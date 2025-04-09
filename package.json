@@ -2,13 +2,17 @@
   "name": "my-turborepo",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "web": "turbo dev --filter web",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
+    "new-package": "hygen new package",
+    "storybook": "turbo run storybook --filter @repo/ui",
+    "build-storybook": "turbo run build-storybook --filter @repo/ui"
   },
   "devDependencies": {
+    "hygen": "^6.2.11",
     "prettier": "^3.5.3",
     "turbo": "^2.5.0",
     "typescript": "5.8.2"
