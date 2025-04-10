@@ -8,8 +8,8 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "new-package": "hygen new package",
-    "storybook": "turbo run storybook --filter @repo/ui",
-    "build-storybook": "turbo run build-storybook --filter @repo/ui"
+    "storybook": "turbo run storybook --filter=@repo/ui",
+    "build-storybook": "turbo run build-storybook --filter=@repo/ui"
   },
   "devDependencies": {
     "hygen": "^6.2.11",

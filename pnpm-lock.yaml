@@ -177,6 +177,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^3.1.1
         version: 3.1.1(@vitest/browser@3.1.1(playwright@1.51.1)(vite@6.2.5(@types/node@22.14.0))(vitest@3.1.1))(vitest@3.1.1(@types/node@22.14.0)(@vitest/browser@3.1.1))
+      chromatic:
+        specifier: ^11.28.0
+        version: 11.28.0
       eslint:
         specifier: ^9.24.0
         version: 9.24.0
