@@ -1,13 +1,18 @@
-export { tokens } from "./tokens/tokens";
-export type { TokensType } from "./tokens/tokens";
+export { tokens } from './tokens/tokens';
+export type { TokensType } from './tokens/tokens';
 
-export { colors } from "./tokens/colors";
-export type { ColorsType } from "./tokens/colors";
+export { colors } from './tokens/colors';
+export type { ColorsType } from './tokens/colors';
 
-export { typography } from "./tokens/typography";
-export type { TypographyType } from "./tokens/typography";
+export { typography } from './tokens/typography';
+export type { TypographyType } from './tokens/typography';
 
-export { fontStyles } from "./tokens/fontStyles";
-export type { fontStylesType } from "./tokens/fontStyles";
+export { fontStyles } from './tokens/fontStyles';
+export type { fontStylesType } from './tokens/fontStyles';
 
-export * from "./styles/global.css";
+export * from './styles/global.css';
+
+export { vars } from './themes/theme.css';
+export { themeClass } from './themes/theme.css';
+
+export * from './themes/theme.css';
