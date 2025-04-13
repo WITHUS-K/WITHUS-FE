@@ -1,6 +1,7 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
-import { join, dirname } from 'path';
+import { join, dirname, resolve } from 'path';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 /**
  * This function is used to resolve the absolute path of a package.
@@ -11,7 +12,11 @@ function getAbsolutePath(value: string): any {
 }
 
 const config: StorybookConfig = {
-  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+  stories: [
+    '../src/**/*.mdx',
+    '../src/**/*.stories.@(js|jsx|ts|tsx)',
+    '../packages/ui/src/**/*.stories.@(js|jsx|ts|tsx)',
+  ],
   addons: [
     getAbsolutePath('@storybook/addon-essentials'),
     getAbsolutePath('@storybook/addon-onboarding'),
@@ -24,8 +29,24 @@ const config: StorybookConfig = {
   },
 
   viteFinal: async (config) => {
-    config.plugins = config.plugins || [];
-    config.plugins.push(vanillaExtractPlugin());
+    config.plugins = [
+      ...(config.plugins || []),
+      tsconfigPaths(), // ✅ 추가
+      vanillaExtractPlugin(),
+    ];
+
+    config.resolve = {
+      ...(config.resolve || {}),
+      alias: {
+        //'@': resolve(__dirname, '../src'),
+        '@repo/theme': resolve(__dirname, '../../../packages/theme'),
+      },
+    };
+
+    config.optimizeDeps = {
+      include: ['@repo/theme'],
+      exclude: ['@vanilla-extract/css'], // ✅ 일부 환경에선 필요
+    };
     return config;
   },
 };

@@ -1,5 +1,5 @@
-import { defineProperties, createSprinkles } from "@vanilla-extract/sprinkles";
-import { vars } from "@/themes/theme.css";
+import { defineProperties, createSprinkles } from '@vanilla-extract/sprinkles';
+import { vars } from '@/themes/theme.css';
 
 // 색상 속성
 const colorProperties = defineProperties({
@@ -9,27 +9,14 @@ const colorProperties = defineProperties({
     borderColor: vars.colors,
   },
   shorthands: {
-    bg: ["background"],
-    border: ["borderColor"],
+    bg: ['background'],
+    border: ['borderColor'],
   },
 });
 
-// 여백 및 둥근 모서리 속성
+// 둥근 모서리 속성
 const spaceProperties = defineProperties({
   properties: {
-    padding: vars.space,
-    paddingTop: vars.space,
-    paddingBottom: vars.space,
-    paddingLeft: vars.space,
-    paddingRight: vars.space,
-
-    margin: vars.space,
-    marginTop: vars.space,
-    marginBottom: vars.space,
-    marginLeft: vars.space,
-    marginRight: vars.space,
-
-    gap: vars.space,
     borderRadius: vars.borderRadius,
   },
 });
@@ -45,20 +32,26 @@ const typographyProperties = defineProperties({
 // 레이아웃 속성
 const layoutProperties = defineProperties({
   properties: {
-    display: ["none", "block", "inline", "inline-block", "flex", "grid"],
-    flexDirection: ["row", "column"],
+    display: ['none', 'block', 'inline', 'inline-block', 'flex', 'grid'],
+    flexDirection: ['row', 'column'],
     justifyContent: [
-      "center",
-      "flex-start",
-      "flex-end",
-      "space-between",
-      "space-around",
+      'center',
+      'flex-start',
+      'flex-end',
+      'space-between',
+      'space-around',
     ],
-    alignItems: ["center", "flex-start", "flex-end", "stretch"],
-    textAlign: ["left", "center", "right"],
-    whiteSpace: ["nowrap", "normal", "pre"],
-    overflow: ["hidden", "auto"],
-    cursor: ["pointer", "default"],
+    alignItems: ['center', 'flex-start', 'flex-end', 'stretch'],
+    flexWrap: ['nowrap', 'wrap', 'wrap-reverse'],
+    textAlign: ['left', 'center', 'right'],
+    whiteSpace: ['nowrap', 'normal', 'pre'],
+    overflow: ['hidden', 'auto'],
+    cursor: ['pointer', 'default'],
+
+    borderRadius: vars.borderRadius,
+  },
+  shorthands: {
+    border: ['borderRadius'],
   },
 });
 

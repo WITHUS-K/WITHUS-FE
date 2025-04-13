@@ -3,7 +3,7 @@ import Text from './Text';
 import { textVariants, textColors } from './Text.css';
 
 const meta: Meta<typeof Text> = {
-  title: 'Components/Text',
+  title: 'Common/Text',
   component: Text,
   //tags: ['autodocs'],
   argTypes: {
