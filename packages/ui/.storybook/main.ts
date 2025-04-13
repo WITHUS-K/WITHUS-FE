@@ -31,7 +31,7 @@ const config: StorybookConfig = {
   viteFinal: async (config) => {
     config.plugins = [
       ...(config.plugins || []),
-      tsconfigPaths(), // ✅ 추가
+      tsconfigPaths(),
       vanillaExtractPlugin(),
     ];
 
@@ -41,11 +41,6 @@ const config: StorybookConfig = {
         //'@': resolve(__dirname, '../src'),
         '@repo/theme': resolve(__dirname, '../../../packages/theme'),
       },
-    };
-
-    config.optimizeDeps = {
-      include: ['@repo/theme'],
-      exclude: ['@vanilla-extract/css'],
     };
     return config;
   },
