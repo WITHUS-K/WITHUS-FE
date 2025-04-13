@@ -45,7 +45,7 @@ const config: StorybookConfig = {
 
     config.optimizeDeps = {
       include: ['@repo/theme'],
-      exclude: ['@vanilla-extract/css'], // ✅ 일부 환경에선 필요
+      exclude: ['@vanilla-extract/css'],
     };
     return config;
   },

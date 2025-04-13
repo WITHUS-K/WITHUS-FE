@@ -50,9 +50,6 @@ const layoutProperties = defineProperties({
 
     borderRadius: vars.borderRadius,
   },
-  shorthands: {
-    border: ['borderRadius'],
-  },
 });
 
 export const sprinkles = createSprinkles(
