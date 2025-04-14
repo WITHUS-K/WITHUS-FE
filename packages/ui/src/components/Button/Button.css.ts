@@ -1,4 +1,3 @@
-// components/Button/Button.css.ts
 import { recipe, RecipeVariants } from '@vanilla-extract/recipes';
 import { styleVariants } from '@vanilla-extract/css';
 import { vars } from '@repo/theme';
@@ -90,7 +89,7 @@ export type ButtonRecipeVariants = RecipeVariants<typeof buttonStyle>;
 
 export const iconSizeStyle = styleVariants({
   '32': {
-    fontSize: '1.6rem', // ✅ 핵심: svg가 em 기준으로 커짐
+    fontSize: '1.6rem',
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',

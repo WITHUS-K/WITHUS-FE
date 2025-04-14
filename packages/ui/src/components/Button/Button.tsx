@@ -1,4 +1,3 @@
-// components/Button/Button.tsx
 import {
   ComponentPropsWithoutRef,
   CSSProperties,
@@ -17,7 +16,7 @@ interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   size?: ButtonSize;
   leftIcon?: ReactElement;
   children: React.ReactNode;
-  width?: CSSProperties['width']; // ✅ width 유동적
+  width?: CSSProperties['width'];
   disabled?: boolean;
 }
 
@@ -43,7 +42,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={`${buttonStyle({ variant, size })} ${className ?? ''}`}
         disabled={disabled}
-        style={{ width }} // ✅ 유동적 넓이
+        style={{ width }}
         {...props}
       >
         {leftIcon && <span className={iconSizeClass}>{leftIcon}</span>}
