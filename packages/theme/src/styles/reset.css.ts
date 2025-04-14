@@ -1,4 +1,4 @@
-import { globalStyle } from "@vanilla-extract/css";
+import { globalStyle } from '@vanilla-extract/css';
 
 globalStyle(
   `html, body, div, span, applet, object, iframe,
@@ -13,62 +13,62 @@ globalStyle(
   {
     margin: 0,
     padding: 0,
-    font: "inherit",
-    fontSize: "100%",
-    verticalAlign: "baseline",
+    font: 'inherit',
+    fontSize: '100%',
+    verticalAlign: 'baseline',
     border: 0,
   }
 );
 
-globalStyle("*", {
-  boxSizing: "border-box",
+globalStyle('*', {
+  boxSizing: 'border-box',
 });
 
 globalStyle(
   `article, aside, details, figcaption, figure,
    footer, header, hgroup, menu, nav, section`,
   {
-    display: "block",
+    display: 'block',
   }
 );
 
-globalStyle("body", {
-  lineHeight: "1",
+globalStyle('body', {
+  lineHeight: '1.5',
 });
 
-globalStyle("ol, ul, li", {
-  listStyle: "none",
+globalStyle('ol, ul, li', {
+  listStyle: 'none',
 });
 
-globalStyle("blockquote, q", {
-  quotes: "none",
+globalStyle('blockquote, q', {
+  quotes: 'none',
 });
 
-globalStyle("blockquote::before, blockquote::after, q::before, q::after", {
+globalStyle('blockquote::before, blockquote::after, q::before, q::after', {
   content: '""',
 });
 
-globalStyle("table", {
-  borderCollapse: "collapse",
-  borderSpacing: "0",
+globalStyle('table', {
+  borderCollapse: 'collapse',
+  borderSpacing: '0',
 });
 
-globalStyle("img", {
-  display: "block",
-  maxWidth: "100%",
-  height: "auto",
+globalStyle('img', {
+  display: 'block',
+  maxWidth: '100%',
+  height: 'auto',
 });
 
-globalStyle("button", {
-  padding: "0",
-  background: "none",
-  cursor: "pointer",
-  border: "none",
+globalStyle('button', {
+  padding: '0',
+  background: 'none',
+  cursor: 'pointer',
+  border: 'none',
 });
 
-globalStyle("input, textarea", {
-  color: "inherit",
-  font: "inherit",
-  outline: "none",
-  border: "none",
+globalStyle('input, textarea', {
+  color: 'inherit',
+  font: 'inherit',
+  outline: 'none',
+  border: 'none',
 });

@@ -27,6 +27,10 @@ export const colors = {
   white: '#FFFFFF',
   black: '#121212',
 
+  //Success & Error
+  success: '#22D363',
+  error: '#FF3232',
+
   //mint
   mint5: '#F3FBFC',
   mint10: '#D2F0F4',

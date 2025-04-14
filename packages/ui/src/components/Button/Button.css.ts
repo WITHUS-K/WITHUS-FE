@@ -26,14 +26,14 @@ export const buttonStyle = recipe({
     },
     variant: {
       main: {
-        backgroundColor: colors.primary50,
+        backgroundColor: vars.colors.primary50,
         color: colors.white,
         selectors: {
-          '&:hover': { backgroundColor: colors.primary60 },
-          '&:active': { backgroundColor: colors.primary70 },
+          '&:hover': { backgroundColor: vars.colors.primary60 },
+          '&:active': { backgroundColor: vars.colors.primary70 },
           '&:disabled': {
-            backgroundColor: colors.grayscale30,
-            color: colors.grayscale10,
+            backgroundColor: vars.colors.grayscale30,
+            color: vars.colors.grayscale10,
           },
         },
       },
