@@ -24,7 +24,6 @@ export const errorTextStyle = style({
   ...fontStyles.sm_caption_regular,
 });
 
-// ✅ input wrapper 상태 스타일
 export const inputWrapper = recipe({
   base: {
     display: 'flex',

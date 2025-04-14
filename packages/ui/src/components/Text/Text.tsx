@@ -3,7 +3,7 @@ import { textColors, textVariants } from './Text.css';
 
 interface TextProps {
   variant?: keyof typeof textVariants;
-  color?: keyof typeof textColors | 'inherit'; // ✅ 추가
+  color?: keyof typeof textColors | 'inherit';
   children: ReactNode;
 }
 
