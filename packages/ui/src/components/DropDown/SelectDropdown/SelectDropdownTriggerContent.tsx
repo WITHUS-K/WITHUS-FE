@@ -1,4 +1,3 @@
-// components/Dropdown/SelectDropdownTriggerContent.tsx
 import { IcArrowDropdown } from '@/icons/src/colored';
 import { arrowStyle, triggerStyle } from '../Dropdown.css';
 import { useDropdownContext } from '../context';
