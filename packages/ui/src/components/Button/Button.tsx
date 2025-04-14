@@ -6,11 +6,9 @@ import {
 } from 'react';
 import { buttonStyle, iconSizeStyle, textVariantMap } from './Button.css';
 import Text from '../Text/Text';
-import { vars } from '@repo/theme';
 export type ButtonVariant = 'main' | 'sub' | 'basic' | 'stroke' | 'white';
 export type ButtonSize = '32' | '40' | '48' | '56' | '64';
-console.log('Primary50:', vars.colors.primary50);
-console.log('안녕', vars.colors);
+
 interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   variant?: ButtonVariant;
   size?: ButtonSize;

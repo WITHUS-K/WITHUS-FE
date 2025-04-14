@@ -50,13 +50,13 @@ const BaseInput = ({
         placeholder={placeholder}
       />
       {showPasswordToggle && value && (
-        <span className={iconStyleVariants[size]} onClick={onTogglePassword}>
+        <button className={iconStyleVariants[size]} onClick={onTogglePassword}>
           {isPasswordVisible ? (
             <IcPwActive width={24} height={24} />
           ) : (
             <IcPwDefault width={24} height={24} />
           )}
-        </span>
+        </button>
       )}
       {icon && <span className={iconStyleVariants[size]}>{icon}</span>}
     </div>

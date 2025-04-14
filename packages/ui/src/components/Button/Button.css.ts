@@ -87,36 +87,32 @@ export const buttonStyle = recipe({
 
 export type ButtonRecipeVariants = RecipeVariants<typeof buttonStyle>;
 
+const commonIconStyle = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
 export const iconSizeStyle = styleVariants({
   '32': {
+    ...commonIconStyle,
     fontSize: '1.6rem',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   '40': {
+    ...commonIconStyle,
     fontSize: '1.6rem',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   '48': {
+    ...commonIconStyle,
     fontSize: '2.4rem',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   '56': {
+    ...commonIconStyle,
     fontSize: '2.4rem',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   '64': {
+    ...commonIconStyle,
     fontSize: '2.4rem',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 
