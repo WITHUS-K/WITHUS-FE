@@ -1,0 +1,58 @@
+// components/Button/Button.tsx
+import {
+  ComponentPropsWithoutRef,
+  CSSProperties,
+  forwardRef,
+  ReactElement,
+} from 'react';
+import { buttonStyle, iconSizeStyle, textVariantMap } from './Button.css';
+import Text from '../Text/Text';
+import { vars } from '@repo/theme';
+export type ButtonVariant = 'main' | 'sub' | 'basic' | 'stroke' | 'white';
+export type ButtonSize = '32' | '40' | '48' | '56' | '64';
+console.log('Primary50:', vars.colors.primary50);
+console.log('안녕', vars.colors);
+interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  leftIcon?: ReactElement;
+  children: React.ReactNode;
+  width?: CSSProperties['width']; // ✅ width 유동적
+  disabled?: boolean;
+}
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      variant = 'main',
+      size = '48',
+      leftIcon,
+      children,
+      width,
+      disabled,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const iconSizeClass = iconSizeStyle[size];
+    const textVariant = textVariantMap[size];
+
+    return (
+      <button
+        ref={ref}
+        className={`${buttonStyle({ variant, size })} ${className ?? ''}`}
+        disabled={disabled}
+        style={{ width }} // ✅ 유동적 넓이
+        {...props}
+      >
+        {leftIcon && <span className={iconSizeClass}>{leftIcon}</span>}
+        <Text variant={textVariant} color="inherit">
+          {children}
+        </Text>
+      </button>
+    );
+  }
+);
+
+Button.displayName = 'Button';

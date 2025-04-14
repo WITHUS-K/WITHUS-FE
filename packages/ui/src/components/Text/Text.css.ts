@@ -10,3 +10,5 @@ export const textVariants = styleVariants(fontStyles, (style) => ({
 export const textColors = styleVariants(colors, (value) => ({
   color: value,
 }));
+
+export type TextVariants = typeof textVariants;
