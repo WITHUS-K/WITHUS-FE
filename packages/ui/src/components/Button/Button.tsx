@@ -9,7 +9,7 @@ import Text from '../Text/Text';
 export type ButtonVariant = 'main' | 'sub' | 'basic' | 'stroke' | 'white';
 export type ButtonSize = '32' | '40' | '48' | '56' | '64';
 
-interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
+export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   leftIcon?: ReactElement;
