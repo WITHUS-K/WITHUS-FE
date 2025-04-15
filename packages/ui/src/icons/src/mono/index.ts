@@ -1,3 +1,9 @@
 export { default as IcButtonEx } from './IcButtonEx';
 export { default as IcHeaderAlarm } from './IcHeaderAlarm';
+export { default as IcSidebarCalender } from './IcSidebarCalender';
+export { default as IcSidebarGroup } from './IcSidebarGroup';
+export { default as IcSidebarHome } from './IcSidebarHome';
+export { default as IcSidebarInfo } from './IcSidebarInfo';
+export { default as IcSidebarPaper } from './IcSidebarPaper';
+export { default as IcSidebarSearch } from './IcSidebarSearch';
 export { default as IcTriangleDown } from './IcTriangleDown';
