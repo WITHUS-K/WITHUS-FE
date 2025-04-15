@@ -10,11 +10,17 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./styles": "./dist/index.css",
-    "./styles/global.css": {
-      "import": "./src/styles/global.css.ts"
+    "./styles/global.css.js": {
+      "import": "./dist/styles/global.css.js"
+    },
+    "./themes/theme.css.js": {
+      "import": "./dist/themes/theme.css.js"
     }
   },
+  "sideEffects": [
+    "./dist/**/*.css.js",
+    "./src/**/*.css.ts"
+  ],
   "scripts": {
     "build": "tsc && node esbuild.config.mjs",
     "dev": "esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.mjs --watch",

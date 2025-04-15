@@ -30,9 +30,9 @@ const config: StorybookConfig = {
 
   viteFinal: async (config) => {
     config.plugins = [
+      vanillaExtractPlugin(),
       ...(config.plugins || []),
       tsconfigPaths(),
-      vanillaExtractPlugin(),
     ];
 
     config.resolve = {
@@ -40,6 +40,14 @@ const config: StorybookConfig = {
       alias: {
         //'@': resolve(__dirname, '../src'),
         '@repo/theme': resolve(__dirname, '../../../packages/theme'),
+      },
+    };
+
+    config.optimizeDeps = {
+      ...(config.optimizeDeps || {}),
+      include: ['@repo/theme'],
+      esbuildOptions: {
+        plugins: [],
       },
     };
     return config;
