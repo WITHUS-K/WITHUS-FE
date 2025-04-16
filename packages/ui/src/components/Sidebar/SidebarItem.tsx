@@ -1,24 +1,18 @@
 import React from 'react';
 import clsx from 'clsx';
 import * as styles from './Sidebar.css';
-import { useSidebarContext } from './SidebarContext';
 
 export interface SidebarItemProps {
   icon: React.ReactNode;
   label: string;
+  isActive: boolean;
+  onClick: () => void;
 }
 
-const SidebarItem = ({ icon, label }: SidebarItemProps) => {
-  const { activeItem, setActiveItem } = useSidebarContext();
-  const isActive = activeItem === label;
-
-  const handleClick = () => {
-    setActiveItem(label);
-  };
-
+const SidebarItem = ({ icon, label, isActive, onClick }: SidebarItemProps) => {
   return (
     <li
-      onClick={handleClick}
+      onClick={onClick}
       className={clsx(
         styles.sidebarItemWrapper,
         isActive && styles.sidebarItemActive

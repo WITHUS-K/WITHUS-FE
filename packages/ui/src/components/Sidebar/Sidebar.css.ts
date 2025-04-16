@@ -57,5 +57,5 @@ export const sidebarIcon = style({
 
 export const sidebarLabel = style({
   whiteSpace: 'nowrap',
-    paddingTop: '0.2rem'
+  paddingTop: '0.2rem'
 });
