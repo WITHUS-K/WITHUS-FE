@@ -26,10 +26,6 @@ export const centerSection = style({
   flexGrow: 1,
 });
 
-export const username = style({
-  color: vars.colors.grayscale70,
-  ...fontStyles.md2_text_medium
-});
 
 export const notificationButton = style({
   background: 'none',
@@ -61,8 +57,6 @@ export const badgeWrapper = style({
   borderRadius: '6px',
   marginLeft: '0.4rem',
   border: `1px solid ${vars.colors.grayscale20}`,
-  color: vars.colors.grayscale50,
-  ...fontStyles.xs_caption_medium,
 })
 
 export const profile = style({

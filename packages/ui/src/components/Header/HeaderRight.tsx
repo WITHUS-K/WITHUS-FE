@@ -1,8 +1,8 @@
 import React from 'react';
-import Flex from '@/components/Flex/Flex';
 import * as styles from './Header.css';
 import { IcHeaderProfile } from '@/icons/src/colored';
 import { IcHeaderAlarm, IcTriangleDown } from '@/icons/src/mono';
+import Text from '@/components/Text/Text';
 
 export interface HeaderRightProps {
   username: string;
@@ -24,13 +24,19 @@ export const HeaderRight = ({
       <div className={styles.profileWrapper}>
         <div className={styles.profile}>
           <IcHeaderProfile width={24} height={24} />
-          <span className={styles.username}>{username}</span>
+          <Text variant="md2_text_medium" color="grayscale70">
+            {username}
+          </Text>
         </div>
         {role === 'admin' && (
           <div className={styles.badgeWrapper}>
-            <span>{position}</span>
+            <Text variant="xs_caption_medium" color="grayscale50">
+              {position}
+            </Text>
             <div className={styles.divider} />
-            <span>{part}</span>
+            <Text variant="xs_caption_medium" color="grayscale50">
+              {part}
+            </Text>
           </div>
         )}
         <IcTriangleDown width={24} height={24} />
