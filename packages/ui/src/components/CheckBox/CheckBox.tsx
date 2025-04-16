@@ -1,7 +1,6 @@
 import { HTMLAttributes } from 'react';
 import { inputStyle, wrapperStyle, iconStyle } from './CheckBox.css';
 import { IcCheck } from '../../icons/src/colored';
-
 interface CheckBoxProps extends HTMLAttributes<HTMLInputElement> {
   isChecked: boolean;
   onChange: () => void;

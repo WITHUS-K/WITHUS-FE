@@ -1,5 +1,6 @@
 import { ElementType, HTMLAttributes } from 'react';
 import { flexStyle } from './Flex.css';
+import clsx from 'clsx';
 
 interface FlexProps extends HTMLAttributes<HTMLDivElement> {
   tag?: ElementType;
@@ -75,15 +76,12 @@ const Flex = ({
 
   return (
     <Element
-      className={flexStyle({
-        direction,
-        align,
-        justify,
-        wrap,
-        grow,
-      })}
-      style={inlineStyles}
       {...props}
+      className={clsx(
+        flexStyle({ direction, align, justify, wrap, grow }),
+        props.className
+      )}
+      style={inlineStyles}
     >
       {children}
     </Element>

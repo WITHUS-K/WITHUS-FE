@@ -53,8 +53,8 @@
     "check-types": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o storybook-static",
-    "svgr:mono": "svgr --out-dir src/icons/src/mono src/icons/assets/mono",
-    "svgr:colored": "svgr --out-dir src/icons/src/colored src/icons/assets/colored --typescript --icon --jsx-runtime automatic",
+    "svgr:mono": "svgr --out-dir src/icons/src/mono src/icons/assets/mono --typescript --icon --jsx-runtime automatic",
+    "svgr:colored": "svgr --out-dir src/icons/src/colored src/icons/assets/colored",
     "svg:build": "pnpm svgr:mono && pnpm svgr:colored"
   },
   "devDependencies": {

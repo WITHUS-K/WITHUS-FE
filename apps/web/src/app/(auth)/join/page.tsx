@@ -5,6 +5,7 @@ import JoinHeader from './_components/JoinHeader/JoinHeader';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Flex } from '@repo/ui/Flex';
 import Step1 from './_components/Step1/Step1';
+import Step2 from './_components/Step2/Step2';
 
 const stepFromQuery = (step: string | null): number => {
   const s = parseInt(step ?? '1', 10);
@@ -46,6 +47,9 @@ export default function JoinPage() {
               goToStep(2);
             }}
           />
+        )}
+        {step === 2 && (
+          <Step2 onBack={() => goToStep(1)} onNext={() => goToStep(3)} />
         )}
       </section>
     </Flex>
