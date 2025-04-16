@@ -66,12 +66,12 @@ export default function Step2({ onBack, onNext }: Step2Props) {
       </Flex>
 
       <Flex gap="1rem" className={buttonStyle}>
-        <Button variant="basic" size="48" width="20.7rem" onClick={onBack}>
+        <Button variant="basic" size="64" width="20.7rem" onClick={onBack}>
           이전
         </Button>
         <Button
           variant="main"
-          size="48"
+          size="64"
           width="20.7rem"
           disabled={!allAgreed}
           onClick={onNext}

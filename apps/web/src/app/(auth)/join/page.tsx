@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Flex } from '@repo/ui/Flex';
 import Step1 from './_components/Step1/Step1';
 import Step2 from './_components/Step2/Step2';
+import Step4 from './_components/Step4/Step4';
 
 const stepFromQuery = (step: string | null): number => {
   const s = parseInt(step ?? '1', 10);
@@ -19,6 +20,7 @@ export default function JoinPage() {
 
   const [step, setStep] = useState(initialStep);
   const [memberType, setMemberType] = useState<'admin' | 'user' | null>(null);
+  const [memberName, setMemberName] = useState<string>('이채원');
 
   // step 변경 시 URL 쿼리 갱신
   useEffect(() => {
@@ -27,7 +29,6 @@ export default function JoinPage() {
     router.replace(`?${params.toString()}`);
   }, [step, router, searchParams]);
 
-  // guard: 3~4단계에 memberType이 없으면 1단계로 이동
   useEffect(() => {
     if ((step === 3 || step === 4) && !memberType) {
       setStep(1);
@@ -50,6 +51,13 @@ export default function JoinPage() {
         )}
         {step === 2 && (
           <Step2 onBack={() => goToStep(1)} onNext={() => goToStep(3)} />
+        )}
+
+        {step === 4 && (
+          <Step4
+            memberName={memberName}
+            onLogin={() => router.push('/login')}
+          />
         )}
       </section>
     </Flex>
