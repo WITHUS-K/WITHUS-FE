@@ -1,14 +1,15 @@
 import { forwardRef, useState } from 'react';
-import { wrapper, errorTextStyle } from './Input.css';
+import { wrapper, errorTextStyle, successTextStyle } from './Input.css';
 import { IcInputError } from '../../icons/src/colored';
 import BaseInput from './BaseInput';
 import { Text } from '..';
-
+import { IcInputSuccess } from '../../icons/src/colored';
 interface TextFieldProps {
   title?: string;
   description?: string;
   errorMessage?: string;
   success?: boolean;
+  successMessage?: string;
   size?: 'search' | 'club' | 'auth';
   width?: string;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
@@ -22,6 +23,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       description,
       errorMessage,
       success,
+      successMessage,
       size = 'auth',
       width = '100%',
       inputProps = {},
@@ -67,12 +69,17 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           onTogglePassword={() => setShowPassword((prev) => !prev)}
         />
 
-        {errorMessage && (
+        {errorMessage ? (
           <div className={errorTextStyle}>
             <IcInputError width={24} height={24} />
             {errorMessage}
           </div>
-        )}
+        ) : success && successMessage ? (
+          <div className={successTextStyle}>
+            <IcInputSuccess width={24} height={24} />
+            {successMessage}
+          </div>
+        ) : null}
       </div>
     );
   }

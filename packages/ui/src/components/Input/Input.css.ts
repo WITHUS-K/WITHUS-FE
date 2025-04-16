@@ -25,6 +25,14 @@ export const errorTextStyle = style({
   ...fontStyles.sm_caption_regular,
 });
 
+export const successTextStyle = style({
+  color: vars.colors.success,
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.8rem',
+  ...fontStyles.sm_caption_regular,
+});
+
 export const inputWrapper = recipe({
   base: {
     display: 'flex',

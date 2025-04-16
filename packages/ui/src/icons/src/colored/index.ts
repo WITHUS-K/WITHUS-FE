@@ -1,7 +1,8 @@
 export { default as IcArrowDropdown } from './IcArrowDropdown';
 export { default as IcInputError } from './IcInputError';
 export { default as IcInputSearch } from './IcInputSearch';
+export { default as IcInputSuccess } from './IcInputSuccess';
 export { default as IcLoginLogo } from './IcLoginLogo';
 export { default as IcPwActive } from './IcPwActive';
 export { default as IcPwDefault } from './IcPwDefault';
-export { default as IcCheck } from './IcCheck';
+export { default as IcCheck } from './IcPwDefault';
