@@ -25,7 +25,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       size = '48',
       leftIcon,
       children,
-      width,
+      width = '100%',
       disabled,
       className,
       ...props
@@ -40,8 +40,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={`${buttonStyle({ variant, size })} ${className ?? ''}`}
         disabled={disabled}
-        style={{ width }}
         {...props}
+        style={{ ...props.style, width }}
       >
         {leftIcon && <span className={iconSizeClass}>{leftIcon}</span>}
         <Text variant={textVariant} color="inherit">

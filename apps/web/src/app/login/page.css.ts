@@ -8,5 +8,14 @@ export const wrapper = style({
   justifyContent: 'center',
   alignItems: 'center',
   flexDirection: 'column',
-  gap: '3.6rem',
+});
+
+export const dividerStyle = style({
+  width: '1px',
+  height: '16px',
+  backgroundColor: vars.colors.grayscale60,
+});
+
+export const textStyle = style({
+  cursor: 'pointer',
 });

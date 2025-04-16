@@ -7,7 +7,7 @@ import { colors } from '@repo/theme';
 
 export const buttonStyle = recipe({
   base: {
-    display: 'inline-flex',
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: '0.8rem',

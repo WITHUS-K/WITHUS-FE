@@ -6,6 +6,7 @@ export const wrapper = style({
   display: 'flex',
   flexDirection: 'column',
   gap: '0.8rem',
+  //width: '100%',
 });
 
 export const titleStyle = style({
@@ -84,13 +85,21 @@ export const inputStyleVariants = styleVariants({
   },
 });
 
-export const iconBaseStyle = style({
-  position: 'absolute',
-  cursor: 'pointer',
-});
-
-export const iconStyleVariants = styleVariants({
-  search: { right: '1.2rem' },
-  club: { right: '1.6rem' },
-  auth: { right: '2rem' },
+export const iconStyleVariants = recipe({
+  base: {
+    position: 'absolute',
+    cursor: 'pointer',
+    border: 'none',
+    background: 'none',
+  },
+  variants: {
+    size: {
+      search: { right: '1.2rem' },
+      club: { right: '1.6rem' },
+      auth: { right: '2rem' },
+    },
+  },
+  defaultVariants: {
+    size: 'auth',
+  },
 });

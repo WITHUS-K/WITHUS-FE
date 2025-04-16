@@ -1,10 +1,11 @@
 import BaseInput from './BaseInput';
+import type { ReactNode, ChangeEvent } from 'react';
 
 interface InputFieldProps {
   placeholder?: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  icon?: React.ReactNode;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  icon?: ReactNode;
   size?: 'search' | 'club' | 'auth';
   width?: string;
 }
@@ -19,9 +20,11 @@ const InputField = ({
 }: InputFieldProps) => {
   return (
     <BaseInput
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
+      inputProps={{
+        value,
+        onChange,
+        placeholder,
+      }}
       icon={icon}
       size={size}
       width={width}
