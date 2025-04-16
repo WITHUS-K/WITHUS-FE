@@ -11,4 +11,5 @@ export const containerStyle = style({
   display: 'flex',
   flex: 1,
   overflowY: 'scroll',
+  justifyContent: 'center',
 });

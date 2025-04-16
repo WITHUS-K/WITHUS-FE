@@ -51,7 +51,7 @@ export const progressLabels = style({
 
 export const labelItem = style({
   ...fontStyles.sm_caption_medium,
-
+  whiteSpace: 'nowrap',
   selectors: {
     [`${progressLabels} > &:nth-child(1)`]: {
       marginRight: '5.4rem',
