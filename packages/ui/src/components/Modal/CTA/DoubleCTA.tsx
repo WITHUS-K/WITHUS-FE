@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from '@/components';
+import { Button, ButtonProps } from '../..';
 
 type DoubleCTAProps = {
   cancelProps?: Omit<ButtonProps, 'children'>;

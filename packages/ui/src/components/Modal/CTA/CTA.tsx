@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from '@/components';
+import { Button, ButtonProps } from '../..';
 
 interface CTAProps extends Omit<ButtonProps, 'children'> {
   text: string;

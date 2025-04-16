@@ -1,11 +1,11 @@
 import BaseInput from './BaseInput';
 import { wrapper, errorTextStyle } from './Input.css';
-import { IcInputError } from '@/icons/src/colored';
+import { IcInputError } from '../../icons/src/colored';
 import { useState } from 'react';
 import { Text } from '..';
 
 interface TextFieldProps {
-  title: string;
+  title?: string;
   description?: string;
   placeholder?: string;
   value: string;

@@ -10,12 +10,10 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./styles/global.css.js": {
-      "import": "./dist/styles/global.css.js"
+    "./themes": {
+      "import": "./dist/themes/theme.css.css"
     },
-    "./themes/theme.css.js": {
-      "import": "./dist/themes/theme.css.js"
-    }
+    "./styles": "./dist/index.css"
   },
   "sideEffects": [
     "./dist/**/*.css.js",

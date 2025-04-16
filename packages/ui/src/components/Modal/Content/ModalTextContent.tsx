@@ -1,4 +1,4 @@
-import { Text, Flex } from '@/components';
+import { Text, Flex } from '../..';
 
 type ModalTextContentProps = {
   title: string;

@@ -1,7 +1,7 @@
-import { IcArrowDropdown } from '@/icons/src/colored';
+import { IcArrowDropdown } from '../../../icons/src/colored';
 import { arrowStyle, triggerStyle } from '../Dropdown.css';
 import { useDropdownContext } from '../context';
-import { Text, Flex } from '@/components';
+import { Text, Flex } from '../..';
 
 const SelectDropdownTriggerContent = ({
   selected,

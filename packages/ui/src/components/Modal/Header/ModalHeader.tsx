@@ -1,6 +1,5 @@
 import { headerStyle } from './ModalHeader.css';
-import { Text } from '@/components';
-
+import { Text } from '../..';
 type ModalHeaderProps = {
   text?: string;
 };

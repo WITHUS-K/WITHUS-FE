@@ -3,7 +3,7 @@ import {
   iconStyleVariants,
   inputStyleVariants,
 } from './Input.css';
-import { IcPwActive, IcPwDefault } from '@/icons/src/colored';
+import { IcPwActive, IcPwDefault } from '../../icons/src/colored';
 
 interface BaseInputProps {
   value: string;

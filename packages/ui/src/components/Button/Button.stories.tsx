@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Button } from './Button';
-import { IcButtonEx } from '@/icons/src/mono';
+import { Button } from '.';
+import { IcButtonEx } from '../../icons/src/mono';
 
 const meta: Meta<typeof Button> = {
   title: 'Common/Button',

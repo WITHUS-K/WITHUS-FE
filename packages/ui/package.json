@@ -9,8 +9,41 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./icons": "./src/icons/src/index.ts",
-    "./styles": "./dist/index.css"
+    "./icons/colored": "./src/icons/src/colored/index.ts",
+    "./icons/mono": "./src/icons/src/mono/index.ts",
+    "./styles": "./dist/index.css",
+    "./Button": {
+      "types": "./dist/components/Button/index.d.ts",
+      "import": "./dist/components/Button/index.js"
+    },
+    "./CheckBox": {
+      "types": "./dist/components/CheckBox/index.d.ts",
+      "import": "./dist/components/CheckBox/index.js"
+    },
+    "./DropDown": {
+      "types": "./dist/components/DropDown/index.d.ts",
+      "import": "./dist/components/DropDown/index.js"
+    },
+    "./Flex": {
+      "types": "./dist/components/Flex/index.d.ts",
+      "import": "./dist/components/Flex/index.js"
+    },
+    "./InputField": {
+      "types": "./dist/components/Input/index.d.ts",
+      "import": "./dist/components/Input/index.js"
+    },
+    "./TextField": {
+      "types": "./dist/components/Input/index.d.ts",
+      "import": "./dist/components/Input/index.js"
+    },
+    "./Modal": {
+      "types": "./dist/components/Modal/index.d.ts",
+      "import": "./dist/components/Modal/index.js"
+    },
+    "./Text": {
+      "types": "./dist/components/Text/index.d.ts",
+      "import": "./dist/components/Text/index.js"
+    }
   },
   "main": "./dist/index.js",
   "scripts": {
