@@ -1,4 +1,7 @@
-import Page from '../app/login/page';
+import { redirect } from 'next/navigation';
 
-// 일단 로그인 페이지로!!
-export default Page;
+export default function Home() {
+  // 사이트 첫 진입 시 /join으로 보냄
+  redirect('/join');
+  return null;
+}
