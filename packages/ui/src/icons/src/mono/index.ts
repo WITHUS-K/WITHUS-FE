@@ -1,3 +1,5 @@
+export { default as IcArrowLeft } from './IcArrowLeft';
+export { default as IcArrowRight } from './IcArrowRight';
 export { default as IcButtonEx } from './IcButtonEx';
 export { default as IcHeaderAlarm } from './IcHeaderAlarm';
 export { default as IcSidebarCalender } from './IcSidebarCalender';
