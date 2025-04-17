@@ -1,12 +1,14 @@
+import { join, resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import type { StorybookConfig } from '@storybook/react-vite';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
-import { join, dirname, resolve } from 'path';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { createRequire } from 'module';
 
-/**
- * This function is used to resolve the absolute path of a package.
- * It is needed in projects that use Yarn PnP or are set up within a monorepo.
- */
+const require = createRequire(import.meta.url);
+
+const currentDir = dirname(fileURLToPath(import.meta.url));
+
 function getAbsolutePath(value: string): any {
   return dirname(require.resolve(join(value, 'package.json')));
 }
@@ -27,7 +29,6 @@ const config: StorybookConfig = {
     name: getAbsolutePath('@storybook/react-vite'),
     options: {},
   },
-
   viteFinal: async (config) => {
     config.plugins = [
       vanillaExtractPlugin(),
@@ -38,8 +39,7 @@ const config: StorybookConfig = {
     config.resolve = {
       ...(config.resolve || {}),
       alias: {
-        //'@': resolve(__dirname, '../src'),
-        '@repo/theme': resolve(__dirname, '../../../packages/theme'),
+        '@repo/theme': resolve(currentDir, '../../../packages/theme'),
       },
     };
 
@@ -50,6 +50,7 @@ const config: StorybookConfig = {
         plugins: [],
       },
     };
+
     return config;
   },
 };
