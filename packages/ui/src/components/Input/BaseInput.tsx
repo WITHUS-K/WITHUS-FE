@@ -44,7 +44,13 @@ const BaseInput = forwardRef<HTMLInputElement, BaseInputProps>(
         {...props}
         style={{ width, ...props.style }}
       >
-        <input {...inputProps} ref={ref} className={inputStyleVariants[size]} />
+        <input
+          {...inputProps}
+          ref={ref}
+          className={inputStyleVariants[size]}
+          {...props}
+          style={{ width, ...props.style }}
+        />
 
         {showPasswordToggle && inputProps.value && (
           <button

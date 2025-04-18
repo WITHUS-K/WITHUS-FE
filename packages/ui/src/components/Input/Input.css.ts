@@ -58,7 +58,7 @@ export const inputWrapper = recipe({
     size: {
       search: { padding: '0.8rem 1.2rem', borderRadius: '8px' },
       club: { padding: '1.6rem', borderRadius: '12px' },
-      auth: { padding: '1.6rem 2rem', borderRadius: '12px' },
+      auth: { padding: '1.6rem 2rem', borderRadius: '12px', height: '5.6rem' },
     },
   },
   defaultVariants: {

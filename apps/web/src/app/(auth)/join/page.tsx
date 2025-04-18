@@ -7,6 +7,7 @@ import { Flex } from '@repo/ui/Flex';
 import Step1 from './_components/Step1/Step1';
 import Step2 from './_components/Step2/Step2';
 import Step4 from './_components/Step4/Step4';
+import Step3User from './_components/Step3/Step3User';
 
 const stepFromQuery = (step: string | null): number => {
   const s = parseInt(step ?? '1', 10);
@@ -51,6 +52,16 @@ export default function JoinPage() {
         )}
         {step === 2 && (
           <Step2 onBack={() => goToStep(1)} onNext={() => goToStep(3)} />
+        )}
+
+        {step === 3 && memberType === 'user' && (
+          <Step3User
+            onBack={() => setStep(2)}
+            onNext={(name) => {
+              setMemberName(name); // ← 여기서 이름 저장
+              setStep(4);
+            }}
+          />
         )}
 
         {step === 4 && (

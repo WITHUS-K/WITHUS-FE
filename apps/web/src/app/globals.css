@@ -1,5 +1,5 @@
 :root {
-  --background: #f2f3f6;
+  --background: #fafafa;
 }
 
 html,
@@ -23,6 +23,7 @@ body {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  border: 'none';
 }
 
 a {
