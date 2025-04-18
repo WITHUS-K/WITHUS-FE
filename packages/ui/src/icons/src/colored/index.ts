@@ -1,4 +1,5 @@
 export { default as IcArrowDropdown } from './IcArrowDropdown';
+export { default as IcDelete } from './IcDelete';
 export { default as IcHeaderLogo } from './IcHeaderLogo';
 export { default as IcHeaderProfile } from './IcHeaderProfile';
 export { default as IcInputError } from './IcInputError';
