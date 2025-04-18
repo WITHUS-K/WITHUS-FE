@@ -6,6 +6,7 @@ export const wrapperStyle = style({
   display: 'inline-block',
   width: '2.4rem',
   height: '2.4rem',
+  color: vars.colors.white,
 });
 
 export const inputStyle = style({

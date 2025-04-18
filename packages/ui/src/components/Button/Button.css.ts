@@ -5,7 +5,6 @@ import type { ButtonSize } from './Button';
 import type { textVariants } from '../Text/Text.css';
 import { colors } from '@repo/theme';
 
-// 👉 size variant 정의
 const buttonSize = {
   '32': { height: '3.2rem' },
   '40': { height: '4rem' },
@@ -14,7 +13,6 @@ const buttonSize = {
   '64': { height: '6.4rem' },
 } as const;
 
-// 👉 variant 스타일 정의
 export const buttonVariants = styleVariants({
   main: {
     backgroundColor: vars.colors.primary50,
@@ -98,7 +96,7 @@ export const buttonStyle = recipe({
     },
   },
   compoundVariants: [
-    // 🔹 main
+    //main
     {
       variants: { variant: 'main', isPressed: true },
       style: {
@@ -118,7 +116,7 @@ export const buttonStyle = recipe({
       },
     },
 
-    // 🔹 sub
+    // sub
     {
       variants: { variant: 'sub', isPressed: true },
       style: {
@@ -138,7 +136,7 @@ export const buttonStyle = recipe({
       },
     },
 
-    // 🔹 basic
+    // basic
     {
       variants: { variant: 'basic', isPressed: true },
       style: {
@@ -158,7 +156,7 @@ export const buttonStyle = recipe({
       },
     },
 
-    // 🔹 stroke
+    // stroke
     {
       variants: { variant: 'stroke', isPressed: true },
       style: {
@@ -178,7 +176,7 @@ export const buttonStyle = recipe({
       },
     },
 
-    // 🔹 white
+    // white
     {
       variants: { variant: 'white', isPressed: true },
       style: {
