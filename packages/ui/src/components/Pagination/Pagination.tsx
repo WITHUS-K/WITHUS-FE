@@ -39,7 +39,7 @@ export const Pagination = ({
       <ul className={styles.listStyle}>
         <li
           className={
-            isFirstPage ? styles.pageItemDisabledStyle : styles.arrowStyle
+            isFirstPage ? styles.arrowDisabledStyle : styles.arrowStyle
           }
         >
           <a
@@ -74,9 +74,7 @@ export const Pagination = ({
         })}
 
         <li
-          className={
-            isLastPage ? styles.pageItemDisabledStyle : styles.arrowStyle
-          }
+          className={isLastPage ? styles.arrowDisabledStyle : styles.arrowStyle}
         >
           <a
             href={isLastPage ? '#' : `?page=${start + displayCount}`}

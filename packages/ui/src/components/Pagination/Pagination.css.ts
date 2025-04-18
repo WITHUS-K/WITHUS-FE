@@ -82,8 +82,19 @@ export const arrowStyle = style({
   transition: 'background-color 0.2s ease, color 0.2s ease',
   selectors: {
     '&:hover': {
-      color: vars.colors.grayscale80,
+      color: vars.colors.grayscale30,
       backgroundColor: vars.colors.grayscale5
+    },
+  },
+})
+
+export const arrowDisabledStyle = style({
+  color: vars.colors.grayscale10,
+  cursor: 'not-allowed',
+  selectors: {
+    '&:hover': {
+      backgroundColor: 'transparent',
+      color: vars.colors.grayscale10,
     },
   },
 })
