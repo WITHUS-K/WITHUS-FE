@@ -10,7 +10,7 @@ import { buttonStyle } from '../../join/_components/Step1/Step1.css';
 export default function CompletePage() {
   const router = useRouter();
   const params = useSearchParams();
-  const name = params.get('name') ?? ''; // 쿼리에서 이름 읽기
+  const name = params.get('name') ?? '';
 
   return (
     <Flex direction="column" align="center" width="43.4rem" paddingTop="8.8rem">

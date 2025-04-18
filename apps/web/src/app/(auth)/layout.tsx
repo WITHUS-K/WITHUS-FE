@@ -1,5 +1,7 @@
-import { layoutStyle, containerStyle } from './layout.css';
+import { Flex } from '@repo/ui/Flex';
+import { layoutStyle, containerStyle, headerStyle } from './layout.css';
 import { Suspense } from 'react';
+import { IcAuthLogo } from '@repo/ui/icons/colored';
 
 export default function AuthLayout({
   children,
@@ -9,17 +11,15 @@ export default function AuthLayout({
   return (
     <Suspense fallback={null}>
       <div className={layoutStyle}>
-        {/* 임시 헤더 - 공컴 헤더로 바꿔야함!! */}
-        <header
-          style={{
-            top: 0,
-            left: 0,
-            right: 0,
-            width: '100%',
-            height: '60px',
-            backgroundColor: 'black',
-          }}
-        />
+        <Flex
+          tag="header"
+          justify="flexStart"
+          align="center"
+          paddingLeft="2.4rem"
+          className={headerStyle}
+        >
+          <IcAuthLogo width={120} height={24} />
+        </Flex>
         <main className={containerStyle}>{children}</main>
       </div>
     </Suspense>

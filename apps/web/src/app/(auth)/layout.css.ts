@@ -13,3 +13,11 @@ export const containerStyle = style({
   overflowY: 'scroll',
   justifyContent: 'center',
 });
+
+export const headerStyle = style({
+  borderBottom: `1px solid ${vars.colors.grayscale10}`,
+  top: 0,
+  left: 0,
+  right: 0,
+  height: '60px',
+});
