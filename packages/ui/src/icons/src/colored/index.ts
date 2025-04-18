@@ -9,6 +9,7 @@ export { default as IcInputSearch } from './IcInputSearch';
 export { default as IcInputSuccess } from './IcInputSuccess';
 export { default as IcJoinStep4 } from './IcJoinStep4';
 export { default as IcLoginLogo } from './IcLoginLogo';
+export { default as IcPasswordComplete } from './IcPasswordComplete';
 export { default as IcPwActive } from './IcPwActive';
 export { default as IcPwDefault } from './IcPwDefault';
 export { default as IcUserActive } from './IcUserActive';

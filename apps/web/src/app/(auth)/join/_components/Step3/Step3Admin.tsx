@@ -3,22 +3,18 @@
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { TextField } from '@repo/ui/TextField';
-import { InputField } from '@repo/ui/InputField';
-import { SelectDropdown } from '@repo/ui/DropDown';
 import { Button } from '@repo/ui/Button';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
-import { IcInputSearch } from '@repo/ui/icons/colored';
+import { SelectDropdown } from '@repo/ui/DropDown';
 
-interface Step3UserProps {
+interface Step3AdminProps {
   onBack: () => void;
   onNext: (name: string) => void;
 }
 
 interface FormValues {
   name: string;
-  birth: string;
-  gender: 'female' | 'male';
   club: string;
   emailLocal: string;
   emailDomain: string;
@@ -28,7 +24,7 @@ interface FormValues {
   authCode: string;
 }
 
-export default function Step3User({ onBack, onNext }: Step3UserProps) {
+export default function Step3Admin({ onBack, onNext }: Step3AdminProps) {
   const {
     control,
     handleSubmit,
@@ -38,8 +34,6 @@ export default function Step3User({ onBack, onNext }: Step3UserProps) {
     mode: 'onBlur',
     defaultValues: {
       name: '',
-      birth: '',
-      gender: undefined,
       club: '',
       emailLocal: '',
       emailDomain: '',
@@ -90,82 +84,25 @@ export default function Step3User({ onBack, onNext }: Step3UserProps) {
           )}
         />
 
-        {/* 생년월일 */}
+        {/* 동아리명 (Admin) */}
         <Controller
           control={control}
-          name="birth"
-          rules={{ required: '생년월일을 입력해주세요.' }}
+          name="club"
+          rules={{ required: '동아리명을 입력해주세요.' }}
           render={({ field }) => (
             <TextField
-              title="생년월일"
+              title="동아리명"
               inputProps={{
                 ...field,
-                placeholder: 'YYYY / MM / DD',
-                type: 'text',
+                placeholder: '동아리명을 입력해주세요.',
               }}
-              errorMessage={errors.birth?.message}
+              errorMessage={errors.club?.message}
               size="auth"
             />
           )}
         />
 
-        {/* 성별 */}
-        <Flex direction="column" gap="0.8rem">
-          <Text variant="md1_text_semibold" color="grayscale80">
-            성별
-          </Text>
-          <Controller
-            control={control}
-            name="gender"
-            rules={{ required: '성별을 선택해주세요.' }}
-            render={({ field }) => (
-              <Flex gap="1.6rem">
-                <Button
-                  variant="sub"
-                  isPressed={field.value === 'female'}
-                  onClick={() => field.onChange('female')}
-                  size="56"
-                  width="20.9rem"
-                >
-                  여성
-                </Button>
-                <Button
-                  variant="sub"
-                  onClick={() => field.onChange('male')}
-                  isPressed={field.value === 'male'}
-                  size="56"
-                  width="20.9rem"
-                >
-                  남성
-                </Button>
-              </Flex>
-            )}
-          />
-        </Flex>
-
-        {/* 동아리명 */}
-        <Flex direction="column" gap="0.8rem" width="100%">
-          <Text variant="md1_text_semibold" color="grayscale80">
-            동아리명
-          </Text>
-          <Controller
-            control={control}
-            name="club"
-            rules={{ required: '동아리명을 검색해주세요.' }}
-            render={({ field }) => (
-              <InputField
-                placeholder="동아리명을 검색해주세요."
-                value={field.value}
-                onChange={field.onChange}
-                icon={<IcInputSearch width={24} height={24} />}
-                size="club"
-              />
-            )}
-          />
-        </Flex>
-
         {/* 이메일 */}
-
         <Flex direction="column" gap="1.2rem">
           <Flex gap="1.2rem">
             <Controller
@@ -246,6 +183,7 @@ export default function Step3User({ onBack, onNext }: Step3UserProps) {
             />
           )}
         />
+
         {/* 비밀번호 확인 */}
         <Controller
           control={control}
@@ -270,56 +208,27 @@ export default function Step3User({ onBack, onNext }: Step3UserProps) {
         />
 
         {/* 핸드폰 번호 & 인증 */}
-        <Flex gap="1.2rem">
-          <Controller
-            control={control}
-            name="phone"
-            rules={{
-              required: '핸드폰 번호를 입력해주세요.',
-              pattern: {
-                value: /^010-?\d{4}-?\d{4}$/,
-                message: '올바른 형식으로 입력해주세요.',
-              },
-            }}
-            render={({ field }) => (
-              <TextField
-                title="핸드폰 번호"
-                inputProps={{
-                  ...field,
-                  placeholder: '핸드폰 번호',
-                  type: 'text',
-                }}
-                errorMessage={errors.phone?.message}
-                size="auth"
-                width="29.5rem"
-              />
-            )}
-          />
-          <Button
-            type="button"
-            variant="sub"
-            size="56"
-            width="12.7rem"
-            onClick={() => setShowAuthInput(true)}
-            style={{ marginTop: '2.8rem' }}
-          >
-            인증번호 받기
-          </Button>
-        </Flex>
-        {showAuthInput && (
+        <Flex direction="column" gap="1.6rem">
           <Flex gap="1.2rem">
             <Controller
               control={control}
-              name="authCode"
-              rules={{ required: '인증번호를 입력해주세요.' }}
+              name="phone"
+              rules={{
+                required: '핸드폰 번호를 입력해주세요.',
+                pattern: {
+                  value: /^010-?\d{4}-?\d{4}$/,
+                  message: '올바른 형식으로 입력해주세요.',
+                },
+              }}
               render={({ field }) => (
                 <TextField
+                  title="핸드폰 번호"
                   inputProps={{
                     ...field,
-                    placeholder: '인증번호',
+                    placeholder: '핸드폰 번호',
                     type: 'text',
                   }}
-                  errorMessage={errors.authCode?.message}
+                  errorMessage={errors.phone?.message}
                   size="auth"
                   width="29.5rem"
                 />
@@ -327,19 +236,57 @@ export default function Step3User({ onBack, onNext }: Step3UserProps) {
             />
             <Button
               type="button"
+              variant="sub"
               size="56"
               width="12.7rem"
-              disabled={!watch('authCode')}
-              onClick={handleConfirmAuth}
+              onClick={() => setShowAuthInput(true)}
+              style={{ marginTop: '2.8rem' }}
             >
-              인증번호 확인
+              인증번호 받기
             </Button>
           </Flex>
-        )}
+          {showAuthInput && (
+            <Flex gap="1.2rem">
+              <Controller
+                control={control}
+                name="authCode"
+                rules={{ required: '인증번호를 입력해주세요.' }}
+                render={({ field }) => (
+                  <TextField
+                    inputProps={{
+                      ...field,
+                      placeholder: '인증번호',
+                      type: 'text',
+                    }}
+                    errorMessage={errors.authCode?.message}
+                    size="auth"
+                    width="29.5rem"
+                  />
+                )}
+              />
+              <Button
+                type="button"
+                variant="sub"
+                size="56"
+                width="12.7rem"
+                disabled={!watch('authCode')}
+                onClick={handleConfirmAuth}
+              >
+                인증번호 확인
+              </Button>
+            </Flex>
+          )}
+        </Flex>
 
         {/* 이전 / 완료 */}
         <Flex gap="2rem" justify="center" marginTop="3.2rem">
-          <Button variant="basic" size="64" width="20.7rem" onClick={onBack}>
+          <Button
+            type="button"
+            variant="basic"
+            size="64"
+            width="20.7rem"
+            onClick={onBack}
+          >
             이전
           </Button>
           <Button
