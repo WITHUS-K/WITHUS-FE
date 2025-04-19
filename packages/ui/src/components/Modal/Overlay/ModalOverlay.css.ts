@@ -7,7 +7,7 @@ export const overlay = style({
   right: 0,
   bottom: 0,
   backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  zIndex: 0,
+  zIndex: 999,
 });
 
 export const container = style({
@@ -15,7 +15,7 @@ export const container = style({
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  zIndex: 1,
+  zIndex: 1000,
   backgroundColor: 'white',
   borderRadius: '12px',
   overflow: 'hidden',

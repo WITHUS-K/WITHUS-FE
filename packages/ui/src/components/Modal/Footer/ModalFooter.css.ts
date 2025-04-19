@@ -15,8 +15,7 @@ export const footer = styleVariants({
     zIndex: 2,
     position: 'sticky',
     bottom: 0,
-    paddingTop: '1.6rem',
-    paddingBottom: '1.6rem',
+    padding: '1.6rem 2rem',
   },
   false: {
     display: 'flex',

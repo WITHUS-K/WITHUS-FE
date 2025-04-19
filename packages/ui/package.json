@@ -12,6 +12,10 @@
     "./icons/colored": "./src/icons/src/colored/index.ts",
     "./icons/mono": "./src/icons/src/mono/index.ts",
     "./styles": "./dist/index.css",
+    "./hooks": {
+      "import": "./dist/hooks/index.js",
+      "types": "./dist/hooks/index.d.ts"
+    },
     "./Button": {
       "types": "./dist/components/Button/index.d.ts",
       "import": "./dist/components/Button/index.js"
@@ -61,8 +65,8 @@
     "@chromatic-com/storybook": "^3",
     "@repo/eslint-config": "workspace:*",
     "@repo/theme": "workspace:*",
-    "@repo/utils": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@repo/utils": "workspace:*",
     "@storybook/addon-essentials": "^8.6.12",
     "@storybook/addon-onboarding": "^8.6.12",
     "@storybook/blocks": "^8.6.12",
@@ -87,6 +91,7 @@
     "esbuild-plugin-svgr": "^3.1.1",
     "eslint": "^9.24.0",
     "eslint-plugin-storybook": "^0.12.0",
+    "overlay-kit": "^1.7.0",
     "playwright": "^1.51.1",
     "storybook": "^8.6.12",
     "svgo": "^3.3.2",

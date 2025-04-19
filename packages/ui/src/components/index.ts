@@ -4,4 +4,4 @@ export * from './DropDown';
 export * from './Flex';
 export * from './Input';
 export * from './Text';
-export * from './Modal';
+export * from './Modal/Modal';

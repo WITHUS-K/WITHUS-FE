@@ -8,13 +8,16 @@ import { CheckBox } from '@repo/ui/CheckBox';
 import AgreementItem from './AgreementItem';
 import { containerStyle } from './Step2.css';
 import { buttonStyle } from '../Step1/Step1.css';
-
+import { useModal } from '@repo/ui/hooks';
+import AgreementContent from '../AgreementContent/AgreementContent';
 interface Step2Props {
   onBack: () => void;
   onNext: () => void;
 }
 
 export default function Step2({ onBack, onNext }: Step2Props) {
+  const { agreement } = useModal();
+
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreePrivacy, setAgreePrivacy] = useState(false);
   const [agreeMarketing, setAgreeMarketing] = useState(false);
@@ -26,6 +29,15 @@ export default function Step2({ onBack, onNext }: Step2Props) {
     setAgreeTerms(next);
     setAgreePrivacy(next);
     setAgreeMarketing(next);
+  };
+
+  // 이용약관 모달
+  const handleOpenAgreementModal = () => {
+    console.log('모달열림');
+    agreement({
+      content: <AgreementContent />,
+      confirmText: '확인',
+    });
   };
 
   return (
@@ -41,7 +53,12 @@ export default function Step2({ onBack, onNext }: Step2Props) {
       </Text>
 
       <Flex direction="column" marginTop="1.6rem" width="100%">
-        <Flex align="center" gap="1.2rem" className={containerStyle}>
+        <Flex
+          align="center"
+          gap="1.2rem"
+          className={containerStyle}
+          onClick={handleOpenAgreementModal}
+        >
           <CheckBox isChecked={allAgreed} onChange={handleAllChange} />
           <Text variant="md2_text_medium" color="grayscale80">
             전체 동의
