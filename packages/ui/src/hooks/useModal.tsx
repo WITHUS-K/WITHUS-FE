@@ -103,7 +103,6 @@ export function useModal() {
 
   /** 이용약관 모달 */
   const agreement = useCallback((opts: AgreementProps) => {
-    console.log('[Modal] agreement open');
     overlay.open(({ isOpen, close, unmount }) => (
       <Modal.Overlay
         open={isOpen}

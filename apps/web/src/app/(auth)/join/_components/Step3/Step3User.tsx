@@ -9,6 +9,7 @@ import { Button } from '@repo/ui/Button';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { IcInputSearch } from '@repo/ui/icons/colored';
+import { useRouter } from 'next/navigation';
 
 interface Step3UserProps {
   onBack: () => void;
@@ -56,6 +57,8 @@ export default function Step3User({ onBack, onNext }: Step3UserProps) {
   const emailDomain = watch('emailDomain');
   const authCode = watch('authCode');
   const canCheckEmail = Boolean(emailLocal && emailDomain);
+
+  const router = useRouter();
 
   const onSubmit = (data: FormValues) => {
     console.log('이름', data.name);
@@ -158,6 +161,8 @@ export default function Step3User({ onBack, onNext }: Step3UserProps) {
                 placeholder="동아리명을 검색해주세요."
                 value={field.value}
                 onChange={field.onChange}
+                readOnly
+                onClick={() => router.push(`/join/3/club-search?type=user`)}
                 icon={<IcInputSearch width={24} height={24} />}
                 size="club"
               />

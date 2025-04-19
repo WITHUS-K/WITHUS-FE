@@ -33,7 +33,6 @@ export default function Step2({ onBack, onNext }: Step2Props) {
 
   // 이용약관 모달
   const handleOpenAgreementModal = () => {
-    console.log('모달열림');
     agreement({
       content: <AgreementContent />,
       confirmText: '확인',
@@ -53,14 +52,14 @@ export default function Step2({ onBack, onNext }: Step2Props) {
       </Text>
 
       <Flex direction="column" marginTop="1.6rem" width="100%">
-        <Flex
-          align="center"
-          gap="1.2rem"
-          className={containerStyle}
-          onClick={handleOpenAgreementModal}
-        >
+        <Flex align="center" gap="1.2rem" className={containerStyle}>
           <CheckBox isChecked={allAgreed} onChange={handleAllChange} />
-          <Text variant="md2_text_medium" color="grayscale80">
+          <Text
+            variant="md2_text_medium"
+            color="grayscale80"
+            onClick={handleOpenAgreementModal}
+            style={{ cursor: 'pointer' }}
+          >
             전체 동의
           </Text>
         </Flex>
