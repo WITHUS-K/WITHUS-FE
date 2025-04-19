@@ -13,7 +13,6 @@ import { useRouter } from 'next/navigation';
 
 interface Step3UserProps {
   onBack: () => void;
-  onNext: (name: string) => void;
 }
 
 interface FormValues {
@@ -29,7 +28,7 @@ interface FormValues {
   authCode: string;
 }
 
-export default function Step3User({ onBack, onNext }: Step3UserProps) {
+export default function Step3User({ onBack }: Step3UserProps) {
   const {
     control,
     handleSubmit,
@@ -61,8 +60,10 @@ export default function Step3User({ onBack, onNext }: Step3UserProps) {
   const router = useRouter();
 
   const onSubmit = (data: FormValues) => {
-    console.log('이름', data.name);
-    onNext(data.name);
+    const q = new URLSearchParams();
+    q.set('type', 'user');
+    q.set('name', data.name);
+    router.push(`/join/4?${q.toString()}`);
   };
 
   const handleConfirmAuth = () => {
@@ -155,7 +156,7 @@ export default function Step3User({ onBack, onNext }: Step3UserProps) {
           <Controller
             control={control}
             name="club"
-            rules={{ required: '동아리명을 검색해주세요.' }}
+            //rules={{ required: '동아리명을 검색해주세요.' }}
             render={({ field }) => (
               <InputField
                 placeholder="동아리명을 검색해주세요."
@@ -353,7 +354,7 @@ export default function Step3User({ onBack, onNext }: Step3UserProps) {
             variant="main"
             size="64"
             width="20.7rem"
-            disabled={!isValid || !isAuthConfirmed}
+            disabled={!isValid}
           >
             완료
           </Button>

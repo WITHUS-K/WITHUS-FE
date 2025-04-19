@@ -7,10 +7,10 @@ import { Button } from '@repo/ui/Button';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { SelectDropdown } from '@repo/ui/DropDown';
+import { useRouter } from 'next/navigation';
 
 interface Step3AdminProps {
   onBack: () => void;
-  onNext: (name: string) => void;
 }
 
 interface FormValues {
@@ -24,7 +24,7 @@ interface FormValues {
   authCode: string;
 }
 
-export default function Step3Admin({ onBack, onNext }: Step3AdminProps) {
+export default function Step3Admin({ onBack }: Step3AdminProps) {
   const {
     control,
     handleSubmit,
@@ -51,8 +51,13 @@ export default function Step3Admin({ onBack, onNext }: Step3AdminProps) {
   const authCode = watch('authCode');
   const canCheckEmail = Boolean(emailLocal && emailDomain);
 
+  const router = useRouter();
+
   const onSubmit = (data: FormValues) => {
-    onNext(data.name);
+    const q = new URLSearchParams();
+    q.set('type', 'user');
+    q.set('name', data.name);
+    router.push(`/join/4?${q.toString()}`);
   };
 
   const handleConfirmAuth = () => {

@@ -1,18 +1,18 @@
 'use client';
 
-import React from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Button } from '@repo/ui/Button';
 import { IcJoinStep4 } from '@repo/ui/icons/colored';
 import { buttonStyle } from '../Step1/Step1.css';
+import { useSearchParams, useRouter } from 'next/navigation';
 
-interface Step4Props {
-  memberName: string;
-  onLogin?: () => void;
-}
+export default function Step4() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const rawName = searchParams.get('name') ?? '';
+  const memberName = decodeURIComponent(rawName);
 
-export default function Step4({ memberName, onLogin }: Step4Props) {
   return (
     <Flex direction="column" align="center" marginTop="3.6rem">
       <IcJoinStep4 width={161} height={148} />
@@ -31,7 +31,7 @@ export default function Step4({ memberName, onLogin }: Step4Props) {
         size="64"
         width="43.4rem"
         className={buttonStyle}
-        onClick={onLogin}
+        onClick={() => router.push('/login')}
       >
         위더스 로그인하기
       </Button>

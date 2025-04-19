@@ -26,17 +26,26 @@ export default function LoginPage() {
       </Flex>
       <LoginForm />
       <Flex gap="1.6rem" marginTop="1.9rem">
-        <Text
-          variant="md2_text_regular"
-          color="grayscale60"
-          className={textStyle}
-        >
-          회원가입
-        </Text>
+        <Link href="/join" passHref>
+          <Text
+            variant="md2_text_regular"
+            color="grayscale60"
+            className={textStyle}
+            style={{ cursor: 'pointer' }}
+          >
+            회원가입
+          </Text>
+        </Link>
         <span className={dividerStyle} />
-        <Text variant="md2_text_regular" color="grayscale60">
-          비밀번호 찾기
-        </Text>
+        <Link href="/password/find" passHref>
+          <Text
+            variant="md2_text_regular"
+            color="grayscale60"
+            style={{ cursor: 'pointer' }}
+          >
+            비밀번호 찾기
+          </Text>
+        </Link>
       </Flex>
     </div>
   );

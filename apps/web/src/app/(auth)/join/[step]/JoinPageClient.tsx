@@ -23,7 +23,6 @@ export default function JoinPageClient() {
 
   const step = stepFromParam(params.step as string | undefined);
   const memberType = typeFromQuery(searchParams.get('type'));
-  const [memberName, setMemberName] = React.useState('');
 
   const goToStep = (n: number) => {
     const q = new URLSearchParams();
@@ -47,26 +46,12 @@ export default function JoinPageClient() {
     case 3:
       if (!memberType) return null;
       return memberType === 'user' ? (
-        <Step3User
-          onBack={() => goToStep(2)}
-          onNext={(name) => {
-            setMemberName(name);
-            goToStep(4);
-          }}
-        />
+        <Step3User onBack={() => goToStep(2)} />
       ) : (
-        <Step3Admin
-          onBack={() => goToStep(2)}
-          onNext={(name) => {
-            setMemberName(name);
-            goToStep(4);
-          }}
-        />
+        <Step3Admin onBack={() => goToStep(2)} />
       );
     case 4:
-      return (
-        <Step4 memberName={memberName} onLogin={() => router.push('/login')} />
-      );
+      return <Step4 />;
     default:
       return null;
   }
