@@ -1,48 +1,37 @@
 'use client';
-
 import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { Flex } from '@repo/ui/Flex';
 import { TextField } from '@repo/ui/TextField';
 import { Button } from '@repo/ui/Button';
 import { Text } from '@repo/ui/Text';
-import { buttonStyle } from '../../join/_components/Step1/Step1.css';
-interface Form {
+import { buttonStyle } from '../../../join/_components/Step1/Step1.css';
+
+interface VerifyFormProps {
+  router: ReturnType<typeof import('next/navigation').useRouter>;
+  searchParams: URLSearchParams;
+}
+interface VerifyFormValues {
   code: string;
 }
 
-export default function VerifyPage() {
-  const router = useRouter();
-  const params = useSearchParams();
-  const name = params.get('name') || '';
-  const email = params.get('email') || '';
-
+export default function VerifyForm({ router, searchParams }: VerifyFormProps) {
+  const name = searchParams.get('name') || '';
+  const email = searchParams.get('email') || '';
   const [isVerified, setIsVerified] = useState(false);
-
   const {
     control,
     handleSubmit,
     formState: { isValid },
-  } = useForm<Form>({
+  } = useForm<VerifyFormValues>({
     mode: 'onBlur',
     defaultValues: { code: '' },
   });
-
-  // 인증코드 확인
-  const onConfirm = ({ code }: Form) => {
-    setIsVerified(true);
-  };
-
-  // 비밀번호 재설정 페이지로 이동
-  const onReset = () => {
+  const onConfirm = ({ code }: VerifyFormValues) => setIsVerified(true);
+  const onReset = () =>
     router.push(
       `/password/reset?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`
     );
-  };
-
-  // 인증코드 재전송
-  const onResend = () => {};
 
   return (
     <form onSubmit={handleSubmit(onConfirm)}>
@@ -73,7 +62,6 @@ export default function VerifyPage() {
             확인
           </Button>
         </Flex>
-
         <Flex
           direction="column"
           gap="1.6rem"
@@ -90,7 +78,6 @@ export default function VerifyPage() {
           >
             비밀번호 재설정하기
           </Button>
-
           <Text
             variant="md2_text_medium"
             color="grayscale60"
@@ -99,7 +86,9 @@ export default function VerifyPage() {
               cursor: 'pointer',
               textDecorationLine: 'underline',
             }}
-            onClick={onResend}
+            onClick={() => {
+              /* resend logic */
+            }}
           >
             이메일로 인증코드 다시 받기
           </Text>

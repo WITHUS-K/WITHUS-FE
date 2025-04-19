@@ -1,35 +1,33 @@
 'use client';
-
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { Flex } from '@repo/ui/Flex';
 import { TextField } from '@repo/ui/TextField';
 import { Button } from '@repo/ui/Button';
-import { buttonStyle } from '../../join/_components/Step1/Step1.css';
-interface Form {
+import { buttonStyle } from '../../../join/_components/Step1/Step1.css';
+
+interface ResetFormProps {
+  router: ReturnType<typeof import('next/navigation').useRouter>;
+  searchParams: URLSearchParams;
+}
+interface ResetFormValues {
   password: string;
   passwordConfirm: string;
 }
 
-export default function ResetPage() {
-  const router = useRouter();
-  const params = useSearchParams();
-  const name = params.get('name') || '';
-  const email = params.get('email') || '';
-
+export default function ResetForm({ router, searchParams }: ResetFormProps) {
+  const name = searchParams.get('name') || '';
+  const email = searchParams.get('email') || '';
   const {
     control,
     handleSubmit,
     watch,
-    formState: { errors, isValid },
-  } = useForm<Form>({
+    formState: { isValid },
+  } = useForm<ResetFormValues>({
     mode: 'onBlur',
     defaultValues: { password: '', passwordConfirm: '' },
   });
-
-  const onSubmit = ({ password }: Form) => {
+  const onSubmit = ({ password }: ResetFormValues) =>
     router.push(`/password/complete?name=${encodeURIComponent(name)}`);
-  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -59,7 +57,6 @@ export default function ResetPage() {
             />
           )}
         />
-
         <Controller
           name="passwordConfirm"
           control={control}
@@ -81,7 +78,6 @@ export default function ResetPage() {
             />
           )}
         />
-
         <Button
           type="submit"
           variant="main"

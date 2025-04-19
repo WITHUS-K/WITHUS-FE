@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { TextField } from '@repo/ui/TextField';
 import { InputField } from '@repo/ui/InputField';
@@ -58,6 +58,7 @@ export default function Step3User({ onBack, onNext }: Step3UserProps) {
   const canCheckEmail = Boolean(emailLocal && emailDomain);
 
   const onSubmit = (data: FormValues) => {
+    console.log('이름', data.name);
     onNext(data.name);
   };
 

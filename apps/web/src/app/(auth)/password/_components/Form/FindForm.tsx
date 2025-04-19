@@ -1,33 +1,32 @@
 'use client';
-import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { Flex } from '@repo/ui/Flex';
 import { TextField } from '@repo/ui/TextField';
 import { Button } from '@repo/ui/Button';
-import { buttonStyle } from '../../join/_components/Step1/Step1.css';
-interface Form {
+import { buttonStyle } from '../../../join/_components/Step1/Step1.css';
+
+interface FindFormProps {
+  router: ReturnType<typeof import('next/navigation').useRouter>;
+}
+interface FindFormValues {
   name: string;
   email: string;
 }
 
-export default function FindPage() {
-  const router = useRouter();
+export default function FindForm({ router }: FindFormProps) {
   const {
     control,
     handleSubmit,
     formState: { isValid },
-  } = useForm<Form>({
+  } = useForm<FindFormValues>({
     mode: 'onBlur',
     defaultValues: { name: '', email: '' },
   });
-
-  const onSubmit = ({ name, email }: Form) => {
-    // API 호출로 인증코드 발송
+  const onSubmit = ({ name, email }: FindFormValues) => {
     router.push(
       `/password/verify?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`
     );
   };
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex direction="column" gap="2.8rem" width="43.4rem">
@@ -44,7 +43,6 @@ export default function FindPage() {
             />
           )}
         />
-
         <Controller
           name="email"
           control={control}
@@ -64,7 +62,6 @@ export default function FindPage() {
             />
           )}
         />
-
         <Button
           type="submit"
           variant="main"

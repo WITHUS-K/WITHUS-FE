@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { TextField } from '@repo/ui/TextField';
 import { Button } from '@repo/ui/Button';

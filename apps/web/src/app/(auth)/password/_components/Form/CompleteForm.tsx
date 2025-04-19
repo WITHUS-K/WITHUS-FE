@@ -1,17 +1,20 @@
 'use client';
-
 import { IcPasswordComplete } from '@repo/ui/icons/colored';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Button } from '@repo/ui/Button';
-import { buttonStyle } from '../../join/_components/Step1/Step1.css';
+import { buttonStyle } from '../../../join/_components/Step1/Step1.css';
 
-export default function CompletePage() {
-  const router = useRouter();
-  const params = useSearchParams();
-  const name = params.get('name') ?? '';
+interface CompleteFormProps {
+  router: ReturnType<typeof import('next/navigation').useRouter>;
+  searchParams: URLSearchParams;
+}
 
+export default function CompleteForm({
+  router,
+  searchParams,
+}: CompleteFormProps) {
+  const name = searchParams.get('name') ?? '';
   return (
     <Flex direction="column" align="center" width="43.4rem" paddingTop="8.8rem">
       <IcPasswordComplete

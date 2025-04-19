@@ -1,10 +1,7 @@
-'use client';
-
 import { ReactNode } from 'react';
-import { usePathname } from 'next/navigation';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
-import { dividerStyle } from '../join/_components/JoinHeader/JoinHeader.css';
+import { dividerStyle } from '../../join/_components/JoinHeader/JoinHeader.css';
 
 const titleMap: Record<string, string> = {
   find: '비밀번호 찾기',
@@ -13,9 +10,15 @@ const titleMap: Record<string, string> = {
   complete: '비밀번호 변경 완료',
 };
 
-export default function PasswordLayout({ children }: { children: ReactNode }) {
-  const segment = usePathname().split('/').pop()!;
-  const title = titleMap[segment] ?? '비밀번호 찾기';
+export default async function StepLayout({
+  children,
+  params,
+}: {
+  children: ReactNode;
+  params: Promise<{ step: string }>;
+}) {
+  const { step } = await params;
+  const title = titleMap[step] ?? titleMap.find;
 
   return (
     <Flex direction="column" width="43.4rem" paddingTop="8.4rem">
@@ -25,7 +28,6 @@ export default function PasswordLayout({ children }: { children: ReactNode }) {
         </Text>
         <div className={dividerStyle} />
       </Flex>
-
       <div style={{ marginTop: '2.8rem' }}>{children}</div>
     </Flex>
   );
