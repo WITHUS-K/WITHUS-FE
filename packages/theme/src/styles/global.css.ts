@@ -26,4 +26,5 @@ globalStyle('html, body', {
 
 globalStyle('a', {
   textDecoration: 'none',
+  color: 'inherit',
 });

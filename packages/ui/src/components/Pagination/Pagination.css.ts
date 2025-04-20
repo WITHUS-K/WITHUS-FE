@@ -1,15 +1,6 @@
 import { fontStyles, vars } from "@repo/theme";
-import { globalStyle, style } from "@vanilla-extract/css";
+import { style } from "@vanilla-extract/css";
 
-
-globalStyle('a', {
-  textDecoration: 'none',
-  color: 'inherit',
-});
-
-globalStyle('ul', {
-  listStyle: 'none',
-});
 
 export const paginationWrapper = style({
   width: '412px',
