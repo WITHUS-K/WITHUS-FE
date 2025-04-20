@@ -2,8 +2,6 @@ import { vars } from "@repo/theme";
 import { style } from "@vanilla-extract/css";
 
 export const listWrapper = style({
-  width: '1101px',
-  height: '56px',
   display: 'flex',
   flexDirection: 'row',
   justifyItems: 'center',
