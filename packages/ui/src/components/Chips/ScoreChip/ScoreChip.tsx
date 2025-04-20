@@ -17,8 +17,8 @@ export interface ScoreChipProps {
 export const ScoreChip = ({ items }: ScoreChipProps) => {
   return (
     <div className={styles.listWrapper}>
-      {items.map((item, idx) => (
-        <div key={idx} className={styles.itemWrapper}>
+      {items.map((item) => (
+        <div key={item.name} className={styles.itemWrapper}>
           <div className={styles.itemProfileWrapper}>
             <Profile src={item.src} alt={item.alt} />
             <Text variant="sm_caption_medium" color="grayscale90">
