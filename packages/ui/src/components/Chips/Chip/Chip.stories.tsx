@@ -36,7 +36,7 @@ export const ChipVariants: Story = {
             gap: '1rem',
           }}
         >
-          <Chip backgroundColor={bg} color={COLORS[idx]}>
+          <Chip bg={bg} color={COLORS[idx]}>
             {`${bg}`}
           </Chip>
         </div>

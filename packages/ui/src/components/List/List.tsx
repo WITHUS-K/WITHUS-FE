@@ -17,7 +17,7 @@ export const List = ({ question, src, alt, name }: ListProps) => {
         {question}
       </Text>
       <div className={styles.listRightSection}>
-        <Chip backgroundColor="grayscale5" color="grayscale70">
+        <Chip bg="grayscale5" color="grayscale70">
           작성자
         </Chip>
         <Profile src={src} alt={alt} />
