@@ -5,6 +5,8 @@ export { default as IcArrowDropdown } from './IcArrowDropdown';
 export { default as IcAuthLogo } from './IcAuthLogo';
 export { default as IcCheckCopy } from './IcCheckCopy';
 export { default as IcCheck } from './IcCheck';
+export { default as IcHeaderLogo } from './IcHeaderLogo';
+export { default as IcHeaderProfile } from './IcHeaderProfile';
 export { default as IcInputError } from './IcInputError';
 export { default as IcInputSearch } from './IcInputSearch';
 export { default as IcInputSuccess } from './IcInputSuccess';
