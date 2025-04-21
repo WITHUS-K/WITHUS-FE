@@ -16,4 +16,5 @@ export const containerStyle = style({
 export const contentStyle = style({
   flex: 1,
   overflowY: 'auto',
+  padding: '2.4rem',
 });

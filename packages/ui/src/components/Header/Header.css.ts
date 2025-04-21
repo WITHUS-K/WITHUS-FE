@@ -12,6 +12,9 @@ export const headerContainer = style({
   borderBottom: `1px solid ${vars.colors.grayscale10}`,
   padding: '1.6rem 2.4rem',
   backgroundColor: vars.colors.white,
+  top: 0,
+  left: 0,
+  right: 0,
 });
 
 export const leftSection = style({
@@ -19,13 +22,12 @@ export const leftSection = style({
   justifyItems: 'center',
   justifyContent: 'center',
   alignItems: 'center',
-  cursor: 'pointer'
+  cursor: 'pointer',
 });
 
 export const centerSection = style({
   flexGrow: 1,
 });
-
 
 export const notificationButton = style({
   background: 'none',
@@ -44,7 +46,7 @@ export const notificationButton = style({
 export const divider = style({
   height: '1.8rem',
   border: `0.5px solid ${vars.colors.grayscale20}`,
-})
+});
 
 export const badgeWrapper = style({
   display: 'flex',
@@ -53,11 +55,11 @@ export const badgeWrapper = style({
   justifyContent: 'center',
   alignItems: 'center',
   gap: '0.6rem',
-  padding: '0 0.6rem', 
+  padding: '0 0.6rem',
   borderRadius: '6px',
   marginLeft: '0.4rem',
   border: `1px solid ${vars.colors.grayscale20}`,
-})
+});
 
 export const profile = style({
   gap: '0.8rem',
@@ -66,7 +68,7 @@ export const profile = style({
   justifyItems: 'center',
   justifyContent: 'center',
   alignItems: 'center',
-})
+});
 
 export const profileWrapper = style({
   display: 'flex',
@@ -96,4 +98,4 @@ export const headerRightWrapper = style({
   alignItems: 'center',
   flexWrap: 'nowrap',
   gap: '1.2rem',
-})
+});
