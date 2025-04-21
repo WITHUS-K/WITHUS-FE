@@ -1,3 +1,5 @@
+'use client';
+
 import { forwardRef, useState } from 'react';
 import { wrapper, errorTextStyle, successTextStyle } from './Input.css';
 import { IcInputError } from '../../icons/src/colored';

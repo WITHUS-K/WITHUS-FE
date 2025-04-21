@@ -47,6 +47,34 @@
     "./Text": {
       "types": "./dist/components/Text/index.d.ts",
       "import": "./dist/components/Text/index.js"
+    },
+    "./Chips": {
+      "types": "./dist/components/Chips/index.d.ts",
+      "import": "./dist/components/Chips/index.js"
+    },
+    "./Header": {
+      "types": "./dist/components/Header/index.d.ts",
+      "import": "./dist/components/Header/index.js"
+    },
+    "./List": {
+      "types": "./dist/components/List/index.d.ts",
+      "import": "./dist/components/List/index.js"
+    },
+    "./Pagination": {
+      "types": "./dist/components/Pagination/index.d.ts",
+      "import": "./dist/components/Pagination/index.js"
+    },
+    "./Profile": {
+      "types": "./dist/components/Profile/index.d.ts",
+      "import": "./dist/components/Profile/index.js"
+    },
+    "./Sidebar": {
+      "types": "./dist/components/Sidebar/index.d.ts",
+      "import": "./dist/components/Sidebar/index.js"
+    },
+    "./Stepper": {
+      "types": "./dist/components/Stepper/index.d.ts",
+      "import": "./dist/components/Stepper/index.js"
     }
   },
   "main": "./dist/index.js",

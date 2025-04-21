@@ -3,7 +3,7 @@ import { fontStyles, vars } from '@repo/theme';
 
 export const sidebarContainer = style({
   width: '240px',
-  height: '704px',
+  height: '100vh',
   backgroundColor: vars.colors.white,
   display: 'flex',
   flexDirection: 'column',
@@ -41,7 +41,7 @@ export const siderbarItem = style({
   display: 'flex',
   alignItems: 'center',
   gap: '1.2rem',
-})
+});
 
 export const sidebarItemActive = style({
   backgroundColor: vars.colors.primary5,
@@ -57,5 +57,5 @@ export const sidebarIcon = style({
 
 export const sidebarLabel = style({
   whiteSpace: 'nowrap',
-  paddingTop: '0.2rem'
+  paddingTop: '0.2rem',
 });

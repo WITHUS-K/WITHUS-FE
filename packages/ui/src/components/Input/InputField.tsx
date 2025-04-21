@@ -1,3 +1,5 @@
+'use client';
+
 import BaseInput from './BaseInput';
 import type { ReactNode, ChangeEvent } from 'react';
 
