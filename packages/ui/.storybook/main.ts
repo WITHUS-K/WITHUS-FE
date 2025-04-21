@@ -39,7 +39,8 @@ const config: StorybookConfig = {
     config.resolve = {
       ...(config.resolve || {}),
       alias: {
-        '@repo/theme': resolve(currentDir, '../../../packages/theme'),
+        //'@': resolve(__dirname, '../src'),
+        '@repo/theme': resolve(__dirname, '../../../packages/theme'),
       },
     };
 

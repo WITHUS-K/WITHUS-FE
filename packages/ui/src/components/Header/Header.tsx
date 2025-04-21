@@ -1,5 +1,3 @@
-import React from 'react';
-import Flex from '@/components/Flex/Flex';
 import * as styles from './Header.css';
 import { HeaderLeft } from './HeaderLeft';
 import { HeaderRight } from './HeaderRight';

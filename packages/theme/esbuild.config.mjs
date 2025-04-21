@@ -16,7 +16,7 @@ esbuild
       }),
     ],
     format: 'esm',
-    //loader: { '.css': 'file' },
+    loader: { '.css': 'file' },
     outdir,
     external: ['react', 'react-dom'],
     entryPoints: [

@@ -1,0 +1,27 @@
+import { Flex } from '@repo/ui/Flex';
+import { layoutStyle, containerStyle, headerStyle } from './layout.css';
+import { Suspense } from 'react';
+import { IcAuthLogo } from '@repo/ui/icons/colored';
+
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense fallback={null}>
+      <div className={layoutStyle}>
+        <Flex
+          tag="header"
+          justify="flexStart"
+          align="center"
+          paddingLeft="2.4rem"
+          className={headerStyle}
+        >
+          <IcAuthLogo width={120} height={24} />
+        </Flex>
+        <main className={containerStyle}>{children}</main>
+      </div>
+    </Suspense>
+  );
+}

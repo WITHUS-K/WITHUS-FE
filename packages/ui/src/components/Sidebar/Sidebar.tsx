@@ -6,10 +6,10 @@ import {
   IcSidebarInfo,
   IcSidebarPaper,
   IcSidebarSearch,
-} from '@/icons/src/mono';
-import SidebarList from '@/components/Sidebar/SidebarList';
-import SidebarItem from '@/components/Sidebar/SidebarItem';
-import { sidebarContainer } from '@/components/Sidebar/Sidebar.css';
+} from '../../icons/src/mono';
+import SidebarList from './SidebarList';
+import SidebarItem from './SidebarItem';
+import { sidebarContainer } from './Sidebar.css';
 
 interface SidebarProps {
   role: 'user' | 'admin';

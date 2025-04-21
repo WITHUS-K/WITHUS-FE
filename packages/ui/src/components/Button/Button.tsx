@@ -4,30 +4,40 @@ import {
   forwardRef,
   ReactElement,
 } from 'react';
-import { buttonStyle, iconSizeStyle, textVariantMap } from './Button.css';
+import {
+  ButtonRecipeVariants,
+  buttonStyle,
+  iconSizeStyle,
+  textVariantMap,
+} from './Button.css';
 import Text from '../Text/Text';
+
 export type ButtonVariant = 'main' | 'sub' | 'basic' | 'stroke' | 'white';
 export type ButtonSize = '32' | '40' | '48' | '56' | '64';
 
-interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
+export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   variant?: ButtonVariant;
   size?: ButtonSize;
+  isPressed?: boolean;
   leftIcon?: ReactElement;
   children: React.ReactNode;
   width?: CSSProperties['width'];
   disabled?: boolean;
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       variant = 'main',
       size = '48',
+      isPressed,
       leftIcon,
       children,
-      width,
+      width = '100%',
       disabled,
       className,
+      style,
+      type = 'button',
       ...props
     },
     ref
@@ -35,12 +45,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const iconSizeClass = iconSizeStyle[size];
     const textVariant = textVariantMap[size];
 
+    const styleArgs = {
+      variant,
+      size,
+      ...(isPressed !== undefined ? { isPressed } : {}),
+    };
+
     return (
       <button
         ref={ref}
-        className={`${buttonStyle({ variant, size })} ${className ?? ''}`}
+        type={type}
+        className={`${buttonStyle(styleArgs)} ${className ?? ''}`}
         disabled={disabled}
-        style={{ width }}
+        style={{ ...style, width }}
         {...props}
       >
         {leftIcon && <span className={iconSizeClass}>{leftIcon}</span>}
@@ -53,3 +70,5 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 Button.displayName = 'Button';
+
+export default Button;

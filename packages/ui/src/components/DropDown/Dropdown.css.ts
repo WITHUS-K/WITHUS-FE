@@ -15,7 +15,9 @@ export const triggerStyle = style({
   borderRadius: '12px',
   cursor: 'pointer',
   padding: '1.6rem 2rem',
+  height: '5.6rem',
   width: '19.7rem',
+  boxSizing: 'border-box',
 });
 
 export const dropdownListStyle = style({
