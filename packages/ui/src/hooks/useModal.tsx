@@ -4,46 +4,54 @@ import { useCallback } from 'react';
 import { overlay } from 'overlay-kit';
 import { Modal } from '../components/Modal/Modal';
 
-type AlertProps = {
-  title: string;
-  description?: string;
-  buttonText?: string;
-  onConfirm?: () => void;
+type Controls = {
+  close: () => void;
+  unmount: () => void;
 };
 
-type ConfirmProps = {
-  title: string;
-  description?: string;
-  cancelText?: string;
-  confirmText?: string;
-  onCancel?: () => void;
-  onConfirm?: () => void;
-};
+const useModal = () => {
+  const openBase = useCallback(
+    (opts: {
+      header?: React.ReactNode;
+      content: (ctrl: Controls) => React.ReactNode;
+      footer: (ctrl: Controls) => React.ReactNode;
+    }) => {
+      overlay.open(({ isOpen, close, unmount }) => (
+        <Modal.Overlay
+          open={isOpen}
+          onClose={() => {
+            close();
+            unmount();
+          }}
+        >
+          <Modal.Layout>
+            {opts.header}
+            {opts.content({ close, unmount })}
+            {opts.footer({ close, unmount })}
+          </Modal.Layout>
+        </Modal.Overlay>
+      ));
+    },
+    []
+  );
 
-type AgreementProps = {
-  content: React.ReactNode;
-  confirmText?: string;
-  onConfirm?: () => void;
-};
-
-export function useModal() {
-  /** 알림 모달 */
-  const alert = useCallback((opts: AlertProps) => {
-    overlay.open(({ isOpen, close, unmount }) => (
-      <Modal.Overlay
-        open={isOpen}
-        onClose={() => {
-          close();
-          unmount();
-        }}
-      >
-        <Modal.Layout>
+  const alert = useCallback(
+    (opts: {
+      title: string;
+      description?: string;
+      buttonText?: string;
+      onConfirm?: () => void;
+    }) => {
+      openBase({
+        content: () => (
           <Modal.Content>
             <Modal.ModalTextContent
               title={opts.title}
               description={opts.description}
             />
           </Modal.Content>
+        ),
+        footer: ({ close, unmount }) => (
           <Modal.Footer hasTopBorder={false}>
             <Modal.CTA
               text={opts.buttonText ?? '확인'}
@@ -54,28 +62,31 @@ export function useModal() {
               }}
             />
           </Modal.Footer>
-        </Modal.Layout>
-      </Modal.Overlay>
-    ));
-  }, []);
+        ),
+      });
+    },
+    [openBase]
+  );
 
-  /** 확인/취소 모달 */
-  const confirm = useCallback((opts: ConfirmProps) => {
-    overlay.open(({ isOpen, close, unmount }) => (
-      <Modal.Overlay
-        open={isOpen}
-        onClose={() => {
-          close();
-          unmount();
-        }}
-      >
-        <Modal.Layout>
+  const confirm = useCallback(
+    (opts: {
+      title: string;
+      description?: string;
+      cancelText?: string;
+      confirmText?: string;
+      onCancel?: () => void;
+      onConfirm?: () => void;
+    }) => {
+      openBase({
+        content: () => (
           <Modal.Content>
             <Modal.ModalTextContent
               title={opts.title}
               description={opts.description}
             />
           </Modal.Content>
+        ),
+        footer: ({ close, unmount }) => (
           <Modal.Footer hasTopBorder={false}>
             <Modal.DoubleCTA
               cancelText={opts.cancelText ?? '취소'}
@@ -96,24 +107,22 @@ export function useModal() {
               }}
             />
           </Modal.Footer>
-        </Modal.Layout>
-      </Modal.Overlay>
-    ));
-  }, []);
+        ),
+      });
+    },
+    [openBase]
+  );
 
-  /** 이용약관 모달 */
-  const agreement = useCallback((opts: AgreementProps) => {
-    overlay.open(({ isOpen, close, unmount }) => (
-      <Modal.Overlay
-        open={isOpen}
-        onClose={() => {
-          close();
-          unmount();
-        }}
-      >
-        <Modal.Layout>
-          <Modal.Header text="이용약관" />
-          <Modal.Content>{opts.content}</Modal.Content>
+  const agreement = useCallback(
+    (opts: {
+      content: React.ReactNode;
+      confirmText?: string;
+      onConfirm?: () => void;
+    }) => {
+      openBase({
+        header: <Modal.Header text="이용약관" />,
+        content: () => <Modal.Content>{opts.content}</Modal.Content>,
+        footer: ({ close, unmount }) => (
           <Modal.Footer hasTopBorder>
             <Modal.CTA
               text={opts.confirmText ?? '확인'}
@@ -124,10 +133,13 @@ export function useModal() {
               }}
             />
           </Modal.Footer>
-        </Modal.Layout>
-      </Modal.Overlay>
-    ));
-  }, []);
+        ),
+      });
+    },
+    [openBase]
+  );
 
   return { alert, confirm, agreement };
-}
+};
+
+export { useModal };

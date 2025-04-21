@@ -10,8 +10,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 export default function Step4() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const rawName = searchParams.get('name') ?? '';
-  const memberName = decodeURIComponent(rawName);
+  const memberName = searchParams.get('name') ?? '';
 
   return (
     <Flex direction="column" align="center" marginTop="3.6rem">

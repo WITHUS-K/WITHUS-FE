@@ -277,56 +277,27 @@ export default function Step3User({ onBack }: Step3UserProps) {
         />
 
         {/* 핸드폰 번호 & 인증 */}
-        <Flex gap="1.2rem">
-          <Controller
-            control={control}
-            name="phone"
-            rules={{
-              required: '핸드폰 번호를 입력해주세요.',
-              pattern: {
-                value: /^010-?\d{4}-?\d{4}$/,
-                message: '올바른 형식으로 입력해주세요.',
-              },
-            }}
-            render={({ field }) => (
-              <TextField
-                title="핸드폰 번호"
-                inputProps={{
-                  ...field,
-                  placeholder: '핸드폰 번호',
-                  type: 'text',
-                }}
-                errorMessage={errors.phone?.message}
-                size="auth"
-                width="29.5rem"
-              />
-            )}
-          />
-          <Button
-            type="button"
-            variant="sub"
-            size="56"
-            width="12.7rem"
-            onClick={() => setShowAuthInput(true)}
-            style={{ marginTop: '2.8rem' }}
-          >
-            인증번호 받기
-          </Button>
-        </Flex>
-        {showAuthInput && (
+        <Flex direction="column" gap="1.6rem">
           <Flex gap="1.2rem">
             <Controller
               control={control}
-              name="authCode"
-              rules={{ required: '인증번호를 입력해주세요.' }}
+              name="phone"
+              rules={{
+                required: '핸드폰 번호를 입력해주세요.',
+                pattern: {
+                  value: /^010-?\d{4}-?\d{4}$/,
+                  message: '올바른 형식으로 입력해주세요.',
+                },
+              }}
               render={({ field }) => (
                 <TextField
+                  title="핸드폰 번호"
                   inputProps={{
                     ...field,
-                    placeholder: '인증번호',
+                    placeholder: '핸드폰 번호',
                     type: 'text',
                   }}
-                  errorMessage={errors.authCode?.message}
+                  errorMessage={errors.phone?.message}
                   size="auth"
                   width="29.5rem"
                 />
@@ -334,15 +305,46 @@ export default function Step3User({ onBack }: Step3UserProps) {
             />
             <Button
               type="button"
+              variant="sub"
               size="56"
               width="12.7rem"
-              disabled={!watch('authCode')}
-              onClick={handleConfirmAuth}
+              onClick={() => setShowAuthInput(true)}
+              style={{ marginTop: '2.8rem' }}
             >
-              인증번호 확인
+              인증번호 받기
             </Button>
           </Flex>
-        )}
+          {showAuthInput && (
+            <Flex gap="1.2rem">
+              <Controller
+                control={control}
+                name="authCode"
+                rules={{ required: '인증번호를 입력해주세요.' }}
+                render={({ field }) => (
+                  <TextField
+                    inputProps={{
+                      ...field,
+                      placeholder: '인증번호',
+                      type: 'text',
+                    }}
+                    errorMessage={errors.authCode?.message}
+                    size="auth"
+                    width="29.5rem"
+                  />
+                )}
+              />
+              <Button
+                type="button"
+                size="56"
+                width="12.7rem"
+                disabled={!watch('authCode')}
+                onClick={handleConfirmAuth}
+              >
+                인증번호 확인
+              </Button>
+            </Flex>
+          )}
+        </Flex>
 
         {/* 이전 / 완료 */}
         <Flex gap="2rem" justify="center" marginTop="3.2rem">

@@ -54,10 +54,12 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
   const router = useRouter();
 
   const onSubmit = (data: FormValues) => {
-    const q = new URLSearchParams();
-    q.set('type', 'user');
-    q.set('name', data.name);
-    router.push(`/join/4?${q.toString()}`);
+    const params = new URLSearchParams({
+      type: 'admin',
+      name: data.name,
+    }).toString();
+
+    router.push(`/join/4?${params}`);
   };
 
   const handleConfirmAuth = () => {
