@@ -9,7 +9,7 @@ const SvgIcArrowRight = (props: SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      stroke="currentColor"
+      stroke="#A9ABC0"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={2}
