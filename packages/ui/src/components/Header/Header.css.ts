@@ -1,4 +1,4 @@
-import { fontStyles, vars } from '@repo/theme';
+import { vars } from '@repo/theme';
 import { style } from '@vanilla-extract/css';
 
 export const headerContainer = style({
