@@ -9,8 +9,45 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./icons": "./src/icons/src/index.ts",
-    "./styles": "./dist/index.css"
+    "./icons/colored": "./src/icons/src/colored/index.ts",
+    "./icons/mono": "./src/icons/src/mono/index.ts",
+    "./styles": "./dist/index.css",
+    "./hooks": {
+      "import": "./dist/hooks/index.js",
+      "types": "./dist/hooks/index.d.ts"
+    },
+    "./Button": {
+      "types": "./dist/components/Button/index.d.ts",
+      "import": "./dist/components/Button/index.js"
+    },
+    "./CheckBox": {
+      "types": "./dist/components/CheckBox/index.d.ts",
+      "import": "./dist/components/CheckBox/index.js"
+    },
+    "./DropDown": {
+      "types": "./dist/components/DropDown/index.d.ts",
+      "import": "./dist/components/DropDown/index.js"
+    },
+    "./Flex": {
+      "types": "./dist/components/Flex/index.d.ts",
+      "import": "./dist/components/Flex/index.js"
+    },
+    "./InputField": {
+      "types": "./dist/components/Input/index.d.ts",
+      "import": "./dist/components/Input/index.js"
+    },
+    "./TextField": {
+      "types": "./dist/components/Input/index.d.ts",
+      "import": "./dist/components/Input/index.js"
+    },
+    "./Modal": {
+      "types": "./dist/components/Modal/index.d.ts",
+      "import": "./dist/components/Modal/index.js"
+    },
+    "./Text": {
+      "types": "./dist/components/Text/index.d.ts",
+      "import": "./dist/components/Text/index.js"
+    }
   },
   "main": "./dist/index.js",
   "scripts": {
@@ -20,16 +57,16 @@
     "check-types": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o storybook-static",
-    "svgr:mono": "svgr --out-dir src/icons/src/mono src/icons/assets/mono",
-    "svgr:colored": "svgr --out-dir src/icons/src/colored src/icons/assets/colored --typescript --icon --jsx-runtime automatic",
+    "svgr:mono": "svgr --out-dir src/icons/src/mono src/icons/assets/mono --typescript --icon --jsx-runtime automatic",
+    "svgr:colored": "svgr --out-dir src/icons/src/colored src/icons/assets/colored",
     "svg:build": "pnpm svgr:mono && pnpm svgr:colored"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3",
     "@repo/eslint-config": "workspace:*",
     "@repo/theme": "workspace:*",
-    "@repo/utils": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@repo/utils": "workspace:*",
     "@storybook/addon-essentials": "^8.6.12",
     "@storybook/addon-onboarding": "^8.6.12",
     "@storybook/blocks": "^8.6.12",
@@ -54,6 +91,7 @@
     "esbuild-plugin-svgr": "^3.1.1",
     "eslint": "^9.24.0",
     "eslint-plugin-storybook": "^0.12.0",
+    "overlay-kit": "^1.7.0",
     "playwright": "^1.51.1",
     "storybook": "^8.6.12",
     "svgo": "^3.3.2",

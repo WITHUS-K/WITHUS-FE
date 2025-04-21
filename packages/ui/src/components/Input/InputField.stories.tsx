@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import InputField from './InputField';
-import { IcInputSearch } from '@/icons/src/colored';
+import { IcInputSearch } from '../../icons/src/colored';
 
 const meta: Meta<typeof InputField> = {
   title: 'Common/Input/InputField',

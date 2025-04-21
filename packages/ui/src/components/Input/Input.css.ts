@@ -6,6 +6,7 @@ export const wrapper = style({
   display: 'flex',
   flexDirection: 'column',
   gap: '0.8rem',
+  //width: '100%',
 });
 
 export const titleStyle = style({
@@ -18,6 +19,14 @@ export const descriptionStyle = style({
 
 export const errorTextStyle = style({
   color: vars.colors.error,
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.8rem',
+  ...fontStyles.sm_caption_regular,
+});
+
+export const successTextStyle = style({
+  color: vars.colors.success,
   display: 'flex',
   alignItems: 'center',
   gap: '0.8rem',
@@ -49,7 +58,7 @@ export const inputWrapper = recipe({
     size: {
       search: { padding: '0.8rem 1.2rem', borderRadius: '8px' },
       club: { padding: '1.6rem', borderRadius: '12px' },
-      auth: { padding: '1.6rem 2rem', borderRadius: '12px' },
+      auth: { padding: '1.6rem 2rem', borderRadius: '12px', height: '5.6rem' },
     },
   },
   defaultVariants: {
@@ -84,13 +93,21 @@ export const inputStyleVariants = styleVariants({
   },
 });
 
-export const iconBaseStyle = style({
-  position: 'absolute',
-  cursor: 'pointer',
-});
-
-export const iconStyleVariants = styleVariants({
-  search: { right: '1.2rem' },
-  club: { right: '1.6rem' },
-  auth: { right: '2rem' },
+export const iconStyleVariants = recipe({
+  base: {
+    position: 'absolute',
+    cursor: 'pointer',
+    border: 'none',
+    background: 'none',
+  },
+  variants: {
+    size: {
+      search: { right: '1.2rem' },
+      club: { right: '1.6rem' },
+      auth: { right: '2rem' },
+    },
+  },
+  defaultVariants: {
+    size: 'auth',
+  },
 });

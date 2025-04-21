@@ -66,6 +66,8 @@ export const colors = {
   pink70: '#8B0E51',
   pink80: '#5D0936',
   pink90: '#2E0513',
+
+  bg: '#FAFAFA',
 } as const;
 
 export type ColorsType = typeof colors;

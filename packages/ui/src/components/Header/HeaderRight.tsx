@@ -1,8 +1,8 @@
 import React from 'react';
 import * as styles from './Header.css';
-import { IcHeaderProfile } from '@/icons/src/colored';
-import { IcHeaderAlarm, IcTriangleDown } from '@/icons/src/mono';
-import Text from '@/components/Text/Text';
+import { IcHeaderProfile } from '../../icons/src/colored';
+import { IcHeaderAlarm, IcTriangleDown } from '../../icons/src/mono';
+import { Text } from '..';
 
 export interface HeaderRightProps {
   username: string;
