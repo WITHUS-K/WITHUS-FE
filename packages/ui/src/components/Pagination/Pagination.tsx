@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as styles from './Pagination.css';
-import { IcArrowLeft, IcArrowRight } from '@/icons/src/mono';
+import { IcArrowLeft, IcArrowRight } from '../../icons/src/mono';
 
 interface PaginationProps {
   totalItems: number;

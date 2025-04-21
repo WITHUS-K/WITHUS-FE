@@ -1,4 +1,3 @@
-import React from 'react';
 import * as styles from './Header.css';
 import { IcHeaderProfile } from '../../icons/src/colored';
 import { IcHeaderAlarm, IcTriangleDown } from '../../icons/src/mono';

@@ -1,5 +1,5 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react';
-import { IcDelete } from '@/icons/src/colored';
+import { IcDelete } from '../../../icons/src/colored';
 import * as styles from './InputChip.css';
 
 export interface InputChipProps {

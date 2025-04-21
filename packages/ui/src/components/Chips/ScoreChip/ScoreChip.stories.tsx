@@ -1,7 +1,4 @@
-import {
-  ScoreChip,
-  ScoreChipProps,
-} from '@/components/Chips/ScoreChip/ScoreChip';
+import { ScoreChip, ScoreChipProps } from './ScoreChip';
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 

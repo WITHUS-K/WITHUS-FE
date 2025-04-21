@@ -1,6 +1,6 @@
-import { Chip } from '@/components/Chips/Chip/Chip';
-import { Profile } from '@/components/Profile/Profile';
-import Text from '@/components/Text/Text';
+import { Chip } from '../Chips/Chip/Chip';
+import { Profile } from '../Profile/Profile';
+import Text from '../Text/Text';
 import { ListLayout } from './ListLayout';
 import * as styles from './List.css';
 

@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { colors, fontStyles } from '@repo/theme';
+import { colors } from '@repo/theme';
 
 export const listWrapper = style({
   display: 'inline-flex',

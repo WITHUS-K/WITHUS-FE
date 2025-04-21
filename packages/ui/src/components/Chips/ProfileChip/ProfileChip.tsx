@@ -1,6 +1,6 @@
-import { Profile } from '@/components/Profile/Profile';
-import Text from '@/components/Text/Text';
-import { IcDelete } from '@/icons/src/colored';
+import { Profile } from '../../Profile/Profile';
+import Text from '../../Text/Text';
+import { IcDelete } from '../../../icons/src/colored';
 import * as styles from './ProfileChip.css';
 
 interface ProfileChipProps {

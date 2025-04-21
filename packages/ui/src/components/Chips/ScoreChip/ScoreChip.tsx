@@ -1,7 +1,7 @@
 import React from 'react';
 import * as styles from './ScoreChip.css';
-import { Profile } from '@/components/Profile/Profile';
-import Text from '@/components/Text/Text';
+import { Profile } from '../../Profile/Profile';
+import Text from '../../Text/Text';
 
 export interface ScoreInfo {
   src: string;

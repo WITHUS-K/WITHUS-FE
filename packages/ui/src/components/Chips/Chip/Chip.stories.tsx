@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Chip } from '@/components/Chips/Chip/Chip';
+import { Chip } from './Chip';
 
 const BG_COLORS = [
   'primary5',
