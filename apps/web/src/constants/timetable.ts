@@ -1,5 +1,7 @@
 import { ProfileItem } from '@web/components/ProfileGroup/ProfileGroup';
 
+export const timetableDates = ['2025-04-22', '2025-04-23', '2025-04-24'];
+
 export interface RawSlot {
   start: string; // "11:00"
   end: string; // "11:30"

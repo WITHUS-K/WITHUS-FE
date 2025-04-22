@@ -22,6 +22,7 @@ export const colors = {
   grayscale70: '#5A5C72',
   grayscale80: '#464859',
   grayscale90: '#353744',
+  grayscale6D: '#6D6D6D',
 
   //white & black
   white: '#FFFFFF',
@@ -68,6 +69,13 @@ export const colors = {
   pink90: '#2E0513',
 
   bg: '#FAFAFA',
+
+  orangeBg: '#FFEEDE',
+  orangeT: '#EE6B00',
+  greenBg: '#D9FFE2',
+  greenT: '#009857',
+  pinkBg: '#FFEDFE',
+  pinkT: '#F25DEB',
 } as const;
 
 export type ColorsType = typeof colors;

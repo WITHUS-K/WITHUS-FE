@@ -7,34 +7,22 @@ import DropdownList from '../DropdownList';
 import DropdownItem from '../DropdownItem';
 import ClubDropdownTriggerContent from './ClubDropdownTriggerContent';
 
-// 추후 서버연동필요!!
-const club = [
-  '큐시즘',
-  '큐시즘',
-  '큐시즘',
-  '큐시즘',
-  '큐시즘',
-  '큐시즘',
-  '큐시즘',
-  '큐시즘',
-  '큐시즘',
-];
-
 export interface ClubDropdownProps
   extends Omit<ComponentPropsWithoutRef<'div'>, 'onSelect'> {
   value?: string;
-  /** 도메인 선택 시 호출되는 콜백 */
+  clubs: string[];
   onSelect: (val: string) => void;
 }
 
 export default function ClubDropdown({
   value,
   onSelect,
+  clubs,
   className,
   style,
   ...rest
 }: ClubDropdownProps) {
-  const defaultValue: string = club[0]!;
+  const defaultValue = clubs[0] ?? '';
   const selected = value ?? defaultValue;
 
   return (
@@ -44,9 +32,9 @@ export default function ClubDropdown({
       </DropdownTrigger>
 
       <DropdownList>
-        {club.map((domain) => (
-          <DropdownItem key={domain} onSelect={() => onSelect(domain)}>
-            {domain}
+        {clubs.map((name) => (
+          <DropdownItem key={name} onSelect={() => onSelect(name)}>
+            {name}
           </DropdownItem>
         ))}
       </DropdownList>
