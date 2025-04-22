@@ -20,6 +20,14 @@ export const triggerStyle = style({
   boxSizing: 'border-box',
 });
 
+export const clubTriggerStyle = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.8rem',
+  cursor: 'pointer',
+  boxSizing: 'border-box',
+});
+
 export const dropdownListStyle = style({
   position: 'absolute',
   top: '100%',

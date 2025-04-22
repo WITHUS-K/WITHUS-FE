@@ -6,6 +6,7 @@ export { default as IcAuthLogo } from './IcAuthLogo';
 export { default as IcCheckCopy } from './IcCheckCopy';
 export { default as IcCheck } from './IcCheck';
 export { default as IcDelete } from './IcDelete';
+export { default as IcDropdwonGray90 } from './IcDropdwonGray90';
 export { default as IcHeaderLogo } from './IcHeaderLogo';
 export { default as IcHeaderProfile } from './IcHeaderProfile';
 export { default as IcInputError } from './IcInputError';

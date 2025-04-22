@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 import { Profile } from '@repo/ui/Profile';
 import { Text } from '@repo/ui/Text';
