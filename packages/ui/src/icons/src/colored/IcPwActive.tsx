@@ -1,11 +1,11 @@
+import * as React from 'react';
 import type { SVGProps } from 'react';
 const SvgIcPwActive = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="1em"
-    height="1em"
+    width={24}
+    height={24}
     fill="none"
-    viewBox="0 0 24 24"
     {...props}
   >
     <g
@@ -19,7 +19,7 @@ const SvgIcPwActive = (props: SVGProps<SVGSVGElement>) => (
     </g>
     <defs>
       <clipPath id="ic_pw_active_svg__a">
-        <path fill="currentColor" d="M0 0h24v24H0z" />
+        <path fill="#fff" d="M0 0h24v24H0z" />
       </clipPath>
     </defs>
   </svg>

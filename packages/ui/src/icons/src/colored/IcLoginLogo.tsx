@@ -1,11 +1,11 @@
+import * as React from 'react';
 import type { SVGProps } from 'react';
 const SvgIcLoginLogo = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="1em"
-    height="1em"
+    width={250}
+    height={42}
     fill="none"
-    viewBox="0 0 250 42"
     {...props}
   >
     <path

@@ -1,12 +1,12 @@
+import * as React from 'react';
 import type { SVGProps } from 'react';
 const SvgIcHeaderLogo = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
-    width="1em"
-    height="1em"
+    width={121}
+    height={25}
     fill="none"
-    viewBox="0 0 121 25"
     {...props}
   >
     <path fill="url(#ic_header_logo_svg__a)" d="M.372.435h120v24h-120z" />

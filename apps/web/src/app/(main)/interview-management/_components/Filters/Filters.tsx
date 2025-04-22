@@ -24,7 +24,7 @@ export default function Filters() {
 
   const [club, setClub] = useState(clubList[0]!);
   const [created, setCreated] = useState(false);
-  const [filterKey, setFilterKey] = useState(0); // FilterForm 초기화를 위한 키
+  const [filterKey, setFilterKey] = useState(0);
 
   const [parts] = useState<string[]>([
     '기획',
@@ -44,9 +44,9 @@ export default function Filters() {
     } else {
       // 타임테이블 생성
       setCreated(true);
-      /*router.push(
-        `/interviews/timetable/all/${firstDate}?club=${encodeURIComponent(club)}`
-      );*/
+      router.push(
+        `/interview-management/timetable/all/${firstDate}?club=${encodeURIComponent(club)}`
+      );
     }
   };
 
@@ -66,6 +66,7 @@ export default function Filters() {
             onSelect={(selectedClub) => {
               setClub(selectedClub);
               setCreated(false);
+              router.replace('/interview-management');
             }}
             clubs={clubList}
             value={club}

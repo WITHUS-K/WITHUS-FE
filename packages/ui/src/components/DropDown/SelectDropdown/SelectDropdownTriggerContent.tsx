@@ -1,4 +1,4 @@
-import { IcArrowDropdown } from '../../../icons/src/colored';
+import { IcDropdwonGray90 } from '../../../icons/src/colored';
 import { arrowStyle, triggerStyle } from '../Dropdown.css';
 import { useDropdownContext } from '../context';
 import { Text, Flex } from '../..';
@@ -22,7 +22,7 @@ const SelectDropdownTriggerContent = ({
           {selected}
         </Text>
       </Flex>
-      <IcArrowDropdown
+      <IcDropdwonGray90
         width={24}
         height={24}
         className={arrowStyle[isOpen ? 'open' : 'closed']}

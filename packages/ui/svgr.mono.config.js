@@ -7,6 +7,8 @@ module.exports = {
     '#000000': 'currentColor',
     '#fff': 'currentColor',
     '#ffffff': 'currentColor',
+    '#A9ABC0': 'currentColor',
+    '#353744': 'cuurentColor',
     //currentColor 로 변환할 아이콘 색상 유동적으로 추가하면 됨!!
   },
   svgProps: {

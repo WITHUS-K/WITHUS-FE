@@ -1,11 +1,11 @@
+import * as React from 'react';
 import type { SVGProps } from 'react';
 const SvgIcPasswordComplete = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="1em"
-    height="1em"
+    width={84}
+    height={84}
     fill="none"
-    viewBox="0 0 84 84"
     {...props}
   >
     <rect width={84} height={84} fill="#BECEFF" rx={42} />

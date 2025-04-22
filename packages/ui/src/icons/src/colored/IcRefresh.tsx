@@ -1,11 +1,11 @@
+import * as React from 'react';
 import type { SVGProps } from 'react';
 const SvgIcRefresh = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="1em"
-    height="1em"
+    width={24}
+    height={24}
     fill="none"
-    viewBox="0 0 24 24"
     {...props}
   >
     <g
@@ -20,7 +20,7 @@ const SvgIcRefresh = (props: SVGProps<SVGSVGElement>) => (
     </g>
     <defs>
       <clipPath id="ic_refresh_svg__a">
-        <path fill="currentColor" d="M4 4h16v16H4z" />
+        <path fill="#fff" d="M4 4h16v16H4z" />
       </clipPath>
     </defs>
   </svg>
