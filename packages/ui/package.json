@@ -79,6 +79,10 @@
     "./Callout": {
       "types": "./dist/components/Callout/index.d.ts",
       "import": "./dist/components/Callout/index.js"
+    },
+    "./TabBar": {
+      "types": "./dist/components/TabBar/index.d.ts",
+      "import": "./dist/components/TabBar/index.js"
     }
   },
   "main": "./dist/index.js",

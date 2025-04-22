@@ -42,7 +42,7 @@ const config: StorybookConfig = {
       alias: {
         //'@': resolve(__dirname, '../src'),
         '@repo/theme': resolve(__dirname, '../../../packages/theme'),
-        '@repo/utils': resolve(__dirname, '../../../packages/utils'),
+        '@repo/utils': resolve(__dirname, '../../../packages/utils/src'),
       },
     };
 
