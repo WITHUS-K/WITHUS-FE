@@ -1,3 +1,4 @@
+// components/TimeTable/SelectableTimeTable.tsx
 'use client';
 
 import React, { useCallback } from 'react';
@@ -7,6 +8,8 @@ import {
   Range as RowRange,
 } from '../../hooks/useRangeSelection';
 import { rangeToTimeRange } from '@web/utils/time';
+import * as styles from './TimeTable.css';
+import clsx from 'clsx';
 
 export interface TimeRange {
   startTime: string;
@@ -16,7 +19,7 @@ export interface TimeRange {
 export interface SelectableTimeTableProps
   extends Omit<TimeTableProps, 'renderCell'> {
   onRangeSelect: (range: TimeRange | null) => void;
-  renderCell?: TimeTableProps['renderCell'];
+  renderCell?: (row: number) => React.ReactNode;
 }
 
 export function SelectableTimeTable({
@@ -26,6 +29,7 @@ export function SelectableTimeTable({
   startHour,
   ...ttProps
 }: SelectableTimeTableProps) {
+  // 내부 Row 범위 → TimeRange 변환 후 콜백
   const handleInternal = useCallback(
     (rowRange: RowRange | null) => {
       if (!rowRange) {
@@ -46,21 +50,18 @@ export function SelectableTimeTable({
       {...ttProps}
       interval={interval}
       startHour={startHour}
-      renderCell={(row, col) => {
+      renderCell={(row) => {
         const inRange = range ? row >= range.start && row <= range.end : false;
+
         return (
           <div
-            key={`${row}-${col}`}
-            style={{
-              width: '100%',
-              height: '100%',
-              backgroundColor: inRange ? 'rgba(80,100,255,0.3)' : undefined,
-            }}
+            key={row}
+            className={clsx(styles.cellWrapper, inRange && styles.selected)}
             onMouseDown={() => handlers.onMouseDown(row)}
             onMouseEnter={() => handlers.onMouseEnter(row)}
             onClick={() => handlers.onClick(row)}
           >
-            {cellRenderer(row, col)}
+            {cellRenderer(row)}
           </div>
         );
       }}

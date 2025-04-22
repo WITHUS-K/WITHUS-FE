@@ -1,17 +1,17 @@
+// components/TimeTable.tsx
 'use client';
-
 import React from 'react';
-import * as styles from './TimeTable.css';
 import { Text } from '@repo/ui/Text';
+import * as styles from './TimeTable.css';
+import { Flex } from '@repo/ui/Flex';
 
 export interface TimeTableProps {
   title: string;
   headers?: string[];
-  columnWidths?: string[];
   interval: number;
   startHour: number;
   endHour: number;
-  renderCell: (row: number, col: number) => React.ReactNode;
+  renderCell: (row: number) => React.ReactNode;
   className?: string;
   width?: string;
 }
@@ -19,7 +19,6 @@ export interface TimeTableProps {
 export function TimeTable({
   title,
   headers,
-  columnWidths,
   interval,
   startHour,
   endHour,
@@ -28,56 +27,90 @@ export function TimeTable({
   width,
 }: TimeTableProps) {
   const totalRows = ((endHour - startHour) * 60) / interval;
-  const totalCols = headers?.length || 1;
-  const colTemplate = columnWidths
-    ? columnWidths.join(' ')
-    : `repeat(${totalCols}, 1fr)`;
+
+  const labels = Array.from({ length: totalRows + 1 }).map((_, row) => {
+    const totalMin = startHour * 60 + row * interval;
+    const hour = Math.floor(totalMin / 60);
+    const minute = totalMin % 60;
+    return minute === 0 ? String(hour) : '';
+  });
 
   return (
     <div
-      className={`${styles.wrapper} ${className ?? ''}`}
-      style={width ? { width } : undefined}
+      className={className}
+      style={{ width, display: 'flex', flexDirection: 'column', gap: '1rem' }}
     >
-      <Text>{title}</Text>
+      <Flex direction="column" align="center" gap="1.6rem">
+        {/* 1) 제목 */}
+        <Text variant="md2_text_semibold" color="grayscale90">
+          {title}
+        </Text>
 
-      {headers && (
+        {/* 2) 헤더 Row */}
+        {headers && (
+          <div
+            className={styles.headerRow}
+            style={{ display: 'flex', alignItems: 'center' }}
+          >
+            <div className={styles.headerSpacer} />
+            {headers.map((h, i) => (
+              <Text
+                key={i}
+                variant="sm_caption_medium"
+                color="grayscale70"
+                style={{ flex: 1, textAlign: 'center' }}
+              >
+                {h}
+              </Text>
+            ))}
+          </div>
+        )}
+      </Flex>
+
+      {/* 3) 본문 */}
+      <div style={{ display: 'flex', width: '100%' }}>
+        {/* 3-1) 시간 라벨 */}
         <div
-          className={styles.headerRow}
-          style={{ gridTemplateColumns: colTemplate }}
+          className={styles.labelColumn}
+          style={{ display: 'flex', flexDirection: 'column' }}
         >
-          {headers.map((h, i) => (
-            <div key={i} className={styles.headerCell}>
-              {h}
+          {labels.map((label, idx) => (
+            <div key={idx} className={styles.timeLabel}>
+              {label}
             </div>
           ))}
         </div>
-      )}
 
-      <div className={styles.grid} style={{ gridTemplateColumns: colTemplate }}>
-        {Array.from({ length: totalRows }).flatMap((_, row) =>
-          Array.from({ length: totalCols }).map((_, col) => {
-            const minute = (row * interval) % 60;
-            const hour = startHour + Math.floor((row * interval) / 60);
-            const minuteStr = String(minute).padStart(2, '0');
-            const isFullHour = minute === 0;
+        {/* 3-2) 셀 컬럼 */}
+        <div
+          className={styles.cellsWrapper}
+          style={{ display: 'flex', flexDirection: 'column', width }}
+        >
+          {Array.from({ length: totalRows }).map((_, row) => {
+            const isFullHour = (row * interval) % 60 === 0;
+            const isLast = row === totalRows - 1;
 
             return (
               <div
-                key={`${row}-${col}`}
-                className={[styles.cell, isFullHour && styles.fullHourCell]
+                key={row}
+                className={[
+                  styles.cell,
+                  isFullHour && styles.fullHour,
+                  isLast && styles.lastRow,
+                ]
                   .filter(Boolean)
                   .join(' ')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
               >
-                {col === 0 && (
-                  <div className={styles.timeLabel}>
-                    {hour}:{minuteStr}
-                  </div>
-                )}
-                <div className={styles.cellContent}>{renderCell(row, col)}</div>
+                {renderCell(row)}
               </div>
             );
-          })
-        )}
+          })}
+        </div>
       </div>
     </div>
   );

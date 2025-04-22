@@ -1,53 +1,63 @@
+// components/TimeTable.css.ts
 import { style } from '@vanilla-extract/css';
 import { vars } from '@repo/theme';
-
-export const wrapper = style({
-  display: 'flex',
-  flexDirection: 'column',
-  borderRadius: '12px',
-  overflow: 'hidden',
-  backgroundColor: vars.colors.white,
-});
+import { fontStyles } from '@repo/theme';
 
 export const headerRow = style({
-  display: 'grid',
-  borderBottom: `1px solid ${vars.colors.grayscale20}`,
+  display: 'flex',
+  width: '100%',
 });
 
-export const headerCell = style({
-  textAlign: 'center',
+export const headerSpacer = style({
+  width: '3.7rem',
 });
 
-export const grid = style({
-  display: 'grid',
-  // 1칸 높이를 42px로 고정
-  gridAutoRows: '42px',
+export const labelColumn = style({
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+export const timeLabel = style({
+  height: '4.15rem',
+  display: 'flex',
+  alignItems: 'flex-start',
+  justifyContent: 'flex-end',
+  marginRight: '2rem',
+  ...fontStyles.md2_text_medium,
+  color: vars.colors.grayscale50,
+});
+
+export const cellsWrapper = style({
+  display: 'flex',
+  flexDirection: 'column',
+  width: '100%',
+  backgroundColor: vars.colors.white,
+  borderRadius: '12px',
+  border: `1px solid ${vars.colors.grayscale20}`,
+  overflow: 'hidden',
+  alignSelf: 'flex-start',
 });
 
 export const cell = style({
   position: 'relative',
-  // 기본은 점선
-  borderBottom: `1px dotted ${vars.colors.grayscale30}`,
-});
-
-export const fullHourCell = style({
-  // 1시간 간격은 실선
+  height: '4.2rem',
   borderBottom: `1px solid ${vars.colors.grayscale20}`,
+  //boxSizing: 'border-box',
 });
 
-export const timeLabel = style({
-  position: 'absolute',
-  left: 0,
-  top: 0,
-  padding: '0.25rem',
+export const fullHour = style({
+  borderBottom: `1px dotted ${vars.colors.grayscale20}`,
 });
 
-export const cellContent = style({
-  position: 'absolute',
-  inset: 0,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  // gridAutoRows 와 동일하게
-  height: '42px',
+export const lastRow = style({
+  borderBottom: 'none',
+});
+
+export const cellWrapper = style({
+  width: '100%',
+  height: '100%',
+});
+
+export const selected = style({
+  backgroundColor: vars.colors.primary10,
 });

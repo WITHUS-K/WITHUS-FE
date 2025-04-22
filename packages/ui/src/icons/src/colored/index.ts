@@ -18,6 +18,8 @@ export { default as IcPwActive } from './IcPwActive';
 export { default as IcPwDefault } from './IcPwDefault';
 export { default as IcStepperMinus } from './IcStepperMinus';
 export { default as IcStepperPlus } from './IcStepperPlus';
+export { default as IcTimetableExpand } from './IcTimetableExpand';
+export { default as IcTimetablePlus } from './IcTimetablePlus';
 export { default as IcUserActive } from './IcUserActive';
 export { default as IcUserDefault } from './IcUserDefault';
 export { default as IcUserHover } from './IcUserHover';
