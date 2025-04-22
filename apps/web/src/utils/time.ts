@@ -21,3 +21,13 @@ export function rangeToTimeRange(
   const endTime = rowToTime(range.end + 1, startHour, interval);
   return { startTime, endTime };
 }
+
+/**
+ * "HH:MM" 문자열을 분 단위 숫자로 변환
+ */
+export function parseToMin(time: string): number {
+  const [hStr = '0', mStr = '0'] = time.split(':');
+  const h = parseInt(hStr, 10);
+  const m = parseInt(mStr, 10);
+  return (isNaN(h) ? 0 : h) * 60 + (isNaN(m) ? 0 : m);
+}

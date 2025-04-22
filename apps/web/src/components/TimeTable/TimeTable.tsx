@@ -1,9 +1,14 @@
-// components/TimeTable.tsx
 'use client';
 import React from 'react';
 import { Text } from '@repo/ui/Text';
 import * as styles from './TimeTable.css';
-import { Flex } from '@repo/ui/Flex';
+import { parseToMin } from '@web/utils/time';
+
+export interface SlotItem {
+  startTime: string;
+  endTime: string;
+  color?: string;
+}
 
 export interface TimeTableProps {
   title: string;
@@ -11,6 +16,7 @@ export interface TimeTableProps {
   interval: number;
   startHour: number;
   endHour: number;
+  slots?: SlotItem[];
   renderCell: (row: number) => React.ReactNode;
   className?: string;
   width?: string;
@@ -22,17 +28,30 @@ export function TimeTable({
   interval,
   startHour,
   endHour,
+  slots = [],
   renderCell,
   className,
   width,
 }: TimeTableProps) {
   const totalRows = ((endHour - startHour) * 60) / interval;
 
-  const labels = Array.from({ length: totalRows + 1 }).map((_, row) => {
-    const totalMin = startHour * 60 + row * interval;
+  // slots에 min 단위 프로퍼티 붙이기
+  const slotsMin = slots.map((s) => ({
+    ...s,
+    startMin: parseToMin(s.startTime),
+    endMin: parseToMin(s.endTime),
+  }));
+
+  // 각 row마다 실제 시각(분 단위)
+  const rowMins = Array.from({ length: totalRows }).map(
+    (_, i) => startHour * 60 + i * interval
+  );
+
+  // 시간 라벨
+  const labels = Array.from({ length: totalRows + 1 }).map((_, i) => {
+    const totalMin = startHour * 60 + i * interval;
     const hour = Math.floor(totalMin / 60);
-    const minute = totalMin % 60;
-    return minute === 0 ? String(hour) : '';
+    return totalMin % 60 === 0 ? String(hour) : '';
   });
 
   return (
@@ -40,13 +59,18 @@ export function TimeTable({
       className={className}
       style={{ width, display: 'flex', flexDirection: 'column', gap: '1rem' }}
     >
-      <Flex direction="column" align="center" gap="1.6rem">
-        {/* 1) 제목 */}
+      {/* 제목 + 헤더 */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '1.6rem',
+        }}
+      >
         <Text variant="md2_text_semibold" color="grayscale90">
           {title}
         </Text>
-
-        {/* 2) 헤더 Row */}
         {headers && (
           <div
             className={styles.headerRow}
@@ -58,37 +82,40 @@ export function TimeTable({
                 key={i}
                 variant="sm_caption_medium"
                 color="grayscale70"
-                style={{ flex: 1, textAlign: 'center' }}
+                style={{ width: '14rem', textAlign: 'center' }}
               >
                 {h}
               </Text>
             ))}
           </div>
         )}
-      </Flex>
+      </div>
 
-      {/* 3) 본문 */}
+      {/* 본문 */}
       <div style={{ display: 'flex', width: '100%' }}>
-        {/* 3-1) 시간 라벨 */}
+        {/* 시간 라벨 */}
         <div
           className={styles.labelColumn}
           style={{ display: 'flex', flexDirection: 'column' }}
         >
-          {labels.map((label, idx) => (
-            <div key={idx} className={styles.timeLabel}>
-              {label}
+          {labels.map((lbl, i) => (
+            <div key={i} className={styles.timeLabel}>
+              {lbl}
             </div>
           ))}
         </div>
 
-        {/* 3-2) 셀 컬럼 */}
-        <div
-          className={styles.cellsWrapper}
-          style={{ display: 'flex', flexDirection: 'column', width }}
-        >
-          {Array.from({ length: totalRows }).map((_, row) => {
-            const isFullHour = (row * interval) % 60 === 0;
+        {/* 셀 */}
+        <div className={styles.cellsWrapper}>
+          {rowMins.map((rowMin, row) => {
+            const isFullHour = rowMin % 60 === 0;
             const isLast = row === totalRows - 1;
+
+            // rowMin이 슬롯 범위 안에 있으면 color 가져오기
+            const slot = slotsMin.find(
+              (s) => rowMin >= s.startMin && rowMin < s.endMin
+            );
+            const bgColor = slot?.color;
 
             return (
               <div
@@ -104,6 +131,7 @@ export function TimeTable({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  backgroundColor: bgColor,
                 }}
               >
                 {renderCell(row)}

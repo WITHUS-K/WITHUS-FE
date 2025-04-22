@@ -9,7 +9,7 @@ export const headerRow = style({
 });
 
 export const headerSpacer = style({
-  width: '3.7rem',
+  width: '5.5rem',
 });
 
 export const labelColumn = style({
@@ -42,7 +42,6 @@ export const cell = style({
   position: 'relative',
   height: '4.2rem',
   borderBottom: `1px solid ${vars.colors.grayscale20}`,
-  //boxSizing: 'border-box',
 });
 
 export const fullHour = style({
