@@ -75,6 +75,10 @@
     "./Stepper": {
       "types": "./dist/components/Stepper/index.d.ts",
       "import": "./dist/components/Stepper/index.js"
+    },
+    "./Callout": {
+      "types": "./dist/components/Callout/index.d.ts",
+      "import": "./dist/components/Callout/index.js"
     }
   },
   "main": "./dist/index.js",

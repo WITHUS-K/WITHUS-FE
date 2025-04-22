@@ -1,4 +1,3 @@
-// ProfileGroup.css.ts
 import { style } from '@vanilla-extract/css';
 import { vars } from '@repo/theme';
 
@@ -8,7 +7,6 @@ export const wrapper = style({
   display: 'flex',
   justifyContent: 'center',
   minWidth: '6rem',
-  //backgroundColor: vars.colors.black,
 });
 
 export const profileItem = style({

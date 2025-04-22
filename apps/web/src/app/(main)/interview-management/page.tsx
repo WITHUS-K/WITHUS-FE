@@ -1,4 +1,3 @@
-// pages/Page.tsx
 'use client';
 import React, { useCallback, useState } from 'react';
 import { Flex } from '@repo/ui/Flex';
@@ -10,77 +9,14 @@ import { TimeTable, SlotItem } from '@web/components/TimeTable/TimeTable';
 import { Chip } from '@repo/ui/Chips';
 import { IcTimetablePlus, IcTimetableExpand } from '@repo/ui/icons/colored';
 import { Text } from '@repo/ui/Text';
-import { ProfileGroup } from '@web/components/ProfileGroup/ProfileGroup';
+import {
+  ProfileGroup,
+  ProfileItem,
+} from '@web/components/ProfileGroup/ProfileGroup';
+import { Callout } from '@repo/ui/Callout';
 import * as styles from './page.css';
+import { rawSlots } from '@web/constants/timetable';
 
-interface RawSlot {
-  start: string; // "11:00"
-  end: string; // "11:30"
-  applicants: string[];
-  interviewers: string[];
-  guides: string[];
-  color?: string; // 배경색
-}
-
-// API에서 아래 형태로 받는다고 가정
-const rawSlots: RawSlot[] = [
-  {
-    start: '11:00',
-    end: '11:30',
-    applicants: ['김현호', '윤지원', '이채원', '이채원'],
-    interviewers: [
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-    ],
-    guides: [
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-    ],
-    color: '#FFEEDE',
-  },
-  {
-    start: '11:30',
-    end: '12:00',
-    applicants: ['김현호', '윤지원', '이채원', '이채원'],
-    interviewers: [
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-    ],
-    guides: [
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-    ],
-    color: '#FFEEDE',
-  },
-  {
-    start: '13:00',
-    end: '14:00',
-    applicants: ['김현호', '윤지원'],
-    interviewers: [
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-    ],
-    guides: [
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-      'https://image.zeta-ai.io/profile-image/396e44e5-a40d-4896-a4a4-fe230f955148/1bb4e857-0110-4c45-8277-5ecbbb232c87.jpeg?w=828&q=90&f=webp',
-    ],
-    color: '#D9FFE2',
-  },
-];
-
-// TimeTable이 요구하는 형식으로 변환
 const slots: SlotItem[] = rawSlots.map((s) => ({
   startTime: s.start,
   endTime: s.end,
@@ -125,7 +61,7 @@ export default function Page() {
           const time = `${String(Math.floor((10 * 60 + row * 30) / 60)).padStart(2, '0')}:${String(
             (row * 30) % 60
           ).padStart(2, '0')}`;
-          // rawSlots에서 매칭
+
           const raw = rawSlots.find((s) => s.start === time);
           if (!raw) return null;
 
@@ -149,21 +85,32 @@ export default function Page() {
                   </Chip>
                 ))}
                 {raw.applicants.length > 2 && (
-                  <Text variant="xs_caption_medium" color="grayscale70">
-                    +{raw.applicants.length - 2}
-                  </Text>
+                  <Callout
+                    trigger={
+                      <Text variant="xs_caption_medium" color="grayscale70">
+                        +{raw.applicants.length - 2}
+                      </Text>
+                    }
+                    texts={raw.applicants.slice(2)}
+                    position="bottom"
+                    offsetX="0.2rem"
+                  />
                 )}
               </Flex>
 
               {/* 면접관 */}
               <Flex marginRight="5rem">
-                <ProfileGroup images={raw.interviewers} maxVisible={3} />
+                <ProfileGroup
+                  items={raw.interviewers}
+                  maxVisible={3}
+                  size={23}
+                />
               </Flex>
 
-              {/* 안내자 + 버튼 */}
+              {/* 안내자 */}
+              <ProfileGroup items={raw.guides} maxVisible={2} size={23} />
 
-              <ProfileGroup images={raw.guides} maxVisible={2} />
-
+              {/* 액션 버튼 */}
               <Flex align="center" gap="0.4rem">
                 <button className={styles.buttonStyle}>
                   <IcTimetablePlus width={16} height={16} />
