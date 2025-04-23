@@ -17,8 +17,8 @@ export default function InterviewerCell({ slot }: { slot: SlotItem }) {
     >
       <Flex align="center" justify="spaceBetween" width="100%">
         {slot.interviewers.map((person, i) => (
-          <div className={styles.profileItem}>
-            <Profile key={i} src={person.src} alt={person.name} size={24} />
+          <div key={i} className={styles.profileItem}>
+            <Profile src={person.src} alt={person.name} size={24} />
           </div>
         ))}
       </Flex>

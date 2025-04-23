@@ -17,8 +17,8 @@ export default function GuideCell({ slot }: { slot: SlotItem }) {
     >
       <Flex align="center" justify="spaceBetween" width="100%">
         {slot.guides.map((person, i) => (
-          <div className={styles.profileItem}>
-            <Profile key={i} src={person.src} alt={person.name} size={23} />
+          <div key={i} className={styles.profileItem}>
+            <Profile src={person.src} alt={person.name} size={23} />
           </div>
         ))}
       </Flex>

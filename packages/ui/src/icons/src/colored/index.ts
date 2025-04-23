@@ -15,6 +15,8 @@ export { default as IcInputSearch } from './IcInputSearch';
 export { default as IcInputSuccess } from './IcInputSuccess';
 export { default as IcJoinStep4 } from './IcJoinStep4';
 export { default as IcLoginLogo } from './IcLoginLogo';
+export { default as IcModalCheck } from './IcModalCheck';
+export { default as IcModalWarning } from './IcModalWarning';
 export { default as IcPasswordComplete } from './IcPasswordComplete';
 export { default as IcPlus24 } from './IcPlus24';
 export { default as IcPwActive } from './IcPwActive';

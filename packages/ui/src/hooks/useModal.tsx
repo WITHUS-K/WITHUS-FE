@@ -3,11 +3,13 @@
 import { useCallback } from 'react';
 import { overlay } from 'overlay-kit';
 import { Modal } from '../components/Modal/Modal';
-
+import { IcModalCheck, IcModalWarning } from '../icons/src/colored';
 type Controls = {
   close: () => void;
   unmount: () => void;
 };
+
+type ConfirmType = 'info' | 'warning';
 
 const useModal = () => {
   const openBase = useCallback(
@@ -34,55 +36,30 @@ const useModal = () => {
     },
     []
   );
-
-  const alert = useCallback(
-    (opts: {
-      title: string;
-      description?: string;
-      buttonText?: string;
-      onConfirm?: () => void;
-    }) => {
-      openBase({
-        content: () => (
-          <Modal.Content>
-            <Modal.ModalTextContent
-              title={opts.title}
-              description={opts.description}
-            />
-          </Modal.Content>
-        ),
-        footer: ({ close, unmount }) => (
-          <Modal.Footer hasTopBorder={false}>
-            <Modal.CTA
-              text={opts.buttonText ?? '확인'}
-              onClick={() => {
-                opts.onConfirm?.();
-                close();
-                unmount();
-              }}
-            />
-          </Modal.Footer>
-        ),
-      });
-    },
-    [openBase]
-  );
-
   const confirm = useCallback(
     (opts: {
-      title: string;
+      type?: ConfirmType;
+      title?: string;
       description?: string;
       cancelText?: string;
       confirmText?: string;
       onCancel?: () => void;
       onConfirm?: () => void;
     }) => {
+      const icon =
+        opts.type === 'warning' ? (
+          <IcModalWarning width={36} height={36} />
+        ) : (
+          <IcModalCheck width={36} height={36} />
+        );
+
       openBase({
         content: () => (
           <Modal.Content>
             <Modal.ModalTextContent
+              icon={icon}
               title={opts.title}
-              description={opts.description}
+              description={opts.description!}
             />
           </Modal.Content>
         ),
@@ -90,7 +67,7 @@ const useModal = () => {
           <Modal.Footer hasTopBorder={false}>
             <Modal.DoubleCTA
               cancelText={opts.cancelText ?? '취소'}
-              confirmText={opts.confirmText ?? '확인'}
+              confirmText={opts.confirmText ?? '저장'}
               cancelProps={{
                 onClick: () => {
                   opts.onCancel?.();
@@ -139,7 +116,7 @@ const useModal = () => {
     [openBase]
   );
 
-  return { alert, confirm, agreement };
+  return { confirm, agreement };
 };
 
 export { useModal };

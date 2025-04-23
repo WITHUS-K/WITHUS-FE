@@ -7,9 +7,11 @@ import { ClubDropdown } from '@repo/ui/DropDown';
 import FilterForm from './FilterForm/FilterForm';
 import { IcRefresh, IcSave } from '@repo/ui/icons/colored';
 import { timetableDates } from '@web/constants/timetable';
+import { useModal } from '@repo/ui/hooks';
 
 export default function Filters() {
   const router = useRouter();
+  const { confirm } = useModal();
 
   const clubList = [
     '2025-1학기 큐시즘 리크루팅',
@@ -51,7 +53,16 @@ export default function Filters() {
   };
 
   const handleSave = () => {
-    // 저장 로직
+    confirm({
+      type: 'info',
+      description:
+        '면접 타임테이블을 저장하시겠습니까?\n저장 후에도 언제든지 수정할 수 있습니다.',
+      cancelText: '취소',
+      confirmText: '저장',
+      onConfirm: () => {
+        // 실제 저장 로직
+      },
+    });
   };
 
   return (
