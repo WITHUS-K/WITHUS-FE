@@ -4,6 +4,7 @@ import { SlotItem } from '@web/constants/timetable';
 
 import InterviewerCell from './InterviewerCell';
 import GuideCell from './GuideCell';
+import { formatTimeByRow } from '@web/utils/time';
 
 export type Tab = 'interviewer' | 'guide';
 
@@ -14,10 +15,7 @@ export interface CellRendererProps {
 }
 
 export function CellRenderer({ row, tab, slotData }: CellRendererProps) {
-  const minutes = 10 * 60 + row * 30;
-  const hh = Math.floor(minutes / 60);
-  const mm = minutes % 60;
-  const time = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+  const time = formatTimeByRow(row);
 
   const slot = slotData.find((s) => s.startTime === time);
   if (!slot) return null;
@@ -25,7 +23,5 @@ export function CellRenderer({ row, tab, slotData }: CellRendererProps) {
   if (tab === 'interviewer') {
     return <InterviewerCell slot={slot} />;
   }
-
-  // guide 탭
   return <GuideCell slot={slot} />;
 }

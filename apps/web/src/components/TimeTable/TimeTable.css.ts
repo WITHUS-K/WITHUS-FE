@@ -1,20 +1,21 @@
-// components/TimeTable.css.ts
 import { style } from '@vanilla-extract/css';
 import { vars } from '@repo/theme';
 import { fontStyles } from '@repo/theme';
 
+export const root = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '1rem',
+});
+
 export const headerRow = style({
   display: 'flex',
   width: '100%',
+  alignItems: 'center',
 });
 
 export const headerSpacer = style({
   width: '5.5rem',
-});
-
-export const labelColumn = style({
-  display: 'flex',
-  flexDirection: 'column',
 });
 
 export const timeLabel = style({
@@ -39,6 +40,9 @@ export const cellsWrapper = style({
 });
 
 export const cell = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   position: 'relative',
   height: '4.2rem',
   borderBottom: `1px solid ${vars.colors.grayscale20}`,

@@ -2,7 +2,7 @@ import { ElementType, HTMLAttributes } from 'react';
 import { flexStyle } from './Flex.css';
 import clsx from 'clsx';
 
-interface FlexProps extends HTMLAttributes<HTMLDivElement> {
+export interface FlexProps extends HTMLAttributes<HTMLDivElement> {
   tag?: ElementType;
   direction?: 'row' | 'column';
   align?: 'flexStart' | 'flexEnd' | 'center' | 'stretch' | 'baseline';

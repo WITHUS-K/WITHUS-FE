@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Flex, Text, Button } from '@repo/ui';
+import { Flex, Button } from '@repo/ui';
 import { useModal } from '@repo/ui/hooks';
 import {
   SelectableTimeTable,
@@ -16,6 +16,10 @@ export default function SchedulePage() {
   const router = useRouter();
   const [selectedRange, setSelectedRange] = useState<TimeRange | null>(null);
   const { confirm } = useModal();
+
+  const handleRangeSelect = useCallback((range: TimeRange | null) => {
+    setSelectedRange(range);
+  }, []);
 
   const handleSave = () => {
     if (!selectedRange) return;
@@ -53,10 +57,7 @@ export default function SchedulePage() {
               startHour={10}
               endHour={18}
               interval={30}
-              onRangeSelect={useCallback(
-                (r: TimeRange | null) => setSelectedRange(r),
-                []
-              )}
+              onRangeSelect={handleRangeSelect}
               width="40rem"
               title={label}
             />

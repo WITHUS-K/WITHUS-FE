@@ -31,3 +31,17 @@ export function parseToMin(time: string): number {
   const m = parseInt(mStr, 10);
   return (isNaN(h) ? 0 : h) * 60 + (isNaN(m) ? 0 : m);
 }
+
+/**
+ * row 인덱스에 따라 baseHour 시점부터 interval 분 단위의 시:분 문자열을 반환
+ */
+export function formatTimeByRow(
+  row: number,
+  baseHour = 10,
+  interval = 30
+): string {
+  const totalMinutes = baseHour * 60 + row * interval;
+  const hh = Math.floor(totalMinutes / 60);
+  const mm = totalMinutes % 60;
+  return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+}
