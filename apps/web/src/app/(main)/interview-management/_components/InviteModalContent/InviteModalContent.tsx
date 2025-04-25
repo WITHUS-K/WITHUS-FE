@@ -11,20 +11,7 @@ import ProfileChip from './ProfileChip/ProfileChip';
 import ProfileListItem from './ProfileListItem/ProfileListItem';
 import { ProfileItem } from '@web/components/ProfileGroup/ProfileGroup';
 import * as styles from './InviteModalContent.css';
-
-const ALL_INTERVIEWERS: ProfileItem[] = [
-  { src: '/avatar1.jpg', name: '나하이' },
-  { src: '/avatar2.jpg', name: '이하이' },
-  { src: '/avatar3.jpg', name: '김하이' },
-  { src: '/avatar3.jpg', name: '김하이1' },
-  { src: '/avatar3.jpg', name: '김하이2' },
-];
-const ALL_GUIDES: ProfileItem[] = [
-  { src: '/guide1.jpg', name: '장운영' },
-  { src: '/guide2.jpg', name: '박운영' },
-  { src: '/guide3.jpg', name: '최운영' },
-  { src: '/guide3.jpg', name: '최운영1' },
-];
+import { ALL_GUIDES, ALL_INTERVIEWERS } from '@web/constants/timetable';
 
 export default function InviteModalContent() {
   const TABS = ['interviewer', 'guide'];

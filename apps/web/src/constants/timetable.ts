@@ -238,3 +238,49 @@ export const timetableMock: TimeTableDay[] = [
     ],
   },
 ];
+
+export const ALL_INTERVIEWERS: ProfileItem[] = [
+  {
+    src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+    name: '나하이',
+  },
+  {
+    src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+    name: '이하이',
+  },
+  {
+    src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+    name: '김하이',
+  },
+  {
+    src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+    name: '김하이1',
+  },
+  {
+    src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+    name: '김하이2',
+  },
+  {
+    src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+    name: '김하이3',
+  },
+];
+
+export const ALL_GUIDES: ProfileItem[] = [
+  {
+    src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+    name: '장운영',
+  },
+  {
+    src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+    name: '박운영',
+  },
+  {
+    src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+    name: '최운영',
+  },
+  {
+    src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+    name: '최운영1',
+  },
+];

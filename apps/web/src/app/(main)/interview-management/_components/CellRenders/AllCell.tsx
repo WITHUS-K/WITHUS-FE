@@ -18,7 +18,9 @@ export default function AllCell({ slot }: { slot: SlotItem }) {
 
   // 모달 열기
   const openInviteModal = () => {
-    router.push(`/interview-management/timetable/${tab}/${date}/invite`);
+    router.push(
+      `/interview-management/timetable/${tab}/${date}/(modal:invite)`
+    );
   };
 
   return (
