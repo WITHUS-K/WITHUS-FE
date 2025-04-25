@@ -3,13 +3,19 @@
 import { ReactNode } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { TabBar } from '@repo/ui/TabBar';
-import DateNav from '../_components/DateNav/DateNav';
+import DateNav from '../../../_components/DateNav/DateNav';
 import { timetableDates } from '@web/constants/timetable';
 import { Flex } from '@repo/ui/Flex';
 
 const TABS = ['all', 'interviewer', 'applicant', 'guide'];
 
-export default function TimetableLayout({ children }: { children: ReactNode }) {
+export default function TimetableLayout({
+  children,
+  modal,
+}: {
+  children: ReactNode;
+  modal: ReactNode;
+}) {
   const { tab, date } = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -31,21 +37,24 @@ export default function TimetableLayout({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Flex
-      direction="column"
-      width="100%"
-      height="100%"
-      gap="4rem"
-      marginTop="3.2rem"
-      align="center"
-    >
-      <TabBar tabs={TABS} active={currentTab} onChange={handleTabChange} />
-      <DateNav
-        dates={timetableDates}
-        active={currentDate}
-        onChange={handleDateChange}
-      />
-      <div>{children}</div>
-    </Flex>
+    <>
+      <Flex
+        direction="column"
+        width="100%"
+        height="100%"
+        gap="4rem"
+        marginTop="3.2rem"
+        align="center"
+      >
+        <TabBar tabs={TABS} active={currentTab} onChange={handleTabChange} />
+        <DateNav
+          dates={timetableDates}
+          active={currentDate}
+          onChange={handleDateChange}
+        />
+        <div>{children}</div>
+      </Flex>
+      {modal}
+    </>
   );
 }

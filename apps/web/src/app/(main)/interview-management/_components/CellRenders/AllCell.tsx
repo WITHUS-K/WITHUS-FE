@@ -8,8 +8,19 @@ import { IcTimetablePlus, IcTimetableExpand } from '@repo/ui/icons/colored';
 import * as styles from './CellRenders.css';
 import { SlotItem } from '@web/constants/timetable';
 import { Text } from '@repo/ui/Text';
+import { useRouter, useParams } from 'next/navigation';
 
 export default function AllCell({ slot }: { slot: SlotItem }) {
+  const router = useRouter();
+  const params = useParams();
+  const tab = params.tab as string;
+  const date = params.date as string;
+
+  // 모달 열기
+  const openInviteModal = () => {
+    router.push(`/interview-management/timetable/${tab}/${date}/invite`);
+  };
+
   return (
     <Flex
       align="center"
@@ -48,7 +59,7 @@ export default function AllCell({ slot }: { slot: SlotItem }) {
 
       {/* 버튼 */}
       <Flex align="center" gap="0.4rem">
-        <button className={styles.buttonStyle}>
+        <button className={styles.buttonStyle} onClick={openInviteModal}>
           <IcTimetablePlus width={16} height={16} />
         </button>
         <button className={styles.buttonStyle}>
