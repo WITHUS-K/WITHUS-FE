@@ -1,13 +1,11 @@
-import { fontStyles, vars } from "@repo/theme";
-import { style } from "@vanilla-extract/css";
-
+import { fontStyles, vars } from '@repo/theme';
+import { style } from '@vanilla-extract/css';
 
 export const paginationWrapper = style({
-  width: '412px',
   display: 'inline-flex',
   alignItems: 'center',
   gap: '1.2rem',
-})
+});
 
 export const listStyle = style({
   display: 'flex',
@@ -21,8 +19,8 @@ export const listStyle = style({
 export const listItemStyle = style({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center'
-})
+  justifyContent: 'center',
+});
 
 export const pageItemStyle = style({
   cursor: 'pointer',
@@ -41,15 +39,15 @@ export const pageItemStyle = style({
   selectors: {
     '&:hover': {
       color: vars.colors.grayscale80,
-      backgroundColor: vars.colors.grayscale5
+      backgroundColor: vars.colors.grayscale5,
     },
   },
-})
+});
 
 export const pageItemActiveStyle = style({
   color: vars.colors.white,
-  backgroundColor: vars.colors.primary50
-})
+  backgroundColor: vars.colors.primary50,
+});
 
 export const pageItemDisabledStyle = style({
   color: vars.colors.grayscale30,
@@ -74,10 +72,10 @@ export const arrowStyle = style({
   selectors: {
     '&:hover': {
       color: vars.colors.grayscale30,
-      backgroundColor: vars.colors.grayscale5
+      backgroundColor: vars.colors.grayscale5,
     },
   },
-})
+});
 
 export const arrowDisabledStyle = style({
   color: vars.colors.grayscale10,
@@ -88,4 +86,4 @@ export const arrowDisabledStyle = style({
       color: vars.colors.grayscale10,
     },
   },
-})
+});
