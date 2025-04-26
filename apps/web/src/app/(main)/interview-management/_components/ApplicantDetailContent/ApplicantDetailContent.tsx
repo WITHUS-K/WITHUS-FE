@@ -1,16 +1,19 @@
 'use client';
 import React from 'react';
-import { Text, Flex } from '@repo/ui';
-import { Comment } from '../../../../../../../../../packages/ui/src/components/Comment/Comment';
-import { FileUploader } from '../../../../../../../../../packages/ui/src/components/FileUploader/FileUploader';
-import { List } from '../../../../../../../../../packages/ui/src/components/List/List';
-import { AccordianList } from '../../../../../../../../../packages/ui/src/components/List/AccordianList/AccordianList';
-import { ApplicantDetail } from '../../../data';
-import * as styles from './ApplicantDetailContent.style';
-import { Divider } from 'node_modules/@repo/ui/src/components/Divider/Divider';
+import {
+  Text,
+  Flex,
+  FileUploader,
+  Divider,
+  List,
+  AccordianList,
+  Comment,
+} from '@repo/ui';
+import * as styles from './ApplicantDetailContent.css';
+import { Applicant } from '@web/constants/timetable';
 
 interface Props {
-  detail: ApplicantDetail;
+  detail: Applicant;
   introCount: number;
   openIdx: number | null;
   toggle: (idx: number) => void;
@@ -32,7 +35,8 @@ export const ApplicantDetailContent: React.FC<Props> = ({
         direction="column"
         align="flexStart"
         gap="1.6rem"
-        style={{ marginTop: '2.4rem' }}
+        width="100%"
+        marginTop="2.4rem"
       >
         <Text variant="md2_text_semibold" color="grayscale70">
           자기소개서 문항
@@ -56,7 +60,7 @@ export const ApplicantDetailContent: React.FC<Props> = ({
         direction="column"
         align="flexStart"
         gap="1.6rem"
-        style={{ margin: '3.2rem 0 4rem 0' }}
+        marginTop="3.2rem"
       >
         <Text variant="md2_text_semibold" color="grayscale70">
           포트폴리오
@@ -72,22 +76,18 @@ export const ApplicantDetailContent: React.FC<Props> = ({
         면접
       </Text>
 
-      <Flex
-        direction="column"
-        align="flexStart"
-        gap="1.6rem"
-        style={{ marginTop: '4rem' }}
-      >
+      <Flex direction="column" align="flexStart" gap="1.6rem" marginTop="4rem">
         <Text variant="md2_text_semibold" color="grayscale70">
           면접 질문
         </Text>
-        {detail.interviewQuestions.map((qes) => (
+        {detail.interviewQuestions.map((q, i) => (
           <List
-            key={qes.name}
-            question={qes.question}
-            src={qes.src}
-            alt={qes.alt}
-            name={qes.name}
+            key={q.question}
+            question={q.question}
+            src={q.src}
+            alt={q.alt}
+            name={q.name}
+            idx={i + 1}
           />
         ))}
       </Flex>
@@ -96,13 +96,13 @@ export const ApplicantDetailContent: React.FC<Props> = ({
         direction="column"
         align="flexStart"
         gap="1.6rem"
-        style={{ margin: '3.2rem 0 4rem 0' }}
+        marginTop="3.2rem"
       >
         <Text variant="md2_text_semibold" color="grayscale70">
           면접 평가
         </Text>
         {detail.interviewContent.content.map((evalItem, i) => {
-          const idx = introCount + i;
+          const idx = i;
           return (
             <AccordianList
               key={evalItem.question}
@@ -112,6 +112,7 @@ export const ApplicantDetailContent: React.FC<Props> = ({
                 reviewers: evalItem.reviewers,
               }}
               index={idx}
+              isNumbering={false}
               isOpen={openIdx === idx}
               onToggle={() => toggle(idx)}
             />
@@ -127,12 +128,7 @@ export const ApplicantDetailContent: React.FC<Props> = ({
         코멘트
       </Text>
 
-      <Flex
-        direction="column"
-        align="flexStart"
-        gap="1.6rem"
-        style={{ marginTop: '4rem' }}
-      >
+      <Flex direction="column" align="flexStart" gap="1.6rem" marginTop="4rem">
         <Text variant="md2_text_semibold" color="grayscale70">
           서류 평가
         </Text>
@@ -152,7 +148,7 @@ export const ApplicantDetailContent: React.FC<Props> = ({
         direction="column"
         align="flexStart"
         gap="1.6rem"
-        style={{ margin: '3.2rem 0 4rem 0' }}
+        marginTop="3.2rem"
       >
         <Text variant="md2_text_semibold" color="grayscale70">
           면접 평가
@@ -161,7 +157,7 @@ export const ApplicantDetailContent: React.FC<Props> = ({
           {detail.interviewComments.map((c, i) => (
             <React.Fragment key={c.comment}>
               <Comment user={c.user} comment={c.comment} />
-              {i < detail.docsComments.length - 1 && (
+              {i < detail.interviewComments.length - 1 && (
                 <Divider borderColor="grayscale10" />
               )}
             </React.Fragment>
