@@ -45,8 +45,8 @@ export const pageItemStyle = style({
 });
 
 export const pageItemActiveStyle = style({
-  color: vars.colors.white,
-  backgroundColor: vars.colors.primary50,
+  color: vars.colors.primary50,
+  backgroundColor: vars.colors.primary5,
 });
 
 export const pageItemDisabledStyle = style({
