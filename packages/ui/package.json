@@ -95,6 +95,10 @@
     "./FileUploader": {
       "types": "./dist/components/FileUploader/index.d.ts",
       "import": "./dist/components/FileUploader/index.js"
+    },
+    "./Tag": {
+      "types": "./dist/components/Tag/index.d.ts",
+      "import": "./dist/components/Tag/index.js"
     }
   },
   "main": "./dist/index.js",

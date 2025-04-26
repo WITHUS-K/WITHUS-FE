@@ -4,7 +4,7 @@ import type { NextConfig } from 'next';
 const withVanillaExtract = createVanillaExtractPlugin();
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@repo/ui', '@repo/theme'],
+  transpilePackages: ['@repo/ui', '@repo/theme', '@repo/utils'],
   experimental: {
     scrollRestoration: true,
   },
