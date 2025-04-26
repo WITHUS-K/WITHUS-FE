@@ -6,7 +6,7 @@ import { TimeTable } from '@web/components/TimeTable/TimeTable';
 import { timetableMock } from '@web/constants/timetable';
 import { CellRenderer } from '../../../_components/CellRenders/CellRenderer';
 
-export default function TimetablePage() {
+export default function TimetablePageClient() {
   const { tab = 'all', date } = useParams();
 
   const timetable = timetableMock.find((t) => t.date === date);
