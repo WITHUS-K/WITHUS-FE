@@ -1,10 +1,8 @@
 'use client';
 import { ComponentPropsWithoutRef } from 'react';
-import DropdownRoot from '../DropdownRoot';
-import DropdownTrigger from '../DropdownTrigger';
-import DropdownList from '../DropdownList';
 import DropdownItem from '../DropdownItem';
 import SelectScoreDropdownTriggerContent from './SelectScoreDropdownTriggerContent';
+import Dropdown from '../Dropdown';
 
 const scores = ['0', '1', '2', '3', '4', '5'];
 
@@ -27,21 +25,21 @@ export default function SelectScoreDropdown({
   const selected = value || defaultValue;
 
   return (
-    <DropdownRoot {...rest} style={style}>
-      <DropdownTrigger>
+    <Dropdown {...rest} style={style}>
+      <Dropdown.Trigger>
         <SelectScoreDropdownTriggerContent
           selected={selected}
           isDefault={selected === defaultValue}
         />
-      </DropdownTrigger>
+      </Dropdown.Trigger>
 
-      <DropdownList>
+      <Dropdown.List>
         {scores.map((score) => (
           <DropdownItem key={score} onSelect={() => onSelect(score)}>
             {score}
           </DropdownItem>
         ))}
-      </DropdownList>
-    </DropdownRoot>
+      </Dropdown.List>
+    </Dropdown>
   );
 }
