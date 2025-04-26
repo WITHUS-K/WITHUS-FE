@@ -1,10 +1,6 @@
 import { style, styleVariants } from '@vanilla-extract/css';
 import { fontStyles, vars } from '@repo/theme';
 
-export const accordionItem = style({
-    ...fontStyles.md2_text_regular
-});
-
 export const headerButton = style({
   all: 'unset',
   flex: 1,
@@ -45,4 +41,5 @@ export const arrowStyle = styleVariants({
 export const contentWrapper = style({
   backgroundColor: vars.colors.white,
   color: vars.colors.grayscale90,
+  ...fontStyles.md2_text_regular,
 });

@@ -83,6 +83,10 @@
     "./TabBar": {
       "types": "./dist/components/TabBar/index.d.ts",
       "import": "./dist/components/TabBar/index.js"
+    },
+    "./Comment": {
+      "types": "./dist/components/Comment/index.d.ts",
+      "import": "./dist/components/Comment/index.js"
     }
   },
   "main": "./dist/index.js",

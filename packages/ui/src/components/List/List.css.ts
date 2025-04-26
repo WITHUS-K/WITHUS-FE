@@ -7,6 +7,7 @@ export const listWrapperBase = style({
   padding: '1.6rem',
   backgroundColor: vars.colors.white,
   borderRadius: '12px',
+  width: '100%'
 });
 
 export const listWrapperDir = styleVariants({

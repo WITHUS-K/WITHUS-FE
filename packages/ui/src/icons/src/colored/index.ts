@@ -2,19 +2,13 @@ export { default as IcAdminActive } from './IcAdminActive';
 export { default as IcAdminDefault } from './IcAdminDefault';
 export { default as IcAdminHover } from './IcAdminHover';
 export { default as IcArrowDropdown } from './IcArrowDropdown';
-<<<<<<< HEAD
 export { default as IcAuthLogo } from './IcAuthLogo';
 export { default as IcCalendar } from './IcCalendar';
-export { default as IcCheckCopy } from './IcCheckCopy';
-export { default as IcCheck } from './IcCheck';
-export { default as IcDelete } from './IcDelete';
 export { default as IcDropdwonGray90 } from './IcDropdwonGray90';
-=======
 export { default as IcCheckCopy } from './IcCheckCopy';
 export { default as IcCheck } from './IcCheck';
 export { default as IcDelete } from './IcDelete';
 export { default as IcDownload } from './IcDownload';
->>>>>>> 0fa746e (feat: FileUploader 컴포넌트 (#12))
 export { default as IcHeaderLogo } from './IcHeaderLogo';
 export { default as IcHeaderProfile } from './IcHeaderProfile';
 export { default as IcInputError } from './IcInputError';

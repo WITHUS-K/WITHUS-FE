@@ -8,7 +8,7 @@ interface ListLayoutProps {
 }
 
 export const ListLayout = ({
-  width = '1101px',
+  width = '100%',
   direction = 'row',
   children,
 }: ListLayoutProps) => (
