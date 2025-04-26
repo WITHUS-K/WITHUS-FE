@@ -83,6 +83,10 @@
     "./TabBar": {
       "types": "./dist/components/TabBar/index.d.ts",
       "import": "./dist/components/TabBar/index.js"
+    },
+    "./Tag": {
+      "types": "./dist/components/Tag/index.d.ts",
+      "import": "./dist/components/Tag/index.js"
     }
   },
   "main": "./dist/index.js",
