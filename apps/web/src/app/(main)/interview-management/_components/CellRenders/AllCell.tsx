@@ -29,7 +29,7 @@ export default function AllCell({ slot }: { slot: SlotItem }) {
       {/* 지원자 */}
       <OverflowChips
         items={slot.applicants}
-        renderLabel={(name) => name}
+        renderLabel={(name) => name.name}
         maxVisible={2}
         width="13.3rem"
         marginRight="4.1rem"

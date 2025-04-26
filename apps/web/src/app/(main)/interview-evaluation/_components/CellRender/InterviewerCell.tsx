@@ -19,7 +19,7 @@ export default function InterviewerCell({ slot }: { slot: SlotItem }) {
       {/* 지원자 Chip (2개 초과 시 +N 표시) */}
       <OverflowChips
         items={slot.applicants}
-        renderLabel={(name) => name}
+        renderLabel={(name) => name.name}
         maxVisible={2}
         width="13.3rem"
         gap="0.8rem"
