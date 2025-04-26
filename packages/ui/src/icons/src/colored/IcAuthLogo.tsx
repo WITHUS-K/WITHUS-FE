@@ -1,12 +1,12 @@
+import * as React from 'react';
 import type { SVGProps } from 'react';
 const SvgIcAuthLogo = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
-    width="1em"
-    height="1em"
+    width={130}
+    height={32}
     fill="none"
-    viewBox="0 0 130 32"
     {...props}
   >
     <path fill="url(#ic_auth_logo_svg__a)" d="M5.371 4.434h120v24h-120z" />

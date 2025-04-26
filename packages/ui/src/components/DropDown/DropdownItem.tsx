@@ -21,7 +21,9 @@ const DropdownItem = ({ onSelect, children, ...props }: DropdownItemProps) => {
       }}
       {...props}
     >
-      <Text variant="md2_text_medium">{children}</Text>
+      <Text variant="md2_text_medium" style={{ whiteSpace: 'nowrap' }}>
+        {children}
+      </Text>
     </li>
   );
 };

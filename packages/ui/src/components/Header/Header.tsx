@@ -7,7 +7,7 @@ export interface HeaderProps {
   role?: 'user' | 'admin';
   position?: string;
   part?: string;
-  onNotificationClick: () => void;
+  onNotificationClick?: () => void;
 }
 
 export const Header = ({

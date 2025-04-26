@@ -22,6 +22,7 @@ const config: StorybookConfig = {
   addons: [
     getAbsolutePath('@storybook/addon-essentials'),
     getAbsolutePath('@storybook/addon-onboarding'),
+    getAbsolutePath('@storybook/addon-actions'),
     getAbsolutePath('@chromatic-com/storybook'),
     getAbsolutePath('@storybook/experimental-addon-test'),
   ],
@@ -41,12 +42,13 @@ const config: StorybookConfig = {
       alias: {
         //'@': resolve(__dirname, '../src'),
         '@repo/theme': resolve(__dirname, '../../../packages/theme'),
+        '@repo/utils': resolve(__dirname, '../../../packages/utils/src'),
       },
     };
 
     config.optimizeDeps = {
       ...(config.optimizeDeps || {}),
-      include: ['@repo/theme'],
+      include: ['@repo/theme', '@repo/utils'],
       esbuildOptions: {
         plugins: [],
       },

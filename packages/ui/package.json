@@ -47,6 +47,42 @@
     "./Text": {
       "types": "./dist/components/Text/index.d.ts",
       "import": "./dist/components/Text/index.js"
+    },
+    "./Chips": {
+      "types": "./dist/components/Chips/index.d.ts",
+      "import": "./dist/components/Chips/index.js"
+    },
+    "./Header": {
+      "types": "./dist/components/Header/index.d.ts",
+      "import": "./dist/components/Header/index.js"
+    },
+    "./List": {
+      "types": "./dist/components/List/index.d.ts",
+      "import": "./dist/components/List/index.js"
+    },
+    "./Pagination": {
+      "types": "./dist/components/Pagination/index.d.ts",
+      "import": "./dist/components/Pagination/index.js"
+    },
+    "./Profile": {
+      "types": "./dist/components/Profile/index.d.ts",
+      "import": "./dist/components/Profile/index.js"
+    },
+    "./Sidebar": {
+      "types": "./dist/components/Sidebar/index.d.ts",
+      "import": "./dist/components/Sidebar/index.js"
+    },
+    "./Stepper": {
+      "types": "./dist/components/Stepper/index.d.ts",
+      "import": "./dist/components/Stepper/index.js"
+    },
+    "./Callout": {
+      "types": "./dist/components/Callout/index.d.ts",
+      "import": "./dist/components/Callout/index.js"
+    },
+    "./TabBar": {
+      "types": "./dist/components/TabBar/index.d.ts",
+      "import": "./dist/components/TabBar/index.js"
     }
   },
   "main": "./dist/index.js",
@@ -57,8 +93,8 @@
     "check-types": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o storybook-static",
-    "svgr:mono": "svgr --out-dir src/icons/src/mono src/icons/assets/mono --typescript --icon --jsx-runtime automatic",
-    "svgr:colored": "svgr --out-dir src/icons/src/colored src/icons/assets/colored",
+    "svgr:mono": "svgr --config-file svgr.mono.config.js --out-dir src/icons/src/mono src/icons/assets/mono --typescript",
+    "svgr:colored": "svgr --out-dir src/icons/src/colored src/icons/assets/colored --typescript",
     "svg:build": "pnpm svgr:mono && pnpm svgr:colored"
   },
   "devDependencies": {
@@ -67,6 +103,7 @@
     "@repo/theme": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/utils": "workspace:*",
+    "@storybook/addon-actions": "^8.6.12",
     "@storybook/addon-essentials": "^8.6.12",
     "@storybook/addon-onboarding": "^8.6.12",
     "@storybook/blocks": "^8.6.12",

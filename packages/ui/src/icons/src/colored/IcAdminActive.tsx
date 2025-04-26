@@ -1,11 +1,11 @@
+import * as React from 'react';
 import type { SVGProps } from 'react';
 const SvgIcAdminActive = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="1em"
-    height="1em"
+    width={207}
+    height={100}
     fill="none"
-    viewBox="0 0 207 100"
     {...props}
   >
     <g clipPath="url(#ic_admin_active_svg__a)">
@@ -47,8 +47,8 @@ const SvgIcAdminActive = (props: SVGProps<SVGSVGElement>) => (
         y2={103.5}
         gradientUnits="userSpaceOnUse"
       >
-        <stop stopColor="currentColor" />
-        <stop offset={1} stopColor="currentColor" stopOpacity={0} />
+        <stop stopColor="#fff" />
+        <stop offset={1} stopColor="#fff" stopOpacity={0} />
       </linearGradient>
       <linearGradient
         id="ic_admin_active_svg__c"
@@ -58,14 +58,14 @@ const SvgIcAdminActive = (props: SVGProps<SVGSVGElement>) => (
         y2={51.424}
         gradientUnits="userSpaceOnUse"
       >
-        <stop stopColor="currentColor" />
-        <stop offset={1} stopColor="currentColor" stopOpacity={0} />
+        <stop stopColor="#fff" />
+        <stop offset={1} stopColor="#fff" stopOpacity={0} />
       </linearGradient>
       <clipPath id="ic_admin_active_svg__a">
-        <rect width={207} height={100} fill="currentColor" rx={16} />
+        <rect width={207} height={100} fill="#fff" rx={16} />
       </clipPath>
       <clipPath id="ic_admin_active_svg__d">
-        <path fill="currentColor" d="M132 13h54.889v95H132z" />
+        <path fill="#fff" d="M132 13h54.889v95H132z" />
       </clipPath>
     </defs>
   </svg>

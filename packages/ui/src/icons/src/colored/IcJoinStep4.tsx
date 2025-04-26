@@ -1,11 +1,11 @@
+import * as React from 'react';
 import type { SVGProps } from 'react';
 const SvgIcJoinStep4 = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="1em"
-    height="1em"
+    width={162}
+    height={148}
     fill="none"
-    viewBox="0 0 162 148"
     {...props}
   >
     <g clipPath="url(#ic_join_step4_svg__a)">
@@ -152,7 +152,7 @@ const SvgIcJoinStep4 = (props: SVGProps<SVGSVGElement>) => (
     </g>
     <defs>
       <clipPath id="ic_join_step4_svg__a">
-        <path fill="currentColor" d="M.5 0h161v148H.5z" />
+        <path fill="#fff" d="M.5 0h161v148H.5z" />
       </clipPath>
     </defs>
   </svg>

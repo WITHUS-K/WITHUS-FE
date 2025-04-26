@@ -17,7 +17,6 @@ const emailDomains = [
   'nate.com',
 ];
 
-// HTML <div> props에서 onSelect (ReactEventHandler)만 제거합니다.
 export interface SelectDropdownProps
   extends Omit<ComponentPropsWithoutRef<'div'>, 'onSelect'> {
   value?: string;

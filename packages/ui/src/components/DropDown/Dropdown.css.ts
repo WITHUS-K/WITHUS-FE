@@ -20,13 +20,21 @@ export const triggerStyle = style({
   boxSizing: 'border-box',
 });
 
+export const clubTriggerStyle = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.8rem',
+  cursor: 'pointer',
+  boxSizing: 'border-box',
+});
+
 export const dropdownListStyle = style({
   position: 'absolute',
   top: '100%',
   marginTop: '0.8rem',
   left: 0,
   zIndex: 3,
-  width: '16.1rem',
+  minWidth: '16.1rem',
   overflow: 'hidden',
   borderRadius: '12px',
   backgroundColor: vars.colors.white,
@@ -41,7 +49,7 @@ export const dropdownItemStyle = style({
   justifyContent: 'center',
   cursor: 'pointer',
   color: vars.colors.grayscale70,
-
+  paddingInline: '1rem',
   selectors: {
     '&:hover': {
       backgroundColor: vars.colors.primary5,

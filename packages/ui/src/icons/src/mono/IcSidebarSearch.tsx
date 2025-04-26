@@ -9,7 +9,7 @@ const SvgIcSidebarSearch = (props: SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      stroke="currentColor"
+      stroke="#7F82A1"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={2}

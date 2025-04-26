@@ -1,3 +1,5 @@
+'use client';
+
 import {
   ComponentPropsWithoutRef,
   CSSProperties,
@@ -61,7 +63,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {leftIcon && <span className={iconSizeClass}>{leftIcon}</span>}
-        <Text variant={textVariant} color="inherit">
+        <Text
+          variant={textVariant}
+          color="inherit"
+          style={{ whiteSpace: 'nowrap' }}
+        >
           {children}
         </Text>
       </button>
