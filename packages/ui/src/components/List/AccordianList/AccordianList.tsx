@@ -14,7 +14,7 @@ export interface Reviewer {
 export interface AccordianItemType {
   title: string;
   content: string;
-  reviewers: Reviewer[];
+  reviewers?: Reviewer[];
 }
 
 interface AccordianListProps {
@@ -32,7 +32,7 @@ export const AccordianList = ({
   onToggle,
   width = '1101px',
 }: AccordianListProps) => {
-  const scoreItems: ScoreInfo[] = item.reviewers.map((r) => ({
+  const scoreItems: ScoreInfo[] = (item.reviewers ?? []).map((r) => ({
     src: r.avatar,
     alt: r.name,
     name: r.name,
@@ -59,7 +59,7 @@ export const AccordianList = ({
           </button>
 
           <div className={styles.listRightSection}>
-            <ScoreChip items={scoreItems} />
+            {scoreItems.length > 0 && <ScoreChip items={scoreItems} />}
             <button
               className={styles.toggleButton}
               onClick={() => onToggle(index)}
