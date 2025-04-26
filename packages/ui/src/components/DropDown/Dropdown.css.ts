@@ -1,5 +1,6 @@
 import { style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '@repo/theme';
+import { fontStyles } from '@repo/theme';
 
 export const dropdownRootStyle = style({
   position: 'relative',
@@ -29,33 +30,56 @@ export const clubTriggerStyle = style({
 });
 
 export const dropdownListStyle = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.4rem',
   position: 'absolute',
   top: '100%',
   marginTop: '0.8rem',
   left: 0,
   zIndex: 3,
-  minWidth: '16.1rem',
   overflow: 'hidden',
   borderRadius: '12px',
   backgroundColor: vars.colors.white,
-  boxShadow: '0px 4px 6px rgba(0,0,0,0.1)',
+  padding: '0.4rem',
+  boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.10)',
 });
 
-export const dropdownItemStyle = style({
+export const dropdownItemBase = style({
   display: 'flex',
   width: '100%',
-  height: '4.8rem',
   alignItems: 'center',
-  justifyContent: 'center',
   cursor: 'pointer',
-  color: vars.colors.grayscale70,
-  paddingInline: '1rem',
+  color: vars.colors.grayscale50,
+  borderRadius: '10px',
   selectors: {
     '&:hover': {
-      backgroundColor: vars.colors.primary5,
-      color: vars.colors.primary50,
+      backgroundColor: vars.colors.grayscale5,
     },
   },
+});
+
+// 선택된 경우
+export const dropdownItemSelected = style({
+  backgroundColor: vars.colors.primary5,
+  color: vars.colors.primary50,
+  selectors: {
+    '&:hover': {
+      backgroundColor: vars.colors.primary10,
+    },
+  },
+});
+
+// padding-inline: text vs element
+export const dropdownItemPadding = styleVariants({
+  text: { paddingInline: '1.6rem' },
+  element: { paddingInline: '0.6rem' },
+});
+
+// font style: small vs large
+export const dropdownItemFont = styleVariants({
+  small: fontStyles.sm_caption_medium,
+  large: fontStyles.md2_text_medium,
 });
 
 export const arrowStyle = styleVariants({
