@@ -87,6 +87,14 @@
     "./Tag": {
       "types": "./dist/components/Tag/index.d.ts",
       "import": "./dist/components/Tag/index.js"
+    },
+    "./Breadcrumb": {
+      "types": "./dist/components/Breadcrumb/index.d.ts",
+      "import": "./dist/components/Breadcrumb/index.js"
+    },
+    "./Toast": {
+      "types": "./dist/components/Toast/index.d.ts",
+      "import": "./dist/components/Toast/index.js"
     }
   },
   "main": "./dist/index.js",
@@ -103,6 +111,7 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3",
+    "@radix-ui/react-slot": "^1.2.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/theme": "workspace:*",
     "@repo/typescript-config": "workspace:*",
@@ -132,6 +141,7 @@
     "esbuild-plugin-svgr": "^3.1.1",
     "eslint": "^9.24.0",
     "eslint-plugin-storybook": "^0.12.0",
+    "motion": "^12.9.2",
     "overlay-kit": "^1.7.0",
     "playwright": "^1.51.1",
     "storybook": "^8.6.12",

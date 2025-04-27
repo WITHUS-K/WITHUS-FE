@@ -1,9 +1,8 @@
 'use client';
-
+import { Breadcrumb } from '@repo/ui/Breadcrumb';
 import { Flex, Text } from '@repo/ui';
 import { IcArrowRight } from '@repo/ui/icons/mono';
 import { vars } from '@repo/theme';
-
 export type EvaluationStage = 'schedule' | 'timetable';
 
 const LABEL_MAP: Record<
@@ -29,15 +28,10 @@ export function EvaluationHeader({ stage }: { stage: EvaluationStage }) {
   return (
     <Flex direction="column" gap="0.5rem" width="100%">
       {/* 1) Breadcrumb */}
-      <Flex align="center" gap="0.5rem">
-        <Text variant="md2_text_medium" color="grayscale40">
-          면접 평가
-        </Text>
-        <IcArrowRight width={15} height={15} color={vars.colors.grayscale40} />
-        <Text variant="md2_text_medium" color="grayscale90">
-          {title}
-        </Text>
-      </Flex>
+      <Breadcrumb>
+        <Breadcrumb.Item>면접 평가</Breadcrumb.Item>
+        <Breadcrumb.Item active>{title}</Breadcrumb.Item>
+      </Breadcrumb>
 
       {/* 2) Page Title */}
       <Text variant="xl_title_semibold" color="black">
