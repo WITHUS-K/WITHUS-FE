@@ -9,6 +9,7 @@ import { Text } from '@repo/ui/Text';
 import * as styles from './page.css';
 import OrgList from './_components/OrgList/OrgList';
 import { useModal } from '@repo/ui/hooks';
+import SelectionNotification from './_components/SelectionNotification/SelectionNotification';
 
 // 목데이터 + 전체 가능한 역할 목록
 const INITIAL_MEMBERS: Member[] = Array.from({ length: 38 }, (_, i) => ({
@@ -44,6 +45,23 @@ export default function OrganizationPage() {
   const start = (currentPage - 1) * perPage;
   const pageData = filtered.slice(start, start + perPage);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  // 배너 표시 여부 계산
+  const isPageOnly = selectedIds.length === pageData.length;
+  const isAll = selectedIds.length === filtered.length;
+  const showBanner = selectedIds.length > 0 && (isPageOnly || isAll);
+
+  // 전체 페이지 토글 핸들러
+  const handleToggleScope = () => {
+    if (isAll) {
+      // 전체 → 페이지만
+      setSelectedIds(pageData.map((m) => m.id));
+    } else {
+      // 페이지 → 전체
+      setSelectedIds(filtered.map((m) => m.id));
+    }
+  };
+
   // 체크박스
   const handleToggleAll = (checked: boolean) =>
     setSelectedIds(checked ? pageData.map((m) => m.id) : []);
@@ -82,10 +100,21 @@ export default function OrganizationPage() {
 
   return (
     <Flex direction="column" padding="2.4rem" width="100%" height="100%">
-      <Flex direction="column" gap="1.8rem" marginBottom="1.8rem">
-        <Breadcrumb>
-          <Breadcrumb.Item active>조직 관리</Breadcrumb.Item>
-        </Breadcrumb>
+      <Flex direction="column" gap="1.8rem" marginBottom="1.8rem" width="100%">
+        <Flex align="center" justify="spaceBetween" width="100%">
+          <Breadcrumb>
+            <Breadcrumb.Item active>조직 관리</Breadcrumb.Item>
+          </Breadcrumb>
+
+          {showBanner && (
+            <SelectionNotification
+              pageCount={pageData.length}
+              totalCount={filtered.length}
+              isAllSelected={isAll}
+              onToggleScope={handleToggleScope}
+            />
+          )}
+        </Flex>
 
         <Text variant="xl_title_semibold" color="black">
           조직 관리
