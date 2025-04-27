@@ -1,4 +1,3 @@
-// app/organization/components/OrgListItem.tsx
 'use client';
 
 import React from 'react';
@@ -7,7 +6,7 @@ import * as styles from './OrgListItem.css';
 import { Member } from '@web/types/organization';
 import { CheckBox } from '@repo/ui/CheckBox';
 import { Tag } from '@repo/ui/Tag';
-import RolesDropdown from '../RolesDropdown/RolesDropdown';
+import { RolesDropdown } from '@repo/ui/DropDown';
 import { Profile } from '@repo/ui/Profile';
 import { Text } from '@repo/ui/Text';
 import { Flex } from '@repo/ui/Flex';
@@ -31,17 +30,17 @@ export default function OrgListItem({
     <div className={`${styles.item} ${isSelected ? styles.selected : ''}`}>
       {/* 1) 체크박스 */}
 
-      <CheckBox
-        isChecked={isSelected}
-        onChange={() => onToggle(!isSelected)}
-        style={{ marginRight: '2.4rem' }}
-      />
-
+      <div style={{ marginRight: '2.4rem', height: '2.4rem' }}>
+        <CheckBox
+          isChecked={isSelected}
+          onChange={() => onToggle(!isSelected)}
+        />
+      </div>
       {/* 2) 순번 */}
       <Text
         variant="xs_caption_medium"
         color="grayscale50"
-        style={{ marginRight: '1.8rem' }}
+        style={{ marginRight: '1.8rem', width: '2.4rem' }}
       >
         {member.id}
       </Text>
@@ -75,13 +74,25 @@ export default function OrgListItem({
 
       {/* 5) 성별 / 생년월일 / 전화번호 / 가입일 */}
       <Flex align="center" gap="4.4rem">
-        <Text variant="sm_caption_medium" color="grayscale70">
+        <Text
+          variant="sm_caption_medium"
+          color="grayscale70"
+          style={{ width: '2.1rem' }}
+        >
           {member.gender}
         </Text>
-        <Text variant="sm_caption_medium" color="grayscale70">
+        <Text
+          variant="sm_caption_medium"
+          color="grayscale70"
+          style={{ width: '7.7rem' }}
+        >
           {member.dob}
         </Text>
-        <Text variant="sm_caption_medium" color="grayscale70">
+        <Text
+          variant="sm_caption_medium"
+          color="grayscale70"
+          style={{ width: '10.6rem' }}
+        >
           {member.phone}
         </Text>
         <Text variant="sm_caption_medium" color="grayscale70">
