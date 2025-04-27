@@ -4,7 +4,6 @@ import { style } from '@vanilla-extract/css';
 export const container = style({
   width: '100%',
   display: 'flex',
-  flexDirection: 'row',
   justifyItems: 'center',
   justifyContent: 'space-between',
   alignItems: 'center',
