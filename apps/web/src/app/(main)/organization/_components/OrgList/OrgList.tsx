@@ -13,6 +13,7 @@ interface Props {
   onToggleOne: (id: string, checked: boolean) => void;
   availableRoles: Role[];
   onAddRole: (memberId: string, role: Role) => void;
+  search: string;
 }
 
 export default function OrgList({
@@ -22,6 +23,7 @@ export default function OrgList({
   onToggleOne,
   availableRoles,
   onAddRole,
+  search,
 }: Props) {
   const allChecked =
     data.length > 0 && data.every((m) => selectedIds.includes(m.id));
@@ -54,6 +56,7 @@ export default function OrgList({
             onToggle={(checked) => onToggleOne(m.id, checked)}
             availableRoles={availableRoles}
             onAddRole={(role) => onAddRole(m.id, role)}
+            search={search}
           />
         ))}
       </div>

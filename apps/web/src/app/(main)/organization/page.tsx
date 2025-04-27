@@ -133,6 +133,7 @@ export default function OrganizationPage() {
       />
 
       <OrgList
+        search={search}
         data={pageData}
         selectedIds={selectedIds}
         onToggleAll={handleToggleAll}

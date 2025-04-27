@@ -10,13 +10,14 @@ import { RolesDropdown } from '@repo/ui/DropDown';
 import { Profile } from '@repo/ui/Profile';
 import { Text } from '@repo/ui/Text';
 import { Flex } from '@repo/ui/Flex';
-
+import { vars } from '@repo/theme';
 interface Props {
   member: Member;
   isSelected: boolean;
   onToggle: (checked: boolean) => void;
   availableRoles: Member['roles'];
   onAddRole: (role: Member['roles'][number]) => void;
+  search: string;
 }
 
 export default function OrgListItem({
@@ -25,7 +26,13 @@ export default function OrgListItem({
   onToggle,
   availableRoles,
   onAddRole,
+  search,
 }: Props) {
+  // 검색어가 없거나 포함되지 않으면 원본 이름만
+  const nameParts = search
+    ? member.name.split(new RegExp(`(${search})`, 'gi'))
+    : [member.name];
+
   return (
     <div className={`${styles.item} ${isSelected ? styles.selected : ''}`}>
       {/* 1) 체크박스 */}
@@ -53,7 +60,21 @@ export default function OrgListItem({
       {/* 3) 이름+이메일 */}
       <Flex direction="column" width="19rem" marginRight="1.8rem">
         <Text variant="sm_caption_medium" color="grayscale70">
-          {member.name}
+          {nameParts.map((part, index) =>
+            search && part.toLowerCase() === search.toLowerCase() ? (
+              <span
+                key={index}
+                style={{
+                  color: vars.colors.white,
+                  backgroundColor: vars.colors.primary50,
+                }}
+              >
+                {part}
+              </span>
+            ) : (
+              <React.Fragment key={index}>{part}</React.Fragment>
+            )
+          )}
         </Text>
         <Text variant="xs_caption_medium" color="grayscale50">
           {member.email}
