@@ -10,5 +10,6 @@ export const paginationStyle = style({
   alignItems: 'center',
   justifyContent: 'center',
   height: '4.4rem',
+  backgroundColor: vars.colors.white,
   borderTop: `1px solid ${vars.colors.grayscale10}`,
 });

@@ -16,6 +16,7 @@ interface Props {
   onSearchChange: (e: ChangeEvent<HTMLInputElement>) => void;
   selectedCount: number;
   totalCount: number;
+  onDelete: () => void;
 }
 
 export default function OrgSearchToolbar({
@@ -23,9 +24,15 @@ export default function OrgSearchToolbar({
   onSearchChange,
   selectedCount,
   totalCount,
+  onDelete,
 }: Props) {
   return (
-    <Flex align="center" justify="spaceBetween" width="100%">
+    <Flex
+      align="center"
+      justify="spaceBetween"
+      width="100%"
+      marginBottom="1.2rem"
+    >
       <Flex align="center" gap="0.8rem">
         <SearchInput
           placeholder="검색"
@@ -39,6 +46,7 @@ export default function OrgSearchToolbar({
           width="10rem"
           disabled={selectedCount === 0}
           leftIcon={<IcButtonDelete />}
+          onClick={onDelete}
         >
           삭제
         </Button>

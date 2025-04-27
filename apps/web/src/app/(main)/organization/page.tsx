@@ -7,6 +7,8 @@ import { Flex } from '@repo/ui/Flex';
 import { Breadcrumb } from '@repo/ui/Breadcrumb';
 import { Text } from '@repo/ui/Text';
 import * as styles from './page.css';
+import OrgList from './_components/OrgList/OrgList';
+import { useModal } from '@repo/ui/hooks';
 
 // 목데이터 + 전체 가능한 역할 목록
 const INITIAL_MEMBERS: Member[] = Array.from({ length: 38 }, (_, i) => ({
@@ -35,7 +37,7 @@ export default function OrganizationPage() {
   const [members, setMembers] = useState<Member[]>(INITIAL_MEMBERS);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-
+  const { confirm } = useModal();
   // 필터 + 페이징
   const filtered = members.filter((m) => m.name.includes(search));
   const perPage = 20;
@@ -63,30 +65,52 @@ export default function OrganizationPage() {
       )
     );
   };
+  // 삭제 클릭 시
+  const handleDeleteClick = () => {
+    confirm({
+      type: 'warning',
+      title: `${selectedIds.length}명의 멤버를 삭제하시겠습니까?`,
+      cancelText: '취소',
+      confirmText: '삭제',
+      onConfirm: () => {
+        // 실제 삭제 로직 추가하기!
+        //setMembers((prev) => prev.filter((m) => !selectedIds.includes(m.id)));
+        //setSelectedIds([]);
+      },
+    });
+  };
 
   return (
-    <Flex direction="column">
-      <Flex direction="column" width="100%" height="100%" padding="2.4rem">
-        <Flex direction="column" gap="1.8rem" marginBottom="1.8rem">
-          <Breadcrumb>
-            <Breadcrumb.Item active>조직 관리</Breadcrumb.Item>
-          </Breadcrumb>
+    <Flex direction="column" padding="2.4rem" width="100%" height="100%">
+      <Flex direction="column" gap="1.8rem" marginBottom="1.8rem">
+        <Breadcrumb>
+          <Breadcrumb.Item active>조직 관리</Breadcrumb.Item>
+        </Breadcrumb>
 
-          <Text variant="xl_title_semibold" color="black">
-            조직 관리
-          </Text>
-        </Flex>
-
-        <OrgSearchToolbar
-          search={search}
-          onSearchChange={(e: ChangeEvent<HTMLInputElement>) => {
-            setSearch(e.target.value);
-            setCurrentPage(1);
-          }}
-          selectedCount={selectedIds.length}
-          totalCount={filtered.length}
-        />
+        <Text variant="xl_title_semibold" color="black">
+          조직 관리
+        </Text>
       </Flex>
+
+      <OrgSearchToolbar
+        search={search}
+        onSearchChange={(e: ChangeEvent<HTMLInputElement>) => {
+          setSearch(e.target.value);
+          setCurrentPage(1);
+        }}
+        selectedCount={selectedIds.length}
+        totalCount={filtered.length}
+        onDelete={handleDeleteClick}
+      />
+
+      <OrgList
+        data={pageData}
+        selectedIds={selectedIds}
+        onToggleAll={handleToggleAll}
+        onToggleOne={handleToggleOne}
+        availableRoles={ALL_ROLES}
+        onAddRole={handleAddRole}
+      />
 
       <div className={styles.paginationStyle}>
         <Pagination
