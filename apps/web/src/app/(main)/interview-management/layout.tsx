@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export default function InterviewLayout({ children }: { children: ReactNode }) {
   return (
-    <Flex direction="column" width="100%" height="100%">
+    <Flex direction="column" width="100%" height="100%" padding="2.4rem">
       <Filters />
       {children}
     </Flex>

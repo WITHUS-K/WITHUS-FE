@@ -1,6 +1,9 @@
 export { default as IcArrowLeft } from './IcArrowLeft';
 export { default as IcArrowRight } from './IcArrowRight';
+export { default as IcButtonDelete } from './IcButtonDelete';
 export { default as IcButtonEx } from './IcButtonEx';
+export { default as IcButtonInvite } from './IcButtonInvite';
+export { default as IcButtonSetting } from './IcButtonSetting';
 export { default as IcDateArrowLeft } from './IcDateArrowLeft';
 export { default as IcDateArrowRight } from './IcDateArrowRight';
 export { default as IcHeaderAlarm } from './IcHeaderAlarm';

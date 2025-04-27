@@ -17,7 +17,7 @@ export default function RolesDropdown({ availableRoles, onSelect }: Props) {
     <Dropdown>
       {/* Trigger + Callout + List 를 한 곳에 묶어서 */}
       <div style={{ position: 'relative', display: 'inline-block' }}>
-        {/* 1) 호버 시 “역할 추가” Callout, 클릭 시 Dropdown 열림 */}
+        {/* 호버 시 “역할 추가” Callout, 클릭 시 Dropdown 열림 */}
         <HoverCallout
           trigger={
             <Dropdown.Trigger>
@@ -31,7 +31,7 @@ export default function RolesDropdown({ availableRoles, onSelect }: Props) {
           offsetX={0}
         />
 
-        {/* 2) 클릭 시 뜨는 실제 드롭다운 리스트 */}
+        {/* 클릭 시 뜨는 실제 드롭다운 리스트 */}
         <Dropdown.List width="14.8rem">
           {availableRoles.map((r) => (
             <Dropdown.Item key={r.label} onSelect={() => onSelect(r)}>
