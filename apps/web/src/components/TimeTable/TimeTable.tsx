@@ -110,16 +110,9 @@ export function TimeTable({
                 className={clsx(
                   styles.cell,
                   isFullHour && styles.fullHour,
-                  isLast && styles.lastRow,
-                  clickable && styles.clickable
+                  isLast && styles.lastRow
                 )}
                 style={{ backgroundColor: bgColor }}
-                onClick={() => {
-                  if (!slot) return;
-                  router.push(
-                    `/interview-management/timetable/${tab}/${date}/${slot.startTime}-${slot.endTime}`
-                  );
-                }}
               >
                 {renderCell(row)}
               </div>

@@ -64,13 +64,3 @@ export const cellWrapper = style({
 export const selected = style({
   backgroundColor: vars.colors.primary10,
 });
-
-export const clickable = style({
-  cursor: 'pointer',
-  transition: 'all 0.2s ease-in-out',
-  selectors: {
-    '&:hover': { 
-      filter: 'brightness(0.96)',
-     },
-  },
-})

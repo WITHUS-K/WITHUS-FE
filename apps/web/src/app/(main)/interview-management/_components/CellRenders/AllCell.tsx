@@ -49,7 +49,15 @@ export default function AllCell({ slot }: { slot: SlotItem }) {
         <button className={styles.buttonStyle} onClick={openInviteModal}>
           <IcTimetablePlus width={16} height={16} />
         </button>
-        <button className={styles.buttonStyle}>
+        <button
+          className={styles.buttonStyle}
+          onClick={() => {
+            if (!slot) return;
+            router.push(
+              `/interview-management/timetable/${tab}/${date}/${slot.startTime}-${slot.endTime}`
+            );
+          }}
+        >
           <IcTimetableExpand width={16} height={16} />
         </button>
       </Flex>
