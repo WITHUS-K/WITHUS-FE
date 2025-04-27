@@ -12,6 +12,7 @@ export { default as IcDownload } from './IcDownload';
 export { default as IcDropdwonGray90 } from './IcDropdwonGray90';
 export { default as IcHeaderLogo } from './IcHeaderLogo';
 export { default as IcHeaderProfile } from './IcHeaderProfile';
+export { default as IcInputDelete } from './IcInputDelete';
 export { default as IcInputError } from './IcInputError';
 export { default as IcInputSearch } from './IcInputSearch';
 export { default as IcInputSuccess } from './IcInputSuccess';

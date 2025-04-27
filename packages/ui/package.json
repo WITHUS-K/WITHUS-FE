@@ -107,6 +107,10 @@
     "./Toast": {
       "types": "./dist/components/Toast/index.d.ts",
       "import": "./dist/components/Toast/index.js"
+    },
+    "./SearchInput": {
+      "types": "./dist/components/Input/index.d.ts",
+      "import": "./dist/components/Input/index.js"
     }
   },
   "main": "./dist/index.js",
