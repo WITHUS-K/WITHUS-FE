@@ -99,6 +99,10 @@
     "./SearchInput": {
       "types": "./dist/components/Input/index.d.ts",
       "import": "./dist/components/Input/index.js"
+    },
+    "./HoverCallout": {
+      "types": "./dist/components/Callout/index.d.ts",
+      "import": "./dist/components/Callout/index.js"
     }
   },
   "main": "./dist/index.js",
