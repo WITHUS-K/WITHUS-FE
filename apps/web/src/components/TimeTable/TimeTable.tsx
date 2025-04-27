@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { Text } from '@repo/ui/Text';
 import clsx from 'clsx';
 import * as styles from './TimeTable.css';
@@ -30,14 +31,34 @@ export function TimeTable({
   className,
   width,
 }: TimeTableProps) {
+  const { tab = 'all', date = '' } = useParams() as {
+    tab?: string;
+    date?: string;
+  };
+  const router = useRouter();
+
   const { totalRows, rowBgColors, labels } = useTimeTableData(
     slots,
     startHour,
     endHour,
     interval
   );
-
   const rowsPerHour = 60 / interval;
+
+  const findSlotForRow = (row: number): SlotItem | undefined => {
+    return slots.find((s) => {
+      const start = s.startTime.split(':');
+      const h1 = Number(start[0]);
+      const m1 = Number(start[1]);
+      const end = s.endTime.split(':');
+      const h2 = Number(end[0]);
+      const m2 = Number(end[1]);
+
+      const startRow = (h1 - startHour) * rowsPerHour + m1 / interval;
+      const endRow = (h2 - startHour) * rowsPerHour + m2 / interval;
+      return row >= startRow && row < endRow;
+    });
+  };
 
   return (
     <div className={clsx(className, styles.root)} style={{ width }}>
@@ -79,6 +100,8 @@ export function TimeTable({
           {rowBgColors.map((bgColor, row) => {
             const isFullHour = row % rowsPerHour === 0;
             const isLast = row === totalRows - 1;
+            const slot = findSlotForRow(row);
+            const clickable = Boolean(slot);
 
             return (
               <div
@@ -89,9 +112,7 @@ export function TimeTable({
                   isFullHour && styles.fullHour,
                   isLast && styles.lastRow
                 )}
-                style={{
-                  backgroundColor: bgColor,
-                }}
+                style={{ backgroundColor: bgColor }}
               >
                 {renderCell(row)}
               </div>

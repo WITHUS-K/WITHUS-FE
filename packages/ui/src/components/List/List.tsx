@@ -9,13 +9,14 @@ interface ListProps {
   src: string;
   alt: string;
   name: string;
+  idx?: number | string;
   width?: string;
 }
 
-export const List = ({ question, src, alt, name, width }: ListProps) => (
+export const List = ({ question, src, alt, name, idx, width }: ListProps) => (
   <ListLayout width={width}>
     <Text variant="md2_text_regular" color="grayscale90">
-      {question}
+      {idx != null ? `${idx}. ` : ''} {question}
     </Text>
 
     <div className={styles.listRightSection}>

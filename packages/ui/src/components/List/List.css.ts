@@ -1,16 +1,26 @@
 import { vars } from "@repo/theme";
-import { style } from "@vanilla-extract/css";
+import { style, styleVariants } from "@vanilla-extract/css";
 
-export const listWrapper = style({
+export const listWrapperBase = style({
   display: 'flex',
-  flexDirection: 'row',
-  justifyItems: 'center',
-  justifyContent: 'space-between',
-  alignItems: 'center',
   border: `1px solid ${vars.colors.grayscale20}`,
   padding: '1.6rem',
   backgroundColor: vars.colors.white,
-  borderRadius: '12px'
+  borderRadius: '12px',
+  width: '100%'
+});
+
+export const listWrapperDir = styleVariants({
+  row:    { 
+    flexDirection: 'row',   
+    justifyItems: 'center',
+    justifyContent: 'space-between',
+    alignItems: 'center', 
+  },
+  column: { 
+    flexDirection: 'column',
+    gap: '1.6rem',
+  },
 });
 
 export const listRightSection = style({

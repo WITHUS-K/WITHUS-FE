@@ -29,7 +29,7 @@ export default function AllCell({ slot }: { slot: SlotItem }) {
       {/* 지원자 */}
       <OverflowChips
         items={slot.applicants}
-        renderLabel={(name) => name}
+        renderLabel={(name) => name.name}
         maxVisible={2}
         width="13.3rem"
         marginRight="4.1rem"
@@ -49,7 +49,15 @@ export default function AllCell({ slot }: { slot: SlotItem }) {
         <button className={styles.buttonStyle} onClick={openInviteModal}>
           <IcTimetablePlus width={16} height={16} />
         </button>
-        <button className={styles.buttonStyle}>
+        <button
+          className={styles.buttonStyle}
+          onClick={() => {
+            if (!slot) return;
+            router.push(
+              `/interview-management/timetable/${tab}/${date}/${slot.startTime}-${slot.endTime}`
+            );
+          }}
+        >
           <IcTimetableExpand width={16} height={16} />
         </button>
       </Flex>
