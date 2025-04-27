@@ -1,4 +1,6 @@
 import React from 'react';
+import * as styles from './Divider.css';
+
 import { vars } from '@repo/theme';
 
 type ThemeColorKey = keyof typeof vars.colors;
@@ -12,16 +14,23 @@ export interface DividerProps {
 export const Divider = ({
   direction = 'row',
   length,
-  borderColor,
+  borderColor = 'grayscale90',
 }: DividerProps) => {
-  const defaultLength = '100%';
-  const colorValue = vars.colors[borderColor ?? 'grayscale90'];
-  const borderStyle = `1px solid ${colorValue}`;
+  const overrideSize: React.CSSProperties = {};
+  if (length) {
+    if (direction === 'row') {
+      overrideSize.width = length;
+    } else {
+      overrideSize.height = length;
+    }
+  }
 
-  const dividerStyle: React.CSSProperties =
-    direction === 'row'
-      ? { width: length ?? defaultLength, height: 0, borderBottom: borderStyle }
-      : { width: 0, height: length ?? defaultLength, borderLeft: borderStyle };
-
-  return <div style={dividerStyle} />;
+  return (
+    <div
+      className={`${styles.directionVariants[direction]} ${
+        styles.colorVariants[borderColor]
+      }`}
+      style={overrideSize}
+    />
+  );
 };
