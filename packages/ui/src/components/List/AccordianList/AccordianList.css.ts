@@ -1,12 +1,16 @@
-import { style, styleVariants } from '@vanilla-extract/css';
+import { style } from '@vanilla-extract/css';
 import { fontStyles, vars } from '@repo/theme';
 
 export const headerButton = style({
   all: 'unset',
+  display: 'flex',
+  alignItems: 'center',
   flex: 1,
+  gap: '0.9rem',
   cursor: 'pointer',
   textAlign: 'left',
 });
+
 
 export const title = style({
   fontSize: '1.6rem',
@@ -27,14 +31,12 @@ export const toggleButton = style({
   alignItems: 'center',
 });
 
-export const arrowStyle = styleVariants({
-  open: {
-    transform: 'rotate(180deg)',
-    transition: 'transform 0.2s ease',
-  },
-  closed: {
-    transform: 'rotate(0deg)',
-    transition: 'transform 0.2s ease',
+export const arrowIcon = style({
+  transition: 'transform 0.2s ease',
+  selectors: {
+    [`${headerButton}[aria-expanded="true"] &`]: {
+      transform: 'rotate(180deg)',
+    },
   },
 });
 

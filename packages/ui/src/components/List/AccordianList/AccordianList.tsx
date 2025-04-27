@@ -5,6 +5,10 @@ import { IcArrowDropdown } from '../../../icons/src/colored';
 import { Flex } from '../../Flex';
 import { Divider } from '../../Divider/Divider';
 import { Text } from '../../Text';
+import { AccordionRoot } from '../Accordion/AccordionRoot';
+import { AccordionItem } from '../Accordion/AccordionItem';
+import { AccordionTrigger } from '../Accordion/AccordionTrigger';
+import { AccordionContent } from '../Accordion/AccordionContent';
 
 export interface Reviewer {
   name: string;
@@ -19,65 +23,60 @@ export interface AccordianItemType {
 }
 
 interface AccordianListProps {
-  item: AccordianItemType;
-  index: number;
+  items: AccordianItemType[];
   isNumbering?: boolean;
-  isOpen: boolean;
-  onToggle: (idx: number) => void;
   width?: string;
 }
 
 export const AccordianList = ({
-  item,
-  index,
-  isOpen,
+  items,
   isNumbering = true,
-  onToggle,
   width = '100%',
-}: AccordianListProps) => {
-  const scoreItems: ScoreInfo[] = (item.reviewers ?? []).map((r) => ({
-    src: r.avatar,
-    alt: r.name,
-    name: r.name,
-    score: r.score,
-  }));
+}: AccordianListProps) => (
+  <AccordionRoot multiple={false}>
+    {items.map((item, idx) => {
+      const scoreItems: ScoreInfo[] = (item.reviewers ?? []).map((r) => ({
+        src: r.avatar,
+        alt: r.name,
+        name: r.name,
+        score: r.score,
+      }));
 
-  return (
-    <ListLayout width={width} direction={isOpen ? 'column' : 'row'}>
-      <Flex direction="row" justify="spaceBetween" grow="grow1" align="center">
-        <button
-          className={styles.headerButton}
-          onClick={() => onToggle(index)}
-          aria-expanded={isOpen}
-        >
-          <Text variant="md2_text_regular" color="grayscale90">
-            {isNumbering && `${index + 1}. `}
-            {item.title}
-          </Text>
-        </button>
+      return (
+        <AccordionItem key={idx} value={idx.toString()}>
+          <ListLayout width={width} direction="column">
+            <Flex
+              direction="row"
+              justify="spaceBetween"
+              grow="grow1"
+              align="center"
+            >
+              <AccordionTrigger className={styles.headerButton}>
+                <Text variant="md2_text_regular" color="grayscale90">
+                  {isNumbering && `${idx + 1}. `}
+                  {item.title}
+                </Text>
+                <IcArrowDropdown
+                  width={24}
+                  height={24}
+                  className={styles.arrowIcon}
+                />
+              </AccordionTrigger>
 
-        <div className={styles.listRightSection}>
-          {scoreItems.length > 0 && <ScoreChip items={scoreItems} />}
-          <button
-            className={styles.toggleButton}
-            onClick={() => onToggle(index)}
-            aria-label={isOpen ? '접기' : '펼치기'}
-          >
-            <IcArrowDropdown
-              width={24}
-              height={24}
-              className={styles.arrowStyle[isOpen ? 'open' : 'closed']}
-            />
-          </button>
-        </div>
-      </Flex>
+              {scoreItems.length > 0 && <ScoreChip items={scoreItems} />}
+            </Flex>
 
-      {isOpen && (
-        <>
-          <Divider direction="row" length="100%" borderColor="grayscale10" />
-          <div className={styles.contentWrapper}>{item.content}</div>
-        </>
-      )}
-    </ListLayout>
-  );
-};
+            <AccordionContent className={styles.contentWrapper}>
+              <Divider
+                direction="row"
+                length="100%"
+                borderColor="grayscale10"
+              />
+              <div>{item.content}</div>
+            </AccordionContent>
+          </ListLayout>
+        </AccordionItem>
+      );
+    })}
+  </AccordionRoot>
+);

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { useState } from 'react';
 import { AccordianList, AccordianItemType } from './AccordianList';
 
 const meta: Meta<typeof AccordianList> = {
@@ -14,7 +13,7 @@ const sampleItem: AccordianItemType = {
   title:
     '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
   content:
-    '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명',
+    '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명.',
   reviewers: [
     {
       name: '장윤영',
@@ -37,42 +36,17 @@ const sampleItem: AccordianItemType = {
   ],
 };
 
-export const Closed: Story = {
+export const Default: Story = {
   args: {
-    item: sampleItem,
-    index: 0,
-    isOpen: false,
+    items: [sampleItem],
     width: '1101px',
-    onToggle: () => {},
   },
 };
 
-export const Opened: Story = {
+export const WithoutNumbering: Story = {
   args: {
-    item: sampleItem,
-    index: 0,
-    isOpen: true,
-    width: '1101px',
-    onToggle: () => {},
-  },
-};
-
-export const Interactive: Story = {
-  render: (args) => {
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-      <div style={{ padding: '2rem' }}>
-        <AccordianList
-          {...args}
-          isOpen={isOpen}
-          onToggle={() => setIsOpen((prev) => !prev)}
-        />
-      </div>
-    );
-  },
-  args: {
-    item: sampleItem,
-    index: 0,
+    items: [sampleItem],
+    isNumbering: false,
     width: '1101px',
   },
 };
