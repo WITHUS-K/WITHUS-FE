@@ -213,7 +213,7 @@ export const iconSizeStyle = styleVariants({
   },
   '40': {
     ...commonIconStyle,
-    fontSize: '1.6rem',
+    fontSize: '2.4rem',
   },
   '48': {
     ...commonIconStyle,

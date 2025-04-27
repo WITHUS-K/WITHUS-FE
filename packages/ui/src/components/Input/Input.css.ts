@@ -56,7 +56,7 @@ export const inputWrapper = recipe({
       error: { border: `1px solid ${vars.colors.error}` },
     },
     size: {
-      search: { padding: '0.8rem 1.2rem', borderRadius: '8px' },
+      search: { padding: '0.8rem 1.2rem', borderRadius: '8px', height: '4rem' },
       club: { padding: '1.6rem', borderRadius: '12px' },
       auth: { padding: '1.6rem 2rem', borderRadius: '12px', height: '5.6rem' },
     },
@@ -68,6 +68,9 @@ export const inputWrapper = recipe({
 });
 
 export const baseInputStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   flex: 1,
   background: 'transparent',
   border: 'none',

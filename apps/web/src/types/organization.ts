@@ -14,4 +14,5 @@ export interface Member {
   dob: string;
   phone: string;
   joined: string;
+  profileUrl: string;
 }

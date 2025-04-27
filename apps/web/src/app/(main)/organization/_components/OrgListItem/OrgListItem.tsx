@@ -1,0 +1,93 @@
+// app/organization/components/OrgListItem.tsx
+'use client';
+
+import React from 'react';
+
+import * as styles from './OrgListItem.css';
+import { Member } from '@web/types/organization';
+import { CheckBox } from '@repo/ui/CheckBox';
+import { Tag } from '@repo/ui/Tag';
+import RolesDropdown from '../RolesDropdown/RolesDropdown';
+import { Profile } from '@repo/ui/Profile';
+import { Text } from '@repo/ui/Text';
+import { Flex } from '@repo/ui/Flex';
+
+interface Props {
+  member: Member;
+  isSelected: boolean;
+  onToggle: (checked: boolean) => void;
+  availableRoles: Member['roles'];
+  onAddRole: (role: Member['roles'][number]) => void;
+}
+
+export default function OrgListItem({
+  member,
+  isSelected,
+  onToggle,
+  availableRoles,
+  onAddRole,
+}: Props) {
+  return (
+    <div className={`${styles.item} ${isSelected ? styles.selected : ''}`}>
+      {/* 1) 체크박스 */}
+
+      <CheckBox
+        isChecked={isSelected}
+        onChange={() => onToggle(!isSelected)}
+        style={{ marginRight: '2.4rem' }}
+      />
+
+      {/* 2) 순번 */}
+      <Text
+        variant="xs_caption_medium"
+        color="grayscale50"
+        style={{ marginRight: '1.8rem' }}
+      >
+        {member.id}
+      </Text>
+
+      <div style={{ marginRight: '1.8rem' }}>
+        {/* 3) 프로필 */}
+        <Profile src={member.profileUrl} alt={member.name} size={32} />
+      </div>
+
+      {/* 3) 이름+이메일 */}
+      <Flex direction="column" width="19rem" marginRight="1.8rem">
+        <Text variant="sm_caption_medium" color="grayscale70">
+          {member.name}
+        </Text>
+        <Text variant="xs_caption_medium" color="grayscale50">
+          {member.email}
+        </Text>
+      </Flex>
+
+      <Flex align="center" gap="0.8rem" width="31rem" marginRight="4.4rem">
+        <RolesDropdown
+          availableRoles={availableRoles}
+          onSelect={(r) => onAddRole(r)}
+        />
+        {member.roles.map((r) => (
+          <Tag key={r.label} color={r.color} withCircle>
+            {r.label}
+          </Tag>
+        ))}
+      </Flex>
+
+      {/* 5) 성별 / 생년월일 / 전화번호 / 가입일 */}
+      <Flex align="center" gap="4.4rem">
+        <Text variant="sm_caption_medium" color="grayscale70">
+          {member.gender}
+        </Text>
+        <Text variant="sm_caption_medium" color="grayscale70">
+          {member.dob}
+        </Text>
+        <Text variant="sm_caption_medium" color="grayscale70">
+          {member.phone}
+        </Text>
+        <Text variant="sm_caption_medium" color="grayscale70">
+          {member.joined}
+        </Text>
+      </Flex>
+    </div>
+  );
+}
