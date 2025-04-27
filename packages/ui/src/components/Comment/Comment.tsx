@@ -15,7 +15,7 @@ interface CommentProps {
 
 export const Comment = ({ user, comment }: CommentProps) => {
   return (
-    <Flex direction="column" align="flexStart" width="1064px" gap="1.2rem">
+    <Flex direction="column" align="flexStart" width="100%" gap="1.2rem">
       <Flex direction="row" align="center" gap="0.8rem" justify="center">
         <Profile src={user.src} alt={user.alt} />
         <Text variant="sm_caption_medium" color="grayscale90">
