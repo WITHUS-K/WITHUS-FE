@@ -1,30 +1,21 @@
 'use client';
 import React from 'react';
-import {
-  Text,
-  Flex,
-  FileUploader,
-  Divider,
-  List,
-  AccordianList,
-  Comment,
-} from '@repo/ui';
 import * as styles from './ApplicantDetailContent.css';
 import { Applicant } from '@web/constants/timetable';
+import { AccordianList, List } from '@repo/ui/List';
+import { Divider } from '@repo/ui/Divider';
+import { Comment } from '@repo/ui/Comment';
+import { Flex } from '@repo/ui/Flex';
+import { Text } from '@repo/ui/Text';
+import { FileUploader } from '@repo/ui/FileUploader';
 
-interface Props {
+interface ApplicantDetailContentProps {
   detail: Applicant;
-  introCount: number;
-  openIdx: number | null;
-  toggle: (idx: number) => void;
 }
 
-export const ApplicantDetailContent: React.FC<Props> = ({
+export const ApplicantDetailContent = ({
   detail,
-  introCount,
-  openIdx,
-  toggle,
-}) => (
+}: ApplicantDetailContentProps) => (
   <div className={styles.content}>
     <section aria-labelledby="self-intro-and-portfolio">
       <Text variant="lg_subtitle_semibold" color="grayscale90">
@@ -41,19 +32,16 @@ export const ApplicantDetailContent: React.FC<Props> = ({
         <Text variant="md2_text_semibold" color="grayscale70">
           자기소개서 문항
         </Text>
-        {detail.selfIntroductionContent.content.map((item, idx) => (
-          <AccordianList
-            key={item.question}
-            item={{
-              title: item.question,
-              content: item.standardDetail,
-              reviewers: [],
-            }}
-            index={idx}
-            isOpen={openIdx === idx}
-            onToggle={() => toggle(idx)}
-          />
-        ))}
+
+        <AccordianList
+          items={detail.selfIntroductionContent.content.map((q) => ({
+            title: q.question,
+            content: q.standardDetail,
+            reviewers: [],
+          }))}
+          isNumbering
+          width="100%"
+        />
       </Flex>
 
       <Flex
@@ -101,23 +89,16 @@ export const ApplicantDetailContent: React.FC<Props> = ({
         <Text variant="md2_text_semibold" color="grayscale70">
           면접 평가
         </Text>
-        {detail.interviewContent.content.map((evalItem, i) => {
-          const idx = i;
-          return (
-            <AccordianList
-              key={evalItem.question}
-              item={{
-                title: evalItem.question,
-                content: evalItem.standardDetail,
-                reviewers: evalItem.reviewers,
-              }}
-              index={idx}
-              isNumbering={false}
-              isOpen={openIdx === idx}
-              onToggle={() => toggle(idx)}
-            />
-          );
-        })}
+
+        <AccordianList
+          items={detail.interviewContent.content.map((e) => ({
+            title: e.question,
+            content: e.standardDetail,
+            reviewers: e.reviewers,
+          }))}
+          isNumbering={false}
+          width="100%"
+        />
       </Flex>
     </section>
 

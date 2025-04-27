@@ -1,9 +1,10 @@
 'use client';
 import React from 'react';
-import { Text, Flex } from '@repo/ui';
+import { Text } from '@repo/ui/Text';
+import { Flex } from '@repo/ui/Flex';
+import { Divider } from '@repo/ui/Divider';
 import * as styles from './ApplicantHeader.css';
 import { DataController } from '@web/app/(main)/interview-management/_components/DataController/DataController';
-import { Divider } from 'node_modules/@repo/ui/src/components/Divider/Divider';
 
 export interface ApplicantSliderHeaderProps {
   name: string;
