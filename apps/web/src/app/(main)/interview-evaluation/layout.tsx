@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { usePathname } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { Flex } from '@repo/ui';
 import {
   EvaluationHeader,
@@ -13,9 +13,14 @@ export default function EvaluationLayout({
 }: {
   children: ReactNode;
 }) {
+  const params = useParams();
+  const tab = params.tab as string;
+  const date = params.date as string;
+  const time = params.time as string | undefined;
   const path = usePathname()!;
   // URL에 따라 현재 단계를 결정
   const stage = ((): EvaluationStage | undefined => {
+    if (time) return undefined;
     if (path.startsWith('/interview-evaluation/schedule')) return 'schedule';
     if (path.startsWith('/interview-evaluation/timetable')) return 'timetable';
     return undefined;
