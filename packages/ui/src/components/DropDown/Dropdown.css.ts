@@ -28,6 +28,20 @@ export const clubTriggerStyle = style({
   boxSizing: 'border-box',
 });
 
+export const scoreTriggerStyle = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  border: `1px solid ${vars.colors.grayscale20}`,
+  backgroundColor: vars.colors.white,
+  borderRadius: '12px',
+  cursor: 'pointer',
+  padding: '1.6rem 2rem',
+  height: '5.6rem',
+  width: '16.6rem',
+  boxSizing: 'border-box',
+});
+
 export const dropdownListStyle = style({
   position: 'absolute',
   top: '100%',
