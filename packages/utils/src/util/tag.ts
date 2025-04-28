@@ -1,3 +1,15 @@
+export type PaletteColor =
+  | '#FF5360'
+  | '#FF995A'
+  | '#FFD062'
+  | '#5BDF87'
+  | '#86DAF9'
+  | '#6289FF'
+  | '#AD90FF'
+  | '#F196F8'
+  | '#C4C6D4'
+  | '#A9ABC0';
+
 export type TagColor =
   | '#FF2A3A'
   | '#EE6B00'

@@ -99,7 +99,7 @@ export default function OrganizationPageClient() {
   };
 
   return (
-    <Flex direction="column" padding="2.4rem" width="100%" height="100%">
+    <Flex direction="column">
       <Flex direction="column" gap="1.8rem" marginBottom="1.8rem" width="100%">
         <Flex align="center" justify="spaceBetween" width="100%">
           <Breadcrumb>
