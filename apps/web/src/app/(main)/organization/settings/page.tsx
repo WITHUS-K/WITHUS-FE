@@ -6,6 +6,7 @@ import RolePalettePanel from '../_components/RolePalettePanel/RolePalettePanel';
 import { Role, RoleSelect, User } from '@web/types/organization';
 import { useState } from 'react';
 import { ALL_ROLES, INITIAL_SELECTED } from '@web/constants/organization';
+import MemberAssignmentPanel from '../_components/MemberAssignmentPanel/MemberAssignmentPanel';
 
 export default function SettingsPage() {
   // 역할 목록
@@ -19,14 +20,18 @@ export default function SettingsPage() {
   const handleAddRole = (newRole: RoleSelect) => setRoles([...roles, newRole]);
 
   // Role 이름 수정
-  const handleUpdateRole = (idx: number, label: string) => {
+  const handleUpdateRole = (
+    idx: number,
+    label: string,
+    color: RoleSelect['color']
+  ) => {
     setRoles((prev) => {
-      if (idx < 0 || idx >= prev.length) return prev;
-      return prev.map((r, i) => (i === idx ? { ...r, label } : r));
+      const copy = [...prev];
+      copy[idx] = { ...copy[idx], label, color };
+      return copy;
     });
   };
 
-  // 멤버 할당: 역할별 필터링은 예시로 “added” 에만 반영
   const handleAddMember = (u: User) => {
     setAvailable((av) => av.filter((x) => x.id !== u.id));
     setAdded((ad) => [...ad, u]);
@@ -48,6 +53,13 @@ export default function SettingsPage() {
           roles={roles}
           onAddRole={handleAddRole}
           onUpdateRole={handleUpdateRole}
+        />
+
+        <MemberAssignmentPanel
+          addedMembers={added}
+          availableMembers={available}
+          onAdd={handleAddMember}
+          onRemove={handleRemoveMember}
         />
       </Flex>
     </Flex>

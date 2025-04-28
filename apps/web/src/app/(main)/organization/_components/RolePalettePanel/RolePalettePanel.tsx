@@ -3,7 +3,7 @@
 import React, { useState, KeyboardEvent } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
-import { Role, RoleSelect } from '@web/types/organization';
+import { RoleSelect } from '@web/types/organization';
 import { PaletteColor } from '@repo/utils';
 import { SearchInput } from '@repo/ui/SearchInput';
 import * as styles from './RolePalettePanel.css';
@@ -57,11 +57,17 @@ export default function RolePalettePanel({
       setNewLabel('');
     }
   };
+
   const handleEditKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && editingIdx !== null) {
-      onUpdateRole(editingIdx, editLabel.trim(), editColor);
+      const idx = editingIdx;
+      onUpdateRole(idx, editLabel.trim(), editColor);
       setEditingIdx(null);
       setEditPaletteOpen(false);
+      //  편집 전 선택 상태가 아니었다면 편집 후엔 선택 해제
+      if (selectedIdx !== idx) {
+        setSelectedIdx(null);
+      }
     }
   };
 
@@ -78,11 +84,13 @@ export default function RolePalettePanel({
       </Flex>
 
       {/* 검색 */}
-      <SearchInput
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        width="100%"
-      />
+      <div style={{ height: '4rem' }}>
+        <SearchInput
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          width="100%"
+        />
+      </div>
 
       <Flex
         width="100%"
@@ -103,7 +111,6 @@ export default function RolePalettePanel({
             setEditingIdx(null);
           }}
           width="100%"
-          style={{ marginTop: '0.8rem' }}
         >
           추가
         </Button>
@@ -114,7 +121,7 @@ export default function RolePalettePanel({
             const isSelected = selectedIdx === i;
             const isEditing = editingIdx === i;
 
-            // — 편집 모드 —
+            // 편집 모드
             if (isEditing) {
               return editPaletteOpen ? (
                 <div key={i} className={styles.inputWrapper}>
@@ -172,11 +179,12 @@ export default function RolePalettePanel({
               );
             }
 
+            // 검색어 하이라이팅
             const parts = search
               ? r.label.split(new RegExp(`(${search})`, 'gi'))
               : [r.label];
 
-            // — 기본 모드: 싱글 클릭 → 선택, 더블 클릭 → 편집
+            //  기본 모드: 싱글 클릭은 선택/해제 토글, 더블 클릭은 편집 모드
             return (
               <Flex
                 key={i}
@@ -188,7 +196,8 @@ export default function RolePalettePanel({
                     : styles.item
                 }
                 onClick={() => {
-                  setSelectedIdx(i);
+                  // 토글
+                  setSelectedIdx(isSelected ? null : i);
                   setEditingIdx(null);
                 }}
                 onDoubleClick={() => {
@@ -207,15 +216,7 @@ export default function RolePalettePanel({
                 >
                   {parts.map((part, idx) =>
                     search && part.toLowerCase() === search.toLowerCase() ? (
-                      <span
-                        key={idx}
-                        style={{
-                          backgroundColor: vars.colors.primary50,
-                          color: vars.colors.white,
-                          borderRadius: 2,
-                          padding: '0 2px',
-                        }}
-                      >
+                      <span key={idx} className={styles.highlight}>
                         {part}
                       </span>
                     ) : (
@@ -228,7 +229,7 @@ export default function RolePalettePanel({
             );
           })}
 
-          {/* — 추가 모드 — */}
+          {/* ➕ 추가 모드 */}
           {isAdding && (
             <div className={styles.inputWrapper}>
               <div className={styles.inputContainer}>
