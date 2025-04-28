@@ -16,7 +16,11 @@ export default function TimetableLayout({
   children: ReactNode;
   modal: ReactNode;
 }) {
-  const { tab, date } = useParams();
+  const params = useParams();
+  const tab = params.tab as string;
+  const date = params.date as string;
+  const time = params.time as string | undefined;
+
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -36,6 +40,10 @@ export default function TimetableLayout({
     );
   };
 
+  if (time) {
+    return <div style={{ width: '100%' }}>{children}</div>;
+  }
+
   return (
     <>
       <Flex
@@ -52,8 +60,8 @@ export default function TimetableLayout({
           active={currentDate}
           onChange={handleDateChange}
         />
-        <div>{children}</div>
       </Flex>
+      <div>{children}</div>
       {modal}
     </>
   );

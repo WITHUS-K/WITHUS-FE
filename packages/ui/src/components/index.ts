@@ -5,3 +5,8 @@ export * from './Flex';
 export * from './Input';
 export * from './Text';
 export * from './Modal/Modal';
+export * from './Comment/Comment';
+export * from  './Divider/Divider';
+export * from './FileUploader/FileUploader';
+export * from './List/AccordianList/AccordianList';
+export * from './List/List';

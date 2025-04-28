@@ -103,6 +103,18 @@
     "./HoverCallout": {
       "types": "./dist/components/Callout/index.d.ts",
       "import": "./dist/components/Callout/index.js"
+    },
+    "./Comment": {
+      "types": "./dist/components/Comment/index.d.ts",
+      "import": "./dist/components/Comment/index.js"
+    },
+    "./Divider": {
+      "types": "./dist/components/Divider/index.d.ts",
+      "import": "./dist/components/Divider/index.js"
+    },
+    "./FileUploader": {
+      "types": "./dist/components/FileUploader/index.d.ts",
+      "import": "./dist/components/FileUploader/index.js"
     }
   },
   "main": "./dist/index.js",

@@ -4,7 +4,6 @@ import { themeClass } from '@repo/theme';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
-import { OverlayProvider } from 'overlay-kit';
 import { Providers } from '@web/components/providers/Providers';
 const pretendard = localFont({
   src: '../../public/font/subset-PretendardVariable.woff2',
