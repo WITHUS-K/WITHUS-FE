@@ -1,8 +1,8 @@
 'use client';
 
-import { Dropdown } from '@repo/ui/DropDown';
-import { Tag } from '@repo/ui/Tag';
-import { HoverCallout } from '@repo/ui/Callout';
+import { Dropdown } from '..';
+import { Tag } from '../../Tag';
+import { HoverCallout } from '../../Callout';
 import { TagColor } from '@repo/utils';
 import RolesDropdownTriggerContent from './RolesDropdownTriggerContent';
 
