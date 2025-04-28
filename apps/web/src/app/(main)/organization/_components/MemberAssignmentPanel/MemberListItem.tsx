@@ -1,0 +1,52 @@
+import React from 'react';
+import { Flex } from '@repo/ui/Flex';
+import { CheckBox } from '@repo/ui/CheckBox';
+import { Profile } from '@repo/ui/Profile';
+import { Text } from '@repo/ui/Text';
+import * as styles from './MemberAssignmentPanel.css';
+import { User } from '@web/types/organization';
+
+interface Props {
+  user: User;
+  isSelected: boolean;
+  onToggle: () => void;
+  search: string;
+}
+
+export default function MemberListItem({
+  user,
+  isSelected,
+  onToggle,
+  search,
+}: Props) {
+  const nameParts = search
+    ? user.name.split(new RegExp(`(${search})`, 'gi'))
+    : [user.name];
+
+  return (
+    <Flex
+      align="center"
+      className={`${styles.item} ${isSelected ? styles.selectedItem : ''}`}
+      gap="0.8rem"
+    >
+      <div style={{ marginRight: '0.4rem', height: '2rem', width: '2rem' }}>
+        <CheckBox size={2} isChecked={isSelected} onChange={onToggle} />
+      </div>
+      <Profile src={user.profileUrl!} alt={user.name} size={24} />
+      <Text variant="sm_caption_regular" color="grayscale90">
+        {nameParts.map((part, idx) =>
+          search && part.toLowerCase() === search.toLowerCase() ? (
+            <span key={idx} className={styles.highlight}>
+              {part}
+            </span>
+          ) : (
+            <React.Fragment key={idx}>{part}</React.Fragment>
+          )
+        )}
+      </Text>
+      <Text variant="xs_caption_regular" color="grayscale50">
+        {user.email}
+      </Text>
+    </Flex>
+  );
+}
