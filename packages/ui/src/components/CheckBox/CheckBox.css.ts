@@ -4,8 +4,6 @@ import { vars } from '@repo/theme'; // 혹은 @seoulmilk/theme 등 사용 중인
 export const wrapperStyle = style({
   position: 'relative',
   display: 'inline-block',
-  width: '2.4rem',
-  height: '2.4rem',
   color: vars.colors.white,
 });
 

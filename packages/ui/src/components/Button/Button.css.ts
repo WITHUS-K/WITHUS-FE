@@ -82,7 +82,7 @@ export const buttonStyle = recipe({
     alignItems: 'center',
     justifyContent: 'center',
     gap: '0.8rem',
-    border: 'none',
+    //border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s ease-in-out',

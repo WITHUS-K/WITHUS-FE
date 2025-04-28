@@ -8,19 +8,16 @@ export const root = style({
   display: 'flex',
   flexDirection: 'column',
   gap: '1.2rem',
-  width: '27.4rem',
-  height: '100%',
+  minWidth: '27.4rem',
+  height: '57.6rem',
 });
 
 export const list = style({
-  flex: 1,
   display: 'flex',
   flexDirection: 'column',
   gap: '0.6rem',
   width: '100%',
-
-  maxHeight: '39rem',
-  minHeight: '39rem',
+  height: '100%',
   overflowY: 'scroll',
   scrollbarGutter: 'stable',
 
@@ -47,9 +44,6 @@ export const listContainer = style({
 
 export const selectedItem = style({
   backgroundColor: vars.colors.primary5,
-});
-export const selectedText = style({
-  color: vars.colors.primary50,
 });
 
 export const item = style({
@@ -96,7 +90,7 @@ export const inputWrapper = style({
 
   backgroundColor: vars.colors.grayscale5,
   borderRadius: 12,
-  padding: '0.8rem',
+  padding: '0.5rem',
 });
 
 export const inputContainer = style({
@@ -136,7 +130,7 @@ export const paletteContainer = style({
   width: '100%',
   display: 'grid',
   gridTemplateColumns: 'repeat(5, 4rem)',
-  gap: '0.35rem',
+  gap: '0.3rem',
   marginTop: '0.4rem',
 });
 
@@ -145,4 +139,11 @@ export const paletteColor = style({
   height: '4rem',
   borderRadius: 8,
   cursor: 'pointer',
+});
+
+export const highlight = style({
+  backgroundColor: vars.colors.primary50,
+  color: vars.colors.white,
+  borderRadius: 2,
+  padding: '0 2px',
 });
