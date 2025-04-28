@@ -2,6 +2,11 @@ import { PaletteColor, TagColor } from '@repo/utils';
 
 export interface Role {
   label: string;
+  color: TagColor;
+}
+
+export interface RoleSelect {
+  label: string;
   color: PaletteColor;
 }
 

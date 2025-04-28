@@ -3,7 +3,7 @@
 import React, { useState, KeyboardEvent } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
-import { Role } from '@web/types/organization';
+import { Role, RoleSelect } from '@web/types/organization';
 import { PaletteColor } from '@repo/utils';
 import { SearchInput } from '@repo/ui/SearchInput';
 import * as styles from './RolePalettePanel.css';
@@ -25,8 +25,8 @@ const COLOR_OPTIONS: PaletteColor[] = [
 ];
 
 interface Props {
-  roles: Role[];
-  onAddRole: (r: Role) => void;
+  roles: RoleSelect[];
+  onAddRole: (r: RoleSelect) => void;
   onUpdateRole: (index: number, label: string, color: PaletteColor) => void;
 }
 
@@ -46,7 +46,9 @@ export default function RolePalettePanel({
   const [editColor, setEditColor] = useState<PaletteColor>(COLOR_OPTIONS[0]!);
   const [editPaletteOpen, setEditPaletteOpen] = useState(false);
 
-  const filtered = roles.filter((r) => r.label.includes(search));
+  const filtered = roles.filter((r) =>
+    r.label.toLowerCase().includes(search.toLowerCase())
+  );
 
   const handleAddKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newLabel.trim()) {
@@ -170,6 +172,10 @@ export default function RolePalettePanel({
               );
             }
 
+            const parts = search
+              ? r.label.split(new RegExp(`(${search})`, 'gi'))
+              : [r.label];
+
             // — 기본 모드: 싱글 클릭 → 선택, 더블 클릭 → 편집
             return (
               <Flex
@@ -199,7 +205,23 @@ export default function RolePalettePanel({
                   variant="sm_caption_regular"
                   color={isSelected ? 'primary50' : 'grayscale90'}
                 >
-                  {r.label}
+                  {parts.map((part, idx) =>
+                    search && part.toLowerCase() === search.toLowerCase() ? (
+                      <span
+                        key={idx}
+                        style={{
+                          backgroundColor: vars.colors.primary50,
+                          color: vars.colors.white,
+                          borderRadius: 2,
+                          padding: '0 2px',
+                        }}
+                      >
+                        {part}
+                      </span>
+                    ) : (
+                      <React.Fragment key={idx}>{part}</React.Fragment>
+                    )
+                  )}
                   <span className={styles.count}> 0</span>
                 </Text>
               </Flex>

@@ -3,20 +3,20 @@
 import { Flex } from '@repo/ui/Flex';
 import SettingsHeader from '../_components/SettingsHeader/SettingsHeader';
 import RolePalettePanel from '../_components/RolePalettePanel/RolePalettePanel';
-import { Role, User } from '@web/types/organization';
+import { Role, RoleSelect, User } from '@web/types/organization';
 import { useState } from 'react';
 import { ALL_ROLES, INITIAL_SELECTED } from '@web/constants/organization';
 
 export default function SettingsPage() {
   // 역할 목록
-  const [roles, setRoles] = useState<Role[]>(ALL_ROLES);
+  const [roles, setRoles] = useState<RoleSelect[]>(ALL_ROLES);
 
   // “추가된 멤버” & “추가하지 않은 멤버”
   const [added, setAdded] = useState<User[]>([]);
   const [available, setAvailable] = useState<User[]>(INITIAL_SELECTED);
 
   // Role 팔레트 → 역할 추가
-  const handleAddRole = (newRole: Role) => setRoles([...roles, newRole]);
+  const handleAddRole = (newRole: RoleSelect) => setRoles([...roles, newRole]);
 
   // Role 이름 수정
   const handleUpdateRole = (idx: number, label: string) => {
