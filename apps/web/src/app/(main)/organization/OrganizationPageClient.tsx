@@ -34,7 +34,7 @@ const ALL_ROLES: Role[] = [
   { label: '학회장', color: '#813DFF' },
 ];
 
-export default function OrganizationPage() {
+export default function OrganizationPageClient() {
   const [members, setMembers] = useState<Member[]>(INITIAL_MEMBERS);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);

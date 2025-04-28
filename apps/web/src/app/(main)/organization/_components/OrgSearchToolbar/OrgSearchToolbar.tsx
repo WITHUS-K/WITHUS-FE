@@ -10,6 +10,7 @@ import {
   IcButtonInvite,
   IcButtonSetting,
 } from '@repo/ui/icons/mono';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   search: string;
@@ -26,6 +27,12 @@ export default function OrgSearchToolbar({
   totalCount,
   onDelete,
 }: Props) {
+  const router = useRouter();
+
+  const openInviteModal = () => {
+    router.push('/organization/invite');
+  };
+
   return (
     <Flex
       align="center"
@@ -69,6 +76,7 @@ export default function OrgSearchToolbar({
           size="40"
           width="10rem"
           leftIcon={<IcButtonInvite />}
+          onClick={openInviteModal}
         >
           초대
         </Button>

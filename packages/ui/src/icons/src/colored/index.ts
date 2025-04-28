@@ -16,6 +16,7 @@ export { default as IcInputDelete } from './IcInputDelete';
 export { default as IcInputError } from './IcInputError';
 export { default as IcInputSearch } from './IcInputSearch';
 export { default as IcInputSuccess } from './IcInputSuccess';
+export { default as IcInviteDelete } from './IcInviteDelete';
 export { default as IcJoinStep4 } from './IcJoinStep4';
 export { default as IcLoading } from './IcLoading';
 export { default as IcLoginLogo } from './IcLoginLogo';
