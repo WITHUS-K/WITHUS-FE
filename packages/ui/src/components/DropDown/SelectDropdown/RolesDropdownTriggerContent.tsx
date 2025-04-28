@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { IcPlusRole } from '@repo/ui/icons/mono';
+import { IcPlusRole } from '../../../icons/src/mono';
 import * as styles from '../Dropdown.css';
 import cx from 'clsx';
 import { useDropdownContext } from '../context';
