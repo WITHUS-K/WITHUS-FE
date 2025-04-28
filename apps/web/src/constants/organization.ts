@@ -1,5 +1,5 @@
 import { PaletteColor } from '@repo/utils';
-import { Role, User } from '@web/types/organization';
+import { Role, RoleSelect, User } from '@web/types/organization';
 
 export const INITIAL_SELECTED: User[] = [
   {
@@ -67,7 +67,7 @@ export const INITIAL_SELECTED: User[] = [
   },
 ];
 
-export const ALL_ROLES: Role[] = [
+export const ALL_ROLES: RoleSelect[] = [
   { label: '기획', color: '#FF5360' as PaletteColor },
   { label: '디자인', color: '#FF995A' as PaletteColor },
   { label: '백엔드', color: '#FFD062' as PaletteColor },
