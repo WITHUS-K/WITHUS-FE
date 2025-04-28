@@ -1,0 +1,52 @@
+name: Vercel Preview Deployment
+
+on:
+  pull_request:
+    branches-ignore:
+      - develop
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  preview-deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: preview-${{ github.head_ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (with pnpm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: pnpm
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build monorepo & web 패키지
+        run: |
+          pnpm run build            # turbo build (전체 패키지)
+          pnpm --filter web run build  # Next.js web만 빌드
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Pull Vercel environment 정보
+        run: vercel pull --yes --environment=preview --token ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Vercel Output 빌드
+        run: vercel build --token ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Preview 배포
+        run: vercel deploy --prebuilt --yes --token ${{ secrets.VERCEL_TOKEN }}
