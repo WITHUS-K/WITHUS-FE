@@ -8,33 +8,43 @@ on:
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  VERCEL_TOKEN:    ${{ secrets.VERCEL_TOKEN }}
 
 jobs:
   prod-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: pnpm
-
-      - uses: pnpm/action-setup@v4
+      - name: Setup pnpm CLI
+        uses: pnpm/action-setup@v4
         with:
           version: 9
 
-      - run: pnpm install --frozen-lockfile
+      - name: Setup Node.js (with pnpm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'pnpm'
 
-      - run: |
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build monorepo & web 패키지
+        run: |
           pnpm run build
           pnpm --filter web run build
 
-      - run: pnpm add -g vercel@latest
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
 
-      - run: vercel pull --yes --environment=production --token ${{ secrets.VERCEL_TOKEN }}
+      - name: Pull Vercel 환경 변수
+        run: vercel pull --yes --environment=production
 
-      - run: vercel build --prod --token ${{ secrets.VERCEL_TOKEN }}
+      - name: Vercel Production 빌드
+        run: vercel build --prod
 
-      - run: vercel deploy --prebuilt --prod --yes --token ${{ secrets.VERCEL_TOKEN }}
+      - name: Production 배포
+        run: vercel deploy --prebuilt --prod --yes
