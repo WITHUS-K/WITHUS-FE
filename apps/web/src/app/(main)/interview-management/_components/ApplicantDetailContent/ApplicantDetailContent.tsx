@@ -11,6 +11,9 @@ import { FileUploader } from '@repo/ui/FileUploader';
 
 interface ApplicantDetailContentProps {
   detail: Applicant;
+  introCount: number;
+  openIdx: number | null;
+  toggle: (idx: number) => void;
 }
 
 export const ApplicantDetailContent = ({

@@ -18,7 +18,7 @@ export default function ApplicantCell({ slot }: { slot: SlotItem }) {
       <Flex align="center" justify="spaceBetween" width="100%">
         {slot.applicants.map((name, i) => (
           <Chip key={i} bg="grayscale5" color="grayscale70">
-            {name}
+            {name.name}
           </Chip>
         ))}
       </Flex>

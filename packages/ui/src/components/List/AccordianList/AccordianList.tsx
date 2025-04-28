@@ -1,3 +1,4 @@
+'use client';
 import { ListLayout } from '../ListLayout';
 import { ScoreChip, ScoreInfo } from '../../Chips/ScoreChip/ScoreChip';
 import * as styles from './AccordianList.css';
