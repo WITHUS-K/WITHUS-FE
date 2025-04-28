@@ -7,6 +7,7 @@ export { default as IcButtonSetting } from './IcButtonSetting';
 export { default as IcDateArrowLeft } from './IcDateArrowLeft';
 export { default as IcDateArrowRight } from './IcDateArrowRight';
 export { default as IcHeaderAlarm } from './IcHeaderAlarm';
+export { default as IcLink } from './IcLink';
 export { default as IcPlusRole } from './IcPlusRole';
 export { default as IcSidebarCalender } from './IcSidebarCalender';
 export { default as IcSidebarGroup } from './IcSidebarGroup';
