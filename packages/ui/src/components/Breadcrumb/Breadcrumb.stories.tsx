@@ -16,10 +16,6 @@ const meta: Meta<typeof Breadcrumb> = {
 export default meta;
 type Story = StoryObj<typeof Breadcrumb>;
 
-/**
- * 기본 예제:
- * - Home > Library > Data (마지막 아이템은 active 처리)
- */
 export const Default: Story = {
   render: (args) => (
     <Breadcrumb {...args}>
@@ -31,10 +27,6 @@ export const Default: Story = {
   args: {},
 };
 
-/**
- * asChild 예제:
- * 외부 Link 컴포넌트(<a>)를 직접 쓰고 싶을 때 asChild를 true로 지정합니다.
- */
 export const WithLinks: Story = {
   render: (args) => (
     <Breadcrumb {...args}>
