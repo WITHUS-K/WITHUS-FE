@@ -1,8 +1,8 @@
-import { TagColor } from '@repo/utils';
+import { PaletteColor, TagColor } from '@repo/utils';
 
 export interface Role {
   label: string;
-  color: TagColor;
+  color: PaletteColor;
 }
 
 export interface Member {

@@ -9,6 +9,7 @@ export { default as IcDateArrowRight } from './IcDateArrowRight';
 export { default as IcHeaderAlarm } from './IcHeaderAlarm';
 export { default as IcLink } from './IcLink';
 export { default as IcPlusRole } from './IcPlusRole';
+export { default as IcRoleBtn } from './IcRoleBtn';
 export { default as IcSidebarCalender } from './IcSidebarCalender';
 export { default as IcSidebarGroup } from './IcSidebarGroup';
 export { default as IcSidebarHome } from './IcSidebarHome';

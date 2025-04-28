@@ -33,6 +33,10 @@ export default function OrgSearchToolbar({
     router.push('/organization/invite');
   };
 
+  const goSettings = () => {
+    router.push('/organization/settings');
+  };
+
   return (
     <Flex
       align="center"
@@ -68,6 +72,7 @@ export default function OrgSearchToolbar({
           size="40"
           width="13.2rem"
           leftIcon={<IcButtonSetting />}
+          onClick={goSettings}
         >
           세부 설정
         </Button>
