@@ -5,6 +5,7 @@ import { Text } from '@repo/ui';
 import { notFound, useParams } from 'next/navigation';
 import { Applicant, SlotItem, timetableMock } from '@web/constants/timetable';
 import * as styles from './layout.css';
+import { format, parseISO } from 'date-fns';
 
 export default function ApplicantDetailLayout({
   children,
@@ -32,6 +33,7 @@ export default function ApplicantDetailLayout({
   if (!slot) return notFound();
 
   const applicants: Applicant[] = slot.applicants;
+  const formattedDate = format(parseISO(date), 'MM/dd');
 
   return (
     <>
@@ -40,9 +42,8 @@ export default function ApplicantDetailLayout({
         color="grayscale50"
         className={styles.container}
       >
-        면접 관리 &gt; 내 면접 시간 조회 &gt; {date.slice(5).replace('-', '/')}{' '}
-        {slot.startTime}~{slot.endTime}{' '}
-        {applicants.map((a) => a.name).join(' ')}
+        면접 관리 &gt; 내 면접 시간 조회 &gt; {formattedDate} {slot.startTime}~
+        {slot.endTime} {applicants.map((a) => a.name).join(' ')}
       </Text>
       <Flex
         direction="column"
