@@ -1,7 +1,9 @@
 'use client';
 
 import { OverlayProvider } from 'overlay-kit';
+import { QueryClientProvider } from '@web/store/query/QueryClientProvider';
 import { ReactNode } from 'react';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 type ProvidersProps = {
   children: ReactNode;
@@ -9,7 +11,9 @@ type ProvidersProps = {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    // 리액트 쿼리 설정 여기에 설정
-    <OverlayProvider>{children}</OverlayProvider>
+    <QueryClientProvider>
+      <OverlayProvider>{children}</OverlayProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
