@@ -1,5 +1,5 @@
 'use client';
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, useMemo } from 'react';
 import { Member, Role } from '@web/types/organization';
 import OrgSearchToolbar from './_components/OrgSearchToolbar/OrgSearchToolbar';
 import { Pagination } from '@repo/ui/Pagination';
@@ -40,10 +40,19 @@ export default function OrganizationPageClient() {
   const [currentPage, setCurrentPage] = useState(1);
   const { confirm } = useModal();
   // 필터 + 페이징
-  const filtered = members.filter((m) => m.name.includes(search));
+  const filtered = useMemo(() => {
+    return members.filter((m) =>
+      m.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [members, search]);
+
   const perPage = 20;
   const start = (currentPage - 1) * perPage;
-  const pageData = filtered.slice(start, start + perPage);
+
+  const pageData = useMemo(() => {
+    return filtered.slice(start, start + perPage);
+  }, [filtered, start]);
+
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   // 배너 표시 여부 계산

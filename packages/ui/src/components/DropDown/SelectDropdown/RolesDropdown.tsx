@@ -5,6 +5,7 @@ import { Tag } from '../../Tag';
 import { HoverCallout } from '../../Callout';
 import { TagColor } from '@repo/utils';
 import RolesDropdownTriggerContent from './RolesDropdownTriggerContent';
+import { rolesDropdwon } from '../Dropdown.css';
 
 export interface Role {
   label: string;
@@ -19,7 +20,7 @@ interface Props {
 export default function RolesDropdown({ availableRoles, onSelect }: Props) {
   return (
     <Dropdown>
-      <div style={{ position: 'relative', display: 'inline-block' }}>
+      <div className={rolesDropdwon}>
         {/* 호버 시 “역할 추가” Callout, 클릭 시 Dropdown 열림 */}
         <HoverCallout
           trigger={

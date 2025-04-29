@@ -24,9 +24,9 @@ export default function Tag({ color, withCircle = false, children }: TagProps) {
     : hideDot;
 
   return (
-    <div className={clsx(tagBase, sizeClass, colorClass)}>
+    <span className={clsx(tagBase, sizeClass, colorClass)}>
       <span className={dotClass} />
       {children}
-    </div>
+    </span>
   );
 }
