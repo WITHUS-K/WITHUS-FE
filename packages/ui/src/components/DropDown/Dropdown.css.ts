@@ -118,3 +118,8 @@ export const buttonOpen = style({
   color: vars.colors.primary50,
   border: `1px solid ${vars.colors.primary50}`,
 });
+
+export const rolesDropdwon = style({
+  position: 'relative',
+  display: 'inline-block',
+});
