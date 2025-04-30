@@ -1,31 +1,68 @@
-import { dropdownItemStyle } from './Dropdown.css';
+import { ComponentPropsWithoutRef, CSSProperties, ReactNode } from 'react';
 import { useDropdownContext } from './context';
-import { Text } from '..';
-import { ComponentPropsWithoutRef } from 'react';
+import {
+  dropdownItemBase,
+  dropdownItemSelected,
+  dropdownItemPadding,
+  dropdownItemFont,
+} from './Dropdown.css';
+import clsx from 'clsx';
 
-interface DropdownItemProps extends ComponentPropsWithoutRef<'li'> {
+export interface DropdownItemProps extends ComponentPropsWithoutRef<'li'> {
   onSelect?: () => void;
+  isSelected?: boolean;
+  height?: string;
+  /** 작은 텍스트 스타일 vs 큰 텍스트 스타일 */
+  size?: 'small' | 'large';
+  children: ReactNode;
 }
 
-const DropdownItem = ({ onSelect, children, ...props }: DropdownItemProps) => {
+export default function DropdownItem({
+  onSelect,
+  isSelected = false,
+  height = '3.4rem',
+  size = 'large',
+  children,
+  style,
+  ...props
+}: DropdownItemProps) {
   const { close } = useDropdownContext();
+
+  // padding-inline 클래스 선택
+  const paddingClass =
+    typeof children === 'string'
+      ? dropdownItemPadding.text
+      : dropdownItemPadding.element;
+
+  // font style 클래스 선택
+  const fontClass =
+    size === 'large' ? dropdownItemFont.large : dropdownItemFont.small;
+
+  const className = clsx(
+    dropdownItemBase,
+    paddingClass,
+    fontClass,
+    isSelected && dropdownItemSelected
+  );
+
+  // 높이는 inline 스타일로만 덮어쓰기
+  const mergedStyle: CSSProperties | undefined = height
+    ? { ...style, height }
+    : style;
 
   return (
     <li
-      className={dropdownItemStyle}
       role="button"
       tabIndex={0}
+      className={className}
+      style={mergedStyle}
       onMouseDown={() => {
         onSelect?.();
         close();
       }}
       {...props}
     >
-      <Text variant="md2_text_medium" style={{ whiteSpace: 'nowrap' }}>
-        {children}
-      </Text>
+      {children}
     </li>
   );
-};
-
-export default DropdownItem;
+}

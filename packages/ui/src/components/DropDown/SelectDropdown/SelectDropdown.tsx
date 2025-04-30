@@ -1,11 +1,8 @@
 'use client';
 
-import React, { ComponentPropsWithoutRef } from 'react';
-import DropdownRoot from '../DropdownRoot';
-import DropdownTrigger from '../DropdownTrigger';
-import DropdownList from '../DropdownList';
-import DropdownItem from '../DropdownItem';
+import { ComponentPropsWithoutRef } from 'react';
 import SelectDropdownTriggerContent from './SelectDropdownTriggerContent';
+import Dropdown from '../Dropdown';
 
 const emailDomains = [
   'naver.com',
@@ -36,21 +33,25 @@ export default function SelectDropdown({
   const selected = value || defaultValue;
 
   return (
-    <DropdownRoot {...rest} style={style}>
-      <DropdownTrigger>
+    <Dropdown {...rest} style={style}>
+      <Dropdown.Trigger>
         <SelectDropdownTriggerContent
           selected={selected}
           isDefault={selected === defaultValue}
         />
-      </DropdownTrigger>
+      </Dropdown.Trigger>
 
-      <DropdownList>
+      <Dropdown.List width="16rem">
         {emailDomains.map((domain) => (
-          <DropdownItem key={domain} onSelect={() => onSelect(domain)}>
+          <Dropdown.Item
+            key={domain}
+            isSelected={domain === value}
+            onSelect={() => onSelect(domain)}
+          >
             {domain}
-          </DropdownItem>
+          </Dropdown.Item>
         ))}
-      </DropdownList>
-    </DropdownRoot>
+      </Dropdown.List>
+    </Dropdown>
   );
 }

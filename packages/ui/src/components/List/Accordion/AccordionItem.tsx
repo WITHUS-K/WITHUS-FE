@@ -1,3 +1,4 @@
+'use client';
 import React, { ReactNode, createContext } from 'react';
 
 const ItemValueContext = createContext<string | undefined>(undefined);

@@ -1,9 +1,17 @@
 export { default as IcArrowLeft } from './IcArrowLeft';
 export { default as IcArrowRight } from './IcArrowRight';
+export { default as IcButtonDelete } from './IcButtonDelete';
 export { default as IcButtonEx } from './IcButtonEx';
+export { default as IcButtonInvite } from './IcButtonInvite';
+export { default as IcButtonSetting } from './IcButtonSetting';
 export { default as IcDateArrowLeft } from './IcDateArrowLeft';
 export { default as IcDateArrowRight } from './IcDateArrowRight';
+export { default as IcDeleteRight } from './IcDeleteRight';
 export { default as IcHeaderAlarm } from './IcHeaderAlarm';
+export { default as IcLink } from './IcLink';
+export { default as IcPlusLeft } from './IcPlusLeft';
+export { default as IcPlusRole } from './IcPlusRole';
+export { default as IcRoleBtn } from './IcRoleBtn';
 export { default as IcSidebarCalender } from './IcSidebarCalender';
 export { default as IcSidebarGroup } from './IcSidebarGroup';
 export { default as IcSidebarHome } from './IcSidebarHome';

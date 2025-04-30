@@ -6,11 +6,22 @@ import { IcCheck } from '../../icons/src/colored';
 interface CheckBoxProps extends HTMLAttributes<HTMLInputElement> {
   isChecked: boolean;
   onChange: () => void;
+  size?: number | string;
 }
 
-const CheckBox = ({ isChecked, onChange, ...props }: CheckBoxProps) => {
+const CheckBox = ({
+  isChecked,
+  onChange,
+  size = 2.4,
+  ...props
+}: CheckBoxProps) => {
+  const dimension = typeof size === 'number' ? `${size}rem` : size;
+
   return (
-    <label className={wrapperStyle}>
+    <label
+      className={wrapperStyle}
+      style={{ width: dimension, height: dimension }}
+    >
       <input
         type="checkbox"
         checked={isChecked}

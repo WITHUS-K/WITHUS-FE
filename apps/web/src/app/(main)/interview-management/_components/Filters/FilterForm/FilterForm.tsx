@@ -6,18 +6,14 @@ import { Chip } from '@repo/ui/Chips';
 import { Stepper } from '@repo/ui/Stepper';
 import { IcPlus24 } from '@repo/ui/icons/colored';
 import * as styles from './FilterForm.css';
+import { Tag } from '@repo/ui/Tag';
+import { TagColor } from '../../../../../../../../../packages/utils/src';
 
-const PART_COLOR_MAP: Record<
-  string,
-  {
-    bg: keyof typeof import('@repo/theme').colors;
-    color: keyof typeof import('@repo/theme').colors;
-  }
-> = {
-  기획: { bg: 'orangeBg', color: 'orangeT' },
-  디자인: { bg: 'greenBg', color: 'greenT' },
-  프론트엔드: { bg: 'primary5', color: 'primary50' },
-  백엔드: { bg: 'pinkBg', color: 'pinkT' },
+const PART_TAG_COLOR_MAP: Record<string, TagColor> = {
+  기획: '#EE6B00',
+  디자인: '#009857',
+  프론트엔드: '#2C60FF',
+  백엔드: '#F25DEB',
 };
 
 export default function FilterForm({
@@ -75,19 +71,11 @@ export default function FilterForm({
           </Text>
           <Flex gap="1.2rem">
             {parts.map((p) => {
-              const map = PART_COLOR_MAP[p] || {
-                bg: 'grayscale5',
-                color: 'grayscale80',
-              };
+              const color = PART_TAG_COLOR_MAP[p]!;
               return (
-                <Chip
-                  key={p}
-                  bg={map.bg}
-                  color={map.color}
-                  style={{ padding: '0.6rem 0.8rem' }}
-                >
+                <Tag key={p} color={color}>
                   {p}
-                </Chip>
+                </Tag>
               );
             })}
           </Flex>

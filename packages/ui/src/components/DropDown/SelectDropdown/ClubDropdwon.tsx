@@ -1,11 +1,8 @@
 'use client';
 
 import { ComponentPropsWithoutRef } from 'react';
-import DropdownRoot from '../DropdownRoot';
-import DropdownTrigger from '../DropdownTrigger';
-import DropdownList from '../DropdownList';
-import DropdownItem from '../DropdownItem';
 import ClubDropdownTriggerContent from './ClubDropdownTriggerContent';
+import Dropdown from '../Dropdown';
 
 export interface ClubDropdownProps
   extends Omit<ComponentPropsWithoutRef<'div'>, 'onSelect'> {
@@ -26,18 +23,22 @@ export default function ClubDropdown({
   const selected = value ?? defaultValue;
 
   return (
-    <DropdownRoot {...rest} style={style}>
-      <DropdownTrigger>
+    <Dropdown {...rest} style={style}>
+      <Dropdown.Trigger>
         <ClubDropdownTriggerContent selected={selected} />
-      </DropdownTrigger>
+      </Dropdown.Trigger>
 
-      <DropdownList>
+      <Dropdown.List>
         {clubs.map((name) => (
-          <DropdownItem key={name} onSelect={() => onSelect(name)}>
+          <Dropdown.Item
+            key={name}
+            isSelected={name === value}
+            onSelect={() => onSelect(name)}
+          >
             {name}
-          </DropdownItem>
+          </Dropdown.Item>
         ))}
-      </DropdownList>
-    </DropdownRoot>
+      </Dropdown.List>
+    </Dropdown>
   );
 }

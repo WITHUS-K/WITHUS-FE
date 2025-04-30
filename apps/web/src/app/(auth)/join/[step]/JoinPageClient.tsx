@@ -1,17 +1,12 @@
 'use client';
 
 import React from 'react';
-import { useParams, useSearchParams, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Step1 from '../_components/Step1/Step1';
 import Step2 from '../_components/Step2/Step2';
 import Step3User from '../_components/Step3/Step3User';
 import Step3Admin from '../_components/Step3/Step3Admin';
 import Step4 from '../_components/Step4/Step4';
-
-const stepFromParam = (s?: string): number => {
-  const n = parseInt(s ?? '1', 10);
-  return n >= 1 && n <= 4 ? n : 1;
-};
 
 const typeFromQuery = (t: string | null): 'user' | 'admin' | null =>
   t === 'user' || t === 'admin' ? t : null;
@@ -23,38 +18,52 @@ const buildJoinPath = (step: number, type?: 'user' | 'admin'): string => {
   return `/join/${step}${qs ? `?${qs}` : ''}`;
 };
 
-export default function JoinPageClient() {
-  const router = useRouter();
-  const params = useParams();
-  const searchParams = useSearchParams();
+interface JoinPageClientProps {
+  step: number;
+  modal: React.ReactNode;
+}
 
-  const step = stepFromParam(params.step as string | undefined);
+export default function JoinPageClient({ step, modal }: JoinPageClientProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const memberType = typeFromQuery(searchParams.get('type'));
 
-  const goToStep = (step: number, type?: 'user' | 'admin') => {
-    router.push(buildJoinPath(step, type));
+  const goToStep = (next: number, type?: 'user' | 'admin') => {
+    router.push(buildJoinPath(next, type));
   };
+
+  let content: React.ReactNode = null;
 
   switch (step) {
     case 1:
-      return <Step1 onNext={(type) => goToStep(2, type)} />;
+      content = <Step1 onNext={(type) => goToStep(2, type)} />;
+      break;
     case 2:
-      return (
+      content = (
         <Step2
           onBack={() => goToStep(1, memberType ?? undefined)}
           onNext={() => goToStep(3, memberType ?? undefined)}
         />
       );
+      break;
     case 3:
-      if (!memberType) return null;
-      return memberType === 'user' ? (
-        <Step3User onBack={() => goToStep(2, memberType)} />
-      ) : (
-        <Step3Admin onBack={() => goToStep(2, memberType)} />
-      );
+      if (memberType === 'user') {
+        content = <Step3User onBack={() => goToStep(2, memberType)} />;
+      } else if (memberType === 'admin') {
+        content = <Step3Admin onBack={() => goToStep(2, memberType)} />;
+      }
+      break;
     case 4:
-      return <Step4 />;
+      content = <Step4 />;
+      break;
     default:
-      return null;
+      content = null;
   }
+
+  return (
+    <>
+      {content}
+      {modal}
+    </>
+  );
 }

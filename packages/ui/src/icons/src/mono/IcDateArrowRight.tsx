@@ -9,7 +9,7 @@ const SvgIcDateArrowRight = (props: SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      stroke="cuurentColor"
+      stroke="curentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={2}
