@@ -19,6 +19,7 @@ export function middleware(request: NextRequest) {
     pathname === ROUTES.LOGIN ||
     pathname === ROUTES.JOIN.BASE ||
     /^\/join\/[1-4](\?type=(user|admin))?$/.test(pathname) ||
+    /^\/join\/3\/club-search(\?.*)?$/.test(pathname) ||
     pathname === ROUTES.PASSWORD.FIND ||
     pathname === ROUTES.PASSWORD.VERIFY ||
     pathname === ROUTES.PASSWORD.RESET ||

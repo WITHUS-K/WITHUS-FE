@@ -29,3 +29,8 @@ export interface UserJoinRequest {
   password: string;
   phoneNumber: string;
 }
+
+export interface Org {
+  id: number;
+  name: string;
+}

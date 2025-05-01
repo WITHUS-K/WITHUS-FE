@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { TextField } from '@repo/ui/TextField';
 import { InputField } from '@repo/ui/InputField';
 import { SelectDropdown } from '@repo/ui/DropDown';
@@ -20,6 +20,7 @@ import { usePhoneVerifyMutation } from '@web/store/mutation/usePhoneVerifyMutati
 import { usePhoneConfirmMutation } from '@web/store/mutation/usePhoneConfirmMutation';
 import { useUserJoinMutation } from '@web/store/mutation/useUserJoinMutation';
 import type { UserJoinRequest } from '@web/types/auth';
+import { useClub } from '../../_context/ClubContext';
 
 interface Step3UserProps {
   onBack: () => void;
@@ -29,7 +30,6 @@ interface FormValues {
   name: string;
   birth: string;
   gender: 'female' | 'male';
-  club: string; // club id as string
   emailLocal: string;
   emailDomain: string;
   password: string;
@@ -39,6 +39,9 @@ interface FormValues {
 }
 
 export default function Step3User({ onBack }: Step3UserProps) {
+  const { club } = useClub();
+  const router = useRouter();
+
   const {
     control,
     handleSubmit,
@@ -50,7 +53,6 @@ export default function Step3User({ onBack }: Step3UserProps) {
       name: '',
       birth: '',
       gender: undefined,
-      club: '',
       emailLocal: '',
       emailDomain: '',
       password: '',
@@ -60,38 +62,28 @@ export default function Step3User({ onBack }: Step3UserProps) {
     },
   });
 
-  const [showAuthInput, setShowAuthInput] = useState(false);
-
+  // form watchers
   const emailLocal = watch('emailLocal');
   const emailDomain = watch('emailDomain');
   const phone = watch('phone');
   const authCode = watch('authCode');
-
   const canCheckEmail = Boolean(emailLocal && emailDomain);
 
-  // 이메일 중복확인
   const {
     mutate: checkEmail,
     isSuccess: isEmailChecked,
     data: emailCheckData,
-    isError: isEmailCheckError,
   } = useEmailCheckMutation();
 
-  // 휴대폰 인증번호 요청
-  const {
-    mutate: sendVerify,
-    isSuccess: isVerifySent,
-    isError: isSendError,
-  } = usePhoneVerifyMutation();
+  const { mutate: sendVerify, isSuccess: isVerifySent } =
+    usePhoneVerifyMutation();
 
-  // 휴대폰 인증 확인
   const {
     mutate: confirmVerify,
     isSuccess: isPhoneConfirmed,
     isError: isConfirmError,
   } = usePhoneConfirmMutation();
 
-  // 사용자 회원가입
   const { mutate: joinUser } = useUserJoinMutation();
 
   const onSubmit = (data: FormValues) => {
@@ -99,7 +91,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
       name: data.name,
       birthDate: data.birth,
       gender: data.gender.toUpperCase() as 'MALE' | 'FEMALE' | 'NONE',
-      organizationId: Number(data.club),
+      organizationId: club!.id,
       email: `${data.emailLocal}@${data.emailDomain}`,
       password: data.password,
       phoneNumber: data.phone.replace(/-/g, ''),
@@ -135,15 +127,17 @@ export default function Step3User({ onBack }: Step3UserProps) {
         <Controller
           control={control}
           name="birth"
-          rules={{ required: '생년월일을 입력해주세요.' }}
+          rules={{
+            required: '생년월일을 입력해주세요.',
+            pattern: {
+              value: /^\d{4}-\d{2}-\d{2}$/,
+              message: 'YYYY-MM-DD 형식으로 입력해주세요.',
+            },
+          }}
           render={({ field }) => (
             <TextField
               title="생년월일"
-              inputProps={{
-                ...field,
-                placeholder: 'YYYY-MM-DD',
-                type: 'text',
-              }}
+              inputProps={{ ...field, placeholder: 'YYYY-MM-DD', type: 'text' }}
               errorMessage={errors.birth?.message}
               size="auth"
             />
@@ -184,34 +178,22 @@ export default function Step3User({ onBack }: Step3UserProps) {
           />
         </Flex>
 
-        {/* 동아리 선택 (readOnly) */}
+        {/* 동아리명 (읽기 전용) */}
         <Flex direction="column" gap="0.8rem" width="100%">
           <Text variant="md1_text_semibold" color="grayscale80">
             동아리명
           </Text>
-          <Controller
-            control={control}
-            name="club"
-            rules={{ required: '동아리를 선택해주세요.' }}
-            render={({ field }) => (
-              <InputField
-                placeholder="동아리명을 검색해주세요."
-                value={field.value}
-                onChange={field.onChange}
-                readOnly
-                onClick={() =>
-                  (window.location.href = `/join/3/club-search?type=user`)
-                }
-                icon={<IcInputSearch width={24} height={24} />}
-                size="club"
-              />
-            )}
+          <InputField
+            placeholder="동아리명을 검색해주세요."
+            value={club?.name ?? ''}
+            onChange={(e) => {
+              /* readOnly 필드라 특별한 로직 없으니 빈 함수로 둡니다 */
+            }}
+            readOnly
+            onClick={() => router.push('/join/3/club-search?type=user')}
+            icon={<IcInputSearch width={24} height={24} />}
+            size="club"
           />
-          {errors.club && (
-            <Text variant="sm_caption_regular" color="error">
-              {errors.club.message}
-            </Text>
-          )}
         </Flex>
 
         {/* 이메일 */}
@@ -266,15 +248,6 @@ export default function Step3User({ onBack }: Step3UserProps) {
           >
             중복확인
           </Button>
-
-          {isEmailCheckError && (
-            <Flex gap="0.8rem" align="center">
-              <IcInputError width={24} height={24} />
-              <Text variant="sm_caption_regular" color="error">
-                이메일 확인 중 오류가 발생했습니다.
-              </Text>
-            </Flex>
-          )}
           {isEmailChecked && (
             <Flex gap="0.8rem" align="center">
               {emailCheckData!.isDuplicated ? (
@@ -344,7 +317,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
           )}
         />
 
-        {/* 핸드폰 번호 & 인증 */}
+        {/* 전화번호 인증 */}
         <Flex direction="column" gap="1.6rem">
           <Flex gap="1.2rem">
             <Controller
@@ -383,20 +356,6 @@ export default function Step3User({ onBack }: Step3UserProps) {
               인증번호 받기
             </Button>
           </Flex>
-
-          {isSendError && (
-            <Flex gap="0.8rem" align="center">
-              <IcInputError width={24} height={24} />
-              <Text variant="sm_caption_regular" color="error">
-                인증번호 발송 실패. 다시 시도해주세요.
-              </Text>
-            </Flex>
-          )}
-          {isVerifySent && (
-            <Text variant="sm_caption_regular" color="success">
-              인증번호가 발송되었습니다.
-            </Text>
-          )}
 
           {isVerifySent && (
             <Flex gap="1.2rem">
@@ -442,7 +401,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
           )}
         </Flex>
 
-        {/* 이전 / 완료 */}
+        {/* 뒤로/완료 버튼 */}
         <Flex gap="2rem" justify="center" marginTop="3.2rem">
           <Button
             type="button"

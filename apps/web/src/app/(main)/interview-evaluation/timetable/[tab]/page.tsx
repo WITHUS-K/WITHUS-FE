@@ -40,7 +40,7 @@ export default function TimetableTabPage() {
                 row={row}
                 tab={activeTab}
                 slotData={room.slots}
-                date={date}
+                date={date!}
               />
             )}
           />
