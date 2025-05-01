@@ -4,8 +4,8 @@ import { style } from '@vanilla-extract/css';
 export const switchLabel = style({
   display: 'inline-block',
   position: 'relative',
-  width: '34px',
-  height: '18px',
+  width: '3.4rem',
+  height: '1.8rem',
   cursor: 'pointer',
   userSelect: 'none',
 });
@@ -30,10 +30,10 @@ export const track = style({
 
 export const thumb = style({
   position: 'absolute',
-  top: '2px',
-  left: '2px',
-  width: '14px',                      
-  height: '14px',
+  top: '0.2rem',
+  left: '0.2rem',
+  width: '1.4rem',                      
+  height: '1.4rem',
   borderRadius: '50%',
   backgroundColor: colors.white,
   transition: 'transform 0.25s ease',
