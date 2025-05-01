@@ -12,6 +12,7 @@ export const content = style({
 })
 
 export const comment = style({
+  width: '100%',
   border: `1px solid ${vars.colors.grayscale20}`,
   padding: '1.6rem',
   borderRadius: '16px',

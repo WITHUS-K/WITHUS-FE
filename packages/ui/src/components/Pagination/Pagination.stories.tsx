@@ -1,37 +1,51 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Pagination } from './Pagination';
+import { Pagination, PaginationProps } from './Pagination';
 
-const meta: Meta<typeof Pagination> = {
+const meta: Meta<PaginationProps> = {
   title: 'Common/Pagination',
   component: Pagination,
   argTypes: {
     totalItems: {
-      control: 'number',
-      defaultValue: 10,
+      control: { type: 'number' },
+      description: '총 아이템 수',
     },
     itemCountPerPage: {
-      control: 'number',
-      defaultValue: 1,
+      control: { type: 'number' },
+      description: '한 페이지에 표시할 아이템 수',
     },
     pageCount: {
-      control: 'number',
-      defaultValue: 8,
+      control: { type: 'number' },
+      description: '한 그룹에 표시할 페이지 버튼 수',
     },
-    currentPage: {
-      control: 'number',
-      defaultValue: 5,
-    },
+    currentPage: { table: { disable: true } },
+    onPageChange: { table: { disable: true } },
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof Pagination>;
+type Story = StoryObj<PaginationProps>;
 
-export const Default: Story = {
+export const Interactive: Story = {
+  render: (args) => {
+    const [page, setPage] = useState(1);
+    return <Pagination {...args} currentPage={page} onPageChange={setPage} />;
+  },
   args: {
-    totalItems: 20,
-    itemCountPerPage: 8,
-    pageCount: 5,
-    currentPage: 1,
+    totalItems: 95,
+    itemCountPerPage: 10,
+    pageCount: 8,
+  },
+};
+
+export const FewPages: Story = {
+  render: (args) => {
+    const [page, setPage] = useState(1);
+    return <Pagination {...args} currentPage={page} onPageChange={setPage} />;
+  },
+  args: {
+    totalItems: 25,
+    itemCountPerPage: 10,
+    pageCount: 8,
   },
 };

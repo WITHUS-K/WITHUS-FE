@@ -1,16 +1,15 @@
 import { style } from '@vanilla-extract/css';
 import { fontStyles, vars } from '@repo/theme';
 
+
 export const headerButton = style({
   all: 'unset',
-  display: 'flex',
-  alignItems: 'center',
   flex: 1,
-  gap: '0.9rem',
   cursor: 'pointer',
-  textAlign: 'left',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
 });
-
 
 export const title = style({
   fontSize: '1.6rem',
@@ -41,6 +40,9 @@ export const arrowIcon = style({
 });
 
 export const contentWrapper = style({
+  display: 'flex',
+  gap: '1.6rem',
+  flexDirection: 'column',
   backgroundColor: vars.colors.white,
   color: vars.colors.grayscale90,
   ...fontStyles.md2_text_regular,

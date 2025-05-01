@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import * as styles from './Pagination.css';
 import { IcArrowLeft, IcArrowRight } from '../../icons/src/mono';
 
-interface PaginationProps {
+export interface PaginationProps {
   totalItems: number;
   itemCountPerPage?: number;
+  //한 그룹에 보여줄 페이지 개수
   pageCount?: number;
   currentPage: number;
+  // 페이지가 바뀔 때 호출되는 콜백
+  onPageChange?: (page: number) => void;
 }
 
 export const Pagination = ({
@@ -14,75 +17,89 @@ export const Pagination = ({
   itemCountPerPage = 1,
   pageCount = 8,
   currentPage,
+  onPageChange,
 }: PaginationProps) => {
   const totalPages = Math.ceil(totalItems / itemCountPerPage);
-  const [start, setStart] = useState(1);
+  const groupSize = pageCount;
 
-  const MIN_SLOTS = 8;
-  const displayCount = pageCount < MIN_SLOTS ? MIN_SLOTS : pageCount;
+  // 현재 페이지에 맞춰 그룹 시작 페이지 계산
+  const [startPage, setStartPage] = useState(
+    Math.floor((currentPage - 1) / groupSize) * groupSize + 1
+  );
 
-  const isFirstPage = start === 1;
-  const isLastPage = start + displayCount - 1 >= totalPages;
-
+  // currentPage나 groupSize가 바뀌면 startPage 재계산
   useEffect(() => {
-    if (currentPage >= start + displayCount) {
-      setStart((prev) => prev + displayCount);
-    } else if (currentPage < start) {
-      setStart((prev) => Math.max(1, prev - displayCount));
-    }
-  }, [currentPage, displayCount, start]);
+    const newStart = Math.floor((currentPage - 1) / groupSize) * groupSize + 1;
+    setStartPage(newStart);
+  }, [currentPage, groupSize]);
 
-  const slots = Array.from({ length: displayCount }, (_, i) => start + i);
+  const endPage = Math.min(startPage + groupSize - 1, totalPages);
+  const pages = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i
+  );
+
+  const goTo = useCallback(
+    (page: number) => {
+      if (page < 1 || page > totalPages) return;
+      onPageChange?.(page);
+    },
+    [onPageChange, totalPages]
+  );
 
   return (
     <div className={styles.paginationWrapper}>
       <ul className={styles.listStyle}>
-        <li
+        {/* 이전 페이지 */}
+        <button
+          type="button"
+          onClick={() => goTo(currentPage - 1)}
+          disabled={currentPage === 1}
+          aria-label="이전 페이지"
           className={
-            isFirstPage ? styles.arrowDisabledStyle : styles.arrowStyle
+            currentPage === 1 ? styles.arrowDisabledStyle : styles.arrowStyle
           }
         >
-          <a
-            href={isFirstPage ? '#' : `?page=${start - 1}`}
-            aria-disabled={isFirstPage}
-          >
-            <IcArrowLeft width={24} height={24} />
-          </a>
-        </li>
+          <IcArrowLeft width={24} height={24} />
+        </button>
 
-        {slots.map((page) => {
-          const isValid = page <= totalPages;
+        {/* 페이지 번호 */}
+        {pages.map((page) => {
           const isActive = page === currentPage;
-
           return (
             <li key={page} className={styles.listItemStyle}>
-              <a
-                href={isValid ? `?page=${page}` : '#'}
+              <button
+                type="button"
+                onClick={() => goTo(page)}
+                disabled={page === currentPage}
+                aria-current={isActive || undefined}
                 className={[
                   styles.pageItemStyle,
                   isActive && styles.pageItemActiveStyle,
-                  !isValid && styles.pageItemDisabledStyle,
                 ]
                   .filter(Boolean)
                   .join(' ')}
-                aria-disabled={!isValid}
               >
                 {page}
-              </a>
+              </button>
             </li>
           );
         })}
 
-        <li
-          className={isLastPage ? styles.arrowDisabledStyle : styles.arrowStyle}
+        {/* 다음 페이지 */}
+        <button
+          type="button"
+          onClick={() => goTo(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          aria-label="다음 페이지"
+          className={
+            currentPage === totalPages
+              ? styles.arrowDisabledStyle
+              : styles.arrowStyle
+          }
         >
-          <a
-            href={isLastPage ? '#' : `?page=${start + displayCount}`}
-            aria-disabled={isLastPage}
-          >
-            <IcArrowRight width={24} height={24} />
-          </a>
-        </li>
+          <IcArrowRight width={24} height={24} />
+        </button>
       </ul>
     </div>
   );

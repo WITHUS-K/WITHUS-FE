@@ -1,6 +1,5 @@
 // app/interview-evaluation/timetable/[tab]/page.tsx
 'use client';
-
 import { useParams } from 'next/navigation';
 import { Flex } from '@repo/ui/Flex';
 import { TimeTable } from '@web/components/TimeTable/TimeTable';
@@ -20,6 +19,7 @@ export default function TimetableTabPage() {
         const title = format(dt, 'yyyy년 MM월 dd일 (EEE)', { locale: ko });
 
         const day = timetableMock.find((d) => d.date === isoDate);
+        const date = day?.date;
         if (!day || day.rooms.length === 0) return null;
         const room = day.rooms[0]!;
 
@@ -36,7 +36,12 @@ export default function TimetableTabPage() {
             slots={room.slots}
             width="40rem"
             renderCell={(row) => (
-              <CellRenderer row={row} tab={activeTab} slotData={room.slots} />
+              <CellRenderer
+                row={row}
+                tab={activeTab}
+                slotData={room.slots}
+                date={date}
+              />
             )}
           />
         );

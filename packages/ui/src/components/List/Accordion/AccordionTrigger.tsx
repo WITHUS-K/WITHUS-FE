@@ -25,13 +25,12 @@ export const AccordionTrigger: React.FC<AccordionTriggerProps> = ({
   const isOpen = openItems.includes(value);
 
   return (
-    <button
-      type="button"
+    <div
       className={className}
       onClick={() => toggleItem(value)}
       aria-expanded={isOpen}
     >
       {children}
-    </button>
+    </div>
   );
 };

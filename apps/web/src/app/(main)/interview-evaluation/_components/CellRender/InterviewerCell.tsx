@@ -6,8 +6,18 @@ import { ProfileGroup } from '@web/components/ProfileGroup/ProfileGroup';
 import * as styles from './CellRenders.css';
 import { SlotItem } from '@web/constants/timetable';
 import { OverflowChips } from '@web/components/OverflowChips/OverflowChips';
+import { useRouter, useParams } from 'next/navigation';
 
-export default function InterviewerCell({ slot }: { slot: SlotItem }) {
+export default function InterviewerCell({
+  slot,
+  date,
+}: {
+  slot: SlotItem;
+  date: string;
+}) {
+  const router = useRouter();
+  const params = useParams();
+  const tab = params.tab as string;
   return (
     <Flex
       align="center"
@@ -29,7 +39,16 @@ export default function InterviewerCell({ slot }: { slot: SlotItem }) {
       <ProfileGroup items={slot.interviewers} maxVisible={3} size={23} />
 
       {/* 돋보기 버튼 */}
-      <button className={styles.buttonStyle}>
+      <button
+        className={styles.buttonStyle}
+        onClick={() => {
+          console.log(date);
+          if (!slot) return;
+          router.push(
+            `/interview-evaluation/timetable/${tab}/${date}/${slot.startTime}-${slot.endTime}`
+          );
+        }}
+      >
         <IcTimetableExpand width={16} height={16} />
       </button>
     </Flex>

@@ -10,7 +10,7 @@ const SvgIcSidebarInfo = (props: SVGProps<SVGSVGElement>) => (
   >
     <g clipPath="url(#ic_sidebar_info_svg__a)">
       <path
-        stroke="#7F82A1"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={2}

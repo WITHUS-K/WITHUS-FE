@@ -1,5 +1,5 @@
 import { style, styleVariants } from '@vanilla-extract/css';
-import { vars, fontStyles } from '@repo/theme';
+import { vars, fontStyles, colors } from '@repo/theme';
 import { recipe } from '@vanilla-extract/recipes';
 
 export const wrapper = style({
@@ -56,7 +56,7 @@ export const inputWrapper = recipe({
       error: { border: `1px solid ${vars.colors.error}` },
     },
     size: {
-      search: { padding: '0.8rem 1.2rem', borderRadius: '8px' },
+      search: { padding: '0.8rem 1.2rem', borderRadius: '8px', height: '4rem' },
       club: { padding: '1.6rem', borderRadius: '12px' },
       auth: { padding: '1.6rem 2rem', borderRadius: '12px', height: '5.6rem' },
     },
@@ -68,6 +68,9 @@ export const inputWrapper = recipe({
 });
 
 export const baseInputStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   flex: 1,
   background: 'transparent',
   border: 'none',
@@ -111,3 +114,41 @@ export const iconStyleVariants = recipe({
     size: 'auth',
   },
 });
+
+export const commentInputWrapper = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '1.6rem',
+  alignItems: 'flex-start',
+  padding: '1.6rem',
+  border: `1px solid ${vars.colors.grayscale20}`,
+  borderRadius: '16px',
+  width: '100%',
+  height: '20rem'
+});
+
+export const commentInput = style({
+  all: 'unset',
+  width: '100%',
+  height: 'auto',
+  whiteSpace: 'pre-wrap',
+  wordBreak: 'break-word',
+  overflowWrap: 'break-word',
+  color: vars.colors.grayscale90,
+  selectors: {
+    '&::placeholder': {
+      color: vars.colors.grayscale40,
+    },
+  },
+  ...fontStyles.md2_text_regular
+});
+
+export const commentDivider = style({
+  width: '100%',
+  borderTop: `1px dashed ${colors.grayscale10}`
+})
+
+export const commentButton = style({
+  width: 'auto',
+  flex: '0 0 auto',
+})
