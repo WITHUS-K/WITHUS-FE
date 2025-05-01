@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import * as styles from './TextToggleSwitch.css';
 
 export interface Option<T extends string | number> {
@@ -32,7 +33,7 @@ export function TextToggleSwitch<T extends string | number>({
   const offsetX = isFirst ? 0 : selectedIndex * SEGMENT_WIDTH;
 
   return (
-    <div className={`${styles.wrapper} ${className || ''}`.trim()}>
+    <div className={clsx(styles.wrapper, className)}>
       <div className={styles.container}>
         <div
           className={styles.highlight}

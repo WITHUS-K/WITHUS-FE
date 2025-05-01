@@ -11,7 +11,7 @@ export const container = style({
   display: 'inline-flex',
   alignItems: 'center',
   borderRadius: '14px',
-  backgroundColor: '#F5F5F6',
+  backgroundColor: colors.grayscale5,
   padding: '0.3rem',
 });
 
