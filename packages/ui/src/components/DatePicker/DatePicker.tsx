@@ -13,6 +13,7 @@ import * as styles from './DatePicker.css';
 import { IcTouchDown } from '../../icons/src/colored';
 import { Text } from '../Text';
 import { IcArrowLeft, IcArrowRight } from '../../icons/src/mono';
+import { getDayVariant, isAfterMonth, isDateDisabled } from '@repo/utils';
 
 interface DatePickerProps {
   selectedDate: Date;
@@ -142,32 +143,23 @@ export const DatePicker = ({ selectedDate, onSelect }: DatePickerProps) => {
         ))}
 
         {days.map((d) => {
-          const isAfterMonth = d > monthEnd;
-          const isDisabled =
-            d.getMonth() !== currentMonth.getMonth() || d < today;
-          const isToday =
-            format(d, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd');
-          const isSelected =
-            hasUserSelected &&
-            format(d, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd');
-          let variant: keyof typeof styles.dayVariants = 'normal';
-          if (isDisabled) {
-            variant = 'disabled';
-          } else if (isSelected) {
-            variant = 'selected';
-          } else if (isToday) {
-            variant = 'today';
-          } else if (d.getDay() === 0) {
-            variant = 'sunday';
-          }
-
+          const afterMonth = isAfterMonth(d, monthEnd);
+          const disabled = isDateDisabled(d, currentMonth, today);
+          const variant = getDayVariant({
+            date: d,
+            monthEnd,
+            currentMonth,
+            today,
+            selectedDate,
+            hasUserSelected,
+          });
           return (
             <div
-              key={d.toString()}
+              key={d.toISOString()}
               className={`${styles.dayCell} ${styles.dayVariants[variant]}`}
-              onClick={() => !isDisabled && handleSelectDate(d)}
+              onClick={() => !disabled && handleSelectDate(d)}
             >
-              {!isAfterMonth ? d.getDate() : null}
+              {!afterMonth ? d.getDate() : null}
             </div>
           );
         })}

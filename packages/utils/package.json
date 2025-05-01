@@ -11,6 +11,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@turbo/gen": "^2.4.0",
+    "date-fns": "^4.1.0",
     "eslint": "^9.19.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
