@@ -1,4 +1,4 @@
-import { colors, vars } from '@repo/theme'
+import { colors } from '@repo/theme'
 import { style } from '@vanilla-extract/css'
 
 export const content = style({
@@ -13,11 +13,16 @@ export const content = style({
 
 export const comment = style({
   width: '100%',
-  border: `1px solid ${vars.colors.grayscale20}`,
+  backgroundColor: colors.grayscale5,
   padding: '1.6rem',
-  borderRadius: '16px',
+  borderRadius: '8px',
+})
+
+export const editButton = style ({
+  cursor: 'pointer',
   display: 'flex',
-  flexDirection: 'column',
-  alignItems:'center',
-  gap: '2rem'
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '0.4rem',
+  marginTop: '1rem',
 })

@@ -4,8 +4,8 @@ import { Text, Flex } from '@repo/ui';
 import { notFound, useParams, useRouter } from 'next/navigation';
 import { timetableMock, SlotItem, Applicant } from '@web/constants/timetable';
 import { ApplicantSliderHeader } from '@web/app/(main)/interview-management/_components/ApplicantHeader/ApplicantHeader';
-import { ApplicantDetailContent } from '@web/app/(main)/interview-management/_components/ApplicantDetailContent/ApplicantDetailContent';
 import { pageContainer } from '@web/app/(main)/interview-management/timetable/[tab]/[date]/[time]/page.css';
+import { ApplicantInterviewForm } from '@web/app/(main)/interview-evaluation/_components/ApplicantInterviewForm/ApplicantInterviewForm';
 
 export default function ApplicantDetailPage() {
   const router = useRouter();
@@ -46,7 +46,6 @@ export default function ApplicantDetailPage() {
   }
 
   const applicant = applicants[current]!;
-  const introCount = applicant.selfIntroductionContent.content.length;
 
   return (
     <div className={pageContainer}>
@@ -73,7 +72,7 @@ export default function ApplicantDetailPage() {
           onViewApplication={() => router.push(`/`)}
         />
 
-        <ApplicantDetailContent detail={applicant} />
+        <ApplicantInterviewForm detail={applicant} />
       </Flex>
     </div>
   );
