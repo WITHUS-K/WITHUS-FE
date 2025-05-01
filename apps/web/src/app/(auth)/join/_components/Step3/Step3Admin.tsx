@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { TextField } from '@repo/ui/TextField';
 import { Button } from '@repo/ui/Button';
@@ -8,8 +8,11 @@ import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { SelectDropdown } from '@repo/ui/DropDown';
 import { useAdminJoinMutation } from '@web/store/mutation/useAdminJoinMutation';
-import { AdminJoinRequest } from '@web/types/auth';
-
+import { useEmailCheckMutation } from '@web/store/mutation/useEmailCheckMutation';
+import { usePhoneVerifyMutation } from '@web/store/mutation/usePhoneVerifyMutation';
+import { usePhoneConfirmMutation } from '@web/store/mutation/usePhoneConfirmMutation';
+import type { AdminJoinRequest } from '@web/types/auth';
+import { IcInputError, IcInputSuccess } from '@repo/ui/icons/colored';
 interface Step3AdminProps {
   onBack: () => void;
 }
@@ -45,13 +48,28 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
     },
   });
 
-  const [showAuthInput, setShowAuthInput] = useState(false);
-  const [isAuthConfirmed, setIsAuthConfirmed] = useState(false);
-
   const emailLocal = watch('emailLocal');
   const emailDomain = watch('emailDomain');
+  const phone = watch('phone');
   const authCode = watch('authCode');
+
   const canCheckEmail = Boolean(emailLocal && emailDomain);
+
+  const {
+    mutate: checkEmail,
+    data: emailCheckData,
+    isSuccess: isEmailChecked,
+    isError: isEmailCheckError,
+  } = useEmailCheckMutation();
+
+  const { mutate: sendVerify, isSuccess: isVerifySent } =
+    usePhoneVerifyMutation();
+
+  const {
+    mutate: confirmVerify,
+    isSuccess: isPhoneConfirmed,
+    isError: isConfirmError,
+  } = usePhoneConfirmMutation();
 
   const { mutate: joinAdmin } = useAdminJoinMutation();
 
@@ -64,11 +82,6 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
       phoneNumber: data.phone.replace(/-/g, ''),
     };
     joinAdmin(payload);
-  };
-
-  const handleConfirmAuth = () => {
-    // TODO: 이메일/문자 인증 API 호출 후 검증
-    setIsAuthConfirmed(true);
   };
 
   return (
@@ -95,7 +108,7 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
           )}
         />
 
-        {/* 동아리명 */}
+        {/* 동아리명 (Admin) */}
         <Controller
           control={control}
           name="club"
@@ -103,7 +116,10 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
           render={({ field }) => (
             <TextField
               title="동아리명"
-              inputProps={{ ...field, placeholder: '동아리명을 입력해주세요.' }}
+              inputProps={{
+                ...field,
+                placeholder: '동아리명을 입력해주세요.',
+              }}
               errorMessage={errors.club?.message}
               size="auth"
             />
@@ -148,14 +164,38 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
                 <SelectDropdown
                   value={field.value}
                   onSelect={field.onChange}
-                  style={{ marginTop: '2.8rem' }}
+                  style={{ marginTop: '3.3rem' }}
                 />
               )}
             />
           </Flex>
-          <Button variant="sub" size="56" disabled={!canCheckEmail}>
+
+          <Button
+            type="button"
+            variant="sub"
+            size="56"
+            disabled={!canCheckEmail}
+            onClick={() => checkEmail(`${emailLocal}@${emailDomain}`)}
+          >
             중복확인
           </Button>
+          {isEmailChecked && (
+            <Flex gap="0.8rem" align="center">
+              {emailCheckData!.isDuplicated ? (
+                <IcInputError width={24} height={24} />
+              ) : (
+                <IcInputSuccess width={24} height={24} />
+              )}
+              <Text
+                variant="sm_caption_regular"
+                color={emailCheckData!.isDuplicated ? 'error' : 'success'}
+              >
+                {emailCheckData!.isDuplicated
+                  ? '이미 가입된 이메일입니다.'
+                  : '가입 가능한 이메일입니다.'}
+              </Text>
+            </Flex>
+          )}
         </Flex>
 
         {/* 비밀번호 */}
@@ -240,13 +280,15 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
               variant="sub"
               size="56"
               width="12.7rem"
-              onClick={() => setShowAuthInput(true)}
-              style={{ marginTop: '2.8rem' }}
+              style={{ marginTop: '3.4rem' }}
+              disabled={!phone}
+              onClick={() => sendVerify(phone.replace(/-/g, ''))}
             >
               인증번호 받기
             </Button>
           </Flex>
-          {showAuthInput && (
+
+          {isVerifySent && (
             <Flex gap="1.2rem">
               <Controller
                 control={control}
@@ -259,7 +301,13 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
                       placeholder: '인증번호',
                       type: 'text',
                     }}
-                    errorMessage={errors.authCode?.message}
+                    errorMessage={
+                      isConfirmError
+                        ? '인증번호가 일치하지 않습니다. 다시 입력해주세요.'
+                        : errors.authCode?.message
+                    }
+                    success={isPhoneConfirmed}
+                    successMessage="인증이 완료되었습니다."
                     size="auth"
                     width="29.5rem"
                   />
@@ -271,7 +319,12 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
                 size="56"
                 width="12.7rem"
                 disabled={!authCode}
-                onClick={handleConfirmAuth}
+                onClick={() =>
+                  confirmVerify({
+                    phoneNumber: phone.replace(/-/g, ''),
+                    code: authCode,
+                  })
+                }
               >
                 인증번호 확인
               </Button>
@@ -295,7 +348,11 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
             variant="main"
             size="64"
             width="20.7rem"
-            disabled={!isValid || !isAuthConfirmed}
+            disabled={
+              !isValid ||
+              emailCheckData?.isDuplicated !== false ||
+              !isPhoneConfirmed
+            }
           >
             완료
           </Button>

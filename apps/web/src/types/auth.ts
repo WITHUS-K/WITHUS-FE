@@ -10,3 +10,12 @@ export interface AdminJoinRequest {
   password: string;
   phoneNumber: string;
 }
+
+export interface EmailCheckResult {
+  isDuplicated: boolean;
+}
+
+export interface PhoneConfirmParams {
+  phoneNumber: string;
+  code: string;
+}

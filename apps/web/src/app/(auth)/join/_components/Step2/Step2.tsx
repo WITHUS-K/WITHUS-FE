@@ -46,12 +46,13 @@ export default function Step2({ onBack, onNext }: Step2Props) {
       align="center"
       width="100%"
       marginTop="2.8rem"
+      paddingBottom="7.2rem"
     >
       <Text variant="md1_text_semibold" color="grayscale80">
         위더스 서비스 시작 및 가입을 위해 정보 제공에 동의해주세요.
       </Text>
 
-      <Flex direction="column" marginTop="1.6rem" width="100%">
+      <Flex direction="column" marginTop="1.6rem" width="100%" gap="2.8rem">
         <Flex align="center" gap="1.2rem" className={containerStyle}>
           <CheckBox isChecked={allAgreed} onChange={handleAllChange} />
           <Text
@@ -81,7 +82,7 @@ export default function Step2({ onBack, onNext }: Step2Props) {
         />
       </Flex>
 
-      <Flex gap="1rem" className={buttonStyle}>
+      <Flex gap="1rem" align="center">
         <Button variant="basic" size="64" width="20.7rem" onClick={onBack}>
           이전
         </Button>

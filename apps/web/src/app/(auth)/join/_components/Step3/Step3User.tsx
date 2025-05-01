@@ -54,7 +54,6 @@ export default function Step3User({ onBack }: Step3UserProps) {
   const [isAuthConfirmed, setIsAuthConfirmed] = useState(false);
   const emailLocal = watch('emailLocal');
   const emailDomain = watch('emailDomain');
-  const authCode = watch('authCode');
   const canCheckEmail = Boolean(emailLocal && emailDomain);
 
   const router = useRouter();
@@ -156,7 +155,6 @@ export default function Step3User({ onBack }: Step3UserProps) {
           <Controller
             control={control}
             name="club"
-            //rules={{ required: '동아리명을 검색해주세요.' }}
             render={({ field }) => (
               <InputField
                 placeholder="동아리명을 검색해주세요."
@@ -210,7 +208,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
                 <SelectDropdown
                   value={field.value}
                   onSelect={field.onChange}
-                  style={{ marginTop: '2.8rem' }}
+                  style={{ marginTop: '3.3rem' }}
                 />
               )}
             />
@@ -309,7 +307,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
               size="56"
               width="12.7rem"
               onClick={() => setShowAuthInput(true)}
-              style={{ marginTop: '2.8rem' }}
+              style={{ marginTop: '3.4rem' }}
             >
               인증번호 받기
             </Button>
