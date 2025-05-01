@@ -1,9 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import {
   startOfMonth,
   endOfMonth,
-  startOfWeek,
-  endOfWeek,
   addDays,
   format,
   setMonth,
@@ -13,7 +11,13 @@ import * as styles from './DatePicker.css';
 import { IcTouchDown } from '../../icons/src/colored';
 import { Text } from '../Text';
 import { IcArrowLeft, IcArrowRight } from '../../icons/src/mono';
-import { getDayVariant, isAfterMonth, isDateDisabled } from '@repo/utils';
+import {
+  generateCalendarData,
+  getDayVariant,
+  isAfterMonth,
+  isDateDisabled,
+} from '@repo/utils';
+import clsx from 'clsx';
 
 interface DatePickerProps {
   selectedDate: Date;
@@ -55,16 +59,10 @@ export const DatePicker = ({ selectedDate, onSelect }: DatePickerProps) => {
     };
   });
 
-  const monthStart = startOfMonth(currentMonth);
-  const monthEnd = endOfMonth(currentMonth);
-  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
-  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
-  const days: Date[] = [];
-  let day = calendarStart;
-  while (day <= calendarEnd) {
-    days.push(day);
-    day = addDays(day, 1);
-  }
+  const { days, monthEnd } = useMemo(
+    () => generateCalendarData(currentMonth),
+    [currentMonth]
+  );
 
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
@@ -156,7 +154,7 @@ export const DatePicker = ({ selectedDate, onSelect }: DatePickerProps) => {
           return (
             <div
               key={d.toISOString()}
-              className={`${styles.dayCell} ${styles.dayVariants[variant]}`}
+              className={clsx(styles.dayCell, styles.dayVariants[variant])}
               onClick={() => !disabled && handleSelectDate(d)}
             >
               {!afterMonth ? d.getDate() : null}

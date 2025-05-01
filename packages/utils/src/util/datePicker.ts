@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { addDays, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek } from 'date-fns';
 
 export type DayVariant = 'normal' | 'disabled' | 'selected' | 'today' | 'sunday';
 
@@ -48,4 +48,25 @@ export const getDayVariant = (params: {
   if (isDateToday(date, today)) return 'today';
   if (date.getDay() === 0) return 'sunday';
   return 'normal';
+}
+
+export interface CalendarData {
+  days: Date[];
+  monthEnd: Date;
+}
+
+export const generateCalendarData = (currentMonth: Date): CalendarData => {
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(currentMonth);
+  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
+  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
+
+  const days: Date[] = [];
+  let day = calendarStart;
+  while (day <= calendarEnd) {
+    days.push(day);
+    day = addDays(day, 1);
+  }
+
+  return { days, monthEnd };
 }
