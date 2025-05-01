@@ -52,7 +52,7 @@ export default function Step2({ onBack, onNext }: Step2Props) {
         위더스 서비스 시작 및 가입을 위해 정보 제공에 동의해주세요.
       </Text>
 
-      <Flex direction="column" marginTop="1.6rem" width="100%" gap="2.8rem">
+      <Flex direction="column" marginTop="1.6rem" width="100%">
         <Flex align="center" gap="1.2rem" className={containerStyle}>
           <CheckBox isChecked={allAgreed} onChange={handleAllChange} />
           <Text

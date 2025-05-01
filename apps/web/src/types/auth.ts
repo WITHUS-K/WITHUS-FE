@@ -19,3 +19,13 @@ export interface PhoneConfirmParams {
   phoneNumber: string;
   code: string;
 }
+
+export interface UserJoinRequest {
+  name: string;
+  birthDate: string;
+  gender: 'MALE' | 'FEMALE' | 'NONE';
+  organizationId: number;
+  email: string;
+  password: string;
+  phoneNumber: string;
+}
