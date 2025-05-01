@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { TextField } from '@repo/ui/TextField';
 import { Button } from '@repo/ui/Button';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { SelectDropdown } from '@repo/ui/DropDown';
-import { useRouter } from 'next/navigation';
+import { useAdminJoinMutation } from '@web/store/mutation/useAdminJoinMutation';
+import { AdminJoinRequest } from '@web/types/auth';
 
 interface Step3AdminProps {
   onBack: () => void;
@@ -46,24 +47,27 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
 
   const [showAuthInput, setShowAuthInput] = useState(false);
   const [isAuthConfirmed, setIsAuthConfirmed] = useState(false);
+
   const emailLocal = watch('emailLocal');
   const emailDomain = watch('emailDomain');
   const authCode = watch('authCode');
   const canCheckEmail = Boolean(emailLocal && emailDomain);
 
-  const router = useRouter();
+  const { mutate: joinAdmin } = useAdminJoinMutation();
 
   const onSubmit = (data: FormValues) => {
-    const params = new URLSearchParams({
-      type: 'admin',
+    const payload: AdminJoinRequest = {
       name: data.name,
-    }).toString();
-
-    router.push(`/join/4?${params}`);
+      organizationName: data.club,
+      email: `${data.emailLocal}@${data.emailDomain}`,
+      password: data.password,
+      phoneNumber: data.phone.replace(/-/g, ''),
+    };
+    joinAdmin(payload);
   };
 
   const handleConfirmAuth = () => {
-    // 실제 인증번호 검증 로직
+    // TODO: 이메일/문자 인증 API 호출 후 검증
     setIsAuthConfirmed(true);
   };
 
@@ -91,7 +95,7 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
           )}
         />
 
-        {/* 동아리명 (Admin) */}
+        {/* 동아리명 */}
         <Controller
           control={control}
           name="club"
@@ -99,10 +103,7 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
           render={({ field }) => (
             <TextField
               title="동아리명"
-              inputProps={{
-                ...field,
-                placeholder: '동아리명을 입력해주세요.',
-              }}
+              inputProps={{ ...field, placeholder: '동아리명을 입력해주세요.' }}
               errorMessage={errors.club?.message}
               size="auth"
             />
@@ -152,14 +153,7 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
               )}
             />
           </Flex>
-          <Button
-            variant="sub"
-            size="56"
-            disabled={!canCheckEmail}
-            onClick={() => {
-              /* 이메일 중복 검사 로직 */
-            }}
-          >
+          <Button variant="sub" size="56" disabled={!canCheckEmail}>
             중복확인
           </Button>
         </Flex>
@@ -276,7 +270,7 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
                 variant="sub"
                 size="56"
                 width="12.7rem"
-                disabled={!watch('authCode')}
+                disabled={!authCode}
                 onClick={handleConfirmAuth}
               >
                 인증번호 확인

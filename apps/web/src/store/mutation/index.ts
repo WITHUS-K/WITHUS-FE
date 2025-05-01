@@ -1,3 +1,3 @@
 /*
-useMutation 훅 파일들 여기에!!
+useMutation 훅 파일들 mutation 폴더에!!
 */

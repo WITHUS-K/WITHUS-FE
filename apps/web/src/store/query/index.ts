@@ -1,3 +1,3 @@
 /*
-useQuery 훅 파일 여기에!!
+useQuery 훅 파일 query 폴더에!!
 */
