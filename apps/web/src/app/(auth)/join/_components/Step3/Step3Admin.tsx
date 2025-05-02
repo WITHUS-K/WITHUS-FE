@@ -33,6 +33,7 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
     control,
     handleSubmit,
     watch,
+    setError,
     formState: { errors, isValid },
   } = useForm<FormValues>({
     mode: 'onBlur',
@@ -81,7 +82,17 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
       password: data.password,
       phoneNumber: data.phone.replace(/-/g, ''),
     };
-    joinAdmin(payload);
+    joinAdmin(payload, {
+      onError: async (error) => {
+        const errData = (await error.response.json()) as { code: string };
+        if (errData.code === 'ORGANIZATION400') {
+          setError('club', {
+            type: 'manual',
+            message: '이미 존재하는 동아리명입니다.',
+          });
+        }
+      },
+    });
   };
 
   return (
