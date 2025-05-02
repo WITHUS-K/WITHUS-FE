@@ -12,19 +12,19 @@ export function useEmailCheckMutation(): UseMutationResult<
 > {
   return useMutation<EmailCheckResult, HTTPError, string>({
     mutationFn: async (email) => {
-      console.log('[EmailCheck] 요청:', email);
+      //console.log('[EmailCheck] 요청:', email);
       const res = await GET_PUBLIC<EmailCheckResult>(
         'api/v1/users/email/check',
         { email }
       );
-      console.log('[EmailCheck] 응답:', res);
+      //console.log('[EmailCheck] 응답:', res);
       return res.result;
     },
     onSuccess: (result) => {
-      console.log('[EmailCheck] 성공, isDuplicated =', result.isDuplicated);
+      //console.log('[EmailCheck] 성공, isDuplicated =', result.isDuplicated);
     },
     onError: (error) => {
-      console.error('[EmailCheck] 실패:', error);
+      //console.error('[EmailCheck] 실패:', error);
     },
   });
 }

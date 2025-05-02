@@ -15,10 +15,9 @@ export function useUserJoinMutation(): UseMutationResult<
 
   return useMutation<void, HTTPError, UserJoinRequest>({
     mutationFn: async (payload) => {
-      console.log('[UserJoin] 요청:', payload);
+      //console.log('[UserJoin] 요청:', payload);
       const res = await POST_PUBLIC<string>('api/v1/users/join/user', payload);
-      console.log('[UserJoin] 응답:', res);
-      // 반환값은 사용하지 않음
+      //console.log('[UserJoin] 응답:', res);
     },
     onSuccess: (_, variables) => {
       const params = new URLSearchParams({
@@ -28,7 +27,7 @@ export function useUserJoinMutation(): UseMutationResult<
       router.push(`/join/4?${params}`);
     },
     onError: (error) => {
-      console.error('[UserJoin] 실패:', error);
+      //console.error('[UserJoin] 실패:', error);
     },
   });
 }

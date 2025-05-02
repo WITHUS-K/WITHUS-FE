@@ -17,7 +17,7 @@ export function useAdminJoinMutation(): UseMutationResult<
   return useMutation<void, HTTPError, AdminJoinRequest>({
     mutationFn: async (data) => {
       const res = await POST_PUBLIC<void>('api/v1/users/join/admin', data);
-      console.log('회원가입', res);
+      //console.log('회원가입', res);
       return res.result;
     },
 
@@ -26,7 +26,7 @@ export function useAdminJoinMutation(): UseMutationResult<
     },
 
     onError: (error) => {
-      console.error('[Admin Join] 실패:', error);
+      //console.error('[Admin Join] 실패:', error);
     },
   });
 }

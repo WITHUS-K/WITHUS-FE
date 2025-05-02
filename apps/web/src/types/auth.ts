@@ -34,3 +34,18 @@ export interface Org {
   id: number;
   name: string;
 }
+
+export interface EmailVerifyRequest {
+  name: string;
+  email: string;
+}
+
+export interface EmailConfirmRequest {
+  email: string;
+  code: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  newPassword: string;
+}

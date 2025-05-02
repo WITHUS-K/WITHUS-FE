@@ -12,18 +12,18 @@ export function useOrgSearchMutation(): UseMutationResult<
 > {
   return useMutation<Org[], HTTPError, string>({
     mutationFn: async (keyword) => {
-      console.log('[OrgSearch] 요청 키워드:', keyword);
+      //console.log('[OrgSearch] 요청 키워드:', keyword);
       const res = await GET_PUBLIC<Org[]>('api/v1/organizations/search', {
         keyword,
       });
-      console.log('[OrgSearch] 응답 데이터:', res);
+      //console.log('[OrgSearch] 응답 데이터:', res);
       return res.result;
     },
     onSuccess: (data) => {
-      console.log('[OrgSearch] 성공, 결과 개수 =', data.length);
+      //console.log('[OrgSearch] 성공, 결과 개수 =', data.length);
     },
     onError: (error) => {
-      console.error('[OrgSearch] 실패:', error);
+      //console.error('[OrgSearch] 실패:', error);
     },
   });
 }

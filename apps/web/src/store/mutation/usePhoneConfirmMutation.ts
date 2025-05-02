@@ -12,19 +12,19 @@ export function usePhoneConfirmMutation(): UseMutationResult<
 > {
   return useMutation<string, HTTPError, PhoneConfirmParams>({
     mutationFn: async ({ phoneNumber, code }) => {
-      console.log('[PhoneConfirm] 요청:', { phoneNumber, code });
+      //console.log('[PhoneConfirm] 요청:', { phoneNumber, code });
       const res = await POST_PUBLIC<string>('api/v1/auth/phone/confirm', {
         phoneNumber,
         code,
       });
-      console.log('[PhoneConfirm] 응답:', res);
+      //console.log('[PhoneConfirm] 응답:', res);
       return res.result;
     },
     onSuccess: (message) => {
-      console.log('[PhoneConfirm] 성공, message =', message);
+      //console.log('[PhoneConfirm] 성공, message =', message);
     },
     onError: (error) => {
-      console.error('[PhoneConfirm] 실패:', error);
+      //console.error('[PhoneConfirm] 실패:', error);
     },
   });
 }
