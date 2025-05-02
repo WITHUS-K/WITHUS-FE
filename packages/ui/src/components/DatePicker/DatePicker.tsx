@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import {
   startOfMonth,
   endOfMonth,
@@ -8,8 +8,7 @@ import {
   startOfDay,
 } from 'date-fns';
 import * as styles from './DatePicker.css';
-import { IcTouchDown } from '../../icons/src/colored';
-import { Text } from '../Text';
+import { MonthSelect } from './MonthSelect';
 import { IcArrowLeft, IcArrowRight } from '../../icons/src/mono';
 import {
   generateCalendarData,
@@ -35,21 +34,6 @@ export const DatePicker = ({ selectedDate, onSelect }: DatePickerProps) => {
   const [currentMonth, setCurrentMonth] = useState<Date>(
     startOfMonth(selectedDate)
   );
-  const [open, setOpen] = useState(false);
-
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(e.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
 
   const monthOptions = Array.from({ length: 12 }, (_, i) => {
     const date = setMonth(currentMonth, i);
@@ -65,7 +49,7 @@ export const DatePicker = ({ selectedDate, onSelect }: DatePickerProps) => {
   );
 
   return (
-    <div className={styles.wrapper} ref={wrapperRef}>
+    <div className={styles.wrapper}>
       <div className={styles.header}>
         <button
           className={styles.navLeftButton}
@@ -74,49 +58,10 @@ export const DatePicker = ({ selectedDate, onSelect }: DatePickerProps) => {
           <IcArrowLeft width={17} height={17} />
         </button>
 
-        <div className={styles.monthSelectWrapper}>
-          <button
-            className={styles.monthSelect}
-            onClick={() => setOpen((o) => !o)}
-          >
-            <Text variant="lg_subtitle_semibold" color="grayscale90">
-              {format(currentMonth, 'yyyy년 M월')}
-            </Text>
-            <IcTouchDown
-              width={24}
-              height={24}
-              className={styles.arrowStyle[open ? 'open' : 'closed']}
-            />
-          </button>
-
-          {open && (
-            <div className={styles.dropdownFull}>
-              <div className={styles.dropdownList}>
-                {monthOptions.map((opt) => {
-                  const isSel =
-                    format(opt.value, 'yyyy-MM') ===
-                    format(currentMonth, 'yyyy-MM');
-                  return (
-                    <div
-                      key={opt.label}
-                      className={`${styles.dropdownItem} ${
-                        isSel
-                          ? styles.dropdownItemVariants.selected
-                          : styles.dropdownItemVariants.unselected
-                      }`}
-                      onClick={() => {
-                        setCurrentMonth(startOfMonth(opt.value));
-                        setOpen(false);
-                      }}
-                    >
-                      {opt.label}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </div>
+        <MonthSelect
+          currentMonth={currentMonth}
+          onMonthChange={(date) => setCurrentMonth(date)}
+        />
 
         <button
           className={styles.navRightButton}
