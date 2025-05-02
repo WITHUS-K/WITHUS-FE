@@ -82,7 +82,7 @@ export const buttonStyle = recipe({
     alignItems: 'center',
     justifyContent: 'center',
     gap: '0.8rem',
-    border: 'none',
+    //border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s ease-in-out',
@@ -213,7 +213,7 @@ export const iconSizeStyle = styleVariants({
   },
   '40': {
     ...commonIconStyle,
-    fontSize: '1.6rem',
+    fontSize: '2.4rem',
   },
   '48': {
     ...commonIconStyle,

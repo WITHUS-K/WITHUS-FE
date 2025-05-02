@@ -1,3 +1,4 @@
+'use client';
 import React, { useContext, ReactNode } from 'react';
 import { ItemValueContext } from './AccordionItem';
 import { AccordionContext } from './AccordionContext';

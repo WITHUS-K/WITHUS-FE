@@ -1,18 +1,28 @@
+import { ComponentPropsWithoutRef, CSSProperties } from 'react';
 import { useDropdownContext } from './context';
 import { dropdownListStyle } from './Dropdown.css';
-import { ComponentPropsWithoutRef } from 'react';
 
-const DropdownList = ({
+export interface DropdownListProps extends ComponentPropsWithoutRef<'ul'> {
+  width?: string;
+}
+
+export default function DropdownList({
   children,
+  width,
+  style: styleProp,
   ...props
-}: ComponentPropsWithoutRef<'ul'>) => {
+}: DropdownListProps) {
   const { isOpen } = useDropdownContext();
+  if (!isOpen) return null;
 
-  return isOpen ? (
-    <ul className={dropdownListStyle} {...props}>
+  const mergedStyle: CSSProperties = {
+    ...(styleProp as CSSProperties),
+    ...(width ? { width } : {}),
+  };
+
+  return (
+    <ul className={dropdownListStyle} style={mergedStyle} {...props}>
       {children}
     </ul>
-  ) : null;
-};
-
-export default DropdownList;
+  );
+}
