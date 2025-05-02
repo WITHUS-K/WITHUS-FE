@@ -62,7 +62,6 @@ export default function Step3User({ onBack }: Step3UserProps) {
     },
   });
 
-  // form watchers
   const emailLocal = watch('emailLocal');
   const emailDomain = watch('emailDomain');
   const phone = watch('phone');
