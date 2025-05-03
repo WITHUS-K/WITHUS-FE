@@ -73,12 +73,7 @@ export default function ApplicantDetailPage() {
           onViewApplication={() => router.push(`/`)}
         />
 
-        <ApplicantDetailContent
-          detail={applicant}
-          introCount={introCount}
-          openIdx={openIdx}
-          toggle={(idx) => setOpenIdx(idx)}
-        />
+        <ApplicantDetailContent detail={applicant} />
       </Flex>
     </div>
   );

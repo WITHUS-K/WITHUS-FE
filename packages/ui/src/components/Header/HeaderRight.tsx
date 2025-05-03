@@ -1,6 +1,6 @@
 import * as styles from './Header.css';
 import { IcHeaderProfile } from '../../icons/src/colored';
-import { IcHeaderAlarm, IcTriangleDown } from '../../icons/src/mono';
+import { IcAlaram, IcTriangleDown } from '../../icons/src/mono';
 import { Text } from '..';
 
 export interface HeaderRightProps {
@@ -45,7 +45,7 @@ export const HeaderRight = ({
         onClick={onNotificationClick}
         aria-label="알림"
       >
-        <IcHeaderAlarm width={24} height={24} />
+        <IcAlaram width={24} height={24} />
       </button>
     </div>
   );
