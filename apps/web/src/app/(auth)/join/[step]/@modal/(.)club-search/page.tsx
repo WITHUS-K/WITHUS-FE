@@ -1,12 +1,19 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { Modal } from '@repo/ui/Modal';
 import ClubSearchContent from '../../../_components/ClubSearchContent/ClubSearchContent';
+import { useClub } from '../../../_context/ClubContext';
 
 export default function ClubSearchModal() {
   const router = useRouter();
+  const { setClub } = useClub();
+
   const close = () => router.back();
+  const confirm = () => {
+    close();
+  };
 
   return (
     <Modal.Overlay open onClose={close}>
@@ -20,7 +27,7 @@ export default function ClubSearchModal() {
             cancelText="닫기"
             confirmText="확인"
             cancelProps={{ onClick: close }}
-            confirmProps={{ onClick: close }} // 추후 선택 값 전달로 확장
+            confirmProps={{ onClick: confirm }}
           />
         </Modal.Footer>
       </Modal.Layout>

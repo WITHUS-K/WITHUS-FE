@@ -1,19 +1,18 @@
 'use client';
+
 import { useForm, Controller } from 'react-hook-form';
 import { Flex } from '@repo/ui/Flex';
 import { TextField } from '@repo/ui/TextField';
 import { Button } from '@repo/ui/Button';
 import { buttonStyle } from '../../../join/_components/Step1/Step1.css';
+import { useEmailVerifyMutation } from '@web/store/mutation/useEmailVerifyMutation';
 
-interface FindFormProps {
-  router: ReturnType<typeof import('next/navigation').useRouter>;
-}
 interface FindFormValues {
   name: string;
   email: string;
 }
 
-export default function FindForm({ router }: FindFormProps) {
+export default function FindForm() {
   const {
     control,
     handleSubmit,
@@ -22,11 +21,13 @@ export default function FindForm({ router }: FindFormProps) {
     mode: 'onBlur',
     defaultValues: { name: '', email: '' },
   });
-  const onSubmit = ({ name, email }: FindFormValues) => {
-    router.push(
-      `/password/verify?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`
-    );
+
+  const { mutate: sendVerify } = useEmailVerifyMutation();
+
+  const onSubmit = (data: FindFormValues) => {
+    sendVerify(data);
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex direction="column" gap="2.8rem" width="43.4rem">
@@ -66,9 +67,9 @@ export default function FindForm({ router }: FindFormProps) {
           type="submit"
           variant="main"
           size="64"
-          disabled={!isValid}
-          className={buttonStyle}
           width="43.4rem"
+          className={buttonStyle}
+          disabled={!isValid}
         >
           이메일로 인증코드 받기
         </Button>

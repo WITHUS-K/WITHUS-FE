@@ -13,11 +13,11 @@ export default function StepPageClient() {
 
   switch (step) {
     case 'find':
-      return <FindForm router={router} />;
+      return <FindForm />;
     case 'verify':
-      return <VerifyForm router={router} searchParams={searchParams} />;
+      return <VerifyForm searchParams={searchParams} />;
     case 'reset':
-      return <ResetForm router={router} searchParams={searchParams} />;
+      return <ResetForm searchParams={searchParams} />;
     case 'complete':
       return <CompleteForm router={router} searchParams={searchParams} />;
     default:
