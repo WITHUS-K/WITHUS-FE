@@ -1,5 +1,5 @@
 'use client';
-
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Flex } from '@repo/ui/Flex';
@@ -19,6 +19,7 @@ interface VerifyFormValues {
 }
 
 export default function VerifyForm({ searchParams }: VerifyFormProps) {
+  const router = useRouter();
   const name = searchParams.get('name') || '';
   const email = searchParams.get('email') || '';
   const [isVerified, setIsVerified] = useState(false);
@@ -98,7 +99,7 @@ export default function VerifyForm({ searchParams }: VerifyFormProps) {
             size="64"
             disabled={!isVerified}
             onClick={() =>
-              window.location.assign(
+              router.push(
                 `/password/reset?name=${encodeURIComponent(name)}&email=${encodeURIComponent(
                   email
                 )}`

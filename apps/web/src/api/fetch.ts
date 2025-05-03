@@ -23,7 +23,7 @@ async function fetchWrapperWithTokenHandler<Data>(
 ): Promise<ApiResponse<Data>> {
   const method = options?.method ?? 'get';
 
-  console.log('토큰', tokens);
+  //console.log('토큰', tokens);
 
   // 클라이언트 사이드에서 토큰이 없으면 쿠키에서 읽어옴
   if (!tokens && typeof window !== 'undefined') {
@@ -31,10 +31,9 @@ async function fetchWrapperWithTokenHandler<Data>(
   }
 
   // 헤더에 토큰 포함 --> 원래 토큰이 있던 api 들만!!
-  const headers: Record<string, string> = {};
-  if (tokens?.accessToken) {
-    headers['Authorization'] = `Bearer ${tokens.accessToken}`;
-  }
+  const headers = tokens?.accessToken
+    ? { Authorization: `Bearer ${tokens.accessToken}` }
+    : {};
 
   try {
     // 실제 API 호출
