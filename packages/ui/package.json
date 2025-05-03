@@ -80,6 +80,26 @@
       "types": "./dist/components/TabBar/index.d.ts",
       "import": "./dist/components/TabBar/index.js"
     },
+    "./Tag": {
+      "types": "./dist/components/Tag/index.d.ts",
+      "import": "./dist/components/Tag/index.js"
+    },
+    "./Breadcrumb": {
+      "types": "./dist/components/Breadcrumb/index.d.ts",
+      "import": "./dist/components/Breadcrumb/index.js"
+    },
+    "./Toast": {
+      "types": "./dist/components/Toast/index.d.ts",
+      "import": "./dist/components/Toast/index.js"
+    },
+    "./SearchInput": {
+      "types": "./dist/components/Input/index.d.ts",
+      "import": "./dist/components/Input/index.js"
+    },
+    "./HoverCallout": {
+      "types": "./dist/components/Callout/index.d.ts",
+      "import": "./dist/components/Callout/index.js"
+    },
     "./Comment": {
       "types": "./dist/components/Comment/index.d.ts",
       "import": "./dist/components/Comment/index.js"
@@ -91,6 +111,14 @@
     "./FileUploader": {
       "types": "./dist/components/FileUploader/index.d.ts",
       "import": "./dist/components/FileUploader/index.js"
+    },
+    "./Radio": {
+      "types": "./dist/components/Radio/index.d.ts",
+      "import": "./dist/components/Radio/index.js"
+    },
+    "./Option": {
+      "types": "./dist/components/Option/index.d.ts",
+      "import": "./dist/components/Option/index.js"
     }
   },
   "main": "./dist/index.js",
