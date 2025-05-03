@@ -1,6 +1,7 @@
 import { vars } from '@repo/theme';
 import { style } from '@vanilla-extract/css';
 
+
 export const headerContainer = style({
   width: '100%',
   height: '60px',
@@ -36,9 +37,11 @@ export const notificationButton = style({
   padding: '0.4rem',
   transition: 'background-color 0.3s ease, color 0.3s ease',
   borderRadius: '6px',
+  color: vars.colors.grayscale60,
   selectors: {
     '&:hover': {
       backgroundColor: vars.colors.grayscale5,
+      color: vars.colors.grayscale70
     },
   },
 });

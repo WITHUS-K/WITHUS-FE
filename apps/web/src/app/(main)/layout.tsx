@@ -1,7 +1,7 @@
 import * as styles from './layout.css';
 import { Suspense } from 'react';
 import { Header } from '@repo/ui/Header';
-import { Sidebar } from '@repo/ui/Sidebar';
+import Sidebar from '@web/components/Sidebar/Sidebar';
 
 export default function AuthLayout({
   children,
