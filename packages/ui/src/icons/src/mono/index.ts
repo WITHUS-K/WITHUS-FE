@@ -1,3 +1,4 @@
+export { default as IcAlaram } from './IcAlaram';
 export { default as IcArrowLeft } from './IcArrowLeft';
 export { default as IcArrowRight } from './IcArrowRight';
 export { default as IcButtonDelete } from './IcButtonDelete';
