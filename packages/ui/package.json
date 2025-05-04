@@ -111,6 +111,14 @@
     "./FileUploader": {
       "types": "./dist/components/FileUploader/index.d.ts",
       "import": "./dist/components/FileUploader/index.js"
+    },
+    "./BaseInput": {
+      "types": "./dist/components/Input/index.d.ts",
+      "import": "./dist/components/Input/index.js"
+    },
+    "./CommonDropdown": {
+      "types": "./dist/components/DropDown/index.d.ts",
+      "import": "./dist/components/DropDown/index.js"
     }
   },
   "main": "./dist/index.js",

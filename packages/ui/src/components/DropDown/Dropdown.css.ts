@@ -123,3 +123,41 @@ export const rolesDropdwon = style({
   position: 'relative',
   display: 'inline-block',
 });
+
+export const triggerBase = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: '1rem 1.6rem',
+  borderRadius: '12px',
+  backgroundColor: vars.colors.white,
+  cursor: 'pointer',
+});
+
+export const triggerClosed = style({
+  border: `1px solid ${vars.colors.grayscale20}`,
+});
+
+export const triggerOpen = style({
+  border: `1px solid ${vars.colors.primary50}`,
+});
+
+export const iconBase = style({
+  transition: 'transform 0.2s ease',
+});
+
+export const iconClosed = style([
+  iconBase,
+  {
+    transform: 'rotate(0deg)',
+    color: vars.colors.grayscale70,
+  },
+]);
+
+export const iconOpen = style([
+  iconBase,
+  {
+    transform: 'rotate(180deg)',
+    color: vars.colors.primary50,
+  },
+]);

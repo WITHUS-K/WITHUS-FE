@@ -5,6 +5,7 @@ export { default as IcButtonDelete } from './IcButtonDelete';
 export { default as IcButtonEx } from './IcButtonEx';
 export { default as IcButtonInvite } from './IcButtonInvite';
 export { default as IcButtonSetting } from './IcButtonSetting';
+export { default as IcCommonModal } from './IcCommonModal';
 export { default as IcDateArrowLeft } from './IcDateArrowLeft';
 export { default as IcDateArrowRight } from './IcDateArrowRight';
 export { default as IcDeleteRight } from './IcDeleteRight';

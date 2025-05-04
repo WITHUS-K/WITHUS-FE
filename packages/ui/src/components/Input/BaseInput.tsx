@@ -1,10 +1,16 @@
+'use client';
+
 import React, { forwardRef } from 'react';
 import {
   inputWrapper,
   iconStyleVariants,
   inputStyleVariants,
 } from './Input.css';
-import { IcPwActive, IcPwDefault } from '../../icons/src/colored';
+import {
+  IcPwActive,
+  IcPwDefault,
+  IcBaseInputDelete,
+} from '../../icons/src/colored';
 
 interface BaseInputProps extends React.HTMLAttributes<HTMLDivElement> {
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
@@ -14,6 +20,8 @@ interface BaseInputProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: 'search' | 'club' | 'auth';
   showPasswordToggle?: boolean;
   onTogglePassword?: () => void;
+  showClear?: boolean;
+  onClear?: () => void;
   width?: string;
 }
 
@@ -27,6 +35,8 @@ const BaseInput = forwardRef<HTMLInputElement, BaseInputProps>(
       size = 'auth',
       showPasswordToggle,
       onTogglePassword,
+      showClear,
+      onClear,
       width = '100%',
       ...props
     },
@@ -63,6 +73,23 @@ const BaseInput = forwardRef<HTMLInputElement, BaseInputProps>(
             ) : (
               <IcPwActive width={24} height={24} />
             )}
+          </button>
+        )}
+
+        {showClear && inputProps.value && (
+          <button
+            className={iconStyleVariants({ size })}
+            onClick={(e) => {
+              e.preventDefault();
+              inputProps.onChange?.({
+                ...(e as any),
+                target: { ...(e.target as any), value: '' },
+              } as React.ChangeEvent<HTMLInputElement>);
+              onClear?.();
+            }}
+            type="button"
+          >
+            <IcBaseInputDelete width={24} height={24} />
           </button>
         )}
 
