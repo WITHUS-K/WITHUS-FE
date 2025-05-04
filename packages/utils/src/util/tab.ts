@@ -8,6 +8,12 @@ export const getTabLabel = (tab: string): string => {
       return '지원자';
     case 'guide':
       return '안내자';
+    case 'form':
+      return '지원서 양식 설정';
+    case 'stages':
+      return '리크루팅 단계 구성';
+    case 'criteria':
+      return '평가 기준 설정';
     default:
       return tab;
   }
