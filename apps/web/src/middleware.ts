@@ -9,7 +9,6 @@ const publicPaths: string[] = [
   ROUTES.PASSWORD.VERIFY,
   ROUTES.PASSWORD.RESET,
   ROUTES.PASSWORD.COMPLETE,
-  ROUTES.ORGANIZATION,
 ];
 
 const publicPathPatterns = [

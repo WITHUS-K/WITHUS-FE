@@ -13,6 +13,8 @@ interface CellRendererProps {
   row: number;
   tab: Tab;
   slotData: SlotItem[];
+  startHour: number;
+  interval: number;
 }
 
 const componentMap = {
@@ -22,11 +24,17 @@ const componentMap = {
   guide: GuideCell,
 };
 
-export function CellRenderer({ row, tab, slotData }: CellRendererProps) {
-  const time = formatTimeByRow(row);
+export function CellRenderer({
+  row,
+  tab,
+  slotData,
+  startHour,
+  interval,
+}: CellRendererProps) {
+  // 반드시 타임테이블과 같은 startHour/interval을 넘겨주세요!
+  const time = formatTimeByRow(row, startHour, interval);
   const slot = slotData.find((s) => s.startTime === time);
   if (!slot) return null;
-
   const Component = componentMap[tab];
   return <Component slot={slot} />;
 }
