@@ -12,6 +12,7 @@ export { default as IcDeleteRight } from './IcDeleteRight';
 export { default as IcHeaderAlarm } from './IcHeaderAlarm';
 export { default as IcLink } from './IcLink';
 export { default as IcLinkCopy } from './IcLinkCopy';
+export { default as IcPlusCircle } from './IcPlusCircle';
 export { default as IcPlusLeft } from './IcPlusLeft';
 export { default as IcPlusRole } from './IcPlusRole';
 export { default as IcPreview } from './IcPreview';
