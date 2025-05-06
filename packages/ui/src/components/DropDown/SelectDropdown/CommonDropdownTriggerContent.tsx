@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Text } from '@repo/ui/Text';
+import { Text } from '../..';
 import clsx from 'clsx';
 import * as styles from '../Dropdown.css';
 import { useDropdownContext } from '../context';
