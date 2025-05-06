@@ -19,4 +19,6 @@ export const ROUTES = {
     RESET: '/password/reset',
     COMPLETE: '/password/complete',
   },
+
+  ORGANIZATION: '/organization',
 } as const;

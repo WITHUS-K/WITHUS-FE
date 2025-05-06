@@ -49,10 +49,9 @@ export interface Applicant {
   interviewComments: CommentItem[];
 }
 
-
 export interface SlotItem {
-  startTime: string;    
-  endTime: string;     
+  startTime: string;
+  endTime: string;
   applicants: Applicant[];
   interviewers: ProfileItem[];
   guides: ProfileItem[];
@@ -65,7 +64,7 @@ export interface TimeTableRoom {
 }
 
 export interface TimeTableDay {
-  date: string;         
+  date: string;
   rooms: TimeTableRoom[];
 }
 
@@ -78,7 +77,7 @@ export const timetableMock: TimeTableDay[] = [
         slots: [
           {
             startTime: '11:00',
-            endTime: '11:30',
+            endTime: '11:15',
             applicants: [
               {
                 id: 'f1',
@@ -86,9 +85,24 @@ export const timetableMock: TimeTableDay[] = [
                 selfIntroductionContent: {
                   title: '자기소개서 문항 & 포트폴리오',
                   content: [
-                    { question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항', standardDetail: '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명' },
-                    { question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항', standardDetail: '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명' },
-                    { question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항', standardDetail: '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명' },
+                    {
+                      question:
+                        '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                      standardDetail:
+                        '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명',
+                    },
+                    {
+                      question:
+                        '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                      standardDetail:
+                        '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명',
+                    },
+                    {
+                      question:
+                        '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                      standardDetail:
+                        '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명',
+                    },
                   ],
                 },
                 portfolioFile: {
@@ -98,7 +112,8 @@ export const timetableMock: TimeTableDay[] = [
                 },
                 interviewQuestions: [
                   {
-                    question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                    question:
+                      '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
                     src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
                     name: '이채원',
                     alt: '미카사',
@@ -110,41 +125,87 @@ export const timetableMock: TimeTableDay[] = [
                     {
                       question: '면접 평가 기준 관련된 내용',
                       standard: '의사소통 능력',
-                      standardDetail: ' 면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용',
+                      standardDetail:
+                        ' 면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용',
                       reviewers: [
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 5 },
-                        { name: '윤윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '설윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 3 },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 5,
+                        },
+                        {
+                          name: '윤윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '설윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 3,
+                        },
                       ],
                     },
                   ],
                 },
                 docsComments: [
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
                   },
                 ],
                 interviewComments: [
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
                   },
                 ],
               },
@@ -154,9 +215,24 @@ export const timetableMock: TimeTableDay[] = [
                 selfIntroductionContent: {
                   title: '자기소개서 문항 & 포트폴리오',
                   content: [
-                    { question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항', standardDetail: '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명' },
-                    { question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항', standardDetail: '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명' },
-                    { question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항', standardDetail: '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명' },
+                    {
+                      question:
+                        '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                      standardDetail:
+                        '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명',
+                    },
+                    {
+                      question:
+                        '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                      standardDetail:
+                        '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명',
+                    },
+                    {
+                      question:
+                        '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                      standardDetail:
+                        '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명',
+                    },
                   ],
                 },
                 portfolioFile: {
@@ -166,7 +242,8 @@ export const timetableMock: TimeTableDay[] = [
                 },
                 interviewQuestions: [
                   {
-                    question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                    question:
+                      '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
                     src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
                     name: '이채원',
                     alt: '미카사',
@@ -178,50 +255,108 @@ export const timetableMock: TimeTableDay[] = [
                     {
                       question: '면접 평가 기준 관련된 내용',
                       standard: '의사소통 능력',
-                      standardDetail: ' 면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용',
+                      standardDetail:
+                        ' 면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용',
                       reviewers: [
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 5 },
-                        { name: '윤윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '설윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 3 },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 5,
+                        },
+                        {
+                          name: '윤윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '설윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 3,
+                        },
                       ],
                     },
                   ],
                 },
                 docsComments: [
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
                   },
                 ],
                 interviewComments: [
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
                   },
                 ],
               },
             ],
-            interviewers: Array(5).fill({ src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' }),
+            interviewers: Array(5).fill({
+              src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+              name: '이채원',
+            }),
             guides: [
-              { src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' },
-              { src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' },
-              { src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' },
+              {
+                src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                name: '이채원',
+              },
+              {
+                src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                name: '이채원',
+              },
+              {
+                src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                name: '이채원',
+              },
             ],
             color: '#FFEEDE',
           },
@@ -232,7 +367,7 @@ export const timetableMock: TimeTableDay[] = [
         slots: [
           {
             startTime: '11:00',
-            endTime: '11:30',
+            endTime: '11:15',
             applicants: [
               {
                 id: 'f1',
@@ -240,9 +375,24 @@ export const timetableMock: TimeTableDay[] = [
                 selfIntroductionContent: {
                   title: '자기소개서 문항 & 포트폴리오',
                   content: [
-                    { question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항', standardDetail: '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명' },
-                    { question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항', standardDetail: '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명' },
-                    { question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항', standardDetail: '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명' },
+                    {
+                      question:
+                        '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                      standardDetail:
+                        '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명',
+                    },
+                    {
+                      question:
+                        '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                      standardDetail:
+                        '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명',
+                    },
+                    {
+                      question:
+                        '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                      standardDetail:
+                        '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명',
+                    },
                   ],
                 },
                 portfolioFile: {
@@ -252,7 +402,8 @@ export const timetableMock: TimeTableDay[] = [
                 },
                 interviewQuestions: [
                   {
-                    question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                    question:
+                      '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
                     src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
                     name: '이채원',
                     alt: '미카사',
@@ -264,41 +415,87 @@ export const timetableMock: TimeTableDay[] = [
                     {
                       question: '면접 평가 기준 관련된 내용',
                       standard: '의사소통 능력',
-                      standardDetail: ' 면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용',
+                      standardDetail:
+                        ' 면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용',
                       reviewers: [
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 5 },
-                        { name: '윤윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '설윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 3 },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 5,
+                        },
+                        {
+                          name: '윤윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '설윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 3,
+                        },
                       ],
                     },
                   ],
                 },
                 docsComments: [
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
                   },
                 ],
                 interviewComments: [
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
                   },
                 ],
               },
@@ -308,9 +505,24 @@ export const timetableMock: TimeTableDay[] = [
                 selfIntroductionContent: {
                   title: '자기소개서 문항 & 포트폴리오',
                   content: [
-                    { question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항', standardDetail: '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명' },
-                    { question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항', standardDetail: '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명' },
-                    { question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항', standardDetail: '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명' },
+                    {
+                      question:
+                        '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                      standardDetail:
+                        '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명',
+                    },
+                    {
+                      question:
+                        '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                      standardDetail:
+                        '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명',
+                    },
+                    {
+                      question:
+                        '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                      standardDetail:
+                        '자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명자소서 문항에 대한 자세한 설명',
+                    },
                   ],
                 },
                 portfolioFile: {
@@ -320,7 +532,8 @@ export const timetableMock: TimeTableDay[] = [
                 },
                 interviewQuestions: [
                   {
-                    question: '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
+                    question:
+                      '자소서문항 자소서문항 자소서문항 자소서문항 자소서문항자소서문항자소서문항',
                     src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
                     name: '이채원',
                     alt: '미카사',
@@ -332,50 +545,108 @@ export const timetableMock: TimeTableDay[] = [
                     {
                       question: '면접 평가 기준 관련된 내용',
                       standard: '의사소통 능력',
-                      standardDetail: ' 면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용',
+                      standardDetail:
+                        ' 면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용면접 평가 기준과 관련된 자세한 내용',
                       reviewers: [
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 5 },
-                        { name: '윤윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '설윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 3 },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 5,
+                        },
+                        {
+                          name: '윤윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '설윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 3,
+                        },
                       ],
                     },
                   ],
                 },
                 docsComments: [
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 서류평가때 메모했던 내용 자동으로 뜨게}',
                   },
                 ],
                 interviewComments: [
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
                   },
                   {
-                    user: { name: '장윤영', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
-                    comment: '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
+                    user: {
+                      name: '장윤영',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
+                    comment:
+                      '{어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게} {어쩌구저쩌구 면접평가때 메모했던 내용 자동으로 뜨게}',
                   },
                 ],
               },
             ],
-            interviewers: Array(5).fill({ src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' }),
+            interviewers: Array(5).fill({
+              src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+              name: '이채원',
+            }),
             guides: [
-              { src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' },
-              { src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' },
-              { src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' },
+              {
+                src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                name: '이채원',
+              },
+              {
+                src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                name: '이채원',
+              },
+              {
+                src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                name: '이채원',
+              },
             ],
             color: '#D9FFE2',
           },
@@ -391,7 +662,7 @@ export const timetableMock: TimeTableDay[] = [
         slots: [
           {
             startTime: '11:00',
-            endTime: '11:30',
+            endTime: '11:15',
             applicants: [
               {
                 id: 'f1',
@@ -399,8 +670,14 @@ export const timetableMock: TimeTableDay[] = [
                 selfIntroductionContent: {
                   title: '자기소개서 문항 & 포트폴리오',
                   content: [
-                    { question: '1. 자기소개 질문', standardDetail: '자소서 평가 기준 관련 상세 설명…' },
-                    { question: '2. 자기소개 질문', standardDetail: '자소서 평가 기준 관련 상세 설명…' },
+                    {
+                      question: '1. 자기소개 질문',
+                      standardDetail: '자소서 평가 기준 관련 상세 설명…',
+                    },
+                    {
+                      question: '2. 자기소개 질문',
+                      standardDetail: '자소서 평가 기준 관련 상세 설명…',
+                    },
                   ],
                 },
                 portfolioFile: {
@@ -436,9 +713,24 @@ export const timetableMock: TimeTableDay[] = [
                       standard: '의사소통 능력',
                       standardDetail: '명확한 전달력과 경청 능력 평가…',
                       reviewers: [
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 5 },
-                        { name: '윤윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '설윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 3 },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 5,
+                        },
+                        {
+                          name: '윤윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '설윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 3,
+                        },
                       ],
                     },
                     {
@@ -446,22 +738,45 @@ export const timetableMock: TimeTableDay[] = [
                       standard: '문제 해결력',
                       standardDetail: '논리적 사고와 창의적 대안 제시 평가…',
                       reviewers: [
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 5 },
-                        { name: '윤윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '설윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 3 },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 5,
+                        },
+                        {
+                          name: '윤윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '설윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 3,
+                        },
                       ],
                     },
                   ],
                 },
                 docsComments: [
                   {
-                    user: { name: '홍길동', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
+                    user: {
+                      name: '홍길동',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
                     comment: '굿굿굿굿',
                   },
                 ],
                 interviewComments: [
                   {
-                    user: { name: '홍길동', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
+                    user: {
+                      name: '홍길동',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
                     comment: '굿굿굿굿',
                   },
                 ],
@@ -472,8 +787,14 @@ export const timetableMock: TimeTableDay[] = [
                 selfIntroductionContent: {
                   title: '자기소개서 문항 & 포트폴리오',
                   content: [
-                    { question: '1. 자기소개 질문', standardDetail: '자소서 평가 기준 관련 상세 설명…' },
-                    { question: '2. 자기소개 질문', standardDetail: '자소서 평가 기준 관련 상세 설명…' },
+                    {
+                      question: '1. 자기소개 질문',
+                      standardDetail: '자소서 평가 기준 관련 상세 설명…',
+                    },
+                    {
+                      question: '2. 자기소개 질문',
+                      standardDetail: '자소서 평가 기준 관련 상세 설명…',
+                    },
                   ],
                 },
                 portfolioFile: {
@@ -509,9 +830,24 @@ export const timetableMock: TimeTableDay[] = [
                       standard: '리더십 역량',
                       standardDetail: '팀을 이끄는 능력과 책임감 평가…',
                       reviewers: [
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
                       ],
                     },
                     {
@@ -519,32 +855,67 @@ export const timetableMock: TimeTableDay[] = [
                       standard: '전략적 기획력',
                       standardDetail: '목표 설정과 실행 계획 평가…',
                       reviewers: [
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
                       ],
                     },
                   ],
                 },
                 docsComments: [
                   {
-                    user: { name: '김영희', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '김영희' },
+                    user: {
+                      name: '김영희',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '김영희',
+                    },
                     comment: '포트폴리오가 인상적입니다.',
                   },
                 ],
                 interviewComments: [
                   {
-                    user: { name: '김영희', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '김영희' },
+                    user: {
+                      name: '김영희',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '김영희',
+                    },
                     comment: '발표가 훌륭했습니다.',
                   },
                 ],
               },
             ],
-            interviewers: Array(5).fill({ src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' }),
+            interviewers: Array(5).fill({
+              src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+              name: '이채원',
+            }),
             guides: [
-              { src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' },
-              { src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' },
-              { src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' },
+              {
+                src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                name: '이채원',
+              },
+              {
+                src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                name: '이채원',
+              },
+              {
+                src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                name: '이채원',
+              },
             ],
             color: '#FFEEDE',
           },
@@ -555,7 +926,7 @@ export const timetableMock: TimeTableDay[] = [
         slots: [
           {
             startTime: '11:00',
-            endTime: '11:30',
+            endTime: '11:15',
             applicants: [
               {
                 id: 'f1',
@@ -563,8 +934,14 @@ export const timetableMock: TimeTableDay[] = [
                 selfIntroductionContent: {
                   title: '자기소개서 문항 & 포트폴리오',
                   content: [
-                    { question: '1. 자기소개 질문', standardDetail: '자소서 평가 기준 관련 상세 설명…' },
-                    { question: '2. 자기소개 질문', standardDetail: '자소서 평가 기준 관련 상세 설명…' },
+                    {
+                      question: '1. 자기소개 질문',
+                      standardDetail: '자소서 평가 기준 관련 상세 설명…',
+                    },
+                    {
+                      question: '2. 자기소개 질문',
+                      standardDetail: '자소서 평가 기준 관련 상세 설명…',
+                    },
                   ],
                 },
                 portfolioFile: {
@@ -600,9 +977,24 @@ export const timetableMock: TimeTableDay[] = [
                       standard: '의사소통 능력',
                       standardDetail: '명확한 전달력과 경청 능력 평가…',
                       reviewers: [
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 5 },
-                        { name: '윤윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '설윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 3 },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 5,
+                        },
+                        {
+                          name: '윤윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '설윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 3,
+                        },
                       ],
                     },
                     {
@@ -610,22 +1002,45 @@ export const timetableMock: TimeTableDay[] = [
                       standard: '문제 해결력',
                       standardDetail: '논리적 사고와 창의적 대안 제시 평가…',
                       reviewers: [
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 5 },
-                        { name: '윤윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '설윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 3 },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 5,
+                        },
+                        {
+                          name: '윤윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '설윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 3,
+                        },
                       ],
                     },
                   ],
                 },
                 docsComments: [
                   {
-                    user: { name: '홍길동', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
+                    user: {
+                      name: '홍길동',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
                     comment: '굿굿굿굿',
                   },
                 ],
                 interviewComments: [
                   {
-                    user: { name: '홍길동', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '홍길동' },
+                    user: {
+                      name: '홍길동',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '홍길동',
+                    },
                     comment: '굿굿굿굿',
                   },
                 ],
@@ -636,8 +1051,14 @@ export const timetableMock: TimeTableDay[] = [
                 selfIntroductionContent: {
                   title: '자기소개서 문항 & 포트폴리오',
                   content: [
-                    { question: '1. 자기소개 질문', standardDetail: '자소서 평가 기준 관련 상세 설명…' },
-                    { question: '2. 자기소개 질문', standardDetail: '자소서 평가 기준 관련 상세 설명…' },
+                    {
+                      question: '1. 자기소개 질문',
+                      standardDetail: '자소서 평가 기준 관련 상세 설명…',
+                    },
+                    {
+                      question: '2. 자기소개 질문',
+                      standardDetail: '자소서 평가 기준 관련 상세 설명…',
+                    },
                   ],
                 },
                 portfolioFile: {
@@ -673,9 +1094,24 @@ export const timetableMock: TimeTableDay[] = [
                       standard: '리더십 역량',
                       standardDetail: '팀을 이끄는 능력과 책임감 평가…',
                       reviewers: [
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
                       ],
                     },
                     {
@@ -683,32 +1119,67 @@ export const timetableMock: TimeTableDay[] = [
                       standard: '전략적 기획력',
                       standardDetail: '목표 설정과 실행 계획 평가…',
                       reviewers: [
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
-                        { name: '장윤영', avatar: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', score: 4 },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
+                        {
+                          name: '장윤영',
+                          avatar:
+                            'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                          score: 4,
+                        },
                       ],
                     },
                   ],
                 },
                 docsComments: [
                   {
-                    user: { name: '김영희', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '김영희' },
+                    user: {
+                      name: '김영희',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '김영희',
+                    },
                     comment: '포트폴리오가 인상적입니다.',
                   },
                 ],
                 interviewComments: [
                   {
-                    user: { name: '김영희', src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', alt: '김영희' },
+                    user: {
+                      name: '김영희',
+                      src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                      alt: '김영희',
+                    },
                     comment: '발표가 훌륭했습니다.',
                   },
                 ],
               },
             ],
-            interviewers: Array(5).fill({ src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' }),
+            interviewers: Array(5).fill({
+              src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+              name: '이채원',
+            }),
             guides: [
-              { src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' },
-              { src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' },
-              { src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg', name: '이채원' },
+              {
+                src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                name: '이채원',
+              },
+              {
+                src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                name: '이채원',
+              },
+              {
+                src: 'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
+                name: '이채원',
+              },
             ],
             color: '#D9FFE2',
           },
@@ -717,6 +1188,16 @@ export const timetableMock: TimeTableDay[] = [
     ],
   },
 ];
+
+export interface InterviewScheduleItem {
+  date: string;
+  startTime: string; // "HH:MM"
+  endTime: string; // "HH:MM"
+}
+export interface InterviewSchedule {
+  isSelected: boolean;
+  scheduleList: InterviewScheduleItem[];
+}
 
 export const ALL_INTERVIEWERS: ProfileItem[] = [
   {

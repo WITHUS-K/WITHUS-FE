@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { ROUTES } from './routes';
 
-// 공개 경로 상수 리스트 (string[] 타입으로 선언하여 includes에 문자열 타입 사용 가능)
 const publicPaths: string[] = [
   ROUTES.LOGIN,
   ROUTES.JOIN.BASE,
@@ -12,7 +11,6 @@ const publicPaths: string[] = [
   ROUTES.PASSWORD.COMPLETE,
 ];
 
-// 공개 경로 패턴 리스트
 const publicPathPatterns = [
   /^\/join\/[1-4](\?type=(user|admin))?$/,
   /^\/join\/3\/club-search(\?.*)?$/,

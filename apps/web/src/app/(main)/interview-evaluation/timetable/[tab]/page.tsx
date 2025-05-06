@@ -1,4 +1,3 @@
-// app/interview-evaluation/timetable/[tab]/page.tsx
 'use client';
 import { useParams } from 'next/navigation';
 import { Flex } from '@repo/ui/Flex';
@@ -41,6 +40,8 @@ export default function TimetableTabPage() {
                 tab={activeTab}
                 slotData={room.slots}
                 date={date!}
+                startHour={10}
+                interval={30}
               />
             )}
           />

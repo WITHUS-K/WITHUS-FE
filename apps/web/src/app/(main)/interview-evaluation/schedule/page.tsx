@@ -56,7 +56,7 @@ export default function SchedulePage() {
               key={isoDate}
               startHour={10}
               endHour={18}
-              interval={30}
+              interval={15}
               onRangeSelect={handleRangeSelect}
               width="40rem"
               title={label}

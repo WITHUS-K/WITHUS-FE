@@ -8,6 +8,7 @@ import { INITIAL_SELECTED } from '@web/constants/organization';
 import { User } from '@web/types/organization';
 import InviteHeader from '../../_components/InviteModal/InviteHeader';
 import { Toast } from '@repo/ui/Toast';
+import { useToast } from '@repo/ui/hooks';
 
 export default function InviteModal() {
   const router = useRouter();
@@ -16,8 +17,7 @@ export default function InviteModal() {
   // 상태: 검색어 & 선택된 유저 목록
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<User[]>(INITIAL_SELECTED);
-  // 토스트 open 상태
-  const [toastOpen, setToastOpen] = useState(false);
+  const toast = useToast();
 
   // 검색어 변경 핸들러
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +31,7 @@ export default function InviteModal() {
 
   // 링크 복사
   const handleCopyLink = () => {
-    setToastOpen(true);
+    toast.success('초대 링크가 복사되었습니다.', 3000);
     // 링크 복사 로직 추가
   };
 
@@ -65,15 +65,6 @@ export default function InviteModal() {
           </Modal.Footer>
         </Modal.Layout>
       </Modal.Overlay>
-
-      {/* 토스트 알림 */}
-      <Toast
-        open={toastOpen}
-        toastType="success"
-        onClose={() => setToastOpen(false)}
-      >
-        초대 링크가 복사되었습니다.
-      </Toast>
     </>
   );
 }

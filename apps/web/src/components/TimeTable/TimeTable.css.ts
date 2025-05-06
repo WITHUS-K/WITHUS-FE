@@ -45,10 +45,11 @@ export const cell = style({
   justifyContent: 'center',
   position: 'relative',
   height: '4.2rem',
+
   borderBottom: `1px solid ${vars.colors.grayscale20}`,
 });
 
-export const fullHour = style({
+export const dotted = style({
   borderBottom: `1px dotted ${vars.colors.grayscale20}`,
 });
 
@@ -62,5 +63,39 @@ export const cellWrapper = style({
 });
 
 export const selected = style({
-  backgroundColor: vars.colors.primary10,
+  backgroundColor: vars.colors.primary20,
+});
+
+export const unavailable = style({
+  backgroundColor: vars.colors.grayscale10,
+  pointerEvents: 'none',
+  cursor: 'not-allowed',
+});
+
+export const selectedDotted = style({
+  backgroundColor: vars.colors.primary20,
+  borderBottom: `1px dotted ${vars.colors.primary40}`,
+});
+
+export const selectedSolid = style({
+  backgroundColor: vars.colors.primary20,
+  borderBottom: `1px solid ${vars.colors.primary40}`,
+});
+
+export const unavailableDotted = style({
+  backgroundColor: vars.colors.grayscale10,
+  pointerEvents: 'none',
+  cursor: 'not-allowed',
+  borderBottom: `1px dotted ${vars.colors.grayscale20}`,
+});
+
+export const unavailableSolid = style({
+  backgroundColor: vars.colors.grayscale10,
+  pointerEvents: 'none',
+  cursor: 'not-allowed',
+  borderBottom: `1px solid ${vars.colors.grayscale20}`,
+});
+
+export const noBorder = style({
+  borderBottom: 'none',
 });

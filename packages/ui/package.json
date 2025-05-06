@@ -111,6 +111,14 @@
     "./FileUploader": {
       "types": "./dist/components/FileUploader/index.d.ts",
       "import": "./dist/components/FileUploader/index.js"
+    },
+    "./Radio": {
+      "types": "./dist/components/Radio/index.d.ts",
+      "import": "./dist/components/Radio/index.js"
+    },
+    "./Option": {
+      "types": "./dist/components/Option/index.d.ts",
+      "import": "./dist/components/Option/index.js"
     }
   },
   "main": "./dist/index.js",
