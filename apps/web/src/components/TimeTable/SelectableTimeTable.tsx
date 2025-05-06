@@ -71,6 +71,15 @@ export function SelectableTimeTable({
     });
   }, [interviewSchedule, startHour, endHour, interval]);
 
+  const handleMouseDown = useCallback(
+    (row: number) => {
+      if (selectable && !disabledRows[row]) {
+        handlers.onMouseDown(row);
+      }
+    },
+    [selectable, disabledRows, handlers]
+  );
+
   const selectedRows = useMemo(
     () =>
       selectable
@@ -111,11 +120,7 @@ export function SelectableTimeTable({
             key={row}
             className={wrapperClass}
             // selectable=true 일 때만 이벤트 연결
-            onMouseDown={
-              !isDisabled && selectable
-                ? () => handlers.onMouseDown(row)
-                : undefined
-            }
+            onMouseDown={() => handleMouseDown(row)}
             onMouseEnter={
               !isDisabled && selectable
                 ? () => handlers.onMouseEnter(row)
