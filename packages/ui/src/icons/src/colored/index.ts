@@ -1,3 +1,4 @@
+export { default as Error } from './Error';
 export { default as IcAdminActive } from './IcAdminActive';
 export { default as IcAdminDefault } from './IcAdminDefault';
 export { default as IcAdminHover } from './IcAdminHover';
@@ -6,7 +7,6 @@ export { default as IcAuthLogo } from './IcAuthLogo';
 export { default as IcCalendar } from './IcCalendar';
 export { default as IcCheckCopy } from './IcCheckCopy';
 export { default as IcCheck } from './IcCheck';
-export { default as IcClubModalError } from './IcClubModalError';
 export { default as IcDelete } from './IcDelete';
 export { default as IcDeleteLg } from './IcDeleteLg';
 export { default as IcDownload } from './IcDownload';
