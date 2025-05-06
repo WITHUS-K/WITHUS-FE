@@ -50,12 +50,10 @@ export const dropdownListWrapper = style({
   left: 0,
   zIndex: 3,
 
-  // borderRadius / boxShadow / background 은 wrapper 에 주고
   borderRadius: '12px',
   backgroundColor: vars.colors.white,
   boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.10)',
 
-  // overflow: hidden 으로 스크롤바가 wrapper 밖으로 나가지 않도록
   overflow: 'hidden',
 });
 
@@ -64,7 +62,6 @@ export const dropdownListInner = style({
   flexDirection: 'column',
   gap: '0.4rem',
 
-  // 실제 스크롤은 여기서 처리
   maxHeight: '22rem',
   overflowY: 'auto',
   padding: '0.4rem',
@@ -111,8 +108,8 @@ export const dropdownItemSelected = style({
 
 // padding-inline: text vs element
 export const dropdownItemPadding = styleVariants({
-  text: { paddingInline: '1.6rem' },
-  element: { paddingInline: '0.6rem' },
+  text: { padding: '0.5rem 1.6rem' },
+  element: { padding: '0.5rem 0.6rem' },
 });
 
 // font style: small vs large

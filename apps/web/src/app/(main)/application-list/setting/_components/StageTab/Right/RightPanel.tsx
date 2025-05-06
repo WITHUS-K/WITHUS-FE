@@ -59,7 +59,7 @@ export default function RightPanel() {
       )}
 
       {typeof active === 'string' && active.startsWith('interview') && (
-        <InterviewPanel />
+        <InterviewPanel key={active} />
       )}
 
       {active === 'final' && (

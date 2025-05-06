@@ -109,7 +109,24 @@ export const right = style({
   justifyContent: 'center',
 });
 
-export const emptyState = style({
-  ...fontStyles.md1_text_semibold,
-  color: vars.colors.grayscale30,
+export const timescroll = style({
+  display: 'flex',
+  width: '100%',
+  flexDirection: 'column',
+  height: '35.5rem',
+  overflowY: 'auto',
+  gap: '1.6rem',
+
+  selectors: {
+    '&::-webkit-scrollbar': {
+      width: '2px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: vars.colors.grayscale10,
+      borderRadius: '4px',
+    },
+    '&::-webkit-scrollbar-track': {
+      background: 'transparent',
+    },
+  },
 });

@@ -22,11 +22,10 @@ import { IcPlusCircle } from '@repo/ui/icons/mono';
 export default function LeftPanel() {
   const { watch, control, setValue } = useFormContext<FormValues>();
 
-  // interviewSchedule.scheduleList를 다루는 useFieldArray
   const scheduleList = useWatch<FormValues, 'interviewSchedule.scheduleList'>({
     control,
     name: 'interviewSchedule.scheduleList',
-    defaultValue: [], // InterviewScheduleItem[]
+    defaultValue: [],
   });
 
   const { append } = useFieldArray({
@@ -42,28 +41,21 @@ export default function LeftPanel() {
   const schedOn = watch('interviewSchedule.isSelected');
   const finalDate = watch('finalResultDate');
 
-  /*useEffect(() => {
-    if (fields.length === 0) {
-      append({ date: '', startTime: '', endTime: '' });
-    }
-  }, [fields.length, append]);*/
-
-  // 우측 패널 열기 (섹션 or 인터뷰-인덱스)
-  // 섹션 열기 → activeSection 필드 업데이트
-
-  // 3) 날짜별로 그룹핑
+  // 날짜별로 그룹핑
   const groupMap = new Map<string, InterviewScheduleItem[]>();
   scheduleList.forEach((slot) => {
-    const arr = groupMap.get(slot.date) || [];
+    const key = slot.date; // '' 또는 'YYYY-MM-DD'
+    const arr = groupMap.get(key) || [];
     arr.push(slot);
-    groupMap.set(slot.date, arr);
+    groupMap.set(key, arr);
   });
+
   const groups = Array.from(groupMap.entries()).map(([date, slots]) => ({
     date,
     slots,
   }));
 
-  // 4) 빈 상태일 때도 한 개 컨테이너 그리기
+  // 빈 상태일 때도 한 개 컨테이너 그리기
   const displayGroups =
     groups.length > 0
       ? groups
@@ -71,10 +63,6 @@ export default function LeftPanel() {
 
   const openSection = (sec: string) => () => {
     setValue('activeSection', sec);
-  };
-  // 인터뷰 블록 열기 → 'interview-<idx>' 형태로 저장
-  const openInterview = (idx: number) => () => {
-    setValue('activeSection', `interview-${idx}`);
   };
 
   return (
