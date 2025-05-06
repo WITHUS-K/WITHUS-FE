@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useFormContext, Controller } from 'react-hook-form';
+import { useFormContext, Controller, useWatch } from 'react-hook-form';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { IcTrash } from '@repo/ui/icons/colored';
@@ -23,11 +23,27 @@ interface Props {
 }
 
 export default function DetailItemCard({ index, onRemove }: Props) {
-  const { control, watch, setValue } = useFormContext();
-  const type = watch(`detailItems.${index}.type`) as 'text' | 'file';
+  const { control, setValue } = useFormContext();
+
+  const type = useWatch({
+    control,
+    name: `detailItems.${index}.type`,
+    defaultValue: 'text',
+  }) as 'text' | 'file';
+
   useEffect(() => {
+    // description 초기화
     setValue(`detailItems.${index}.description`, '');
     setValue(`detailItems.${index}.addDescription`, '');
+
+    // typeInfo 드롭다운 초기화
+    if (type === 'text') {
+      setValue(`detailItems.${index}.typeInfo.info`, C.BLANK_OPTIONS[0]);
+      setValue(`detailItems.${index}.typeInfo.infoDetail`, C.CHAR_LIMITS[2]);
+    } else {
+      setValue(`detailItems.${index}.typeInfo.info`, C.FILE_COUNTS[0]);
+      setValue(`detailItems.${index}.typeInfo.infoDetail`, C.FILE_SIZES[2]);
+    }
   }, [type, index, setValue]);
 
   return (
