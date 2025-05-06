@@ -64,6 +64,8 @@ export interface ApplicationFormProps {
   paperEvaluateItems: EvaluationItem[];
   interviewEvaluateStandard: 'score' | 'level';
   interviewEvaluateItems: EvaluationItem[];
+
+  activeSection?: string;
 }
 
 // react-hook-form에서 쓸 타입으로 alias

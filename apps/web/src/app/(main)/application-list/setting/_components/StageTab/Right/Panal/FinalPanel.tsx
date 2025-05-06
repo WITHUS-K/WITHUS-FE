@@ -1,0 +1,26 @@
+// components/StageTab/panels/FinalPanel.tsx
+'use client';
+
+import React from 'react';
+import CommonSectionPanel from './CommonSectionPanel';
+import { IcPanalPass } from '@repo/ui/icons/colored';
+
+interface FinalPanelProps {
+  selectedDate: Date;
+  onSelect: (date: Date) => void;
+}
+
+export default function FinalPanel({
+  selectedDate,
+  onSelect,
+}: FinalPanelProps) {
+  return (
+    <CommonSectionPanel
+      title="최종 합격 발표"
+      selectedDate={selectedDate}
+      onSelect={onSelect}
+      icon={<IcPanalPass width={48} height={48} />}
+      helperText={`단체 메일과 문자를 통해\n최종 합격을 안내합니다.`}
+    />
+  );
+}

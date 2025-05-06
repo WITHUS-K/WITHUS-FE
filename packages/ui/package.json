@@ -135,6 +135,10 @@
     "./TextToggleSwitch": {
       "types": "./dist/components/ToggleSwitch/index.d.ts",
       "import": "./dist/components/ToggleSwitch/index.js"
+    },
+    "./DatePicker": {
+      "types": "./dist/components/DatePicker/index.d.ts",
+      "import": "./dist/components/DatePicker/index.js"
     }
   },
   "main": "./dist/index.js",

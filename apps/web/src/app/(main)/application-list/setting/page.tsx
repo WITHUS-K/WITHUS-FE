@@ -14,6 +14,7 @@ import { Text } from '@repo/ui/Text';
 import { FormValues } from '@web/types/application';
 import FormTab from './_components/FormTab/FormTab';
 import { SettingContext } from './_context/SettingContext';
+import StageTab from './_components/StageTab/StageTab';
 
 type TabKey = 'form' | 'stages' | 'criteria';
 const TAB_KEYS: TabKey[] = ['form', 'stages', 'criteria'];
@@ -129,7 +130,7 @@ export default function SettingPage() {
           style={{ width: '100%', display: 'flex' }}
         >
           {activeTab === 'form' && <FormTab />}
-          {activeTab === 'stages' && <>stages</>}
+          {activeTab === 'stages' && <StageTab />}
           {activeTab === 'criteria' && <>criteria</>}
         </form>
       </Flex>

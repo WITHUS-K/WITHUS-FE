@@ -43,20 +43,45 @@ export const scoreTriggerStyle = style({
   boxSizing: 'border-box',
 });
 
-export const dropdownListStyle = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '0.4rem',
+export const dropdownListWrapper = style({
   position: 'absolute',
   top: '100%',
   marginTop: '0.8rem',
   left: 0,
   zIndex: 3,
-  overflow: 'hidden',
+
+  // borderRadius / boxShadow / background 은 wrapper 에 주고
   borderRadius: '12px',
   backgroundColor: vars.colors.white,
-  padding: '0.4rem',
   boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.10)',
+
+  // overflow: hidden 으로 스크롤바가 wrapper 밖으로 나가지 않도록
+  overflow: 'hidden',
+});
+
+export const dropdownListInner = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.4rem',
+
+  // 실제 스크롤은 여기서 처리
+  maxHeight: '22rem',
+  overflowY: 'auto',
+  padding: '0.4rem',
+
+  // 스크롤바 스타일
+  selectors: {
+    '&::-webkit-scrollbar': {
+      width: '2px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: vars.colors.grayscale10,
+      borderRadius: '4px',
+    },
+    '&::-webkit-scrollbar-track': {
+      background: 'transparent',
+    },
+  },
 });
 
 export const dropdownItemBase = style({

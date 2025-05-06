@@ -1,6 +1,6 @@
 import { ComponentPropsWithoutRef, CSSProperties } from 'react';
 import { useDropdownContext } from './context';
-import { dropdownListStyle } from './Dropdown.css';
+import { dropdownListWrapper, dropdownListInner } from './Dropdown.css';
 
 export interface DropdownListProps extends ComponentPropsWithoutRef<'ul'> {
   width?: string;
@@ -21,8 +21,10 @@ export default function DropdownList({
   };
 
   return (
-    <ul className={dropdownListStyle} style={mergedStyle} {...props}>
-      {children}
-    </ul>
+    <div className={dropdownListWrapper} style={mergedStyle}>
+      <ul className={dropdownListInner} {...props}>
+        {children}
+      </ul>
+    </div>
   );
 }

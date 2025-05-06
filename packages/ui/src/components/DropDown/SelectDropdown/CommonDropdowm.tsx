@@ -10,6 +10,7 @@ export interface CommonDropdownProps<T extends string>
   options: T[];
   value?: T;
   onSelect: (val: T) => void;
+  placeholder?: string;
   /** 트리거 높이 */
   triggerHeight?: string;
   /** 드롭다운 전체 너비 */
@@ -28,11 +29,11 @@ export default function CommonDropdown<T extends string>({
   listWidth = '16rem',
   itemHeight = '3.2rem',
   itemSize = 'small',
+  placeholder,
   style,
   ...rest
 }: CommonDropdownProps<T>) {
-  const selected = value ?? options[0]!;
-
+  const selected = value ?? placeholder ?? options[0]!;
   return (
     <Dropdown {...rest} style={style}>
       <Dropdown.Trigger>
