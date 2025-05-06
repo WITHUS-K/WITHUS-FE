@@ -10,7 +10,7 @@ import RightPanel from './Right/RightPanel';
 export default function StageTab() {
   const { watch } = useFormContext();
   return (
-    <Flex width="100%" gap="2rem" marginTop="4rem">
+    <Flex width="100%" gap="2rem" marginTop="4rem" paddingBottom="5rem">
       <LeftPanel />
       <RightPanel />
     </Flex>

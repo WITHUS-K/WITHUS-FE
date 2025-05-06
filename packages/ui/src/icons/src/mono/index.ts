@@ -11,6 +11,7 @@ export { default as IcDateArrowLeft } from './IcDateArrowLeft';
 export { default as IcDateArrowRight } from './IcDateArrowRight';
 export { default as IcDeleteRight } from './IcDeleteRight';
 export { default as IcHeaderAlarm } from './IcHeaderAlarm';
+export { default as IcInfo } from './IcInfo';
 export { default as IcLink } from './IcLink';
 export { default as IcLinkCopy } from './IcLinkCopy';
 export { default as IcPlus } from './IcPlus';
