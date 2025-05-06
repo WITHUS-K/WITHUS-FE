@@ -1,4 +1,3 @@
-// components/StageTab/panels/FinalPanel.tsx
 'use client';
 
 import React from 'react';

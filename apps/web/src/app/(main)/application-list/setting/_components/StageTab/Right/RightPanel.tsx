@@ -1,4 +1,3 @@
-// components/StageTab/RightPanel.tsx
 'use client';
 
 import React from 'react';

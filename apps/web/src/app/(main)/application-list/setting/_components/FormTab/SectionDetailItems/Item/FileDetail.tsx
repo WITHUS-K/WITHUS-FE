@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { useFormContext, Controller } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import { BaseInput } from '@repo/ui/BaseInput';
-import { Flex } from '@repo/ui/Flex';
+import type { FormValues } from '@web/types/application';
 import BorderlessInput from './BorderlessInput';
 
 interface Props {
@@ -11,14 +11,14 @@ interface Props {
 }
 
 export default function FileDetail({ index }: Props) {
-  const { control, register } = useFormContext();
+  const { control } = useFormContext<FormValues>();
 
   return (
-    <Flex direction="column" gap="1.6rem" width="100%">
-      {/* 제목 입력: Controller + BaseInput */}
+    <>
       <Controller
-        name={`detailItems.${index}.description` as const}
+        name={`detailItems.${index}.description`}
         control={control}
+        defaultValue=""
         rules={{ required: true }}
         render={({ field }) => (
           <BaseInput
@@ -32,12 +32,13 @@ export default function FileDetail({ index }: Props) {
           />
         )}
       />
-
-      {/* 추가 설명: borderless */}
       <BorderlessInput
-        {...register(`detailItems.${index}.addDescription` as const)}
+        defaultValue={
+          control._formValues.detailItems?.[index]?.addDescription ?? ''
+        }
+        {...control.register(`detailItems.${index}.addDescription`)}
         placeholder="추가적인 설명을 작성해주세요."
       />
-    </Flex>
+    </>
   );
 }

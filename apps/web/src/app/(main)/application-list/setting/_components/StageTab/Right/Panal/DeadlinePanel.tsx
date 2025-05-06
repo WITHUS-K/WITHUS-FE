@@ -1,4 +1,3 @@
-// components/StageTab/panels/DeadlinePanel.tsx
 'use client';
 
 import React from 'react';

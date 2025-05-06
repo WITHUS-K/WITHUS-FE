@@ -32,7 +32,55 @@ export default function SettingPage() {
   const methods = useForm<FormValues>({
     defaultValues: ctx.form,
     mode: 'onChange',
+    criteriaMode: 'all',
   });
+
+  const title = methods.watch('title') ?? '';
+  const basicInfo = methods.watch('basicInfo') ?? {
+    birthDate: false,
+    gender: false,
+    address: false,
+    school: false,
+    major: false,
+    academicStatus: false,
+  };
+  const detailItems = methods.watch('detailItems') ?? [];
+  const deadline = methods.watch('deadline') ?? '';
+  const interviewDuration = methods.watch('interviewDuration') ?? '15분';
+  const finalResultDate = methods.watch('finalResultDate') ?? '';
+  const paperEvaluateItems = methods.watch('paperEvaluateItems') ?? [];
+  const interviewEvaluateItems = methods.watch('interviewEvaluateItems') ?? [];
+
+  // 2) 각각 검증
+  const isTitleOk = !!title.trim();
+  const isBasicInfoOk = Object.values(basicInfo).some((v) => v);
+  const isDetailItemsOk =
+    detailItems.length > 0 &&
+    detailItems.every((d) => d.description.trim().length > 0);
+  const isDeadlineOk = !!deadline;
+  const isDurationOk = !!interviewDuration;
+  const isFinalOk = !!finalResultDate;
+  const isPaperItemsOk =
+    paperEvaluateItems.length > 0 &&
+    paperEvaluateItems.every(
+      (p) => p.evaluate.trim().length > 0 && p.evaluateDetail.trim().length > 0
+    );
+  const isInterviewItemsOk =
+    interviewEvaluateItems.length > 0 &&
+    interviewEvaluateItems.every(
+      (i) => i.evaluate.trim().length > 0 && i.evaluateDetail.trim().length > 0
+    );
+
+  // 3) 최종 결과
+  const canSubmit =
+    isTitleOk &&
+    isBasicInfoOk &&
+    isDetailItemsOk &&
+    isDeadlineOk &&
+    isDurationOk &&
+    isFinalOk &&
+    isPaperItemsOk &&
+    isInterviewItemsOk;
 
   // ④ form 값이 변경될 때마다 Context에도 동기화
   useEffect(() => {
@@ -111,7 +159,7 @@ export default function SettingPage() {
               width="10rem"
               type="submit"
               form="application-form"
-              disabled={!methods.formState.isValid}
+              disabled={!canSubmit}
             >
               완료
             </Button>

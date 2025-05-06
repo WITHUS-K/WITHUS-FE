@@ -1,4 +1,3 @@
-// app/(main)/application-list/setting/_components/CriteriaTab/CriteriaTab.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';

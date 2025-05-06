@@ -1,4 +1,3 @@
-// components/StageTab/panels/DocumentPanel.tsx
 'use client';
 
 import React from 'react';
