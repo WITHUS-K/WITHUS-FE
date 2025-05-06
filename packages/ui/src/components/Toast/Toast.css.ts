@@ -7,10 +7,18 @@ export const container = style({
   left: '50%',
   padding: '0.7rem 1.2rem',
   borderRadius: '12px',
+  transform: 'translateX(-50%)',
   backgroundColor: vars.colors.white,
   color: vars.colors.primary50,
   zIndex: 1000,
   border: `1px solid ${vars.colors.primary20}`,
+
+  // 포커스 시 outline 제거
+  selectors: {
+    '&:focus': {
+      outline: 'none',
+    },
+  },
 });
 
 export const content = style({

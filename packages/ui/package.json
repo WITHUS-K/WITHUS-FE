@@ -120,14 +120,6 @@
       "types": "./dist/components/DropDown/index.d.ts",
       "import": "./dist/components/DropDown/index.js"
     },
-    "./Radio": {
-      "types": "./dist/components/Radio/index.d.ts",
-      "import": "./dist/components/Radio/index.js"
-    },
-    "./Option": {
-      "types": "./dist/components/Option/index.d.ts",
-      "import": "./dist/components/Option/index.js"
-    },
     "./SimpleToggleSwitch": {
       "types": "./dist/components/ToggleSwitch/index.d.ts",
       "import": "./dist/components/ToggleSwitch/index.js"
@@ -139,6 +131,14 @@
     "./DatePicker": {
       "types": "./dist/components/DatePicker/index.d.ts",
       "import": "./dist/components/DatePicker/index.js"
+    },
+    "./Radio": {
+      "types": "./dist/components/Radio/index.d.ts",
+      "import": "./dist/components/Radio/index.js"
+    },
+    "./Option": {
+      "types": "./dist/components/Option/index.d.ts",
+      "import": "./dist/components/Option/index.js"
     }
   },
   "main": "./dist/index.js",

@@ -13,10 +13,19 @@ export interface CellRendererProps {
   row: number;
   tab: Tab;
   slotData: SlotItem[];
+  startHour: number;
+  interval: number;
 }
 
-export function CellRenderer({ date, row, tab, slotData }: CellRendererProps) {
-  const time = formatTimeByRow(row);
+export function CellRenderer({
+  date,
+  row,
+  tab,
+  slotData,
+  startHour,
+  interval,
+}: CellRendererProps) {
+  const time = formatTimeByRow(row, startHour, interval);
 
   const slot = slotData.find((s) => s.startTime === time);
   if (!slot) return null;

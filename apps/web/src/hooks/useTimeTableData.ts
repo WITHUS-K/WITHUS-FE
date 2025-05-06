@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { parseToMin } from '@web/utils/time';
-import { SlotItem } from '@web/constants/timetable';
+import type { SlotItem } from '@web/constants/timetable';
 
 export function useTimeTableData(
   slots: SlotItem[],
@@ -8,37 +8,44 @@ export function useTimeTableData(
   endHour: number,
   interval: number
 ) {
-  const totalRows = ((endHour - startHour) * 60) / interval;
+  const rowsPerHour = 60 / interval;
+  const totalRows = (endHour - startHour) * rowsPerHour;
 
-  const slotsMin = slots.map((s) => ({
-    startMin: parseToMin(s.startTime),
-    endMin: parseToMin(s.endTime),
-    color: s.color,
-  }));
-
-  const rowBgColors = useMemo(() => {
-    const colors: (string | undefined)[] = Array(totalRows).fill(undefined);
-    for (const { startMin, endMin, color } of slotsMin) {
-      const startIdx = Math.max(
-        0,
-        Math.floor((startMin - startHour * 60) / interval)
-      );
-      const endIdx = Math.min(
-        totalRows,
-        Math.ceil((endMin - startHour * 60) / interval)
-      );
-      for (let i = startIdx; i < endIdx; i++) {
-        colors[i] = color;
+  // slot.startTime ~ slot.endTime 의 row 구간 모두 Map 에 기록
+  const slotMap = useMemo(() => {
+    const m = new Map<number, SlotItem>();
+    for (const slot of slots) {
+      const startMin = parseToMin(slot.startTime);
+      const endMin = parseToMin(slot.endTime);
+      // 시작 row, 끝 row 계산
+      const startRow = Math.floor((startMin - startHour * 60) / interval);
+      const endRow = Math.ceil((endMin - startHour * 60) / interval);
+      // 범위 내 모든 row 에 slot 기록
+      for (let r = startRow; r < endRow; r++) {
+        if (r >= 0 && r < totalRows) m.set(r, slot);
       }
     }
-    return colors;
-  }, [slotsMin, totalRows, startHour, interval]);
+    return m;
+  }, [slots, startHour, interval, totalRows]);
 
-  const labels = Array.from({ length: totalRows + 1 }).map((_, i) => {
-    const totalMin = startHour * 60 + i * interval;
-    const hour = Math.floor(totalMin / 60);
-    return totalMin % 60 === 0 ? String(hour) : '';
-  });
+  // rowBgColors: slotMap 에 있으면 slot.color, 없으면 투명
+  const rowBgColors = useMemo(
+    () =>
+      Array.from({ length: totalRows }, (_, i) => {
+        const slot = slotMap.get(i);
+        return slot?.color ?? 'transparent';
+      }),
+    [slotMap, totalRows]
+  );
 
-  return { totalRows, rowBgColors, labels };
+  // labels: 오직 풀아워에만 "HH" 로 표시
+  const labels = useMemo(
+    () =>
+      Array.from({ length: totalRows }, (_, i) =>
+        i % rowsPerHour === 0 ? String(startHour + i / rowsPerHour) : ''
+      ),
+    [startHour, rowsPerHour, totalRows]
+  );
+
+  return { totalRows, rowsPerHour, rowBgColors, labels };
 }

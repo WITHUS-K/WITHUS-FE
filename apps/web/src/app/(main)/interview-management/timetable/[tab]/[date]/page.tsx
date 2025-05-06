@@ -24,11 +24,17 @@ export default function TimetablePage() {
           headers={isAllTab ? ['지원자', '면접관', '안내자'] : undefined}
           startHour={10}
           endHour={18}
-          interval={30}
+          interval={15}
           slots={room.slots}
           width={getWidth(timetable.rooms.length)}
           renderCell={(row) => (
-            <CellRenderer row={row} tab={tab as any} slotData={room.slots} />
+            <CellRenderer
+              row={row}
+              tab={tab as any}
+              slotData={room.slots}
+              startHour={10}
+              interval={15}
+            />
           )}
         />
       ))}
