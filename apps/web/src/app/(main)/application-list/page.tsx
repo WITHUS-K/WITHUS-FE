@@ -4,6 +4,7 @@ import { IcFileUpload, IcRefresh } from '@repo/ui/icons/mono';
 import { dummyRecruitmentCardList } from '@web/constants/recuritmentList';
 import { ChangeEvent, useState } from 'react';
 import { RecruitmentCard } from './_components/RecruitmentCard/RecruitmentCard';
+import { Breadcrumb } from '@repo/ui/Breadcrumb';
 
 export default function ApplicationList() {
   const [search, setSearch] = useState('');
@@ -12,7 +13,17 @@ export default function ApplicationList() {
     setSearch(e.target.value);
   };
   return (
-    <Flex direction="column" width="100%">
+    <Flex
+      direction="column"
+      paddingLeft="2.4rem"
+      paddingTop="1.8rem"
+      paddingRight="2.4rem"
+      paddingBottom="1.8rem"
+      width="100%"
+    >
+      <Breadcrumb style={{ marginBottom: '2.4rem' }}>
+        <Breadcrumb.Item active>지원서 리스트</Breadcrumb.Item>
+      </Breadcrumb>
       {/* 헤더 - 제목 */}
       <Text variant="xl_title_semibold" color="black">
         지원서 리스트
