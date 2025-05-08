@@ -12,6 +12,7 @@ export type Applicant = {
 };
 
 export interface RecruitmentCardProps {
+  id: string;
   /** D-day 카운트 */
   count: number;
   /** 모집 제목 */
@@ -22,6 +23,9 @@ export interface RecruitmentCardProps {
   recruitLink: string;
   /** 포지션별 지원자 정보 리스트 */
   currentApplicantList: Applicant[];
+  onModify?: () => void;
+  onCopy?: () => void;
+  onDelete?: () => void;
 }
 
 export const RecruitmentCard = ({
@@ -30,6 +34,9 @@ export const RecruitmentCard = ({
   dueDate,
   recruitLink,
   currentApplicantList,
+  onModify,
+  onCopy,
+  onDelete,
 }: RecruitmentCardProps) => {
   return (
     <div className={styles.cardWrapper}>
@@ -67,13 +74,13 @@ export const RecruitmentCard = ({
       </Flex>
       {/* 오른쪽 */}
       <Flex gap="0.8rem" marginTop="auto" marginLeft="auto">
-        <button className={styles.iconButton}>
+        <button className={styles.iconButton} onClick={onModify}>
           <IcModify width={32} height={32} />
         </button>
-        <button className={styles.iconButton}>
+        <button className={styles.iconButton} onClick={onCopy}>
           <IcCopy width={32} height={32} />
         </button>
-        <button className={styles.iconButton}>
+        <button className={styles.iconButton} onClick={onDelete}>
           <IcTrash width={32} height={32} />
         </button>
       </Flex>
