@@ -7,7 +7,7 @@ import { SearchInput } from '@repo/ui/SearchInput';
 import { Button } from '@repo/ui/Button';
 import { IcRoleBtn } from '@repo/ui/icons/mono';
 import * as styles from './RolePalettePanel.css';
-import type { RoleSelect } from '@web/types/organization';
+import type { RoleSelect, RoleSelectWithCount } from '@web/types/organization';
 import type { PaletteColor } from '@repo/utils';
 import { RoleEditor } from './RoleEditor';
 import { RoleItem } from './RoleItem';
@@ -26,7 +26,7 @@ const COLOR_OPTIONS: PaletteColor[] = [
 ];
 
 interface Props {
-  roles: RoleSelect[];
+  roles: RoleSelectWithCount[];
   onAddRole: (r: RoleSelect) => void;
   onUpdateRole: (i: number, label: string, color: PaletteColor) => void;
 }
@@ -137,6 +137,7 @@ export default function RolePalettePanel({
                 label={r.label}
                 color={r.color as PaletteColor}
                 search={search}
+                count={r.count}
                 isSelected={isSelected}
                 onClick={() => {
                   setSelectedIdx(isSelected ? null : i);

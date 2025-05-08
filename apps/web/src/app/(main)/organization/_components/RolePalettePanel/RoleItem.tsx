@@ -12,6 +12,7 @@ interface RoleItemProps {
   isSelected: boolean;
   onClick: () => void;
   onDoubleClick: () => void;
+  count?: number;
 }
 
 export function RoleItem({
@@ -21,6 +22,7 @@ export function RoleItem({
   isSelected,
   onClick,
   onDoubleClick,
+  count,
 }: RoleItemProps) {
   const parts = search ? label.split(new RegExp(`(${search})`, 'gi')) : [label];
 
@@ -48,6 +50,9 @@ export function RoleItem({
             <React.Fragment key={idx}>{part}</React.Fragment>
           )
         )}
+      </Text>
+      <Text variant="sm_caption_regular" color="grayscale50">
+        {count}
       </Text>
     </Flex>
   );

@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import OrganizationPageClient from '../OrganizationPageClient';
+
 import InviteModal from '../@modal/(.)invite/page';
+import OrganizationPageClient from '../OrganizationPageClient';
 
 export default function Page() {
   // URL이 /organization/invite 면 modal = ['invite']

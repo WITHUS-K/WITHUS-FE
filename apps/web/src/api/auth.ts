@@ -22,6 +22,8 @@ export async function reissueTokens(tokens: Tokens): Promise<Tokens> {
 
   const newRefreshToken = response.headers.get('refresh-token') ?? '';
 
+  console.log('리이슈 토큰', newAccessToken);
+
   // 3) 쿠키에 저장 (브라우저 측)
   setCookie('accessToken', newAccessToken, { path: '/' });
   setCookie('refreshToken', newRefreshToken, { path: '/' });
