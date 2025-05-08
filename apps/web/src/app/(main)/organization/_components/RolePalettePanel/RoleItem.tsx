@@ -51,7 +51,7 @@ export function RoleItem({
           )
         )}
       </Text>
-      <Text variant="sm_caption_regular" color="grayscale50">
+      <Text variant="sm_caption_regular" color="grayscale40">
         {count}
       </Text>
     </Flex>
