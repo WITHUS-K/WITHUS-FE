@@ -29,7 +29,7 @@ export default function DetailItemCard({ index, onRemove }: Props) {
     control,
     name: `detailItems.${index}.type`,
     defaultValue: 'text',
-  }) as 'text' | 'file';
+  }) as C.DetailType;
 
   useEffect(() => {
     // description 초기화
@@ -58,10 +58,7 @@ export default function DetailItemCard({ index, onRemove }: Props) {
               defaultValue="text"
               render={({ field }) => (
                 <TextToggleSwitch
-                  options={[
-                    { value: 'text', label: '장문형' },
-                    { value: 'file', label: '파일 업로드' },
-                  ]}
+                  options={C.DETAIL_TYPE_OPTIONS}
                   selected={field.value}
                   onChange={field.onChange}
                 />

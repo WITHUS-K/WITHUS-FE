@@ -7,86 +7,78 @@ import { Text } from '@repo/ui/Text';
 import { CommonDropdown } from '@repo/ui/CommonDropdown';
 import * as C from '@web/constants/application';
 
+const TYPE_CONTROL = {
+  text: {
+    titles: ['분량 설정', ''],
+    dropdowns: [
+      {
+        nameSuffix: 'info',
+        options: C.BLANK_OPTIONS,
+        ariaLabel: '분량 유형 선택',
+      },
+      {
+        nameSuffix: 'infoDetail',
+        options: C.CHAR_LIMITS,
+        ariaLabel: '문자 제한 선택',
+      },
+    ],
+  },
+  file: {
+    titles: ['최대 파일 수', '최대 파일 용량'],
+    dropdowns: [
+      {
+        nameSuffix: 'info',
+        options: C.FILE_COUNTS,
+        ariaLabel: '파일 개수 선택',
+      },
+      {
+        nameSuffix: 'infoDetail',
+        options: C.FILE_SIZES,
+        ariaLabel: '파일 용량 선택',
+      },
+    ],
+  },
+} as const;
+
+type TypeKey = keyof typeof TYPE_CONTROL;
+
 interface Props {
   index: number;
-  type: 'text' | 'file';
+  type: TypeKey;
 }
 
 export default function TypeControls({ index, type }: Props) {
   const { control } = useFormContext();
+  const { titles, dropdowns } = TYPE_CONTROL[type];
 
-  if (type === 'text') {
-    return (
-      <Flex direction="column" gap="1.2rem">
-        <Text variant="md1_text_semibold" color="grayscale50">
-          분량 설정
-        </Text>
-        <Flex gap="0.8rem" wrap="wrap">
-          <Controller
-            name={`detailItems.${index}.typeInfo.info` as const}
-            control={control}
-            defaultValue={C.BLANK_OPTIONS[0]}
-            render={({ field }) => (
-              <CommonDropdown
-                options={C.BLANK_OPTIONS}
-                value={field.value}
-                onSelect={field.onChange}
-              />
-            )}
-          />
-          <Controller
-            name={`detailItems.${index}.typeInfo.infoDetail` as const}
-            control={control}
-            defaultValue={C.CHAR_LIMITS[2]}
-            render={({ field }) => (
-              <CommonDropdown
-                options={C.CHAR_LIMITS}
-                value={field.value}
-                onSelect={field.onChange}
-              />
-            )}
-          />
-        </Flex>
-      </Flex>
-    );
-  }
-
-  // type === 'file'
   return (
     <Flex direction="column" gap="1.2rem">
       <Flex align="center" gap="7.5rem">
-        <Text variant="md1_text_semibold" color="grayscale50">
-          최대 파일 수
-        </Text>
-        <Text variant="md1_text_semibold" color="grayscale50">
-          최대 파일 용량
-        </Text>
+        {titles.map((title, idx) =>
+          title ? (
+            <Text key={idx} variant="md1_text_semibold" color="grayscale50">
+              {title}
+            </Text>
+          ) : null
+        )}
       </Flex>
       <Flex gap="0.8rem" wrap="wrap">
-        <Controller
-          name={`detailItems.${index}.typeInfo.info` as const}
-          control={control}
-          defaultValue={C.FILE_COUNTS[0]}
-          render={({ field }) => (
-            <CommonDropdown
-              options={C.FILE_COUNTS}
-              value={field.value}
-              onSelect={field.onChange}
-            />
-          )}
-        />
-        <Controller
-          name={`detailItems.${index}.typeInfo.infoDetail` as const}
-          control={control}
-          defaultValue={C.FILE_SIZES[2]}
-          render={({ field }) => (
-            <CommonDropdown
-              options={C.FILE_SIZES}
-              value={field.value}
-              onSelect={field.onChange}
-            />
-          )}
-        />
+        {dropdowns.map(({ nameSuffix, options, ariaLabel }) => (
+          <Controller
+            key={nameSuffix}
+            name={`detailItems.${index}.typeInfo.${nameSuffix}` as const}
+            control={control}
+            defaultValue={options[0]}
+            render={({ field }) => (
+              <CommonDropdown
+                aria-label={ariaLabel}
+                options={options}
+                value={field.value}
+                onSelect={field.onChange}
+              />
+            )}
+          />
+        ))}
       </Flex>
     </Flex>
   );

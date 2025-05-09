@@ -1,45 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useFormContext, useFieldArray } from 'react-hook-form';
+import React, { useState } from 'react';
 import { Flex } from '@repo/ui/Flex';
-import { Text } from '@repo/ui/Text';
-import { IcBtnPlusCircle } from '@repo/ui/icons/colored';
-import type { FormValues, EvaluationItem } from '@web/types/application';
 import * as styles from './CriteriaTab.css';
-import StandardSection from './Section/StandardSection';
-import EvaluationItemCard from './Section/EvaluationItemCard';
 import { IcInfo } from '@repo/ui/icons/mono';
+import EvaluationSection from './Section/EvaluationSection';
 
 export default function CriteriaTab() {
-  const { control } = useFormContext<FormValues>();
   const [showHeaderInfo, setShowHeaderInfo] = useState(true);
-  const {
-    fields: paperFields,
-    append: appendPaper,
-    remove: removePaper,
-  } = useFieldArray<FormValues, 'paperEvaluateItems'>({
-    control,
-    name: 'paperEvaluateItems',
-  });
-
-  const {
-    fields: interviewFields,
-    append: appendInterview,
-    remove: removeInterview,
-  } = useFieldArray<FormValues, 'interviewEvaluateItems'>({
-    control,
-    name: 'interviewEvaluateItems',
-  });
-
-  useEffect(() => {
-    if (paperFields.length === 0) {
-      appendPaper({ evaluate: '', evaluateDetail: '' });
-    }
-    if (interviewFields.length === 0) {
-      appendInterview({ evaluate: '', evaluateDetail: '' });
-    }
-  }, []);
 
   return (
     <Flex
@@ -65,75 +33,16 @@ export default function CriteriaTab() {
       )}
 
       <Flex direction="column" width="100%" gap="10rem">
-        <Flex width="100%" direction="column">
-          {/* 1) 서류평가 기준 */}
-          <StandardSection
-            label="서류평가 기준"
-            standardName="paperEvaluateStandard"
-          />
-          <Flex
-            direction="column"
-            gap="2.4rem"
-            width="100%"
-            marginTop="5rem"
-            align="center"
-          >
-            {paperFields.map((f, idx) => (
-              <EvaluationItemCard
-                key={f.id}
-                index={idx}
-                prefix="paperEvaluateItems"
-                onRemove={() => removePaper(idx)}
-              />
-            ))}
-            <button
-              type="button"
-              className={styles.addButton}
-              onClick={() => appendPaper({ evaluate: '', evaluateDetail: '' })}
-            >
-              <IcBtnPlusCircle width={24} height={24} />
-              <Text variant="md2_text_semibold" color="grayscale40">
-                추가
-              </Text>
-            </button>
-          </Flex>
-        </Flex>
-
-        <Flex width="100%" direction="column">
-          {/* 2) 면접평가 기준 */}
-          <StandardSection
-            label="면접평가 기준"
-            standardName="interviewEvaluateStandard"
-          />
-          <Flex
-            direction="column"
-            gap="2.4rem"
-            width="100%"
-            marginTop="5rem"
-            align="center"
-          >
-            {interviewFields.map((f, idx) => (
-              <EvaluationItemCard
-                key={f.id}
-                index={idx}
-                prefix="interviewEvaluateItems"
-                onRemove={() => removeInterview(idx)}
-              />
-            ))}
-            <button
-              type="button"
-              className={styles.addButton}
-              onClick={() =>
-                appendInterview({ evaluate: '', evaluateDetail: '' })
-              }
-            >
-              <IcBtnPlusCircle width={24} height={24} />
-              <Text variant="md2_text_semibold" color="grayscale40">
-                추가
-              </Text>
-            </button>
-          </Flex>
-        </Flex>
+        <EvaluationSection
+          label="서류평가 기준"
+          standardName="paperEvaluateStandard"
+          itemsName="paperEvaluateItems"
+        />
+        <EvaluationSection
+          label="면접평가 기준"
+          standardName="interviewEvaluateStandard"
+          itemsName="interviewEvaluateItems"
+        />
       </Flex>
     </Flex>
   );

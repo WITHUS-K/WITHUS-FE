@@ -15,7 +15,7 @@ import { TIME_STEP } from '@web/utils/application';
 import * as styles from '../../StageTab.css';
 
 export default function InterviewPanel() {
-  const { control, watch, setValue } = useFormContext<FormValues>();
+  const { control, setValue } = useFormContext<FormValues>();
 
   const {
     fields: persistedFields,
@@ -26,7 +26,7 @@ export default function InterviewPanel() {
     name: 'interviewSchedule.scheduleList',
   });
 
-  const activeSection = watch('activeSection') as string;
+  const activeSection = useWatch({ control, name: 'activeSection' }) as string;
   const activeIndex = useMemo<number | null>(() => {
     if (
       typeof activeSection === 'string' &&
