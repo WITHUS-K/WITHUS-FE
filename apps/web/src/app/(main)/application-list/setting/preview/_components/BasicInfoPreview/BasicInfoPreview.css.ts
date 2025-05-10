@@ -1,3 +1,4 @@
+import { vars } from '@repo/theme';
 import { style } from '@vanilla-extract/css';
 
 export const container = style({
@@ -49,3 +50,31 @@ export const optionWrapper = style({
   flex: 1,
   width: '100%',
 });
+
+export const imageIcon = style({
+  zIndex: 1,                  
+})
+
+export const imageInput = style({
+  position: 'absolute',       
+  inset: 0,                 
+  width: '15.6rem',
+  height: '20.8rem',
+  opacity: 0,                 
+  cursor: 'pointer',          
+  zIndex: 2,                 
+})
+
+export const imageContainer = style({
+  position: 'relative',      
+  width: '15.6rem',
+  height: '20.8rem',
+  flexShrink: 0,   
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderRadius: '12px',
+  border: `1px solid ${vars.colors.grayscale10}`,
+  backgroundColor: vars.colors.grayscale5,
+  cursor: 'pointer',
+})

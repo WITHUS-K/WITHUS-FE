@@ -1,8 +1,7 @@
 import React from 'react';
 import * as styles from './AdditionalInfoPreview.css';
-import { TextField } from '@repo/ui/TextField';
-import { Text } from '@repo/ui/Text';
 import { SelectAcademicStatusDropdown } from '@repo/ui/DropDown';
+import { InfoField } from '@web/app/(main)/application-list/setting/preview/_components/InfoField/InfoField';
 
 interface AdditionalProps {
   school: boolean;
@@ -21,66 +20,41 @@ export function AdditionalInfoPreview({
     <div className={styles.container}>
       <div className={styles.row}>
         {school && (
-          <div className={styles.rowItemWide}>
-            <Text variant="md1_text_semibold" color="grayscale70">
-              학교
-            </Text>
-            <div className={styles.fieldGrowForSchool}>
-              <TextField
-                inputProps={{
-                  placeholder: 'oo대학교',
-                  disabled: true,
-                }}
-                width="100%"
-              />
-            </div>
-          </div>
+          <InfoField
+            label="학교"
+            placeholder="oo대학교"
+            itemClass={styles.rowItemWide}
+            wrapperClass={styles.fieldGrowForSchool}
+          />
         )}
 
         {academicStatus && (
-          <div className={styles.rowItemAuto}>
-            <Text variant="md1_text_semibold" color="grayscale70">
-              학적 상태
-            </Text>
-            <div className={styles.fieldAuto}>
-              <SelectAcademicStatusDropdown onSelect={() => {}} />
-            </div>
-          </div>
+          <InfoField
+            label="학적 상태"
+            itemClass={styles.rowItemAuto}
+            wrapperClass={styles.fieldAuto}
+          >
+            <SelectAcademicStatusDropdown onSelect={() => {}} />
+          </InfoField>
         )}
       </div>
 
       {major && (
-        <div className={styles.rowItemWide}>
-          <Text variant="md1_text_semibold" color="grayscale70">
-            전공
-          </Text>
-          <div className={styles.fieldGrowForSchool}>
-            <TextField
-              inputProps={{
-                placeholder: 'ooo학과',
-                disabled: true,
-              }}
-              width="100%"
-            />
-          </div>
-        </div>
+        <InfoField
+          label="전공"
+          placeholder="ooo학과"
+          itemClass={styles.rowItemWide}
+          wrapperClass={styles.fieldGrowForSchool}
+        />
       )}
 
       {address && (
-        <div className={styles.rowItemWide}>
-          <Text variant="md1_text_semibold" color="grayscale70">
-            주소
-          </Text>
-          <div className={styles.fieldGrowForSchool}>
-            <TextField
-              inputProps={{
-                placeholder: 'oo시 oo구 oo동',
-                disabled: true,
-              }}
-              width="100%"
-            />
-          </div>
-        </div>
+        <InfoField
+          label="주소"
+          placeholder="oo시 oo구 oo동"
+          itemClass={styles.rowItemWide}
+          wrapperClass={styles.fieldGrowForSchool}
+        />
       )}
     </div>
   );
