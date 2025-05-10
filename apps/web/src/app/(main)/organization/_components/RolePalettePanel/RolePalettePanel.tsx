@@ -27,16 +27,19 @@ const COLOR_OPTIONS: PaletteColor[] = [
 
 interface Props {
   roles: RoleSelectWithCount[];
+  search: string;
   onAddRole: (r: RoleSelect) => void;
+  onSearchChange?: (value: string) => void;
   onUpdateRole: (i: number, label: string, color: PaletteColor) => void;
 }
 
 export default function RolePalettePanel({
   roles,
+  search,
   onAddRole,
   onUpdateRole,
+  onSearchChange,
 }: Props) {
-  const [search, setSearch] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [newLabel, setNewLabel] = useState('');
   const [newColor, setNewColor] = useState<PaletteColor>(COLOR_OPTIONS[0]!);
@@ -46,9 +49,9 @@ export default function RolePalettePanel({
   const [editColor, setEditColor] = useState<PaletteColor>(COLOR_OPTIONS[0]!);
   const [editOpen, setEditOpen] = useState(false);
 
-  const filtered = roles.filter((r) =>
+  /*const filtered = roles.filter((r) =>
     r.label.toLowerCase().includes(search.toLowerCase())
-  );
+  );*/
 
   const handleAddKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newLabel.trim()) {
@@ -82,7 +85,7 @@ export default function RolePalettePanel({
         <SearchInput
           value={search}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setSearch(e.target.value)
+            onSearchChange?.(e.target.value)
           }
           width="100%"
         />
@@ -111,7 +114,7 @@ export default function RolePalettePanel({
         </Button>
 
         <div className={styles.list}>
-          {filtered.map((r, i) => {
+          {roles.map((r, i) => {
             const isSelected = selectedIdx === i;
             const isEditing = editingIdx === i;
 
