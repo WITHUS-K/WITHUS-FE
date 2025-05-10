@@ -1,3 +1,4 @@
+// src/store/organization/constants.ts
 export const queryKeys = {
   organization: {
     roles: {
@@ -11,6 +12,25 @@ export const queryKeys = {
               keyword,
             ] as const)
           : (['organization', organizationId, 'roles'] as const),
+    },
+    users: {
+      search: (organizationId: number, roleId: number, keyword?: string) =>
+        keyword
+          ? ([
+              'organization',
+              organizationId,
+              'users',
+              'search',
+              roleId,
+              keyword,
+            ] as const)
+          : ([
+              'organization',
+              organizationId,
+              'users',
+              'search',
+              roleId,
+            ] as const),
     },
   },
 } as const;

@@ -1,24 +1,24 @@
+// src/app/(main)/settings/_components/MemberPanel.tsx
 import React, { ReactElement } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { CheckBox } from '@repo/ui/CheckBox';
 import { Button } from '@repo/ui/Button';
-
-import * as styles from './MemberAssignmentPanel.css';
-import { User } from '@web/types/organization';
+import type { UserResult } from '@web/types/organization';
 import MemberListItem from './MemberListItem';
+import * as styles from './MemberAssignmentPanel.css';
 
 interface MemberPanelProps {
   title: string;
   count: number;
-  items: User[];
-  selected: Set<string>;
+  items: UserResult[];
+  selected: Set<number>;
   allSelected: boolean;
   onToggleAll: () => void;
   onAction: () => void;
   actionLabel: string;
   actionIcon: ReactElement;
-  onToggleItem: (id: string) => void;
+  onToggleItem: (id: number) => void;
   search: string;
 }
 
@@ -50,7 +50,6 @@ export default function MemberPanel({
         <div style={{ width: '2rem', height: '2rem' }}>
           <CheckBox size={2} isChecked={allSelected} onChange={onToggleAll} />
         </div>
-
         <Button
           disabled={selected.size === 0}
           onClick={onAction}
@@ -65,10 +64,10 @@ export default function MemberPanel({
       <div className={styles.list}>
         {items.map((u) => (
           <MemberListItem
-            key={u.id}
+            key={u.userId}
             user={u}
-            isSelected={selected.has(u.id)}
-            onToggle={() => onToggleItem(u.id)}
+            isSelected={selected.has(u.userId)}
+            onToggle={() => onToggleItem(u.userId)}
             search={search}
           />
         ))}

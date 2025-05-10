@@ -1,6 +1,33 @@
 /* api */
 import type { ApiResponse } from '@web/api/types';
 
+export interface AssignUsersRequest {
+  userIds: number[];
+}
+
+export interface AssignUsersResult {
+  id: number;
+  userName: string;
+  roleName: string;
+}
+
+export type AssignUsersResponse = ApiResponse<AssignUsersResult[]>;
+
+export interface UserResult {
+  /** 사용자 고유 ID */
+  userId: number;
+  /** 이름 */
+  name: string;
+  /** 이메일 */
+  email: string;
+  /** 프로필 이미지 URL (없으면 null) */
+  imageUrl: string | null;
+  /** 해당 역할에 할당된 상태 */
+  isAssigned: boolean;
+}
+
+export type UserResponse = ApiResponse<UserResult[]>;
+
 export interface RoleDto {
   id: number;
   roleName: string;

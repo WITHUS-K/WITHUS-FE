@@ -1,102 +1,114 @@
-// src/app/(main)/settings/Settings.tsx
+// ─── Settings.tsx ──────────────────────────────────────────────────────────
 'use client';
-
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import SettingsHeader from '../_components/SettingsHeader/SettingsHeader';
 import RolePalettePanel from '../_components/RolePalettePanel/RolePalettePanel';
 import MemberAssignmentPanel from '../_components/MemberAssignmentPanel/MemberAssignmentPanel';
+import { nameToHex } from '@web/utils/color';
+import type { RoleSelectWithCount, UserResult } from '@web/types/organization';
+import type { PaletteColor } from '@repo/utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getOrganizationRolesQueryOptions } from '@web/store/query/useOrganizationRolesQuery';
+import { useOrganizationUsersQuery } from '@web/store/query/useOrganizationUsersQuery';
 import { useAddOrganizationRoleMutation } from '@web/store/mutation/useAddOrganizationRoleMutation';
 import { useUpdateOrganizationRoleMutation } from '@web/store/mutation/useUpdateOrganizationRoleMutation';
-import { nameToHex } from '@web/utils/color';
-import { INITIAL_SELECTED } from '@web/constants/organization';
-import type { RoleSelectWithCount, User } from '@web/types/organization';
-import type { PaletteColor } from '@repo/utils';
+import { useAssignOrganizationUsersMutation } from '@web/store/mutation/useAssignOrganizationUsersMutation';
 
 interface Props {
   organizationId: number;
 }
 
 export default function Settings({ organizationId }: Props) {
-  const [searchInput, setSearchInput] = useState('');
+  const [roleSearch, setRoleSearch] = useState('');
+  const [selectedRoleIdx, setSelectedRoleIdx] = useState<number | null>(null);
 
-  // 1) 전체 역할 목록을 한 번만 가져옴
-  const { data } = useSuspenseQuery(
+  // 1) 역할 목록
+  const { data: rolesData } = useSuspenseQuery(
     getOrganizationRolesQueryOptions({ organizationId })
   );
-
-  // 2) 메모리에서 검색어 기준으로 필터링
   const filteredRoles = useMemo(
     () =>
-      data.roles.filter((r) =>
-        r.roleName.toLowerCase().includes(searchInput.toLowerCase())
+      rolesData.roles.filter((r) =>
+        r.roleName.toLowerCase().includes(roleSearch.toLowerCase())
       ),
-    [data.roles, searchInput]
+    [rolesData.roles, roleSearch]
   );
-
-  // 3) RolePalettePanel 용으로 매핑
   const roleSelect: RoleSelectWithCount[] = filteredRoles.map((r) => ({
     label: r.roleName,
     color: nameToHex[r.color] as PaletteColor,
     count: r.assignedUserCount,
   }));
+  const selectedRoleId =
+    selectedRoleIdx != null ? filteredRoles[selectedRoleIdx]!.id : 0;
 
-  // 뮤테이션 훅
+  // 2) 서버에서 users
+  const { data: users } = useOrganizationUsersQuery(
+    organizationId,
+    selectedRoleId
+  );
+
+  // 3) local state: roleId 가 바뀔 때만 초기화
+  const [localUsers, setLocalUsers] = useState<UserResult[]>([]);
+  useEffect(() => {
+    if (selectedRoleId === 0) {
+      setLocalUsers([]);
+    } else if (users) {
+      setLocalUsers(users);
+    }
+  }, [selectedRoleId, users]);
+
+  // 4) 분리
+  const addedMembers = localUsers.filter((u) => u.isAssigned);
+  const availableMembers = localUsers.filter((u) => !u.isAssigned);
+
+  // 5) 즉시 UI 반영용 토글
+  const handleAdd = (u: UserResult) =>
+    setLocalUsers((ls) =>
+      ls.map((x) => (x.userId === u.userId ? { ...x, isAssigned: true } : x))
+    );
+  const handleRemove = (u: UserResult) =>
+    setLocalUsers((ls) =>
+      ls.map((x) => (x.userId === u.userId ? { ...x, isAssigned: false } : x))
+    );
+
+  // 6) 역할 뮤테이션
   const { mutate: addRole } = useAddOrganizationRoleMutation(organizationId);
   const { mutate: updateRole } =
     useUpdateOrganizationRoleMutation(organizationId);
 
-  // 멤버 할당 상태
-  const [addedMembers, setAddedMembers] = useState<User[]>([]);
-  const [availableMembers, setAvailableMembers] =
-    useState<User[]>(INITIAL_SELECTED);
+  // 7) 할당/제외 뮤테이션
+  const { mutate: assignUsers } =
+    useAssignOrganizationUsersMutation(organizationId);
 
-  const handleAddRole = (newRole: { label: string; color: PaletteColor }) => {
-    addRole({ label: newRole.label, color: newRole.color });
-  };
-
-  const handleUpdateRole = (
-    idx: number,
-    label: string,
-    color: PaletteColor
-  ) => {
-    const role = filteredRoles[idx];
-    updateRole({ roleId: role!.id, label, color });
-  };
-
-  const handleAddMember = (u: User) => {
-    setAvailableMembers((av) => av.filter((x) => x.id !== u.id));
-    setAddedMembers((ad) => [...ad, u]);
-  };
-  const handleRemoveMember = (u: User) => {
-    setAddedMembers((ad) => ad.filter((x) => x.id !== u.id));
-    setAvailableMembers((av) => [...av, u]);
-  };
-
+  // 8) 저장: 비어 있으면 [0] 전송
   const handleSave = () => {
-    // 저장 API 호출
+    if (!selectedRoleId) return;
+    const userIds =
+      addedMembers.length > 0 ? addedMembers.map((u) => u.userId) : [0];
+    assignUsers({ roleId: selectedRoleId, userIds });
   };
 
   return (
     <Flex direction="column">
       <SettingsHeader onSave={handleSave} />
-
       <Flex align="center" gap="1.9rem" width="100%" marginTop="1.8rem">
         <RolePalettePanel
           roles={roleSelect}
-          search={searchInput}
-          onSearchChange={setSearchInput}
-          onAddRole={handleAddRole}
-          onUpdateRole={handleUpdateRole}
+          search={roleSearch}
+          selectedIdx={selectedRoleIdx}
+          onSearchChange={setRoleSearch}
+          onSelectRole={setSelectedRoleIdx}
+          onAddRole={addRole}
+          onUpdateRole={(i, label, color) =>
+            updateRole({ roleId: filteredRoles[i]!.id, label, color })
+          }
         />
-
         <MemberAssignmentPanel
           addedMembers={addedMembers}
           availableMembers={availableMembers}
-          onAdd={handleAddMember}
-          onRemove={handleRemoveMember}
+          onAdd={handleAdd}
+          onRemove={handleRemove}
         />
       </Flex>
     </Flex>

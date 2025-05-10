@@ -1,5 +1,5 @@
+// src/app/(main)/settings/_components/RolePalettePanel.tsx
 'use client';
-
 import React, { useState, ChangeEvent, KeyboardEvent } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
@@ -7,7 +7,7 @@ import { SearchInput } from '@repo/ui/SearchInput';
 import { Button } from '@repo/ui/Button';
 import { IcRoleBtn } from '@repo/ui/icons/mono';
 import * as styles from './RolePalettePanel.css';
-import type { RoleSelect, RoleSelectWithCount } from '@web/types/organization';
+import type { RoleSelectWithCount } from '@web/types/organization';
 import type { PaletteColor } from '@repo/utils';
 import { RoleEditor } from './RoleEditor';
 import { RoleItem } from './RoleItem';
@@ -28,30 +28,28 @@ const COLOR_OPTIONS: PaletteColor[] = [
 interface Props {
   roles: RoleSelectWithCount[];
   search: string;
-  onAddRole: (r: RoleSelect) => void;
-  onSearchChange?: (value: string) => void;
+  selectedIdx: number | null;
+  onSelectRole: (i: number) => void;
+  onSearchChange?: (v: string) => void;
+  onAddRole: (r: { label: string; color: PaletteColor }) => void;
   onUpdateRole: (i: number, label: string, color: PaletteColor) => void;
 }
-
 export default function RolePalettePanel({
   roles,
   search,
+  selectedIdx,
+  onSelectRole,
+  onSearchChange,
   onAddRole,
   onUpdateRole,
-  onSearchChange,
 }: Props) {
   const [isAdding, setIsAdding] = useState(false);
   const [newLabel, setNewLabel] = useState('');
-  const [newColor, setNewColor] = useState<PaletteColor>(COLOR_OPTIONS[0]!);
-  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const [newColor, setNewColor] = useState(COLOR_OPTIONS[0]!);
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
   const [editLabel, setEditLabel] = useState('');
-  const [editColor, setEditColor] = useState<PaletteColor>(COLOR_OPTIONS[0]!);
+  const [editColor, setEditColor] = useState(COLOR_OPTIONS[0]!);
   const [editOpen, setEditOpen] = useState(false);
-
-  /*const filtered = roles.filter((r) =>
-    r.label.toLowerCase().includes(search.toLowerCase())
-  );*/
 
   const handleAddKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newLabel.trim()) {
@@ -60,65 +58,45 @@ export default function RolePalettePanel({
       setNewLabel('');
     }
   };
-
   const handleEditKey = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && editingIdx !== null) {
+    if (e.key === 'Enter' && editingIdx != null) {
       onUpdateRole(editingIdx, editLabel.trim(), editColor);
       setEditingIdx(null);
       setEditOpen(false);
-      if (selectedIdx !== editingIdx) setSelectedIdx(null);
     }
   };
 
   return (
     <div className={styles.root}>
       <Flex align="center" gap="0.8rem">
-        <Text variant="md1_text_semibold" color="grayscale90">
-          역할
-        </Text>
-        <Text variant="md1_text_medium" color="grayscale30">
-          {roles.length}
-        </Text>
+        <Text variant="md1_text_semibold">역할</Text>
+        <Text variant="md1_text_medium">{roles.length}</Text>
       </Flex>
-
       <div style={{ height: '4rem' }}>
         <SearchInput
           value={search}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            onSearchChange?.(e.target.value)
-          }
+          onChange={(e) => onSearchChange?.(e.target.value)}
           width="100%"
         />
       </div>
-
-      <Flex
-        width="100%"
-        direction="column"
-        gap="1.2rem"
-        marginTop="0.8rem"
-        className={styles.listContainer}
-      >
+      <Flex direction="column" gap="1.2rem" marginTop="0.8rem">
         <Button
-          variant="basic"
-          size="32"
           leftIcon={<IcRoleBtn />}
           onClick={() => {
             setIsAdding(true);
-            setNewLabel('');
-            setNewColor(COLOR_OPTIONS[0]!);
             setEditingIdx(null);
           }}
           width="100%"
+          size="32"
+          variant="basic"
         >
           추가
         </Button>
-
         <div className={styles.list}>
           {roles.map((r, i) => {
-            const isSelected = selectedIdx === i;
-            const isEditing = editingIdx === i;
-
-            if (isEditing) {
+            const isSel = selectedIdx === i;
+            const isEd = editingIdx === i;
+            if (isEd) {
               return (
                 <RoleEditor
                   key={`edit-${i}`}
@@ -127,44 +105,39 @@ export default function RolePalettePanel({
                   isOpen={editOpen}
                   options={COLOR_OPTIONS}
                   onLabelChange={(e) => setEditLabel(e.target.value)}
-                  onColorChange={setEditColor}
+                  onColorChange={(c) => setEditColor(c)}
                   onKeyDown={handleEditKey}
                   onTogglePalette={() => setEditOpen((o) => !o)}
                 />
               );
             }
-
             return (
               <RoleItem
                 key={i}
                 label={r.label}
-                color={r.color as PaletteColor}
-                search={search}
+                color={r.color}
                 count={r.count}
-                isSelected={isSelected}
-                onClick={() => {
-                  setSelectedIdx(isSelected ? null : i);
-                  setEditingIdx(null);
-                }}
+                search={search}
+                isSelected={isSel}
+                onClick={() => onSelectRole(i)}
                 onDoubleClick={() => {
                   setEditingIdx(i);
                   setEditLabel(r.label);
-                  setEditColor(r.color as PaletteColor);
+                  setEditColor(r.color);
                   setEditOpen(false);
                 }}
               />
             );
           })}
-
           {isAdding && (
             <RoleEditor
               key="add"
               label={newLabel}
               color={newColor}
-              isOpen={true}
+              isOpen
               options={COLOR_OPTIONS}
               onLabelChange={(e) => setNewLabel(e.target.value)}
-              onColorChange={setNewColor}
+              onColorChange={(c) => setNewColor(c)}
               onKeyDown={handleAddKey}
               onTogglePalette={() => setEditOpen((o) => !o)}
             />
