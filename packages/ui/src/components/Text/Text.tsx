@@ -34,7 +34,7 @@ const Text = ({
   return (
     <p
       className={combinedClassName}
-      style={{ ...inlineColorStyle, ...style, whiteSpace: 'nowrap' }}
+      style={{ ...inlineColorStyle, ...style }}
       {...rest}
     >
       {children}

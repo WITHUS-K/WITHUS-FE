@@ -32,6 +32,7 @@ export interface FlexProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const Flex = ({
+  style,
   tag = 'div',
   direction,
   align,
@@ -81,7 +82,7 @@ const Flex = ({
         flexStyle({ direction, align, justify, wrap, grow }),
         props.className
       )}
-      style={inlineStyles}
+      style={{ ...inlineStyles, ...style }}
     >
       {children}
     </Element>

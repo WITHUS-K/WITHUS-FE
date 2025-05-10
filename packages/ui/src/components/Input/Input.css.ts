@@ -124,8 +124,13 @@ export const commentInputWrapper = style({
   border: `1px solid ${vars.colors.grayscale20}`,
   borderRadius: '16px',
   width: '100%',
-  height: '20rem'
 });
+
+export const questionTitleInput = style({
+  all: 'unset',
+  width: '100%',
+  height: 'auto',
+})
 
 export const commentInput = style({
   all: 'unset',
