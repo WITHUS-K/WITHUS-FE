@@ -56,20 +56,6 @@ export const imageContainer = style({
   cursor: 'pointer',
 })
 
-export const imageIcon = style({
-  zIndex: 1,                  
-})
-
-export const imageInput = style({
-  position: 'absolute',       
-  inset: 0,                 
-  width: '15.6rem',
-  height: '20.8rem',
-  opacity: 0,                 
-  cursor: 'pointer',          
-  zIndex: 2,                 
-})
-
 export const questionRow = style({
   position: 'relative',
 });

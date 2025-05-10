@@ -22,19 +22,6 @@ export const bodyContainer = style({
   padding: '1.6rem'
 })
 
-export const helpText = style({
-  whiteSpace: 'pre-wrap',     
-  color: 'var(--gray-500)',   
-  fontSize: '0.875rem',       
-});
-
-export const maxInfo = style({
-  textAlign: 'right',
-  color: 'var(--gray-400)',   
-  fontSize: '0.875rem',      
-  marginTop: '0.25rem',
-  marginBottom: '0.5rem',
-});
 
 export const dropZone = style({
   position: 'relative',
