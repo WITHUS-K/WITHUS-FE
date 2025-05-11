@@ -83,6 +83,15 @@ export interface AssignRoleRequest {
 
 export type AssignRoleResponse = ApiResponse<AssignUsersResult[]>;
 
+export interface EmailUser {
+  userId: number;
+  name: string;
+  email: string;
+  imageUrl: string | null;
+}
+
+export type EmailUserResponse = ApiResponse<EmailUser>;
+
 /* UI 에서 썼던거 */
 export interface OrgRole {
   id: number;

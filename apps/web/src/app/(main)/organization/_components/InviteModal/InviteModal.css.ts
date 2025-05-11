@@ -15,6 +15,7 @@ export const listContainer = style({
   flexDirection: 'column',
   gap: '0.8rem',
   width: '100%',
+  height: '32.2rem',
   maxHeight: '32.2rem',
   overflowY: 'scroll',
 

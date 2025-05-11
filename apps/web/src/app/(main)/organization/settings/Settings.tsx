@@ -1,4 +1,3 @@
-// ─── Settings.tsx ──────────────────────────────────────────────────────────
 'use client';
 import { useState, useEffect, useMemo } from 'react';
 import { Flex } from '@repo/ui/Flex';
@@ -23,7 +22,7 @@ export default function Settings({ organizationId }: Props) {
   const [roleSearch, setRoleSearch] = useState('');
   const [selectedRoleIdx, setSelectedRoleIdx] = useState<number | null>(null);
 
-  // 1) 역할 목록
+  // 역할 목록
   const { data: rolesData } = useSuspenseQuery(
     getOrganizationRolesQueryOptions({ organizationId })
   );
@@ -42,13 +41,13 @@ export default function Settings({ organizationId }: Props) {
   const selectedRoleId =
     selectedRoleIdx != null ? filteredRoles[selectedRoleIdx]!.id : 0;
 
-  // 2) 서버에서 users
+  // 서버에서 users
   const { data: users } = useOrganizationUsersQuery(
     organizationId,
     selectedRoleId
   );
 
-  // 3) local state: roleId 가 바뀔 때만 초기화
+  // roleId 가 바뀔 때만 초기화
   const [localUsers, setLocalUsers] = useState<UserResult[]>([]);
   useEffect(() => {
     if (selectedRoleId === 0) {
@@ -58,11 +57,10 @@ export default function Settings({ organizationId }: Props) {
     }
   }, [selectedRoleId, users]);
 
-  // 4) 분리
   const addedMembers = localUsers.filter((u) => u.isAssigned);
   const availableMembers = localUsers.filter((u) => !u.isAssigned);
 
-  // 5) 즉시 UI 반영용 토글
+  //  즉시 UI 반영
   const handleAdd = (u: UserResult) =>
     setLocalUsers((ls) =>
       ls.map((x) => (x.userId === u.userId ? { ...x, isAssigned: true } : x))
@@ -72,16 +70,16 @@ export default function Settings({ organizationId }: Props) {
       ls.map((x) => (x.userId === u.userId ? { ...x, isAssigned: false } : x))
     );
 
-  // 6) 역할 뮤테이션
+  // 역할
   const { mutate: addRole } = useAddOrganizationRoleMutation(organizationId);
   const { mutate: updateRole } =
     useUpdateOrganizationRoleMutation(organizationId);
 
-  // 7) 할당/제외 뮤테이션
+  //  할당/제외
   const { mutate: assignUsers } =
     useAssignOrganizationUsersMutation(organizationId);
 
-  // 8) 저장: 비어 있으면 [0] 전송
+  // 저장, 비어 있으면 [0] 전송
   const handleSave = () => {
     if (!selectedRoleId) return;
     const userIds =

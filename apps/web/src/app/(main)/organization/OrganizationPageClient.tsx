@@ -1,4 +1,3 @@
-// app/organization/OrganizationPageClient.tsx
 'use client';
 import { useState, useMemo, ChangeEvent } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -18,7 +17,6 @@ import { Flex } from '@repo/ui/Flex';
 import { Breadcrumb } from '@repo/ui/Breadcrumb';
 import * as styles from './page.css';
 
-// 서버에서 미리 받아온 페이지 크기
 const PAGE_SIZE = 20;
 
 interface Props {
@@ -36,7 +34,7 @@ export default function OrganizationPageClient({
   const { confirm } = useModal();
   const qc = useQueryClient();
 
-  // 1) 멤버 리스트(서버)
+  // 멤버 리스트
   const { data: paged, isFetching } = useOrganizationMembersQuery(
     organizationId,
     page,
@@ -45,7 +43,7 @@ export default function OrganizationPageClient({
   const members = paged?.content ?? [];
   const totalCount = paged?.totalElements ?? 0;
 
-  // 2) 역할 리스트(서버)
+  // 역할 리스트
   const { data: rolesData } = useOrganizationRolesQuery(organizationId);
   const allRoles = rolesData.roles.map((r) => ({
     label: r.roleName,
@@ -53,21 +51,21 @@ export default function OrganizationPageClient({
     id: r.id,
   }));
 
-  // 3) 삭제 뮤테이션
+  // 삭제
   const deleteMutation = useDeleteOrganizationUsersMutation(
     organizationId,
     page,
     PAGE_SIZE
   );
 
-  // 4) 단일 역할 부여 뮤테이션
+  // 단일 역할 부여
   const assignRoleMutation = useAssignRoleToUserMutation(
     organizationId,
     page,
     PAGE_SIZE
   );
 
-  // 5) 선택 토글
+  // 선택 토글
   const handleToggleOne = (id: string, checked: boolean) =>
     setSelectedIds((prev) =>
       checked ? [...prev, id] : prev.filter((x) => x !== id)
@@ -79,12 +77,12 @@ export default function OrganizationPageClient({
     members.length > 0 &&
     members.every((m) => selectedIds.includes(String(m.userId)));
 
-  // 6) 배너 토글
+  // 배너 토글
   const showBanner =
     selectedIds.length > 0 &&
     (isAllPageSelected || selectedIds.length === totalCount);
 
-  // 7) 삭제 실행
+  // 삭제
   const handleDeleteClick = () => {
     confirm({
       type: 'warning',
@@ -98,12 +96,12 @@ export default function OrganizationPageClient({
     });
   };
 
-  // 8) 역할 부여
+  // 역할 부여
   const handleAddRole = (memberId: string, role: { id: number }) => {
     assignRoleMutation.mutate({ userId: Number(memberId), roleIds: [role.id] });
   };
 
-  // 9) 필터링 + 페이징
+  // 필터링 + 페이징
   const filtered = useMemo(
     () =>
       members.filter((m) =>
@@ -158,14 +156,11 @@ export default function OrganizationPageClient({
         />
         <OrgList
           data={filtered.map((m) => ({
-            // —— Member 필수 프로퍼티만 골라내기 ——
             id: String(m.userId),
             name: m.name,
             email: m.email,
             profileUrl: m.profileImageUrl ?? '',
 
-            // 서버에서 넘어온 roles: { id, roleName, colorName }
-            // ↓ UI 에선 Role = { id, label, color: TagColor } 이므로
             roles: m.roles.map((r) => ({
               id: r.id,
               label: r.roleName,
@@ -180,7 +175,6 @@ export default function OrganizationPageClient({
           selectedIds={selectedIds}
           onToggleAll={handleToggleAll}
           onToggleOne={handleToggleOne}
-          // availableRoles 도 똑같이 id,label,color 로만
           availableRoles={rolesData.roles.map((r) => ({
             id: r.id,
             label: r.roleName,

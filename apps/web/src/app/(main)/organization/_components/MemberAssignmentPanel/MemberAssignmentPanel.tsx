@@ -1,4 +1,3 @@
-// src/app/(main)/settings/_components/MemberAssignmentPanel.tsx
 'use client';
 
 import React, { useState, ChangeEvent } from 'react';

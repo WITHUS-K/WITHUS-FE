@@ -1,4 +1,3 @@
-// src/store/organization/useAssignRoleToUserMutation.ts
 import {
   useMutation,
   useQueryClient,
@@ -24,11 +23,10 @@ export function useAssignRoleToUserMutation(
         `api/v1/organizations/${organizationId}/assign-role`,
         payload
       );
-      console.log('역할 부여', res);
+      //console.log('역할 부여', res);
       return res.result;
     },
     onSuccess: () => {
-      // 역할 부여 후 목록 리프레시
       qc.invalidateQueries({
         queryKey: queryKeys.organization.members.list(
           organizationId,

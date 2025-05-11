@@ -1,4 +1,3 @@
-// src/store/organization/useDeleteOrganizationUsersMutation.ts
 import {
   useMutation,
   useQueryClient,
@@ -15,12 +14,11 @@ export function useDeleteOrganizationUsersMutation(
   const qc = useQueryClient();
   return useMutation<string, Error, { userIds: number[] }, unknown>({
     mutationFn: async ({ userIds }) => {
-      // 경로 앞의 슬래시(/)를 제거합니다.
       const res = await DELETE<string>(
         `api/v1/organizations/${organizationId}/users`,
         { userIds }
       );
-      console.log('멤버 일괄 삭제', res);
+      //console.log('멤버 일괄 삭제', res);
       return res.result;
     },
     onSuccess: () => {
@@ -33,7 +31,7 @@ export function useDeleteOrganizationUsersMutation(
       });
     },
     onError: (error) => {
-      console.error('멤버 일괄 삭제 실패', error);
+      //console.error('멤버 일괄 삭제 실패', error);
     },
   });
 }

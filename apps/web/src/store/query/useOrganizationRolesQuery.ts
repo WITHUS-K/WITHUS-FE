@@ -1,4 +1,3 @@
-// src/store/organization/useOrganizationRolesQuery.ts
 import { GET } from '@web/api/fetch';
 import {
   useSuspenseQuery,
@@ -14,8 +13,8 @@ import type {
   OrganizationRolesResponse,
 } from '@web/types/organization';
 
-const STALE_TIME = 1000 * 60 * 2; // 2분
-const GC_TIME = 1000 * 60 * 3; // 3분
+const STALE_TIME = 1000 * 60 * 2;
+const GC_TIME = 1000 * 60 * 3;
 
 export type GetOrganizationRolesParams = {
   organizationId: number;
@@ -51,7 +50,7 @@ export function getOrganizationRolesQueryOptions({
       keyword ? { keyword } : undefined,
       tokens
     );
-    console.log('역할 조회', res);
+    //console.log('역할 조회', res);
     return res.result;
   };
 

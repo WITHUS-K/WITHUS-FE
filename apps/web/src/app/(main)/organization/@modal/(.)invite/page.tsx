@@ -3,12 +3,12 @@
 import { useRouter } from 'next/navigation';
 import { Modal } from '@repo/ui/Modal';
 import InviteContent from '../../_components/InviteModal/InviteContent';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useState, KeyboardEvent } from 'react';
 import { INITIAL_SELECTED } from '@web/constants/organization';
 import { User } from '@web/types/organization';
 import InviteHeader from '../../_components/InviteModal/InviteHeader';
-import { Toast } from '@repo/ui/Toast';
 import { useToast } from '@repo/ui/hooks';
+import { useUserByEmailQuery } from '@web/store/query/useUserByEmailQuery';
 
 export default function InviteModal() {
   const router = useRouter();
@@ -16,12 +16,36 @@ export default function InviteModal() {
 
   // 상태: 검색어 & 선택된 유저 목록
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<User[]>(INITIAL_SELECTED);
+  const [selected, setSelected] = useState<User[]>([]);
   const toast = useToast();
+
+  // 이메일로 유저 조회
+  const { data, refetch, isFetching } = useUserByEmailQuery(search, false);
 
   // 검색어 변경 핸들러
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
+  };
+
+  const handleSearchKeyDown = async (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && search.trim()) {
+      const res = await refetch();
+      if (res.data) {
+        const u = res.data;
+        const ui: User = {
+          id: String(u.userId),
+          name: u.name,
+          email: u.email,
+          profileUrl: u.imageUrl ?? '',
+        };
+        setSelected((prev) =>
+          prev.some((x) => x.id === ui.id) ? prev : [...prev, ui]
+        );
+        setSearch('');
+      } else {
+        toast.error('해당 이메일의 사용자를 찾을 수 없습니다.', 3000);
+      }
+    }
   };
 
   // 선택 해제 핸들러
@@ -48,6 +72,7 @@ export default function InviteModal() {
               onSearchChange={handleSearchChange}
               selected={selected}
               onRemove={handleRemove}
+              onSearchKeyDown={handleSearchKeyDown}
             />
           </Modal.Content>
           <Modal.Footer hasTopBorder>

@@ -1,4 +1,3 @@
-// src/app/(main)/settings/_components/RolePalettePanel.tsx
 'use client';
 import React, { useState, ChangeEvent, KeyboardEvent } from 'react';
 import { Flex } from '@repo/ui/Flex';

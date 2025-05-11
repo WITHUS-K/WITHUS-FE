@@ -1,4 +1,3 @@
-// src/app/(main)/settings/_components/MemberListItem.tsx
 import React from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { CheckBox } from '@repo/ui/CheckBox';

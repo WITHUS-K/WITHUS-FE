@@ -1,4 +1,3 @@
-// src/app/(main)/settings/_components/MemberPanel.tsx
 import React, { ReactElement } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';

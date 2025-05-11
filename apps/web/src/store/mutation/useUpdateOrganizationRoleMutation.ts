@@ -1,4 +1,3 @@
-// src/store/organization/useUpdateOrganizationRoleMutation.ts
 import {
   useMutation,
   useQueryClient,
@@ -38,16 +37,16 @@ export function useUpdateOrganizationRoleMutation(
         `api/v1/organizations/${organizationId}/roles/${roleId}`,
         payload
       );
-      console.log('역할 수정 요청 완료:', { roleId, label, color });
+      //console.log('역할 수정 요청 완료:', { roleId, label, color });
     },
     onSuccess: (_data, variables) => {
-      console.log('역할 수정 성공:', variables);
+      //console.log('역할 수정 성공:', variables);
       qc.invalidateQueries({
         queryKey: queryKeys.organization.roles.list(organizationId),
       });
     },
     onError: (error, variables) => {
-      console.error('역할 수정 실패:', variables, error);
+      //console.error('역할 수정 실패:', variables, error);
     },
   });
 }

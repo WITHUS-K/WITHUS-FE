@@ -13,8 +13,6 @@ type Variables = { label: string; color: PaletteColor };
 
 /**
  * 조직 역할 생성
- * - 성공 시 반환값 void
- * - 생성 후 invalidateQueries 로 목록 갱신
  */
 export function useAddOrganizationRoleMutation(
   organizationId: number
@@ -31,7 +29,7 @@ export function useAddOrganizationRoleMutation(
         `api/v1/organizations/${organizationId}/roles`,
         payload
       );
-      console.log('역할 생성', response);
+      //console.log('역할 생성', response);
       return response.result;
     },
     onSuccess: () => {
