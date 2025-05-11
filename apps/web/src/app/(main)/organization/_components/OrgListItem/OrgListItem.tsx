@@ -3,7 +3,7 @@
 import React from 'react';
 
 import * as styles from './OrgListItem.css';
-import { Member } from '@web/types/organization';
+import { Member, OrgRole } from '@web/types/organization';
 import { CheckBox } from '@repo/ui/CheckBox';
 import { Tag } from '@repo/ui/Tag';
 import { RolesDropdown } from '@repo/ui/DropDown';
@@ -15,8 +15,8 @@ interface Props {
   member: Member;
   isSelected: boolean;
   onToggle: (checked: boolean) => void;
-  availableRoles: Member['roles'];
-  onAddRole: (role: Member['roles'][number]) => void;
+  availableRoles: OrgRole[];
+  onAddRole: (role: OrgRole) => void;
   search: string;
 }
 

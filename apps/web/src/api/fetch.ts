@@ -134,9 +134,14 @@ export function PUT<Data>(
 /** DELETE 요청 */
 export function DELETE<Data>(
   uri: string,
+  body?: unknown,
   tokens?: Tokens
 ): Promise<ApiResponse<Data>> {
-  return fetchWrapperWithTokenHandler<Data>(uri, { method: 'delete' }, tokens);
+  return fetchWrapperWithTokenHandler<Data>(
+    uri,
+    { method: 'delete', json: body },
+    tokens
+  );
 }
 
 /** PATCH 요청 */

@@ -1,165 +1,207 @@
+// app/organization/OrganizationPageClient.tsx
 'use client';
-import { useState, ChangeEvent, useMemo } from 'react';
-import { Member, Role } from '@web/types/organization';
+import { useState, useMemo, ChangeEvent } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { Text } from '@repo/ui/Text';
 import OrgSearchToolbar from './_components/OrgSearchToolbar/OrgSearchToolbar';
+import OrgList from './_components/OrgList/OrgList';
+import SelectionNotification from './_components/SelectionNotification/SelectionNotification';
 import { Pagination } from '@repo/ui/Pagination';
+import { useModal } from '@repo/ui/hooks';
+import { useOrganizationMembersQuery } from '@web/store/query/useOrganizationMembersQuery';
+import { useOrganizationRolesQuery } from '@web/store/query/useOrganizationRolesQuery';
+import { useDeleteOrganizationUsersMutation } from '@web/store/mutation/useDeleteOrganizationUsersMutation';
+import { useAssignRoleToUserMutation } from '@web/store/mutation/useAssignRoleToUserMutation';
+import { mapServerColorToTagHex } from '@web/utils/color';
+import InviteModal from './@modal/(.)invite/page';
 import { Flex } from '@repo/ui/Flex';
 import { Breadcrumb } from '@repo/ui/Breadcrumb';
-import { Text } from '@repo/ui/Text';
 import * as styles from './page.css';
-import OrgList from './_components/OrgList/OrgList';
-import { useModal } from '@repo/ui/hooks';
-import SelectionNotification from './_components/SelectionNotification/SelectionNotification';
 
-// 목데이터 + 전체 가능한 역할 목록
-const INITIAL_MEMBERS: Member[] = Array.from({ length: 38 }, (_, i) => ({
-  id: String(i + 1).padStart(3, '0'),
-  name: '김현호',
-  email: 'rable8264@gmail.com',
-  roles: [{ label: '프론트엔드', color: '#E2A500' }],
-  gender: '남',
-  dob: '2001.01.16',
-  phone: '010-3940-5094',
-  joined: '2025.04.18',
-  profileUrl:
-    'https://image.dongascience.com/Photo/2020/03/5bddba7b6574b95d37b6079c199d7101.jpg',
-}));
+// 서버에서 미리 받아온 페이지 크기
+const PAGE_SIZE = 20;
 
-const ALL_ROLES: Role[] = [
-  { label: '기획', color: '#FF2A3A' },
-  { label: '디자인', color: '#EE6B00' },
-  { label: '백엔드', color: '#E2A500' },
-  { label: '프론트엔드', color: '#E2A500' },
-  { label: '부학회장', color: '#009857' },
-  { label: '학회장', color: '#813DFF' },
-];
+interface Props {
+  organizationId: number;
+  showInvite: boolean;
+}
 
-export default function OrganizationPageClient() {
-  const [members, setMembers] = useState<Member[]>(INITIAL_MEMBERS);
+export default function OrganizationPageClient({
+  organizationId,
+  showInvite,
+}: Props) {
   const [search, setSearch] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const { confirm } = useModal();
-  // 필터 + 페이징
-  const filtered = useMemo(() => {
-    return members.filter((m) =>
-      m.name.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [members, search]);
-
-  const perPage = 20;
-  const start = (currentPage - 1) * perPage;
-
-  const pageData = useMemo(() => {
-    return filtered.slice(start, start + perPage);
-  }, [filtered, start]);
-
+  const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const { confirm } = useModal();
+  const qc = useQueryClient();
 
-  // 배너 표시 여부 계산
-  const isPageOnly = selectedIds.length === pageData.length;
-  const isAll = selectedIds.length === filtered.length;
-  const showBanner = selectedIds.length > 0 && (isPageOnly || isAll);
+  // 1) 멤버 리스트(서버)
+  const { data: paged, isFetching } = useOrganizationMembersQuery(
+    organizationId,
+    page,
+    PAGE_SIZE
+  );
+  const members = paged?.content ?? [];
+  const totalCount = paged?.totalElements ?? 0;
 
-  // 전체 페이지 토글 핸들러
-  const handleToggleScope = () => {
-    if (isAll) {
-      // 전체 → 페이지만
-      setSelectedIds(pageData.map((m) => m.id));
-    } else {
-      // 페이지 → 전체
-      setSelectedIds(filtered.map((m) => m.id));
-    }
-  };
+  // 2) 역할 리스트(서버)
+  const { data: rolesData } = useOrganizationRolesQuery(organizationId);
+  const allRoles = rolesData.roles.map((r) => ({
+    label: r.roleName,
+    color: r.color,
+    id: r.id,
+  }));
 
-  // 체크박스
-  const handleToggleAll = (checked: boolean) =>
-    setSelectedIds(checked ? pageData.map((m) => m.id) : []);
+  // 3) 삭제 뮤테이션
+  const deleteMutation = useDeleteOrganizationUsersMutation(
+    organizationId,
+    page,
+    PAGE_SIZE
+  );
+
+  // 4) 단일 역할 부여 뮤테이션
+  const assignRoleMutation = useAssignRoleToUserMutation(
+    organizationId,
+    page,
+    PAGE_SIZE
+  );
+
+  // 5) 선택 토글
   const handleToggleOne = (id: string, checked: boolean) =>
     setSelectedIds((prev) =>
       checked ? [...prev, id] : prev.filter((x) => x !== id)
     );
+  const handleToggleAll = (checked: boolean) =>
+    setSelectedIds(checked ? members.map((m) => String(m.userId)) : []);
 
-  // 역할 추가
-  const handleAddRole = (memberId: string, role: Role) => {
-    setMembers((prev) =>
-      prev.map((m) =>
-        m.id === memberId
-          ? {
-              ...m,
-              roles: [...m.roles.filter((r) => r.label !== role.label), role],
-            }
-          : m
-      )
-    );
-  };
-  // 삭제 클릭 시
+  const isAllPageSelected =
+    members.length > 0 &&
+    members.every((m) => selectedIds.includes(String(m.userId)));
+
+  // 6) 배너 토글
+  const showBanner =
+    selectedIds.length > 0 &&
+    (isAllPageSelected || selectedIds.length === totalCount);
+
+  // 7) 삭제 실행
   const handleDeleteClick = () => {
     confirm({
       type: 'warning',
-      title: `${selectedIds.length}명의 멤버를 삭제하시겠습니까?`,
+      title: `${selectedIds.length}명을 정말 삭제하시겠습니까?`,
       cancelText: '취소',
       confirmText: '삭제',
       onConfirm: () => {
-        // 실제 삭제 로직 추가하기!
-        //setMembers((prev) => prev.filter((m) => !selectedIds.includes(m.id)));
-        //setSelectedIds([]);
+        deleteMutation.mutate({ userIds: selectedIds.map(Number) });
+        setSelectedIds([]);
       },
     });
   };
 
-  return (
-    <Flex direction="column">
-      <Flex direction="column" gap="1.8rem" marginBottom="1.8rem" width="100%">
-        <Flex align="center" justify="spaceBetween" width="100%">
-          <Breadcrumb>
-            <Breadcrumb.Item active>조직 관리</Breadcrumb.Item>
-          </Breadcrumb>
+  // 8) 역할 부여
+  const handleAddRole = (memberId: string, role: { id: number }) => {
+    assignRoleMutation.mutate({ userId: Number(memberId), roleIds: [role.id] });
+  };
 
-          {showBanner && (
-            <SelectionNotification
-              pageCount={pageData.length}
-              totalCount={filtered.length}
-              isAllSelected={isAll}
-              onToggleScope={handleToggleScope}
-            />
-          )}
+  // 9) 필터링 + 페이징
+  const filtered = useMemo(
+    () =>
+      members.filter((m) =>
+        m.name.toLowerCase().includes(search.toLowerCase())
+      ),
+    [members, search]
+  );
+
+  return (
+    <>
+      {showInvite && <InviteModal />}
+      <Flex direction="column">
+        <Flex
+          direction="column"
+          gap="1.8rem"
+          marginBottom="1.8rem"
+          width="100%"
+        >
+          <Flex align="center" justify="spaceBetween" width="100%">
+            <Breadcrumb>
+              <Breadcrumb.Item active>조직 관리</Breadcrumb.Item>
+            </Breadcrumb>
+            {showBanner && (
+              <SelectionNotification
+                pageCount={filtered.length}
+                totalCount={totalCount}
+                isAllSelected={selectedIds.length === totalCount}
+                onToggleScope={() =>
+                  setSelectedIds(
+                    selectedIds.length === totalCount
+                      ? filtered.map((m) => String(m.userId))
+                      : filtered.map((m) => String(m.userId))
+                  )
+                }
+              />
+            )}
+          </Flex>
+
+          <Text variant="xl_title_semibold" color="black">
+            조직 관리
+          </Text>
         </Flex>
 
-        <Text variant="xl_title_semibold" color="black">
-          조직 관리
-        </Text>
-      </Flex>
-
-      <OrgSearchToolbar
-        search={search}
-        onSearchChange={(e: ChangeEvent<HTMLInputElement>) => {
-          setSearch(e.target.value);
-          setCurrentPage(1);
-        }}
-        selectedCount={selectedIds.length}
-        totalCount={filtered.length}
-        onDelete={handleDeleteClick}
-      />
-
-      <OrgList
-        search={search}
-        data={pageData}
-        selectedIds={selectedIds}
-        onToggleAll={handleToggleAll}
-        onToggleOne={handleToggleOne}
-        availableRoles={ALL_ROLES}
-        onAddRole={handleAddRole}
-      />
-
-      <div className={styles.paginationStyle}>
-        <Pagination
-          totalItems={filtered.length}
-          itemCountPerPage={perPage}
-          pageCount={8}
-          currentPage={currentPage}
-          onPageChange={(p) => setCurrentPage(p)}
+        <OrgSearchToolbar
+          search={search}
+          onSearchChange={(e: ChangeEvent<HTMLInputElement>) => {
+            setSearch(e.target.value);
+          }}
+          selectedCount={selectedIds.length}
+          totalCount={totalCount}
+          onDelete={handleDeleteClick}
         />
-      </div>
-    </Flex>
+        <OrgList
+          data={filtered.map((m) => ({
+            // —— Member 필수 프로퍼티만 골라내기 ——
+            id: String(m.userId),
+            name: m.name,
+            email: m.email,
+            profileUrl: m.profileImageUrl ?? '',
+
+            // 서버에서 넘어온 roles: { id, roleName, colorName }
+            // ↓ UI 에선 Role = { id, label, color: TagColor } 이므로
+            roles: m.roles.map((r) => ({
+              id: r.id,
+              label: r.roleName,
+              color: mapServerColorToTagHex(r.color),
+            })),
+
+            gender: m.gender,
+            dob: m.birthDate,
+            phone: m.phoneNumber,
+            joined: m.createdAt.replace('.', '/'),
+          }))}
+          selectedIds={selectedIds}
+          onToggleAll={handleToggleAll}
+          onToggleOne={handleToggleOne}
+          // availableRoles 도 똑같이 id,label,color 로만
+          availableRoles={rolesData.roles.map((r) => ({
+            id: r.id,
+            label: r.roleName,
+            color: mapServerColorToTagHex(r.color),
+          }))}
+          onAddRole={handleAddRole}
+          search={search}
+        />
+        <div className={styles.paginationStyle}>
+          <Pagination
+            currentPage={page + 1}
+            totalItems={totalCount}
+            itemCountPerPage={PAGE_SIZE}
+            pageCount={5}
+            onPageChange={(p) => {
+              setPage(p - 1);
+              setSelectedIds([]);
+            }}
+          />
+        </div>
+      </Flex>
+    </>
   );
 }

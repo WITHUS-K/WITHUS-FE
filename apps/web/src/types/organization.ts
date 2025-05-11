@@ -1,6 +1,8 @@
 /* api */
 import type { ApiResponse } from '@web/api/types';
 
+import { PaletteColor, TagColor } from '@repo/utils';
+
 export interface AssignUsersRequest {
   userIds: number[];
 }
@@ -51,8 +53,42 @@ export type CreateRoleDto = Pick<RoleDto, 'id' | 'roleName' | 'color'>;
 
 export type CreateRoleResponse = ApiResponse<CreateRoleDto>;
 
+export interface OrganizationUser {
+  userId: number;
+  profileImageUrl: string | null;
+  name: string;
+  email: string;
+  roles: { id: number; roleName: string; color: string }[];
+  gender: string;
+  birthDate: string;
+  phoneNumber: string;
+  createdAt: string;
+}
+
+export interface PaginatedUsers {
+  content: OrganizationUser[];
+  pageable: Record<string, unknown>;
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+}
+
+export type PaginatedUsersResponse = ApiResponse<PaginatedUsers>;
+
+export interface AssignRoleRequest {
+  userId: number;
+  roleIds: number[];
+}
+
+export type AssignRoleResponse = ApiResponse<AssignUsersResult[]>;
+
 /* UI 에서 썼던거 */
-import { PaletteColor, TagColor } from '@repo/utils';
+export interface OrgRole {
+  id: number;
+  label: string;
+  color: TagColor;
+}
 
 export interface Role {
   label: string;

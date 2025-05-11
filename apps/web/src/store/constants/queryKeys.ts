@@ -32,5 +32,17 @@ export const queryKeys = {
               roleId,
             ] as const),
     },
+    members: {
+      // 전체 조직 사용자(멤버) 목록 조회 (페이징)
+      list: (organizationId: number, page: number, size: number) =>
+        [
+          'organization',
+          organizationId,
+          'members',
+          'list',
+          page,
+          size,
+        ] as const,
+    },
   },
 } as const;

@@ -7,14 +7,15 @@ import { TagColor } from '@repo/utils';
 import RolesDropdownTriggerContent from './RolesDropdownTriggerContent';
 import { rolesDropdwon } from '../Dropdown.css';
 
-export interface Role {
+export interface OrgRole {
+  id: number;
   label: string;
   color: TagColor;
 }
 
 interface Props {
-  availableRoles: Role[];
-  onSelect: (role: Role) => void;
+  availableRoles: OrgRole[];
+  onSelect: (role: OrgRole) => void;
 }
 
 export default function RolesDropdown({ availableRoles, onSelect }: Props) {
