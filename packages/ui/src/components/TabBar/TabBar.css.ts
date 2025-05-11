@@ -14,6 +14,7 @@ export const tabButton = recipe({
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
+    gap: '0.4rem',
     textAlign: 'center',
     height: '100%',
     ...fontStyles.md2_text_semibold,
@@ -33,4 +34,24 @@ export const tabButton = recipe({
   defaultVariants: {
     state: 'inactive',
   },
+});
+
+export const indicator = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '1.8rem',
+  height: '1.8rem',
+  borderRadius: '50%',
+  ...fontStyles.xs_caption_medium,
+});
+
+export const indicatorActive = style({
+  backgroundColor: vars.colors.primary50,
+  color: vars.colors.white,
+});
+
+export const indicatorInactive = style({
+  backgroundColor: vars.colors.grayscale20,
+  color: vars.colors.white,
 });

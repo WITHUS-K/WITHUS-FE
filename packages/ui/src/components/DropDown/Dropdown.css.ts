@@ -57,20 +57,42 @@ export const scoreTriggerStyle = style({
   boxSizing: 'border-box',
 });
 
-export const dropdownListStyle = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '0.4rem',
+export const dropdownListWrapper = style({
   position: 'absolute',
   top: '100%',
   marginTop: '0.8rem',
   left: 0,
   zIndex: 3,
-  overflow: 'hidden',
+
   borderRadius: '12px',
   backgroundColor: vars.colors.white,
-  padding: '0.4rem',
   boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.10)',
+
+  overflow: 'hidden',
+});
+
+export const dropdownListInner = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.4rem',
+
+  maxHeight: '22rem',
+  overflowY: 'auto',
+  padding: '0.4rem',
+
+  // 스크롤바 스타일
+  selectors: {
+    '&::-webkit-scrollbar': {
+      width: '2px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: vars.colors.grayscale10,
+      borderRadius: '4px',
+    },
+    '&::-webkit-scrollbar-track': {
+      background: 'transparent',
+    },
+  },
 });
 
 export const dropdownItemBase = style({
@@ -100,8 +122,8 @@ export const dropdownItemSelected = style({
 
 // padding-inline: text vs element
 export const dropdownItemPadding = styleVariants({
-  text: { paddingInline: '1.6rem' },
-  element: { paddingInline: '0.6rem' },
+  text: { padding: '0.5rem 1.6rem' },
+  element: { padding: '0.5rem 0.6rem' },
 });
 
 // font style: small vs large
@@ -137,3 +159,41 @@ export const rolesDropdwon = style({
   position: 'relative',
   display: 'inline-block',
 });
+
+export const triggerBase = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: '1rem 1.6rem',
+  borderRadius: '12px',
+  backgroundColor: vars.colors.white,
+  cursor: 'pointer',
+});
+
+export const triggerClosed = style({
+  border: `1px solid ${vars.colors.grayscale20}`,
+});
+
+export const triggerOpen = style({
+  border: `1px solid ${vars.colors.primary50}`,
+});
+
+export const iconBase = style({
+  transition: 'transform 0.2s ease',
+});
+
+export const iconClosed = style([
+  iconBase,
+  {
+    transform: 'rotate(0deg)',
+    color: vars.colors.grayscale70,
+  },
+]);
+
+export const iconOpen = style([
+  iconBase,
+  {
+    transform: 'rotate(180deg)',
+    color: vars.colors.primary50,
+  },
+]);

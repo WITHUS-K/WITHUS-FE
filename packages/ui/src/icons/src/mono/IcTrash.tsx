@@ -9,7 +9,7 @@ const SvgIcTrash = (props: SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      stroke="currentColor"
+      stroke="#C4C6D4"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={1.5}

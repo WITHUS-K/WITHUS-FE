@@ -1,3 +1,28 @@
+export const PART_TARGETS = ['공통', '기획', '디자인', '프론트엔드', '백엔드'];
+export const BLANK_OPTIONS = ['공백 포함', '공백 제외'];
+export const CHAR_LIMITS = ['제한 없음', '250자', '500자', '750자', '1000자'];
+export const FILE_COUNTS = ['1개', '2개', '3개', '4개', '5개'];
+export const FILE_SIZES = ['5MB', '10MB', '15MB', '20MB', '25MB', '30MB'];
+export const UPLOAD_NOTICE = '지원 형식: PDF, PNG, JPG';
+
+export interface Option<T extends string | number> {
+  value: T;
+  label: string;
+}
+
+export type OptionsList<T extends string | number> =
+  | [Option<T>, Option<T>]
+  | [Option<T>, Option<T>, Option<T>]
+  | [Option<T>, Option<T>, Option<T>, Option<T>]
+  | [Option<T>, Option<T>, Option<T>, Option<T>, Option<T>];
+
+export const DETAIL_TYPE_OPTIONS: OptionsList<'text' | 'file'> = [
+  { value: 'text', label: '장문형' },
+  { value: 'file', label: '파일 업로드' },
+];
+
+export type DetailType = (typeof DETAIL_TYPE_OPTIONS)[number]['value'];
+
 import { FormValues } from '@web/types/application';
 
 // 모든 선택 항목
@@ -30,8 +55,10 @@ export const dummyForm: FormValues = {
     {
       isEssential: false,
       type: 'file',
-      description: '(선택) 본인을 가장 잘 드러낼 수 있는 포트폴리오를 첨부해주세요.',
-      addDescription: '서비스 기획/경영 관련 포트폴리오가 있다면 제출해주세요.\n본인의 작업 포트폴리오를 “하나의 PDF”로 첨부해주세요. 작업물 당 기여도를 반드시 표기해주시길 바랍니다.',
+      description:
+        '(선택) 본인을 가장 잘 드러낼 수 있는 포트폴리오를 첨부해주세요.',
+      addDescription:
+        '서비스 기획/경영 관련 포트폴리오가 있다면 제출해주세요.\n본인의 작업 포트폴리오를 “하나의 PDF”로 첨부해주세요. 작업물 당 기여도를 반드시 표기해주시길 바랍니다.',
       responseTarget: 4,
       typeInfo: {
         info: '1',
@@ -100,8 +127,10 @@ export const dummyBasicForm: FormValues = {
     {
       isEssential: false,
       type: 'file',
-      description: '(선택) 본인을 가장 잘 드러낼 수 있는 포트폴리오를 첨부해주세요.',
-      addDescription: '서비스 기획/경영 관련 포트폴리오가 있다면 제출해주세요.\n본인의 작업 포트폴리오를 “하나의 PDF”로 첨부해주세요. 작업물 당 기여도를 반드시 표기해주시길 바랍니다.',
+      description:
+        '(선택) 본인을 가장 잘 드러낼 수 있는 포트폴리오를 첨부해주세요.',
+      addDescription:
+        '서비스 기획/경영 관련 포트폴리오가 있다면 제출해주세요.\n본인의 작업 포트폴리오를 “하나의 PDF”로 첨부해주세요. 작업물 당 기여도를 반드시 표기해주시길 바랍니다.',
       responseTarget: 4,
       typeInfo: {
         info: '1',

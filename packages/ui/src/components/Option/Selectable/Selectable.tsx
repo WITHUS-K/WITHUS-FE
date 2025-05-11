@@ -25,7 +25,7 @@ export const Selectable = ({
 }: SelectableProps) => {
   const inlineStyles: CSSProperties = {
     paddingInline: '1.8rem',
-    width,
+    minWidth: width,
     height,
     ...style,
   };

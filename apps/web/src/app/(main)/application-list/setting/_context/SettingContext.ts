@@ -1,8 +1,7 @@
 'use client';
 
-import { FormValues } from '@web/types/application';
 import { createContext } from 'react';
-
+import type { FormValues } from '@web/types/application';
 
 export interface SettingContextType {
   form: FormValues;
