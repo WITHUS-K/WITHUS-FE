@@ -8,11 +8,14 @@ export interface BasicInfo {
 }
 
 export interface ApplicationParts {
+  // 지원파트
+
   isSelected: boolean;
   parts: string[];
 }
 
 export interface DetailItem {
+  // 상세 내용 (장문형 / 파일업로드)
   isEssential: boolean;
   type: 'text' | 'file';
   description: string;
@@ -25,24 +28,28 @@ export interface DetailItem {
 }
 
 export interface AnnouncementResult {
+  // 서류 합격 발표
   isSelected: boolean;
   date: string;
 }
 
 export interface InterviewScheduleItem {
+  // 면접 일정 세부 값
   date: string;
   startTime: string;
   endTime: string;
 }
 
 export interface InterviewSchedule {
+  // 면접 일정
   isSelected: boolean;
   scheduleList: InterviewScheduleItem[];
 }
 
 export interface EvaluationItem {
-  evaluate: string;
-  evaluateDetail: string;
+  // 평가 항목
+  evaluate: string; // 평가 내용
+  evaluateDetail: string; // 평가 상세 설명
 }
 
 export interface ApplicationFormProps {

@@ -21,6 +21,20 @@ export const triggerStyle = style({
   boxSizing: 'border-box',
 });
 
+export const academicStatusTriggerStyle = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  border: `1px solid ${vars.colors.grayscale20}`,
+  backgroundColor: vars.colors.white,
+  borderRadius: '12px',
+  cursor: 'pointer',
+  padding: '1.6rem 2rem',
+  height: '5.6rem',
+  width: '30.1rem',
+  boxSizing: 'border-box',
+});
+
 export const clubTriggerStyle = style({
   display: 'flex',
   alignItems: 'center',

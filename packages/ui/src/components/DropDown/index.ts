@@ -4,3 +4,5 @@ export { default as SelectScoreDropdown } from './SelectDropdown/SelectScoreDrop
 export { default as Dropdown } from './Dropdown';
 export { default as RolesDropdown } from './SelectDropdown/RolesDropdown';
 export { default as CommonDropdown } from './SelectDropdown/CommonDropdowm';
+
+export { default as SelectAcademicStatusDropdown } from './SelectDropdown/SelectAcademicStatusDropdown';

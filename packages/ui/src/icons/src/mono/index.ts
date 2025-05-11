@@ -1,4 +1,5 @@
 export { default as IcAlaram } from './IcAlaram';
+export { default as IcArrowDown } from './IcArrowDown';
 export { default as IcArrowLeft } from './IcArrowLeft';
 export { default as IcArrowRight } from './IcArrowRight';
 export { default as IcButtonDelete } from './IcButtonDelete';
@@ -7,18 +8,24 @@ export { default as IcButtonInvite } from './IcButtonInvite';
 export { default as IcButtonSetting } from './IcButtonSetting';
 export { default as IcCalendar } from './IcCalendar';
 export { default as IcCommonModal } from './IcCommonModal';
+export { default as IcCopy } from './IcCopy';
 export { default as IcDateArrowLeft } from './IcDateArrowLeft';
 export { default as IcDateArrowRight } from './IcDateArrowRight';
 export { default as IcDeleteRight } from './IcDeleteRight';
+export { default as IcFileUpload } from './IcFileUpload';
 export { default as IcHeaderAlarm } from './IcHeaderAlarm';
 export { default as IcInfo } from './IcInfo';
 export { default as IcLink } from './IcLink';
+
 export { default as IcLinkCopy } from './IcLinkCopy';
 export { default as IcPlus } from './IcPlus';
 export { default as IcPlusCircle } from './IcPlusCircle';
 export { default as IcPlusLeft } from './IcPlusLeft';
 export { default as IcPlusRole } from './IcPlusRole';
 export { default as IcPreview } from './IcPreview';
+
+export { default as IcModify } from './IcModify';
+export { default as IcRefresh } from './IcRefresh';
 export { default as IcRoleBtn } from './IcRoleBtn';
 export { default as IcSave } from './IcSave';
 export { default as IcSidebarCalender } from './IcSidebarCalender';
@@ -27,4 +34,5 @@ export { default as IcSidebarHome } from './IcSidebarHome';
 export { default as IcSidebarInfo } from './IcSidebarInfo';
 export { default as IcSidebarPaper } from './IcSidebarPaper';
 export { default as IcSidebarSearch } from './IcSidebarSearch';
+export { default as IcTrash } from './IcTrash';
 export { default as IcTriangleDown } from './IcTriangleDown';

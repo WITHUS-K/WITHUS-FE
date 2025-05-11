@@ -1,10 +1,9 @@
-// app/(main)/application-list/setting/layout.tsx
 'use client';
 
 import React, { useState, type ReactNode } from 'react';
-
 import type { FormValues } from '@web/types/application';
 import { SettingContext } from './_context/SettingContext';
+import { dummyBasicForm, dummyForm } from '@web/constants/application';
 
 const initialForm: FormValues = {
   title: '',
@@ -33,7 +32,7 @@ export default function SettingLayout({ children }: { children: ReactNode }) {
   const [form, setForm] = useState<FormValues>(initialForm);
 
   return (
-    <SettingContext.Provider value={{ form, setForm }}>
+    <SettingContext.Provider value={{ form: dummyBasicForm, setForm }}>
       {children}
     </SettingContext.Provider>
   );
