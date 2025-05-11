@@ -31,7 +31,7 @@ export default function ApplicationList() {
     setCards((prev) => {
       const idx = prev.findIndex((c) => c.id === id);
       if (idx === -1) return prev;
-      const orig = prev[idx];
+      const orig = prev[idx]!;
       const copy: RecruitmentCardProps = {
         ...orig,
         id: generateId(),
