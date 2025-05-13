@@ -14,6 +14,15 @@ export const getTabLabel = (tab: string): string => {
       return '리크루팅 단계 구성';
     case 'criteria':
       return '평가 기준 설정';
+
+    case 'documents':
+      return '서류';
+    case 'interviews':
+      return '면접';
+    case 'final':
+      return '최합';
+    case 'rejected':
+      return '불합격';
     default:
       return tab;
   }

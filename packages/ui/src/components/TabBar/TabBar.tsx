@@ -14,6 +14,7 @@ interface TabBarProps {
   tabs: string[];
   active: string;
   onChange: (tab: string) => void;
+  counts?: Record<string, number>;
   showIndicator?: boolean;
 }
 
@@ -21,12 +22,15 @@ export default function TabBar({
   tabs,
   active,
   onChange,
+  counts,
   showIndicator = false,
 }: TabBarProps) {
   return (
     <nav className={tabBar}>
       {tabs.map((tab, idx) => {
         const isActive = tab === active;
+        const base = getTabLabel(tab);
+        const label = counts ? `${base} (${counts[tab] ?? 0}명)` : base;
 
         return (
           <button
@@ -44,7 +48,7 @@ export default function TabBar({
                 {idx + 1}
               </span>
             )}
-            {getTabLabel(tab)}
+            {label}
           </button>
         );
       })}
