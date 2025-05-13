@@ -1,4 +1,3 @@
-// apps/web/src/app/(main)/apply-management/[clubId]/layout.tsx
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';

@@ -12,6 +12,7 @@ import { TagColor } from '@repo/utils';
 import { Flex } from '@repo/ui/Flex';
 import StatusBadge, { Status } from '../StatusBadge/StatusBadge';
 import { useRouter, useParams } from 'next/navigation';
+import { IcPlusRole } from '@repo/ui/icons/mono';
 
 export interface Evaluator {
   name: string;
@@ -40,13 +41,11 @@ export default function ApplyListItem({
   member,
   isSelected,
   onToggle,
-  availableEvals,
   onAddEval,
 }: Props) {
   const router = useRouter();
   const params = useParams();
 
-  // 현재 URL에서 clubId, tab 꺼내기
   const rawClubId = params.clubId;
   const rawTab = params.tab;
   const clubId = Array.isArray(rawClubId) ? rawClubId[0] : rawClubId;
@@ -69,7 +68,6 @@ export default function ApplyListItem({
         variant="xs_caption_medium"
         color="grayscale50"
         style={{ marginRight: '2.4rem', width: '2.4rem' }}
-        onClick={openChargeModal}
       >
         {member.id}
       </Text>
@@ -106,7 +104,13 @@ export default function ApplyListItem({
       </Text>
 
       <Flex align="center" gap="1rem" marginRight="3.8rem">
-        <ChargeDropdown available={availableEvals} onSelect={onAddEval} />
+        <button
+          type="button"
+          onClick={openChargeModal}
+          className={styles.buttonBase}
+        >
+          <IcPlusRole width={11} height={11} />
+        </button>
         <div style={{ width: '19.6rem' }}>
           <EvalBubbles evaluators={member.evaluators} />
         </div>

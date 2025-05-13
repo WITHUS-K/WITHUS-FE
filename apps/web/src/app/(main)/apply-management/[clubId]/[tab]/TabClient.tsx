@@ -1,4 +1,3 @@
-// apps/web/src/app/(main)/apply-management/[clubId]/[tab]/page.tsx
 'use client';
 
 import { useParams } from 'next/navigation';
