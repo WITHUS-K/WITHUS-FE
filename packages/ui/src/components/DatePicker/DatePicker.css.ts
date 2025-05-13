@@ -8,6 +8,7 @@ export const wrapper = style({
   padding: '2.7rem',
   userSelect: 'none',
   position: 'relative', 
+  boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.10)',
 });
 
 export const header = style({

@@ -32,8 +32,8 @@ export const dropZone = style({
   cursor: 'pointer',
   border: `1px dashed ${vars.colors.grayscale10}`,
   borderRadius: '16px',
-  padding: '6.55rem 0'
-
+  padding: '6.55rem 0',
+  marginTop: '1.6rem'
 });
 
 export const input = style({

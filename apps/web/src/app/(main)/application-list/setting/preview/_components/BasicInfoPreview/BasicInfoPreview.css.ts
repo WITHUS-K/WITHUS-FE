@@ -65,6 +65,14 @@ export const imageInput = style({
   zIndex: 2,                 
 })
 
+
+export const imagePreview = style({
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+  borderRadius: '12px',
+}) 
+
 export const imageContainer = style({
   position: 'relative',      
   width: '15.6rem',

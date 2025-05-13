@@ -27,6 +27,11 @@ export const downloadButton = style({
   },
 });
 
+export const deleteButton = style({
+  all: 'unset',
+  cursor: 'pointer',
+})
+
 export const rightSection = style({
     display: 'flex',
     alignItems: 'center',

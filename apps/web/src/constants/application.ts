@@ -77,8 +77,8 @@ export const dummyForm: FormValues = {
   interviewSchedule: {
     isSelected: true,
     scheduleList: [
-      { date: '2025-06-15', startTime: '10:00', endTime: '10:30' },
-      { date: '2025-06-16', startTime: '14:00', endTime: '14:30' },
+      { date: '2025-06-15', startTime: '10:00', endTime: '16:00' },
+      { date: '2025-06-16', startTime: '10:00', endTime: '18:30' },
     ],
   },
   finalResultDate: '2025-06-25',

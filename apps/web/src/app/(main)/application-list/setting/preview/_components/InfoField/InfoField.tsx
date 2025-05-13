@@ -12,6 +12,8 @@ interface InfoFieldProps {
   itemClass?: string;
   wrapperClass?: string;
   children?: ReactNode;
+  disabled?: boolean;
+  inputProps?: React.ComponentProps<typeof TextField>['inputProps'];
 }
 
 export function InfoField({
@@ -22,6 +24,8 @@ export function InfoField({
   itemClass = styles.rowItem,
   wrapperClass = styles.fieldWrapper,
   children,
+  disabled = true,
+  inputProps,
 }: InfoFieldProps) {
   return (
     <div className={itemClass}>
@@ -50,9 +54,15 @@ export function InfoField({
       )}
 
       <div className={wrapperClass}>
-        {children ?? (
+        {children ? (
+          children
+        ) : (
           <TextField
-            inputProps={{ placeholder, disabled: true }}
+            inputProps={{
+              placeholder,
+              disabled,
+              ...inputProps,
+            }}
             width="100%"
           />
         )}

@@ -7,13 +7,19 @@ import { IcApplicationFileUpload } from '@repo/ui/icons/colored';
 import { IcFileUpload } from '@repo/ui/icons/mono';
 import * as styles from './FileUpload.css';
 import type { DetailItem } from '@web/types/application';
+import { FileUploader } from '@repo/ui/FileUploader';
 
 export interface FileUploadProps {
   item: DetailItem;
+  file?: File | null;
   onChange: (file: File | null) => void;
 }
 
-export const FileUpload = ({ item, onChange }: FileUploadProps) => {
+function formatMB(bytes: number, decimals = 2) {
+  return (bytes / (1024 * 1024)).toFixed(decimals) + ' MB';
+}
+
+export const FileUpload = ({ item, file, onChange }: FileUploadProps) => {
   const {
     isEssential,
     typeInfo: { info, infoDetail },
@@ -67,6 +73,17 @@ export const FileUpload = ({ item, onChange }: FileUploadProps) => {
             {item.addDescription}
           </Text>
         </Flex>
+
+        {file && (
+          <FileUploader
+            file={{
+              name: file.name,
+              size: formatMB(file.size),
+              downloadUrl: URL.createObjectURL(file),
+            }}
+            onDelete={() => onChange(null)}
+          />
+        )}
 
         <div
           className={styles.dropZone}

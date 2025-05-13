@@ -31,7 +31,7 @@ const Sidebar = ({ role }: SidebarProps) => {
     {
       icon: <IcSidebarSearch width={24} height={24} />,
       label: '지원 현황 관리',
-      route: '/',
+      route: '/apply-management',
     },
     {
       icon: <IcSidebarCalender width={24} height={24} />,
