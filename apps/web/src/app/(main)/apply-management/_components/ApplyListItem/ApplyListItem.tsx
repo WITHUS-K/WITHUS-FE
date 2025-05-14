@@ -6,7 +6,6 @@ import { CheckBox } from '@repo/ui/CheckBox';
 import { Tag } from '@repo/ui/Tag';
 import { Text } from '@repo/ui/Text';
 import * as styles from './ApplyListItem.css';
-import { ChargeDropdown } from '@repo/ui/ChargeDropdown';
 import EvalBubbles from '../EvalBubbles/EvalBubbles';
 import { TagColor } from '@repo/utils';
 import { Flex } from '@repo/ui/Flex';
@@ -53,7 +52,7 @@ export default function ApplyListItem({
 
   // charge 모달 페이지로 이동
   const openChargeModal = () => {
-    router.push(`/apply-management/${clubId}/${activeTab}/charge`);
+    router.push(`/apply-management/${activeTab}/charge?clubId=${clubId}`);
   };
 
   return (

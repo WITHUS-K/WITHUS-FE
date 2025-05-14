@@ -8,7 +8,6 @@ import { Flex } from '@repo/ui/Flex';
 import ActionToolbar from '../../ActionToolbar/ActionToolbar';
 import TableContainer from '../../TableContainer/TableContainer';
 
-// 헤더 설정 (서류)
 const DOC_HEADER: HeaderMeta[] = [
   { key: 'checkbox', label: '', width: '4.7rem' },
   { key: 'id', label: '순번', width: '5rem' },
@@ -27,9 +26,6 @@ const DOC_HEADER: HeaderMeta[] = [
   { key: 'mailSent', label: '메일 발송' },
 ];
 
-// Mock data (서류 전용 필드 채워서)
-// components/Table/TableContainer.tsx (상단 어딘가에)
-// =====> 모의 데이터, 'random' 제거
 export const MOCK_DATA: MemberWithEval[] = Array.from(
   { length: 38 },
   (_, i) => ({
@@ -44,7 +40,6 @@ export const MOCK_DATA: MemberWithEval[] = Array.from(
     profileUrl: 'https://…jpg',
 
     fieldTags: [{ label: '기획', color: '#FF2A3A' }],
-    // 난수 대신 인덱스 활용
     evalStatus: `${(i % 12) + 1}/12`,
     documentScore: (i * 7) % 100,
     interviewScore: (i * 7) % 100,
@@ -55,7 +50,6 @@ export const MOCK_DATA: MemberWithEval[] = Array.from(
   })
 );
 
-// 전체 가능한 평가자
 const AVAILABLE_EVALS: Evaluator[] = [
   { name: '장수정' },
   { name: '윤수빈' },
@@ -73,7 +67,7 @@ export default function DocumentTab({ clubId }: DocumentTabProps) {
   return (
     <Flex direction="column" width="100%" height="100%" gap="1.2rem">
       <ActionToolbar
-        hasSelection={false} // 실제 state 바인딩
+        hasSelection={false}
         onDistribute={() => {}}
         onAdd={() => {}}
         onSms={() => {}}

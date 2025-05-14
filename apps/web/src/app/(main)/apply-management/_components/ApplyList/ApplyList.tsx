@@ -1,4 +1,3 @@
-// components/Table/OrgList.tsx
 'use client';
 
 import React from 'react';

@@ -5,7 +5,7 @@ export const pagination = style({
   position: 'fixed',
   bottom: '0',
   right: '0',
-  left: '240px', // 사이드바 너비에 맞춰
+  left: '240px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

@@ -6,10 +6,7 @@ import { CheckBox } from '@repo/ui/CheckBox';
 import { Tag } from '@repo/ui/Tag';
 import { Text } from '@repo/ui/Text';
 import * as styles from './ApplyListItem.css';
-import { ChargeDropdown } from '@repo/ui/ChargeDropdown';
-import EvalBubbles from '../EvalBubbles/EvalBubbles';
 import { TagColor } from '@repo/utils';
-import { Flex } from '@repo/ui/Flex';
 import StatusBadge, { Status } from '../StatusBadge/StatusBadge';
 
 export interface Evaluator {
