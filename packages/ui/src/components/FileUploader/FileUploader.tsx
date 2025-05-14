@@ -14,17 +14,19 @@ export interface FileUploaderProps {
   file: FileInfo;
   onDownload?: (file: FileInfo) => void;
   onDelete?: (file: FileInfo) => void;
+  readOnly?: boolean;
 }
 
 export const FileUploader = ({
   file,
   onDownload,
   onDelete,
+  readOnly = false,
 }: FileUploaderProps) => {
   const isDeletable = typeof onDelete === 'function';
 
   return (
-    <ListLayout>
+    <ListLayout readOnly={readOnly}>
       <Flex direction="row" gap="1.6rem" align="center">
         <div className={styles.pdfIcon}>
           <Text variant="sm_caption_medium" color="grayscale40">

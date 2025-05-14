@@ -19,7 +19,13 @@ export const bodyContainer = style({
   width: '100%',
   border: `1px solid ${vars.colors.grayscale20}`,
   borderRadius: '16px',
-  padding: '1.6rem'
+  padding: '1.6rem',
+  selectors: {
+    '&[data-read-only="true"]': {
+      backgroundColor: vars.colors.bg,
+      border: `1px solid ${vars.colors.grayscale5}`,
+    },
+  },
 })
 
 

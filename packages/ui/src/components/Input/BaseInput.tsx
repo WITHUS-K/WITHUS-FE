@@ -23,6 +23,7 @@ interface BaseInputProps extends React.HTMLAttributes<HTMLDivElement> {
   showClear?: boolean;
   onClear?: () => void;
   width?: string;
+  readOnly?: boolean;
 }
 
 const BaseInput = forwardRef<HTMLInputElement, BaseInputProps>(
@@ -38,6 +39,7 @@ const BaseInput = forwardRef<HTMLInputElement, BaseInputProps>(
       showClear,
       onClear,
       width = '100%',
+      readOnly = false,
       ...props
     },
     ref
@@ -51,6 +53,7 @@ const BaseInput = forwardRef<HTMLInputElement, BaseInputProps>(
     return (
       <div
         className={inputWrapper({ state, size })}
+        data-read-only={readOnly ? 'true' : 'false'}
         {...props}
         style={{ width, ...props.style }}
       >

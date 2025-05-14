@@ -13,11 +13,17 @@ interface QuestionAndFileListFormProps {
   files: (File | null)[];
   onAnswerChange: (idx: number, value: string) => void;
   onFileChange: (idx: number, file: File | null) => void;
+  readOnly?: boolean;
 }
 
-export const QuestionAndFileListForm: React.FC<
-  QuestionAndFileListFormProps
-> = ({ detailItems, answers, files, onAnswerChange, onFileChange }) => {
+export const QuestionAndFileListForm = ({
+  detailItems,
+  answers,
+  files,
+  onAnswerChange,
+  onFileChange,
+  readOnly = false,
+}: QuestionAndFileListFormProps) => {
   const textItems = detailItems.filter((item) => item.type === 'text');
   const fileItems = detailItems.filter((item) => item.type === 'file');
 
@@ -36,11 +42,12 @@ export const QuestionAndFileListForm: React.FC<
             )}
           </Flex>
           <QuestionInput
+            readOnly
             title={item.description}
             info={item.typeInfo.info}
             infoDetail={item.typeInfo.infoDetail}
             value={answers[idx] as string}
-            onChange={(val) => onAnswerChange(idx, val)}
+            onChange={(val) => !readOnly && onAnswerChange(idx, val)}
           />
         </div>
       ))}
@@ -51,6 +58,7 @@ export const QuestionAndFileListForm: React.FC<
             item={item}
             file={files[files.length - 1]}
             onChange={(file) => onFileChange(idx, file)}
+            readOnly
           />
         </div>
       ))}

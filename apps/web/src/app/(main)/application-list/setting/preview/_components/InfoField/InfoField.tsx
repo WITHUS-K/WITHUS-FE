@@ -14,6 +14,7 @@ interface InfoFieldProps {
   children?: ReactNode;
   disabled?: boolean;
   inputProps?: React.ComponentProps<typeof TextField>['inputProps'];
+  readOnly?: boolean;
 }
 
 export function InfoField({
@@ -26,6 +27,7 @@ export function InfoField({
   children,
   disabled = true,
   inputProps,
+  readOnly = false,
 }: InfoFieldProps) {
   return (
     <div className={itemClass}>
@@ -34,7 +36,7 @@ export function InfoField({
           <Text variant="md1_text_semibold" color="grayscale70">
             {label}
           </Text>
-          {required && (
+          {required && !readOnly && (
             <Text variant="md2_text_semibold" color="error">
               *
             </Text>
@@ -45,7 +47,7 @@ export function InfoField({
           <Text variant="md1_text_semibold" color="grayscale70">
             {label}
           </Text>
-          {required && (
+          {required && !readOnly && (
             <Text variant="md2_text_semibold" color="error">
               *
             </Text>
@@ -64,6 +66,7 @@ export function InfoField({
               ...inputProps,
             }}
             width="100%"
+            readOnly={readOnly}
           />
         )}
       </div>

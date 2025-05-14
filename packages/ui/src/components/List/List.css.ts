@@ -7,7 +7,13 @@ export const listWrapperBase = style({
   padding: '1.6rem',
   backgroundColor: vars.colors.white,
   borderRadius: '12px',
-  width: '100%'
+  width: '100%',
+    selectors: {
+    '&[data-read-only="true"]': {
+      backgroundColor: vars.colors.white,
+      border: 'none',
+    },
+  },
 });
 
 export const listWrapperDir = styleVariants({
