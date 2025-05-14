@@ -4,15 +4,15 @@ import React, { useState, ChangeEvent } from 'react';
 import { Text } from '@repo/ui/Text';
 import { SearchInput } from '@repo/ui/SearchInput';
 import MemberPanel from './MemberPanel';
-import { User } from '@web/types/organization';
+import type { UserResult } from '@web/types/organization';
 import * as styles from './MemberAssignmentPanel.css';
 import { IcDeleteRight, IcPlusLeft } from '@repo/ui/icons/mono';
 
 interface Props {
-  addedMembers: User[];
-  availableMembers: User[];
-  onAdd: (u: User) => void;
-  onRemove: (u: User) => void;
+  addedMembers: UserResult[];
+  availableMembers: UserResult[];
+  onAdd: (u: UserResult) => void;
+  onRemove: (u: UserResult) => void;
 }
 
 export default function MemberAssignmentPanel({
@@ -22,8 +22,8 @@ export default function MemberAssignmentPanel({
   onRemove,
 }: Props) {
   const [search, setSearch] = useState('');
-  const [selAdded, setSelAdded] = useState<Set<string>>(new Set());
-  const [selAvail, setSelAvail] = useState<Set<string>>(new Set());
+  const [selAdded, setSelAdded] = useState<Set<number>>(new Set());
+  const [selAvail, setSelAvail] = useState<Set<number>>(new Set());
 
   const filteredAdded = addedMembers.filter((u) =>
     u.name.toLowerCase().includes(search.toLowerCase())
@@ -33,31 +33,20 @@ export default function MemberAssignmentPanel({
   );
 
   const allAdded =
-    filteredAdded.length > 0 && filteredAdded.every((u) => selAdded.has(u.id));
+    filteredAdded.length > 0 &&
+    filteredAdded.every((u) => selAdded.has(u.userId));
   const allAvail =
-    filteredAvail.length > 0 && filteredAvail.every((u) => selAvail.has(u.id));
+    filteredAvail.length > 0 &&
+    filteredAvail.every((u) => selAvail.has(u.userId));
 
   const toggleSet = (
-    set: Set<string>,
-    setFn: React.Dispatch<Set<string>>,
-    id: string
+    set: Set<number>,
+    setFn: React.Dispatch<Set<number>>,
+    id: number
   ) => {
     const nxt = new Set(set);
     nxt.has(id) ? nxt.delete(id) : nxt.add(id);
     setFn(nxt);
-  };
-
-  const toggleAdded = (id: string) => toggleSet(selAdded, setSelAdded, id);
-  const toggleAvail = (id: string) => toggleSet(selAvail, setSelAvail, id);
-
-  const selectAllAdded = () => {
-    if (allAdded) setSelAdded(new Set());
-    else setSelAdded(new Set(filteredAdded.map((u) => u.id)));
-  };
-
-  const selectAllAvail = () => {
-    if (allAvail) setSelAvail(new Set());
-    else setSelAvail(new Set(filteredAvail.map((u) => u.id)));
   };
 
   return (
@@ -78,38 +67,47 @@ export default function MemberAssignmentPanel({
       <div className={styles.panels}>
         <MemberPanel
           title="추가된 멤버"
-          count={addedMembers.length}
+          count={filteredAdded.length}
           items={filteredAdded}
           selected={selAdded}
           allSelected={allAdded}
-          onToggleAll={selectAllAdded}
+          onToggleAll={() =>
+            setSelAdded(
+              allAdded ? new Set() : new Set(filteredAdded.map((u) => u.userId))
+            )
+          }
           onAction={() => {
             filteredAdded.forEach((u) => {
-              if (selAdded.has(u.id)) onRemove(u);
+              if (selAdded.has(u.userId)) onRemove(u);
             });
             setSelAdded(new Set());
           }}
           actionLabel="제외"
           actionIcon={<IcDeleteRight />}
-          onToggleItem={toggleAdded}
+          onToggleItem={(id) => toggleSet(selAdded, setSelAdded, id)}
           search={search}
         />
+
         <MemberPanel
           title="추가하지 않은 멤버"
-          count={availableMembers.length}
+          count={filteredAvail.length}
           items={filteredAvail}
           selected={selAvail}
           allSelected={allAvail}
-          onToggleAll={selectAllAvail}
+          onToggleAll={() =>
+            setSelAvail(
+              allAvail ? new Set() : new Set(filteredAvail.map((u) => u.userId))
+            )
+          }
           onAction={() => {
             filteredAvail.forEach((u) => {
-              if (selAvail.has(u.id)) onAdd(u);
+              if (selAvail.has(u.userId)) onAdd(u);
             });
             setSelAvail(new Set());
           }}
           actionLabel="추가"
           actionIcon={<IcPlusLeft />}
-          onToggleItem={toggleAvail}
+          onToggleItem={(id) => toggleSet(selAvail, setSelAvail, id)}
           search={search}
         />
       </div>

@@ -1,0 +1,114 @@
+'use client';
+import { useState, useEffect, useMemo } from 'react';
+import { Flex } from '@repo/ui/Flex';
+import SettingsHeader from '../_components/SettingsHeader/SettingsHeader';
+import RolePalettePanel from '../_components/RolePalettePanel/RolePalettePanel';
+import MemberAssignmentPanel from '../_components/MemberAssignmentPanel/MemberAssignmentPanel';
+import { nameToHex } from '@web/utils/color';
+import type { RoleSelectWithCount, UserResult } from '@web/types/organization';
+import type { PaletteColor } from '@repo/utils';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { getOrganizationRolesQueryOptions } from '@web/store/query/useOrganizationRolesQuery';
+import { useOrganizationUsersQuery } from '@web/store/query/useOrganizationUsersQuery';
+import { useAddOrganizationRoleMutation } from '@web/store/mutation/useAddOrganizationRoleMutation';
+import { useUpdateOrganizationRoleMutation } from '@web/store/mutation/useUpdateOrganizationRoleMutation';
+import { useAssignOrganizationUsersMutation } from '@web/store/mutation/useAssignOrganizationUsersMutation';
+
+interface Props {
+  organizationId: number;
+}
+
+export default function Settings({ organizationId }: Props) {
+  const [roleSearch, setRoleSearch] = useState('');
+  const [selectedRoleIdx, setSelectedRoleIdx] = useState<number | null>(null);
+
+  // 역할 목록
+  const { data: rolesData } = useSuspenseQuery(
+    getOrganizationRolesQueryOptions({ organizationId })
+  );
+  const filteredRoles = useMemo(
+    () =>
+      rolesData.roles.filter((r) =>
+        r.roleName.toLowerCase().includes(roleSearch.toLowerCase())
+      ),
+    [rolesData.roles, roleSearch]
+  );
+  const roleSelect: RoleSelectWithCount[] = filteredRoles.map((r) => ({
+    label: r.roleName,
+    color: nameToHex[r.color] as PaletteColor,
+    count: r.assignedUserCount,
+  }));
+  const selectedRoleId =
+    selectedRoleIdx != null ? filteredRoles[selectedRoleIdx]!.id : 0;
+
+  // 서버에서 users
+  const { data: users } = useOrganizationUsersQuery(
+    organizationId,
+    selectedRoleId
+  );
+
+  // roleId 가 바뀔 때만 초기화
+  const [localUsers, setLocalUsers] = useState<UserResult[]>([]);
+  useEffect(() => {
+    if (selectedRoleId === 0) {
+      setLocalUsers([]);
+    } else if (users) {
+      setLocalUsers(users);
+    }
+  }, [selectedRoleId, users]);
+
+  const addedMembers = localUsers.filter((u) => u.isAssigned);
+  const availableMembers = localUsers.filter((u) => !u.isAssigned);
+
+  //  즉시 UI 반영
+  const handleAdd = (u: UserResult) =>
+    setLocalUsers((ls) =>
+      ls.map((x) => (x.userId === u.userId ? { ...x, isAssigned: true } : x))
+    );
+  const handleRemove = (u: UserResult) =>
+    setLocalUsers((ls) =>
+      ls.map((x) => (x.userId === u.userId ? { ...x, isAssigned: false } : x))
+    );
+
+  // 역할
+  const { mutate: addRole } = useAddOrganizationRoleMutation(organizationId);
+  const { mutate: updateRole } =
+    useUpdateOrganizationRoleMutation(organizationId);
+
+  //  할당/제외
+  const { mutate: assignUsers } =
+    useAssignOrganizationUsersMutation(organizationId);
+
+  // 저장, 비어 있으면 [0] 전송
+  const handleSave = () => {
+    if (!selectedRoleId) return;
+    const userIds =
+      addedMembers.length > 0 ? addedMembers.map((u) => u.userId) : [0];
+    assignUsers({ roleId: selectedRoleId, userIds });
+  };
+
+  return (
+    <Flex direction="column">
+      <SettingsHeader onSave={handleSave} />
+      <Flex align="center" gap="1.9rem" width="100%" marginTop="1.8rem">
+        <RolePalettePanel
+          roles={roleSelect}
+          search={roleSearch}
+          selectedIdx={selectedRoleIdx}
+          onSearchChange={setRoleSearch}
+          onSelectRole={setSelectedRoleIdx}
+          onAddRole={addRole}
+          onUpdateRole={(i, label, color) =>
+            updateRole({ roleId: filteredRoles[i]!.id, label, color })
+          }
+        />
+        <MemberAssignmentPanel
+          addedMembers={addedMembers}
+          availableMembers={availableMembers}
+          onAdd={handleAdd}
+          onRemove={handleRemove}
+        />
+      </Flex>
+    </Flex>
+  );
+}

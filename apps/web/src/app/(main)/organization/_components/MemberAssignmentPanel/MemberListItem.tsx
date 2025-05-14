@@ -3,11 +3,11 @@ import { Flex } from '@repo/ui/Flex';
 import { CheckBox } from '@repo/ui/CheckBox';
 import { Profile } from '@repo/ui/Profile';
 import { Text } from '@repo/ui/Text';
+import type { UserResult } from '@web/types/organization';
 import * as styles from './MemberAssignmentPanel.css';
-import { User } from '@web/types/organization';
 
 interface Props {
-  user: User;
+  user: UserResult;
   isSelected: boolean;
   onToggle: () => void;
   search: string;
@@ -32,7 +32,7 @@ export default function MemberListItem({
       <div style={{ marginRight: '0.4rem', height: '2rem', width: '2rem' }}>
         <CheckBox size={2} isChecked={isSelected} onChange={onToggle} />
       </div>
-      <Profile src={user.profileUrl!} alt={user.name} size={24} />
+      <Profile src={user.imageUrl ?? null} alt={user.name} size={24} />
       <Text variant="sm_caption_regular" color="grayscale90">
         {nameParts.map((part, idx) =>
           search && part.toLowerCase() === search.toLowerCase() ? (

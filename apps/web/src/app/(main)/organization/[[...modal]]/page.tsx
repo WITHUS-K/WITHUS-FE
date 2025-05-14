@@ -1,19 +1,41 @@
-'use client';
-
-import React from 'react';
-import { useParams } from 'next/navigation';
+import { getServerSideTokens } from '@web/api/serverSideTokens';
+import { getOrganizationRolesQueryOptions } from '@web/store/query/useOrganizationRolesQuery';
+import { getOrganizationMembersQueryOptions } from '@web/store/query/useOrganizationMembersQuery';
+import { ServerFetchBoundary } from '@web/store/query/ServerFetchBoundary';
 import OrganizationPageClient from '../OrganizationPageClient';
-import InviteModal from '../@modal/(.)invite/page';
 
-export default function Page() {
-  // URL이 /organization/invite 면 modal = ['invite']
-  const { modal } = useParams() as { modal?: string[] };
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ modal?: string[] }>;
+}) {
+  const tokens = await getServerSideTokens();
+  const organizationId = 3;
+
+  const roleFetchOptions = getOrganizationRolesQueryOptions({
+    organizationId,
+    tokens,
+  });
+  const membersFetchOptions = getOrganizationMembersQueryOptions({
+    organizationId,
+    page: 1,
+    size: 20,
+    tokens,
+  });
+
+  const { modal } = await params;
   const showInvite = modal?.[0] === 'invite';
 
   return (
     <>
-      <OrganizationPageClient />
-      {showInvite && <InviteModal />}
+      <ServerFetchBoundary fetchOptions={[roleFetchOptions]}>
+        <ServerFetchBoundary fetchOptions={[membersFetchOptions]}>
+          <OrganizationPageClient
+            organizationId={organizationId}
+            showInvite={showInvite}
+          />
+        </ServerFetchBoundary>
+      </ServerFetchBoundary>
     </>
   );
 }

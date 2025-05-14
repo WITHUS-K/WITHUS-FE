@@ -1,12 +1,13 @@
 'use client';
 
 import BaseInput from './BaseInput';
-import type { ReactNode, ChangeEvent } from 'react';
+import type { ReactNode, ChangeEvent, KeyboardEvent } from 'react';
 
 interface InputFieldProps {
   placeholder?: string;
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
   icon?: ReactNode;
   size?: 'search' | 'club' | 'auth';
   width?: string;
@@ -20,6 +21,7 @@ const InputField = ({
   placeholder,
   value,
   onChange,
+  onKeyDown,
   icon,
   size = 'search',
   width,
@@ -31,6 +33,7 @@ const InputField = ({
       inputProps={{
         value,
         onChange,
+        onKeyDown,
         placeholder,
         readOnly,
         onClick,

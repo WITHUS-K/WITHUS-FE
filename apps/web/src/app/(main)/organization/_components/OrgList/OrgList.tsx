@@ -4,15 +4,16 @@ import React from 'react';
 import * as styles from './OrgList.css';
 import { OrgListHeader } from './OrgListHeader';
 import OrgListItem from '../OrgListItem/OrgListItem';
-import { Member, Role } from '@web/types/organization';
+import { Member, OrgRole, Role } from '@web/types/organization';
 
 interface Props {
   data: Member[];
   selectedIds: string[];
   onToggleAll: (checked: boolean) => void;
   onToggleOne: (id: string, checked: boolean) => void;
-  availableRoles: Role[];
-  onAddRole: (memberId: string, role: Role) => void;
+  availableRoles: OrgRole[];
+  // 💥 onAddRole 에도 OrgRole 타입을 맞춰 줍니다
+  onAddRole: (memberId: string, role: OrgRole) => void;
   search: string;
 }
 

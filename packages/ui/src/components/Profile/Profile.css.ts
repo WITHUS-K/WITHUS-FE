@@ -1,4 +1,5 @@
 import { style } from '@vanilla-extract/css';
+import { vars } from '@repo/theme';
 
 export const profileWrapper = style({
   display: 'flex',
@@ -14,4 +15,12 @@ export const profileImage = style({
   height: '100%',
   borderRadius: '50%',
   objectFit: 'cover',
+});
+
+export const emptyProfile = style({
+  width: '100%',
+  height: '100%',
+  borderRadius: '50%',
+  objectFit: 'cover',
+  backgroundColor: vars.colors.grayscale20,
 });

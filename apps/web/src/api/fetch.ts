@@ -23,7 +23,7 @@ async function fetchWrapperWithTokenHandler<Data>(
 ): Promise<ApiResponse<Data>> {
   const method = options?.method ?? 'get';
 
-  //console.log('토큰', tokens);
+  console.log('토큰', tokens);
 
   // 클라이언트 사이드에서 토큰이 없으면 쿠키에서 읽어옴
   if (!tokens && typeof window !== 'undefined') {
@@ -134,9 +134,14 @@ export function PUT<Data>(
 /** DELETE 요청 */
 export function DELETE<Data>(
   uri: string,
+  body?: unknown,
   tokens?: Tokens
 ): Promise<ApiResponse<Data>> {
-  return fetchWrapperWithTokenHandler<Data>(uri, { method: 'delete' }, tokens);
+  return fetchWrapperWithTokenHandler<Data>(
+    uri,
+    { method: 'delete', json: body },
+    tokens
+  );
 }
 
 /** PATCH 요청 */
