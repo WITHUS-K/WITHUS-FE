@@ -5,7 +5,7 @@ import { notFound, useParams, useRouter } from 'next/navigation';
 import { timetableMock, SlotItem, Applicant } from '@web/constants/timetable';
 import { ApplicantSliderHeader } from '@web/app/(main)/interview-management/_components/ApplicantHeader/ApplicantHeader';
 import { ApplicantDetailContent } from '@web/app/(main)/interview-management/_components/ApplicantDetailContent/ApplicantDetailContent';
-import { pageContainer } from '@web/app/(main)/interview-management/timetable/[tab]/[date]/[time]/page.css';
+import { pageContainer } from '@web/app/(main)/interview-management/timetable/[tab]/[date]/application/[time]/page.css';
 
 export default function ApplicantDetailPage() {
   const router = useRouter();

@@ -54,7 +54,9 @@ export default function AllCell({ slot }: { slot: SlotItem }) {
           onClick={() => {
             if (!slot) return;
             router.push(
-              `/interview-management/timetable/${tab}/${date}/${slot.startTime}-${slot.endTime}`
+              `/interview-management/timetable/${tab}/${date}/application/${encodeURIComponent(
+                `${slot.startTime}-${slot.endTime}`
+              )}`
             );
           }}
         >

@@ -61,7 +61,7 @@ export default function TimetableLayout({
           onChange={handleDateChange}
         />
       </Flex>
-      <div>{children}</div>
+      <div style={{ width: '100%' }}>{children}</div>
       {modal}
     </>
   );

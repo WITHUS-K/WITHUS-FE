@@ -1,21 +1,27 @@
 'use client';
 import { ReactNode } from 'react';
 import Filters from './_components/Filters/Filters';
-import { Flex } from '@repo/ui/Flex';
 import { usePathname } from 'next/navigation';
 
-export const dynamic = 'force-dynamic';
-
 export default function InterviewLayout({ children }: { children: ReactNode }) {
-  const pathname = usePathname() || '';
-  const isSlotPage =
-    /^\/interview-management\/timetable\/[^/]+\/[^/]+\/[^/]+$/.test(pathname);
+  const pathname = usePathname(); // ②
+  const isDetail =
+    // “/application/” 세그먼트를 포함하면 상세 페이지로 간주
+    pathname.includes('/application/'); // ③
 
   return (
-    <Flex direction="column" width="100%" height="100%" padding="2.4rem">
-      {!isSlotPage && <Filters />}
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        height: '100%',
+        padding: '2.4rem',
+      }}
+    >
+      {!isDetail && <Filters />}
 
       {children}
-    </Flex>
+    </div>
   );
 }
