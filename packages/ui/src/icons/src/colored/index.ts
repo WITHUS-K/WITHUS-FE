@@ -26,6 +26,7 @@ export { default as IcInviteDelete } from './IcInviteDelete';
 export { default as IcJoinStep4 } from './IcJoinStep4';
 export { default as IcLoading } from './IcLoading';
 export { default as IcLoginLogo } from './IcLoginLogo';
+export { default as IcMenuBtn } from './IcMenuBtn';
 export { default as IcModalCheck } from './IcModalCheck';
 export { default as IcModalWarning } from './IcModalWarning';
 export { default as IcNotice } from './IcNotice';

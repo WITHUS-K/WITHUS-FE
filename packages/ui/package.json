@@ -139,6 +139,10 @@
     "./Option": {
       "types": "./dist/components/Option/index.d.ts",
       "import": "./dist/components/Option/index.js"
+    },
+    "./ChargeDropdown": {
+      "types": "./dist/components/DropDown/index.d.ts",
+      "import": "./dist/components/DropDown/index.js"
     }
   },
   "main": "./dist/index.js",
