@@ -4,7 +4,7 @@ import { Text, Flex } from '@repo/ui';
 import { notFound, useParams, useRouter } from 'next/navigation';
 import { timetableMock, SlotItem, Applicant } from '@web/constants/timetable';
 import { ApplicantSliderHeader } from '@web/app/(main)/interview-management/_components/ApplicantHeader/ApplicantHeader';
-import { pageContainer } from '@web/app/(main)/interview-management/timetable/[tab]/[date]/[time]/page.css';
+import { pageContainer } from '@web/app/(main)/interview-management/timetable/[tab]/[date]/application/[time]/page.css';
 import { ApplicantInterviewForm } from '@web/app/(main)/interview-evaluation/_components/ApplicantInterviewForm/ApplicantInterviewForm';
 
 export default function ApplicantDetailPage() {

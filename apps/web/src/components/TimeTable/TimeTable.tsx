@@ -6,6 +6,7 @@ import { useTimeTableData } from '../../hooks/useTimeTableData';
 import * as styles from './TimeTable.css';
 import type { SlotItem } from '@web/constants/timetable';
 import { Text } from '@repo/ui/Text';
+import { TimeSlot } from '@web/store/query/useInterviewScheduleQuery';
 
 export interface TimeTableProps {
   title: string;
@@ -13,7 +14,7 @@ export interface TimeTableProps {
   interval: number;
   startHour: number;
   endHour: number;
-  slots?: SlotItem[];
+  slots?: TimeSlot[];
   renderCell: (row: number) => React.ReactNode;
   className?: string;
   width?: string;

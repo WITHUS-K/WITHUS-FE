@@ -8,15 +8,23 @@ export interface StepperProps {
   name: string;
   value: number;
   onChange: (name: string, next: number) => void;
+  disabled?: boolean;
 }
 
-export function Stepper({ name, value, onChange }: StepperProps) {
+export function Stepper({
+  name,
+  value,
+  onChange,
+  disabled = false,
+}: StepperProps) {
   return (
     <Flex align="center" className={styles.container}>
       <button
         type="button"
         className={styles.button}
         onClick={() => onChange(name, value - 1)}
+        disabled={disabled || value <= 1}
+        aria-label={`decrease ${name}`}
       >
         <IcStepperMinus width={24} height={24} />
       </button>
@@ -29,6 +37,8 @@ export function Stepper({ name, value, onChange }: StepperProps) {
         type="button"
         className={styles.button}
         onClick={() => onChange(name, value + 1)}
+        disabled={disabled}
+        aria-label={`increase ${name}`}
       >
         <IcStepperPlus width={24} height={24} />
       </button>

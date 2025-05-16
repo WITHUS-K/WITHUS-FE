@@ -5,6 +5,7 @@ import { Callout } from '@repo/ui/Callout';
 import * as styles from './ProfileGroup.css';
 
 export interface ProfileItem {
+  userId?: number;
   src: string;
   name: string;
 }
