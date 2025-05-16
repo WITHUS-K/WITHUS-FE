@@ -27,7 +27,7 @@ export interface OrgInterviewInfo {
 }
 
 // — QueryOptions & Hook —
-function getOrgInterviewsOptions(
+export function getOrgInterviewsOptions(
   tokens?: Tokens
 ): FetchQueryOptions<
   OrgInterviewInfo[],
@@ -43,6 +43,7 @@ function getOrgInterviewsOptions(
         undefined,
         tokens
       );
+      console.log(res);
       return res.result;
     },
     staleTime: 1000 * 60 * 5,
@@ -60,6 +61,7 @@ export function useOrganizationInterviewsQuery(
         undefined,
         tokens
       );
+      console.log(res);
       return res.result;
     },
     staleTime: 1000 * 60 * 5,

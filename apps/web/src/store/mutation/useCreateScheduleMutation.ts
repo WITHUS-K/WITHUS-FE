@@ -1,3 +1,4 @@
+// src/store/query/useCreateSchedule.ts
 import {
   useMutation,
   useQueryClient,
@@ -6,6 +7,9 @@ import {
 import { POST } from '@web/api/fetch';
 import { queryKeys } from '../constants';
 
+// — 요청/응답 타입 —
+// POST /api/v1/interviews/recruitments/{recruitmentId}/interviews/{interviewId}/schedule
+// → 타임테이블 생성
 export interface ScheduleBody {
   interviewerPerSlot: number;
   applicantPerSlot: number;
@@ -18,6 +22,7 @@ export type CreateScheduleVariables = {
   body: ScheduleBody;
 };
 
+// — Hook & Mutation —
 export function useCreateScheduleMutation(): UseMutationResult<
   CreateScheduleResult,
   Error,
@@ -28,11 +33,10 @@ export function useCreateScheduleMutation(): UseMutationResult<
   return useMutation<CreateScheduleResult, Error, CreateScheduleVariables>({
     mutationKey: queryKeys.interview.scheduleCreate(),
     mutationFn: async ({ recruitmentId, interviewId, body }) => {
-      const url =
-        `api/v1/interviews/schedule` +
-        `?recruitmentId=${recruitmentId}` +
-        `&interviewId=${interviewId}`;
+      // RESTful 경로로 변경
+      const url = `api/v1/interviews/recruitments/${recruitmentId}/interviews/${interviewId}/schedule`;
       const res = await POST<CreateScheduleResult>(url, body);
+      console.log(res);
       return res.result;
     },
     onSuccess: () => {

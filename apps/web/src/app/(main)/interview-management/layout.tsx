@@ -1,13 +1,25 @@
+// app/(main)/interview-management/InterviewLayout.tsx
 'use client';
+
 import { ReactNode } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 import Filters from './_components/Filters/Filters';
-import { usePathname } from 'next/navigation';
+import { Flex } from '@repo/ui/Flex';
+import { IcCalendar } from '@repo/ui/icons/colored';
+import { Text } from '@repo/ui/Text';
 
 export default function InterviewLayout({ children }: { children: ReactNode }) {
-  const pathname = usePathname(); // ②
-  const isDetail =
-    // “/application/” 세그먼트를 포함하면 상세 페이지로 간주
-    pathname.includes('/application/'); // ③
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // ① timetable 경로인지 확인
+  const isTimetable = pathname.includes('/interview-management/timetable/');
+  // ② URL 에 interviewId 가 있는지
+  const ivParam = searchParams.get('interviewId');
+  const interviewId = ivParam ? Number(ivParam) : undefined;
+
+  // ③ 기본 detail 페이지 구분은 그대로
+  const isDetail = pathname.includes('/application/');
 
   return (
     <div
@@ -21,7 +33,29 @@ export default function InterviewLayout({ children }: { children: ReactNode }) {
     >
       {!isDetail && <Filters />}
 
-      {children}
+      {/*
+        ④ timetable 경로 + interviewId 없으면 placeholder,
+           그렇지 않으면 자식 렌더
+      */}
+      {!interviewId ? (
+        <Flex
+          direction="column"
+          align="center"
+          justify="center"
+          width="100%"
+          height="100%"
+          gap="2rem"
+        >
+          <IcCalendar width={48} height={48} />
+          <Text variant="lg_subtitle_medium" color="grayscale30">
+            동아리와 면접 조건을 설정한 후,
+            <br />
+            타임테이블을 생성하면 이곳에 표시됩니다.
+          </Text>
+        </Flex>
+      ) : (
+        children
+      )}
     </div>
   );
 }

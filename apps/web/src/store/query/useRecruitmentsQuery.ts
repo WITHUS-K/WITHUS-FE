@@ -24,7 +24,9 @@ type RecruitmentListOptions = UseSuspenseQueryOptions<
   RecruitmentListQueryKey // TQueryKey
 >;
 
-function getRecruitmentsListOptions(tokens?: Tokens): RecruitmentListOptions {
+export function getRecruitmentsListOptions(
+  tokens?: Tokens
+): RecruitmentListOptions {
   return {
     queryKey: queryKeys.recruitment.list(),
     queryFn: async () => {
@@ -33,6 +35,7 @@ function getRecruitmentsListOptions(tokens?: Tokens): RecruitmentListOptions {
         undefined,
         tokens
       );
+      console.log(res);
       return res.result;
     },
     staleTime: 1000 * 60 * 5,
@@ -50,6 +53,7 @@ export function useRecruitmentsQuery(
         undefined,
         tokens
       );
+      console.log(res);
       return res.result;
     },
     staleTime: 1000 * 60 * 5,

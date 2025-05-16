@@ -27,12 +27,20 @@ export default function EvaluationLayout({
   })();
 
   return (
-    <Flex direction="column" width="100%" height="100%" padding="2.4rem">
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        height: '100%',
+        padding: '2.4rem',
+      }}
+    >
       {/* 단계가 식별되면 헤더를 렌더 */}
       {stage && <EvaluationHeader stage={stage} />}
 
       {/* 본문 */}
       <div style={{ width: '100%' }}>{children}</div>
-    </Flex>
+    </div>
   );
 }

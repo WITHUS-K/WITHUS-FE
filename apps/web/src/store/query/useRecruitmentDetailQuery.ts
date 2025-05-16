@@ -64,7 +64,7 @@ export interface RecruitmentDetail {
 }
 
 // — QueryOptions & Hook —
-function getRecruitmentDetailOptions(
+export function getRecruitmentDetailOptions(
   recruitmentId: number,
   tokens?: Tokens
 ): FetchQueryOptions<
@@ -81,6 +81,7 @@ function getRecruitmentDetailOptions(
         undefined,
         tokens
       );
+      console.log(res);
       return res.result;
     },
     staleTime: 1000 * 60 * 5,
@@ -99,6 +100,7 @@ export function useRecruitmentDetailQuery(
         undefined,
         tokens
       );
+      console.log(res);
       return res.result;
     },
     staleTime: 1000 * 60 * 5,

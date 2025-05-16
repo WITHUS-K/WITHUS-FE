@@ -1,5 +1,10 @@
 'use client';
-import { useRouter, usePathname, useParams } from 'next/navigation';
+import {
+  useRouter,
+  usePathname,
+  useParams,
+  useSearchParams,
+} from 'next/navigation';
 import { Flex } from '@repo/ui';
 import { TabBar } from '@repo/ui/TabBar';
 
@@ -16,6 +21,8 @@ export default function TimetableLayout({
   const time = params.time as string | undefined;
   const router = useRouter();
   const pathname = usePathname()!;
+  const sp = useSearchParams();
+  const qs = sp.toString(); // 기존 ?interviewId=xxx 등
 
   const active = TABS.find((t) => pathname.endsWith(`/${t}`)) ?? 'interviewer';
 
@@ -32,9 +39,11 @@ export default function TimetableLayout({
         <TabBar
           tabs={TABS}
           active={active}
-          onChange={(tab) =>
-            router.push(`/interview-evaluation/timetable/${tab}`)
-          }
+          onChange={(t) => {
+            const base = `/interview-evaluation/timetable/${t}`;
+            // 쿼리스트링이 있으면 붙여주고, 없으면 그대로
+            router.push(qs ? `${base}?${qs}` : base);
+          }}
         />
       )}
       {children}

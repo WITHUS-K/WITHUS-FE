@@ -5,8 +5,9 @@ import { IcTimetableExpand } from '@repo/ui/icons/colored';
 import * as styles from './CellRenders.css';
 import { SlotItem } from '@web/constants/timetable';
 import { OverflowChips } from '@web/components/OverflowChips/OverflowChips';
+import { TimeSlot } from '@web/store/query/useInterviewScheduleQuery';
 
-export default function GuideCell({ slot }: { slot: SlotItem }) {
+export default function GuideCell({ slot }: { slot: TimeSlot }) {
   return (
     <Flex
       align="center"
@@ -17,7 +18,7 @@ export default function GuideCell({ slot }: { slot: SlotItem }) {
     >
       {/* 안내자 Chip (3개 초과 시 +N 표시) */}
       <OverflowChips
-        items={slot.guides}
+        items={slot.assistants}
         renderLabel={(g) => g.name}
         maxVisible={3}
         gap="0.8rem"

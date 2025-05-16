@@ -7,6 +7,7 @@ export interface InputChipProps {
   onChange?: (value: string) => void;
   onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
   onDelete?: () => void;
+  disabled?: boolean;
 }
 
 export const InputChip: React.FC<InputChipProps> = ({
@@ -14,9 +15,10 @@ export const InputChip: React.FC<InputChipProps> = ({
   onChange = () => {},
   onKeyDown,
   onDelete = () => {},
+  disabled = false,
 }) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value);
+    if (!disabled) onChange(e.target.value);
   };
   const width = `${Math.max(value.length, 1) + 1}ch`;
 
@@ -28,12 +30,14 @@ export const InputChip: React.FC<InputChipProps> = ({
         onChange={handleChange}
         onKeyDown={onKeyDown}
         style={{ width }}
+        disabled={disabled}
       />
       <button
         type="button"
         className={styles.buttonStyle}
-        onClick={onDelete}
+        onClick={() => !disabled && onDelete()}
         aria-label="delete"
+        disabled={disabled}
       >
         <IcDelete width={16} height={16} />
       </button>

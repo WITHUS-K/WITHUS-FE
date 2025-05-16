@@ -1,3 +1,4 @@
+// src/store/query/useCreateInterview.ts
 import {
   useMutation,
   useQueryClient,
@@ -6,25 +7,31 @@ import {
 import { POST } from '@web/api/fetch';
 import { queryKeys } from '../constants';
 
+// — 요청/응답 타입 —
+// POST /api/v1/interviews/recruitments/{recruitmentId}/interviews
+// → 면접 생성, 반환값은 interviewId
 export type CreateInterviewResult = number;
 export type CreateInterviewVariables = { recruitmentId: number };
 
+// — Hook & Mutation —
 export function useCreateInterviewMutation(): UseMutationResult<
-  CreateInterviewResult,
-  Error,
-  CreateInterviewVariables
+  CreateInterviewResult, // TData
+  Error, // TError
+  CreateInterviewVariables // TVariables
 > {
   const qc = useQueryClient();
 
   return useMutation<CreateInterviewResult, Error, CreateInterviewVariables>({
     mutationKey: queryKeys.interview.create(),
     mutationFn: async ({ recruitmentId }) => {
-      const url = `api/v1/interviews?recruitmentId=${recruitmentId}`;
+      // RESTful 경로로 변경
+      const url = `api/v1/interviews/recruitments/${recruitmentId}/interviews`;
       const res = await POST<CreateInterviewResult>(url);
+      console.log(res);
       return res.result;
     },
     onSuccess: () => {
-      // 배열 대신 옵션 객체 형태로 queryKey 를 전달합니다
+      // 조직 인터뷰 리스트 무효화
       qc.invalidateQueries({ queryKey: queryKeys.interview.orgList() });
     },
   });

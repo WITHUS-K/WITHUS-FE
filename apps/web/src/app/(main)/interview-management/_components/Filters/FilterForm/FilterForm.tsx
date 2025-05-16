@@ -1,48 +1,88 @@
+// app/(main)/interview-management/_components/FilterForm/FilterForm.tsx
 'use client';
-import React, { useState } from 'react';
+
+import { useEffect, useState } from 'react';
 import { Flex, Text } from '@repo/ui';
 import { InputChip } from '@repo/ui/Chips';
-import { Chip } from '@repo/ui/Chips';
 import { Stepper } from '@repo/ui/Stepper';
 import { IcPlus24 } from '@repo/ui/icons/colored';
-import * as styles from './FilterForm.css';
 import { Tag } from '@repo/ui/Tag';
-import { TagColor } from '../../../../../../../../../packages/utils/src';
+import type { TagColor } from '@repo/utils';
+import * as styles from './FilterForm.css';
 
-const PART_TAG_COLOR_MAP: Record<string, TagColor> = {
-  기획: '#EE6B00',
-  디자인: '#009857',
-  프론트엔드: '#2C60FF',
-  백엔드: '#F25DEB',
-};
+export interface FilterSettings {
+  rooms: string[];
+  interviewerPerSlot: number;
+  applicantPerSlot: number;
+  assistantPerSlot: number;
+}
+
+interface FilterFormProps {
+  parts: string[];
+  onSettingsChange: (s: FilterSettings) => void;
+  disabled?: boolean;
+}
+
+const TAG_COLORS: TagColor[] = [
+  '#FF2A3A',
+  '#EE6B00',
+  '#E2A500',
+  '#009857',
+  '#0084BC',
+  '#2C60FF',
+  '#813DFF',
+  '#F25DEB',
+  '#7F82A1',
+  '#5A5C72',
+];
 
 export default function FilterForm({
-  club,
   parts,
-}: {
-  club: string;
-  parts: string[];
-}) {
+  onSettingsChange,
+  disabled = false,
+}: FilterFormProps) {
   const [rooms, setRooms] = useState<string[]>(['']);
-  const addRoom = () => rooms.length < 3 && setRooms((r) => [...r, '']);
+  const addRoom = () =>
+    !disabled && rooms.length < 3 && setRooms((r) => [...r, '']);
   const updateRoom = (i: number, v: string) =>
+    !disabled &&
     setRooms((r) => {
-      const c = [...r];
-      c[i] = v;
-      return c;
+      const a = [...r];
+      a[i] = v;
+      return a;
     });
-  const delRoom = (i: number) =>
-    setRooms((r) => r.filter((_, idx) => idx !== i));
+  const deleteRoom = (i: number) =>
+    !disabled && setRooms((r) => r.filter((_, idx) => idx !== i));
 
-  // 스테퍼 카운터
   const [counts, setCounts] = useState({ 면접관: 1, 지원자: 1, 안내자: 1 });
-  const onCountChange = (name: string, next: number) =>
+  const onCountChange = (name: string, next: number) => {
+    if (disabled) return;
     setCounts((c) => ({ ...c, [name]: Math.max(1, next) }));
+  };
+
+  // parts 컬러 매핑
+  const [partColorMap] = useState(() =>
+    parts.reduce(
+      (acc, p) => {
+        acc[p] = TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)]!;
+        return acc;
+      },
+      {} as Record<string, TagColor>
+    )
+  );
+
+  useEffect(() => {
+    onSettingsChange({
+      rooms,
+      interviewerPerSlot: counts.면접관,
+      applicantPerSlot: counts.지원자,
+      assistantPerSlot: counts.안내자,
+    });
+  }, [rooms, counts, onSettingsChange]);
 
   return (
     <div className={styles.wrapper}>
       <Flex align="center" gap="7.2rem">
-        {/* 면접실 입력 */}
         <Flex align="center" gap="2rem">
           <Text variant="md2_text_medium" color="grayscale6D">
             면접실
@@ -53,36 +93,30 @@ export default function FilterForm({
                 key={i}
                 value={val}
                 onChange={(v) => updateRoom(i, v)}
-                onDelete={() => delRoom(i)}
+                onDelete={() => deleteRoom(i)}
+                disabled={disabled}
               />
             ))}
-            {rooms.length < 3 && (
+            {!disabled && rooms.length < 3 && (
               <button onClick={addRoom}>
                 <IcPlus24 width={24} height={24} />
               </button>
             )}
           </Flex>
         </Flex>
-
-        {/* 면접파트: 서버에서 받은 parts 리스트 보여주기만 */}
         <Flex align="center" gap="2rem">
           <Text variant="md2_text_medium" color="grayscale6D">
             면접파트
           </Text>
           <Flex gap="1.2rem">
-            {parts.map((p) => {
-              const color = PART_TAG_COLOR_MAP[p]!;
-              return (
-                <Tag key={p} color={color}>
-                  {p}
-                </Tag>
-              );
-            })}
+            {parts.map((p) => (
+              <Tag key={p} color={partColorMap[p]!}>
+                {p}
+              </Tag>
+            ))}
           </Flex>
         </Flex>
       </Flex>
-
-      {/* 스테퍼 카운터들 */}
       <Flex align="center" gap="7.2rem">
         <Flex align="center" gap="2rem">
           <Text variant="md2_text_medium" color="grayscale6D">
@@ -92,9 +126,9 @@ export default function FilterForm({
             name="면접관"
             value={counts.면접관}
             onChange={onCountChange}
+            disabled={disabled}
           />
         </Flex>
-
         <Flex align="center" gap="2rem">
           <Text variant="md2_text_medium" color="grayscale6D">
             지원자 수
@@ -103,9 +137,9 @@ export default function FilterForm({
             name="지원자"
             value={counts.지원자}
             onChange={onCountChange}
+            disabled={disabled}
           />
         </Flex>
-
         <Flex align="center" gap="2rem">
           <Text variant="md2_text_medium" color="grayscale6D">
             안내자 수
@@ -114,6 +148,7 @@ export default function FilterForm({
             name="안내자"
             value={counts.안내자}
             onChange={onCountChange}
+            disabled={disabled}
           />
         </Flex>
       </Flex>
