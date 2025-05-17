@@ -17,6 +17,7 @@ export const tabButton = recipe({
     gap: '0.4rem',
     textAlign: 'center',
     height: '100%',
+    padding: '1.2rem',
     ...fontStyles.md2_text_semibold,
   },
   variants: {

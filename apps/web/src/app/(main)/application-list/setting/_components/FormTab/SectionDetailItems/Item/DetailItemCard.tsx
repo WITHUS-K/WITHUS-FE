@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useFormContext, Controller, useWatch } from 'react-hook-form';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
@@ -31,18 +31,22 @@ export default function DetailItemCard({ index, onRemove }: Props) {
     defaultValue: 'text',
   }) as C.DetailType;
 
-  useEffect(() => {
-    // description 초기화
-    setValue(`detailItems.${index}.description`, '');
-    setValue(`detailItems.${index}.addDescription`, '');
+  const prevTypeRef = useRef<C.DetailType>(type);
 
-    // typeInfo 드롭다운 초기화
-    if (type === 'text') {
-      setValue(`detailItems.${index}.typeInfo.info`, C.BLANK_OPTIONS[0]);
-      setValue(`detailItems.${index}.typeInfo.infoDetail`, C.CHAR_LIMITS[2]);
-    } else {
-      setValue(`detailItems.${index}.typeInfo.info`, C.FILE_COUNTS[0]);
-      setValue(`detailItems.${index}.typeInfo.infoDetail`, C.FILE_SIZES[2]);
+  useEffect(() => {
+    if (prevTypeRef.current !== type) {
+      setValue(`detailItems.${index}.description`, '');
+      setValue(`detailItems.${index}.addDescription`, '');
+
+      if (type === 'text') {
+        setValue(`detailItems.${index}.typeInfo.info`, C.BLANK_OPTIONS[0]);
+        setValue(`detailItems.${index}.typeInfo.infoDetail`, C.CHAR_LIMITS[2]);
+      } else {
+        setValue(`detailItems.${index}.typeInfo.info`, C.FILE_COUNTS[0]);
+        setValue(`detailItems.${index}.typeInfo.infoDetail`, C.FILE_SIZES[2]);
+      }
+
+      prevTypeRef.current = type;
     }
   }, [type, index, setValue]);
 

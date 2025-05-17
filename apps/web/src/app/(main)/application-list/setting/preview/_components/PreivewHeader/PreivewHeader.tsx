@@ -1,10 +1,13 @@
+'use client';
 import { Button } from '@repo/ui/Button';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Breadcrumb } from '@repo/ui/Breadcrumb';
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
 export function PreviewHeader() {
+  const router = useRouter();
   return (
     <Flex
       direction="column"
@@ -22,7 +25,12 @@ export function PreviewHeader() {
         <Text variant="xl_title_semibold" color="black">
           미리보기
         </Text>
-        <Button variant="main" size="40" width="10rem">
+        <Button
+          variant="main"
+          size="40"
+          width="10rem"
+          onClick={() => router.back()}
+        >
           <Text variant="md2_text_medium" color="white">
             돌아가기
           </Text>
