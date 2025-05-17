@@ -12,13 +12,22 @@ interface DateNavProps {
 }
 
 export default function DateNav({ dates, active, onChange }: DateNavProps) {
-  const currentIndex = dates.indexOf(active);
+  //    여기서는 모두 'YYYY-MM-DD' 로 바꿔 볼게요.
+  const normDates = dates.map((d) => d.replace(/\./g, '-'));
+  const normActive = active.replace(/\./g, '-');
+
+  // 2) 이제 실제 인덱스를 찾아요.
+  const currentIndex = normDates.findIndex((d) => d === normActive);
+
+  // 3) disabled 플래그
   const prevDisabled = currentIndex <= 0;
-  const nextDisabled = currentIndex >= dates.length - 1;
+  const nextDisabled = currentIndex < 0 || currentIndex >= dates.length - 1;
 
   const getDayLabel = (dateStr: string) => {
-    const day = new Date(dateStr).getDay();
-    return ['일', '월', '화', '수', '목', '금', '토'][day];
+    // active 는 원본 포맷(점이든 하이픈이든) 그대로 넘겨야 하니,
+    // 파싱할 땐 hyphen 포맷으로 바꿔서 new Date() 에 줍시다.
+    const d = new Date(dateStr.replace(/\./g, '-'));
+    return ['일', '월', '화', '수', '목', '금', '토'][d.getDay()];
   };
 
   return (

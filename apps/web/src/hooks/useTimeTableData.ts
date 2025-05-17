@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { parseToMin } from '@web/utils/time';
 import type { SlotItem } from '@web/constants/timetable';
+import { TimeSlot } from '@web/store/query/useInterviewScheduleQuery';
 
 export function useTimeTableData(
-  slots: SlotItem[],
+  slots: TimeSlot[],
   startHour: number,
   endHour: number,
   interval: number
@@ -13,7 +14,7 @@ export function useTimeTableData(
 
   // slot.startTime ~ slot.endTime 의 row 구간 모두 Map 에 기록
   const slotMap = useMemo(() => {
-    const m = new Map<number, SlotItem>();
+    const m = new Map<number, TimeSlot>();
     for (const slot of slots) {
       const startMin = parseToMin(slot.startTime);
       const endMin = parseToMin(slot.endTime);

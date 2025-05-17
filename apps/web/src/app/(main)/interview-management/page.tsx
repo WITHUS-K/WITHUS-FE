@@ -1,20 +1,21 @@
-import { Flex } from '@repo/ui/Flex';
-import { Text } from '@repo/ui/Text';
-import { IcCalendar } from '@repo/ui/icons/colored';
-export default function InterviewsHomePage() {
+// app/(main)/interview-management/page.tsx
+import { getServerSideTokens } from '@web/api/serverSideTokens';
+import { getOrgInterviewsOptions } from '@web/store/query/useOrganizationInterviewsQuery';
+import { getRecruitmentsListOptions } from '@web/store/query/useRecruitmentsQuery';
+import { ServerFetchBoundary } from '@web/store/query/ServerFetchBoundary';
+import InterviewManagementPageClient from './InterviewManagementPageClient';
+
+export default async function Page() {
+  const tokens = await getServerSideTokens();
+
+  const interviewsOptions = getOrgInterviewsOptions(tokens);
+  const recruitmentsOptions = getRecruitmentsListOptions(tokens);
+
   return (
-    <Flex
-      direction="column"
-      align="center"
-      justify="center"
-      width="100%"
-      height="100%"
-      gap="2rem"
-    >
-      <IcCalendar width={48} height={48} />
-      <Text variant="lg_subtitle_medium" color="grayscale30">
-        동아리와 면접 조건을 설정한 후, 타임테이블을 생성하면 이곳에 표시됩니다.
-      </Text>
-    </Flex>
+    <ServerFetchBoundary fetchOptions={[interviewsOptions]}>
+      <ServerFetchBoundary fetchOptions={[recruitmentsOptions]}>
+        <InterviewManagementPageClient />
+      </ServerFetchBoundary>
+    </ServerFetchBoundary>
   );
 }

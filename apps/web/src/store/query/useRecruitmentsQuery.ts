@@ -1,29 +1,61 @@
-'use client'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { GET } from '@web/api/fetch'
-import { queryKeys } from '@web/store/constants/queryKeys'
-import type {
-  RecruitmentDto,
-  RecruitmentsResponse,
-} from '@web/types/recruitment'
+import {
+  useSuspenseQuery,
+  UseSuspenseQueryResult,
+  type UseSuspenseQueryOptions,
+} from '@tanstack/react-query';
+import { GET } from '@web/api/fetch';
+import { queryKeys } from '../constants';
+import type { ApiResponse, Tokens } from '@web/api/types';
 
-const STALE_TIME = 1000 * 60 * 2   
-const GC_TIME    = 1000 * 60 * 3   
+// — 요청/응답 타입 —
 
-export function useRecruitmentsQuery(keyword?: string) {
-  const key = queryKeys.recruitments.list(keyword)
+// GET /api/v1/recruitments/my-organizations
+export interface RecruitmentSummary {
+  recruitmentId: number;
+  title: string;
+}
 
-  return useQuery<RecruitmentDto[], Error, RecruitmentDto[], typeof key>({
-    queryKey: key,               
-    queryFn: async () => {       
-      const res = await GET<RecruitmentsResponse['result']>(
-        '/api/v1/recruitments',
-        keyword ? { keyword } : undefined
-      )
-      return res.result
+// — QueryOptions & Hook —
+type RecruitmentListQueryKey = ReturnType<typeof queryKeys.recruitment.list>;
+type RecruitmentListOptions = UseSuspenseQueryOptions<
+  RecruitmentSummary[], // TQueryFnData
+  Error, // TError
+  RecruitmentSummary[], // TData
+  RecruitmentListQueryKey // TQueryKey
+>;
+
+export function getRecruitmentsListOptions(
+  tokens?: Tokens
+): RecruitmentListOptions {
+  return {
+    queryKey: queryKeys.recruitment.list(),
+    queryFn: async () => {
+      const res = await GET<RecruitmentSummary[]>(
+        'api/v1/recruitments/my-organizations',
+        undefined,
+        tokens
+      );
+      console.log(res);
+      return res.result;
     },
-    staleTime: STALE_TIME,       
-    gcTime: GC_TIME,
-    refetchOnMount: 'always',          
-  })
+    staleTime: 1000 * 60 * 5,
+  };
+}
+
+export function useRecruitmentsQuery(
+  tokens?: Tokens
+): UseSuspenseQueryResult<RecruitmentSummary[], Error> {
+  return useSuspenseQuery<RecruitmentSummary[], Error>({
+    queryKey: queryKeys.recruitment.list(),
+    queryFn: async () => {
+      const res = await GET<RecruitmentSummary[]>(
+        'api/v1/recruitments/my-organizations',
+        undefined,
+        tokens
+      );
+      console.log(res);
+      return res.result;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 }

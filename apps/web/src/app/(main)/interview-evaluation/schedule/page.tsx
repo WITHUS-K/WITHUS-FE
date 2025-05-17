@@ -1,26 +1,53 @@
+// app/(main)/interview-evaluation/schedule/page.tsx
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { Flex, Button } from '@repo/ui';
+import { Text, Flex, Button } from '@repo/ui';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { format, parseISO } from 'date-fns';
+import { ko } from 'date-fns/locale';
 import { useModal } from '@repo/ui/hooks';
+import { useOrganizationInterviewsQuery } from '@web/store/query/useOrganizationInterviewsQuery';
 import {
   SelectableTimeTable,
   TimeRange,
 } from '@web/components/TimeTable/SelectableTimeTable';
-import { timetableDates } from '@web/constants/timetable';
-import { format, parseISO } from 'date-fns';
-import { ko } from 'date-fns/locale';
+import { useRegisterAvailabilitiesMutation } from '@web/store/mutation/useRegisterAvailabilitiesMutation';
 
 export default function SchedulePage() {
   const router = useRouter();
-  const [selectedRange, setSelectedRange] = useState<TimeRange | null>(null);
+  const sp = useSearchParams();
   const { confirm } = useModal();
 
+  // 쿼리에서 interviewId 가져오기
+  const interviewIdParam = sp.get('interviewId');
+  const interviewId = interviewIdParam ? Number(interviewIdParam) : undefined;
+
+  // 1) 내 조직의 면접 목록 불러오기
+  const { data: orgs = [], isLoading } = useOrganizationInterviewsQuery();
+  console.log(orgs);
+  if (isLoading) return <Text>로딩 중…</Text>;
+  if (!orgs.length) return <Text>등록된 면접이 없습니다.</Text>;
+
+  // 2) 선택된 인터뷰 결정 (쿼리에 없으면 첫 번째)
+  //    ❗️ 여기서 'orgs[0]!'로 non-null assertion
+  const current = (orgs.find((o) => o.interviewId === interviewId) ?? orgs[1])!;
+
+  // 이제 current는 절대 undefined가 아니므로 안전하게 구조분해 할당 가능
+  const { availableTimeRanges, interviewDuration } = current;
+
+  // 3) 선택된 시간 범위 상태
+  const [selectedRange, setSelectedRange] = useState<TimeRange | null>(null);
+  const registerMutation = useRegisterAvailabilitiesMutation(
+    current.interviewId
+  );
+
   const handleRangeSelect = useCallback((range: TimeRange | null) => {
+    console.log('📌 onRangeSelect 호출됨:', range);
     setSelectedRange(range);
   }, []);
 
+  // 4) 저장: confirm 모달 안에서 mutate 호출
   const handleSave = () => {
     if (!selectedRange) return;
 
@@ -30,8 +57,29 @@ export default function SchedulePage() {
       cancelText: '취소',
       confirmText: '저장',
       onConfirm: () => {
-        // 바로 timetable 페이지로 이동
-        router.replace('/interview-evaluation/timetable/interviewer');
+        const { startTime, endTime } = selectedRange;
+        // ISO 배열 생성 (duration 분 단위)
+        const dateIso = availableTimeRanges[0]!.date.replace(/\./g, '-');
+        const slots: string[] = [];
+        let cursor = parseISO(`${dateIso}T${startTime}:00`).getTime();
+        const endMs = parseISO(`${dateIso}T${endTime}:00`).getTime();
+
+        while (cursor < endMs) {
+          slots.push(new Date(cursor).toISOString());
+          cursor += interviewDuration * 60 * 1000;
+        }
+
+        registerMutation.mutate(
+          { availableTimes: slots },
+          {
+            onSuccess: () => {
+              // 성공 시 타임테이블 페이지로, interviewId 쿼리 유지
+              router.replace(
+                `/interview-evaluation/timetable/interviewer?interviewId=${current.interviewId}`
+              );
+            },
+          }
+        );
       },
     });
   };
@@ -45,27 +93,28 @@ export default function SchedulePage() {
       paddingBottom="6rem"
       paddingTop="4rem"
     >
-      {/* 날짜별 SelectableTimeTable */}
       <Flex gap="6.4rem" width="100%" justify="center">
-        {timetableDates.map((isoDate) => {
-          const dt = parseISO(isoDate);
-          const label = format(dt, 'yyyy년 MM월 dd일 (EEE)', { locale: ko });
-
+        {availableTimeRanges.map((r) => {
+          const label = format(
+            parseISO(r.date.replace(/\./g, '-')),
+            'yyyy-MM-dd (EEE)',
+            { locale: ko }
+          );
           return (
             <SelectableTimeTable
-              key={isoDate}
-              startHour={10}
-              endHour={18}
-              interval={15}
-              onRangeSelect={handleRangeSelect}
-              width="40rem"
+              key={r.id}
               title={label}
+              startHour={Number(r.startTime.split(':')[0])}
+              endHour={Number(r.endTime.split(':')[0])}
+              interval={interviewDuration}
+              onRangeSelect={handleRangeSelect}
+              selectable
+              width="40rem"
             />
           );
         })}
       </Flex>
 
-      {/* 저장 버튼 */}
       <Button
         variant="main"
         size="48"

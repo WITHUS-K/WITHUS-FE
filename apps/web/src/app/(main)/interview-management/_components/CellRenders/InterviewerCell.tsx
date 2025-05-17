@@ -5,8 +5,9 @@ import { IcTimetablePlus } from '@repo/ui/icons/colored';
 import { Profile } from '@repo/ui/Profile';
 import * as styles from './CellRenders.css';
 import { SlotItem } from '@web/constants/timetable';
+import { TimeSlot } from '@web/store/query/useInterviewScheduleQuery';
 
-export default function InterviewerCell({ slot }: { slot: SlotItem }) {
+export default function InterviewerCell({ slot }: { slot: TimeSlot }) {
   return (
     <Flex
       align="center"

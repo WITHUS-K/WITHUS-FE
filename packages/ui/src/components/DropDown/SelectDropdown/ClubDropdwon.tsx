@@ -28,12 +28,13 @@ export default function ClubDropdown({
         <ClubDropdownTriggerContent selected={selected} />
       </Dropdown.Trigger>
 
-      <Dropdown.List>
+      <Dropdown.List width="31.1rem">
         {clubs.map((name) => (
           <Dropdown.Item
             key={name}
             isSelected={name === value}
             onSelect={() => onSelect(name)}
+            height="3.4rem"
           >
             {name}
           </Dropdown.Item>

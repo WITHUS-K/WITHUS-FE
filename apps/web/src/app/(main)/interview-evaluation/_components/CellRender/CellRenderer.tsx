@@ -5,6 +5,7 @@ import { SlotItem } from '@web/constants/timetable';
 import InterviewerCell from './InterviewerCell';
 import GuideCell from './GuideCell';
 import { formatTimeByRow } from '@web/utils/time';
+import { TimeSlot } from '@web/store/query/useInterviewScheduleQuery';
 
 export type Tab = 'interviewer' | 'guide';
 
@@ -12,7 +13,7 @@ export interface CellRendererProps {
   date: string;
   row: number;
   tab: Tab;
-  slotData: SlotItem[];
+  slotData: TimeSlot[];
   startHour: number;
   interval: number;
 }

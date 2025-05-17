@@ -6,13 +6,14 @@ import InterviewerCell from './InterviewerCell';
 import ApplicantCell from './ApplicantCell';
 import GuideCell from './GuideCell';
 import { formatTimeByRow } from '@web/utils/time';
+import { TimeSlot } from '@web/store/query/useInterviewScheduleQuery';
 
 type Tab = 'all' | 'interviewer' | 'applicant' | 'guide';
 
 interface CellRendererProps {
   row: number;
   tab: Tab;
-  slotData: SlotItem[];
+  slotData: TimeSlot[];
   startHour: number;
   interval: number;
 }
