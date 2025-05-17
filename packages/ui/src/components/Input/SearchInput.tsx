@@ -7,6 +7,7 @@ export interface SearchInputProps {
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   width?: string;
+  onClick?: () => void;
 }
 
 export default function SearchInput({
@@ -14,6 +15,7 @@ export default function SearchInput({
   value,
   onChange,
   width = '100%',
+  onClick,
 }: SearchInputProps) {
   const handleClear = () => {
     onChange({ target: { value: '' } } as ChangeEvent<HTMLInputElement>);
@@ -32,7 +34,9 @@ export default function SearchInput({
             <IcInputDelete width={24} height={24} />
           </button>
         ) : (
-          <IcInputSearch width={24} height={24} />
+          <button type="button" onClick={onClick}>
+            <IcInputSearch width={24} height={24} />
+          </button>
         )
       }
     />
