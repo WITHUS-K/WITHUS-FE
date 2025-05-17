@@ -23,18 +23,32 @@ export default function ApplicationPreview() {
   const form: FormValues = ctx.form;
 
   const applicationSchedule = [
-    { label: '지원 마감', date: form.deadline || '2025/04/20' },
+    {
+      label: '지원 마감',
+      date: form.deadline
+        ? format(parseISO(form.deadline), 'yyyy/MM/dd')
+        : '2025/04/20',
+    },
     {
       label: '서류 합격 발표',
-      date: form.documentResult?.date || '2025/04/24',
+      date: form.documentResult?.date
+        ? format(parseISO(form.documentResult.date), 'yyyy/MM/dd')
+        : '2025/04/24',
     },
     {
       label: '면접 일정',
       date: form.interviewSchedule?.scheduleList.length
-        ? form.interviewSchedule.scheduleList.map((s) => s.date).join(', ')
+        ? form.interviewSchedule.scheduleList
+            .map((s) => format(parseISO(s.date), 'yyyy/MM/dd'))
+            .join(', ')
         : '2025/04/29, 2025/04/30',
     },
-    { label: '최종 합격 발표', date: form.finalResultDate || '2025/05/03' },
+    {
+      label: '최종 합격 발표',
+      date: form.finalResultDate
+        ? format(parseISO(form.finalResultDate), 'yyyy/MM/dd')
+        : '2025/05/03',
+    },
   ];
 
   const timetableDates = Array.from(

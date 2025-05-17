@@ -24,6 +24,6 @@ export function useRecruitmentsQuery(keyword?: string) {
     },
     staleTime: STALE_TIME,       
     gcTime: GC_TIME,
-    placeholderData: keepPreviousData,          
+    refetchOnMount: 'always',          
   })
 }

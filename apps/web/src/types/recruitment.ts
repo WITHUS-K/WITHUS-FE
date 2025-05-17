@@ -23,6 +23,25 @@ export interface RecruitmentsResponse {
 
 export type RecruitmentsData = RecruitmentsResponse['result']
 
+interface BaseQuestionDto {
+  title: string
+  description: string
+  required: boolean
+  positionName: string
+}
+
+export interface TextQuestionDto extends BaseQuestionDto {
+  type: 'TEXT'
+  textLimit: number
+  includeWhitespace: boolean
+}
+
+export interface FileQuestionDto extends BaseQuestionDto {
+  type: 'FILE'
+  maxFileCount: number
+  maxFileSizeMb: number
+}
+
 export interface RecruitmentDetailDto {
   recruitmentId: number
   organizationId: number
@@ -61,14 +80,7 @@ export interface RecruitmentDetailDto {
     type: 'DOCUMENT' | 'INTERVIEW' | string
     score: number
   }[]
-  applicationQuestions: {
-    questionId: number
-    title: string
-    description: string
-    type: 'TEXT' | 'MULTIPLE_CHOICE' | string
-    required: boolean
-    positionName: string
-  }[]
+  applicationQuestions: Array<TextQuestionDto | FileQuestionDto>
   availableTimeRanges: {
     id: number
     date: string
@@ -76,7 +88,7 @@ export interface RecruitmentDetailDto {
     endTime: string
     recruitmentId: number
   }[]
-}
+  }
 
 export interface RecruitmentDetailResponse {
   code: number
@@ -133,17 +145,7 @@ export interface PublishRecruitmentRequest {
   content: string
   fileUrl: string
   positions: string[]
-  applicationQuestions: {
-    title: string
-    description: string
-    type: 'TEXT' | 'MULTIPLE_CHOICE' | string
-    required: boolean
-    textLimit: number
-    includeWhitespace: boolean
-    maxFileCount: number
-    maxFileSizeMb: number
-    positionName: string
-  }[]
+  applicationQuestions: Array<TextQuestionDto | FileQuestionDto>
   documentDeadline: string         
   documentResultDate: string
   finalResultDate: string
@@ -191,17 +193,7 @@ export interface DraftRecruitmentRequest {
   content: string
   fileUrl: string
   positions: string[]
-  applicationQuestions: {
-    title: string
-    description: string
-    type: 'TEXT' | 'MULTIPLE_CHOICE' | string
-    required: boolean
-    textLimit: number
-    includeWhitespace: boolean
-    maxFileCount: number
-    maxFileSizeMb: number
-    positionName: string
-  }[]
+  applicationQuestions: Array<TextQuestionDto | FileQuestionDto>
   documentDeadline: string
   documentResultDate: string
   finalResultDate: string
