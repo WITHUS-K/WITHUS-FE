@@ -44,10 +44,9 @@ export const queryKeys = {
     },
   },
   recruitments: {
-    list: (keyword?: string) =>
-      ['recruitments', keyword ?? ''] as const,
-     slug: (slug: string) =>
-        ['recruitments', 'slug', slug] as const,
+    list: (keyword?: string) => ['recruitments', keyword ?? ''] as const,
+    slug: (slug: string) => ['recruitments', 'slug', slug] as const,
+  },
   recruitment: {
     list: () => ['recruitment', 'list'] as const,
     detail: (id: number) => ['recruitment', 'detail', id] as const,
