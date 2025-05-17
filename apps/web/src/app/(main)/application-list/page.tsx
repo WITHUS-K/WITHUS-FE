@@ -6,7 +6,6 @@ import { IcFileUpload, IcRefresh } from '@repo/ui/icons/mono';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { RecruitmentCard } from './_components/RecruitmentCard/RecruitmentCard';
-import { useRecruitmentsQuery } from '@web/store/query/useRecruitmentsQuery';
 import { usePublishRecruitmentMutation } from '@web/store/mutation/usePublishRecruitmentMutation';
 import { useDeleteRecruitmentMutation } from '@web/store/mutation/useDeleteRecruitmentMutation';
 import { useRecruitmentDetailQuery } from '@web/store/query/useRecruitmentDetailQuery';
@@ -15,6 +14,7 @@ import {
   PublishRecruitmentRequest,
   TextQuestionDto,
 } from '@web/types/recruitment';
+import { useRecruitmentsListQuery } from '@web/store/query/useRecruirmentsListQuery';
 
 export default function ApplicationList() {
   const router = useRouter();
@@ -24,10 +24,9 @@ export default function ApplicationList() {
     data: recruitments = [],
     isFetching,
     refetch,
-  } = useRecruitmentsQuery(search);
+  } = useRecruitmentsListQuery(search);
   useEffect(() => {
     console.log('🏷 recruitments:', recruitments);
-    // console.error('❌ error:', error);
   }, [recruitments]);
 
   const publishMutation = usePublishRecruitmentMutation();
