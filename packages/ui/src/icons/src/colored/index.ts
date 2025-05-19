@@ -7,6 +7,7 @@ export { default as IcAuthLogo } from './IcAuthLogo';
 export { default as IcBaseInputDelete } from './IcBaseInputDelete';
 export { default as IcBtnPlusCircle } from './IcBtnPlusCircle';
 export { default as IcCalendar } from './IcCalendar';
+export { default as IcCallout } from './IcCallout';
 export { default as IcCheckCopy } from './IcCheckCopy';
 export { default as IcCheck } from './IcCheck';
 export { default as IcClubModalError } from './IcClubModalError';

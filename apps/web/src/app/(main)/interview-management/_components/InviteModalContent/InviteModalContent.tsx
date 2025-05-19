@@ -47,7 +47,6 @@ export default function InviteModalContent() {
   }, [assignedRaw]);
 
   // 2) 서버 검색
-  // TODO: 실제 organizationId로 바꿔주세요
   const organizationId = 5;
   const roleId = activeTab === 'interviewer' ? 1 : 2;
   const { data: candidates = [], isFetching } = useOrganizationUsersQuery(

@@ -7,6 +7,7 @@ import { HeaderMeta } from '../../ApplyListHeader/ApplyListHeader';
 import { Flex } from '@repo/ui/Flex';
 import ActionToolbar from '../../ActionToolbar/ActionToolbar';
 import TableContainer from '../../TableContainer/TableContainer';
+import { useRouter, useParams } from 'next/navigation';
 
 const DOC_HEADER: HeaderMeta[] = [
   { key: 'checkbox', label: '', width: '4.7rem' },
@@ -64,11 +65,21 @@ interface DocumentTabProps {
 }
 
 export default function DocumentTab({ clubId }: DocumentTabProps) {
+  const router = useRouter();
+  const params = useParams() as { tab: string };
+  const activeTab = params.tab;
+
+  const openAssignManagerModal = () => {
+    router.push(
+      `/apply-management/${activeTab}/assign-manager?clubId=${clubId}`
+    );
+  };
+
   return (
     <Flex direction="column" width="100%" height="100%" gap="1.2rem">
       <ActionToolbar
         hasSelection={false}
-        onDistribute={() => {}}
+        onDistribute={openAssignManagerModal}
         onAdd={() => {}}
         onSms={() => {}}
         onMail={() => {}}

@@ -15,10 +15,10 @@ export function DoubleCTA({
 }: DoubleCTAProps) {
   return (
     <>
-      <Button variant="basic" size="48" width="18.5rem" {...cancelProps}>
+      <Button variant="basic" size="48" width="100%" {...cancelProps}>
         {cancelText}
       </Button>
-      <Button variant="main" size="48" width="18.5rem" {...confirmProps}>
+      <Button variant="main" size="48" width="100%" {...confirmProps}>
         {confirmText}
       </Button>
     </>

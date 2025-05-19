@@ -4,10 +4,14 @@
     "paths": {
       "@web/*": ["./src/*"],
       "@repo/ui/*": ["packages/ui/src/*"],
-      "@repo/theme/*": ["packages/theme/src/*"]
+      "@repo/theme/*": ["packages/theme/src/*"],
+      "./types": ["node_modules/@tanstack/react-query/build/modern/types.d.ts"] // 여기랑
     },
     "baseUrl": "./",
-    "allowJs": true
+
+    "allowJs": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
