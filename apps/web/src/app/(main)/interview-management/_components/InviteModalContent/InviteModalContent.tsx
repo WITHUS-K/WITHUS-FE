@@ -20,34 +20,40 @@ import { IcInputSearch } from '@repo/ui/icons/colored';
 const TABS = ['interviewer', 'guide'];
 
 export default function InviteModalContent() {
-  const searchParams = useSearchParams();
-  const timeSlotId = Number(searchParams.get('timeSlotId') ?? NaN);
-  const interviewId = Number(searchParams.get('interviewId'));
-  // 탭, 입력, 실제 검색어 분리
+  const sp = useSearchParams();
+  const timeSlotId = Number(sp.get('timeSlotId') ?? NaN);
+  console.log(timeSlotId);
+  const interviewId = Number(sp.get('interviewId'));
+
   const [activeTab, setActiveTab] =
     useState<(typeof TABS)[number]>('interviewer');
   const [inputKeyword, setInputKeyword] = useState('');
   const [searchKeyword, setSearchKeyword] = useState('');
 
   // 1) 이미 배정된 사용자 조회
-  const { data: assignedRaw = [] } = useTimeSlotUsersQuery(timeSlotId);
+  const { data: assignedRaw } = useTimeSlotUsersQuery(timeSlotId);
+  console.log('데이터', assignedRaw);
   const [assignedInterviewers, setAssignedInterviewers] = useState<
     ProfileItem[]
   >([]);
   const [assignedGuides, setAssignedGuides] = useState<ProfileItem[]>([]);
 
   useEffect(() => {
-    const mapped = assignedRaw.map((u) => ({
-      name: u.name,
-      src: '',
-      userId: u.userId,
-    }));
-    setAssignedInterviewers(mapped);
-    setAssignedGuides(mapped);
+    if (!assignedRaw) return;
+
+    const interviewers = assignedRaw
+      .filter((u) => u.role === 'INTERVIEWER')
+      .map((u) => ({ name: u.name, src: '', userId: u.userId }));
+    const guides = assignedRaw
+      .filter((u) => u.role === 'ASSISTANT')
+      .map((u) => ({ name: u.name, src: '', userId: u.userId }));
+
+    setAssignedInterviewers(interviewers);
+    setAssignedGuides(guides);
   }, [assignedRaw]);
 
   // 2) 서버 검색
-  const organizationId = 5;
+  const organizationId = 3;
   const roleId = activeTab === 'interviewer' ? 1 : 2;
   const { data: candidates = [], isFetching } = useOrganizationUsersQuery(
     organizationId,
@@ -62,7 +68,6 @@ export default function InviteModalContent() {
       userIds: [p.userId!],
       role: activeTab === 'interviewer' ? 'INTERVIEWER' : 'ASSISTANT',
     });
-
   const handleRemove = (p: ProfileItem) => {
     if (activeTab === 'interviewer') {
       setAssignedInterviewers((prev) =>

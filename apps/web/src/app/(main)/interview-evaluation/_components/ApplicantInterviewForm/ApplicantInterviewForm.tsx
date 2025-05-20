@@ -11,19 +11,21 @@ import { InterviewQuestions } from '@web/app/(main)/interview-evaluation/_compon
 import { SelectScoreDropdown } from '@repo/ui/DropDown';
 import { CommentInput } from '@repo/ui/InputField';
 import { IcSidebarInfo } from '@repo/ui/icons/mono';
+import { TimeSlotApplication } from '@web/store/query/useTimeSlotApplicationsQuery';
 
 interface ApplicantInterviewFormProps {
-  detail: Applicant;
+  detail: TimeSlotApplication;
 }
 
 export const ApplicantInterviewForm = ({
   detail,
 }: ApplicantInterviewFormProps) => {
   const [interviewScore, setInterviewScore] = useState<string | undefined>();
-  const comment = detail.docsComments[0];
-
   const [newDocComment, setNewDocComment] = useState('');
   const [isDocSubmitted, setIsDocSubmitted] = useState(false);
+
+  const documentComment = detail.documentComments[0]?.content ?? '';
+  const interviewComment = detail.interviewComments[0]?.content ?? '';
 
   return (
     <div className={styles.content}>
@@ -44,9 +46,9 @@ export const ApplicantInterviewForm = ({
           </Text>
 
           <AccordianList
-            items={detail.selfIntroductionContent.content.map((q) => ({
-              title: q.question,
-              content: q.standardDetail,
+            items={detail.documentAnswers.map((q, i) => ({
+              title: `${i + 1}. ${q.questionTitle}`,
+              content: q.answerText,
               reviewers: [],
             }))}
             isNumbering
@@ -63,7 +65,19 @@ export const ApplicantInterviewForm = ({
           <Text variant="md2_text_semibold" color="grayscale70">
             포트폴리오
           </Text>
-          <FileUploader file={detail.portfolioFile} onDownload={() => {}} />
+          {detail.documentAnswers
+            .filter((q) => q.fileUrl)
+            .map((q) => (
+              <FileUploader
+                key={q.questionId}
+                file={{
+                  name: `첨부파일_${q.questionId}`, // 혹은 실제 파일명 정보가 있다면 그걸 사용
+                  downloadUrl: q.fileUrl!,
+                  size: '0KB',
+                }}
+                onDownload={() => {}}
+              />
+            ))}
         </Flex>
       </section>
 
@@ -86,11 +100,11 @@ export const ApplicantInterviewForm = ({
           <InterviewQuestions />
           {detail.interviewQuestions.map((q, i) => (
             <List
-              key={q.question}
-              question={q.question}
-              src={q.src}
-              alt={q.alt}
-              name={q.name}
+              key={q.id}
+              question={q.content}
+              src={q.user.profileImageUrl ?? ''}
+              alt={q.user.name}
+              name={q.user.name}
               idx={i + 1}
             />
           ))}
@@ -108,9 +122,9 @@ export const ApplicantInterviewForm = ({
 
           <Flex width="100%" gap="1.6rem">
             <AccordianList
-              items={detail.interviewContent.content.map((e) => ({
-                title: e.question,
-                content: e.standardDetail,
+              items={detail.evaluations.map((e) => ({
+                title: e.criteria.content,
+                content: `점수: ${e.score}`,
               }))}
               isNumbering={false}
               width="100%"
@@ -140,7 +154,7 @@ export const ApplicantInterviewForm = ({
           <Text variant="md2_text_semibold" color="grayscale70">
             서류 평가
           </Text>
-          <div className={styles.comment}>{comment?.comment}</div>
+          <div className={styles.comment}>{documentComment}</div>
         </Flex>
 
         <Flex

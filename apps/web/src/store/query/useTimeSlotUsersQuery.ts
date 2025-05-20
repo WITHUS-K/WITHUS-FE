@@ -10,20 +10,22 @@ import { queryKeys } from '../constants';
 export interface TimeSlotUser {
   userId: number;
   name: string;
+  role: 'INTERVIEWER' | 'ASSISTANT';
 }
 
 export function useTimeSlotUsersQuery(
   timeSlotId: number
-): UseQueryResult<TimeSlotUser[], Error> {
+): UseQueryResult<TimeSlotUser[] | undefined, Error> {
   return useQuery<TimeSlotUser[], Error>({
     queryKey: queryKeys.timeSlot.users(timeSlotId),
     queryFn: async () => {
       const res = await GET<TimeSlotUser[]>(
         `api/v1/timeslots/${timeSlotId}/users`
       );
-      console.log(res);
+      console.log('타임슬록 배정', res.result);
       return res.result;
     },
     staleTime: 1000 * 60,
+    enabled: Number.isFinite(timeSlotId),
   });
 }

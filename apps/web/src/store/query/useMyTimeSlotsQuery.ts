@@ -2,48 +2,34 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
 import { queryKeys } from '../constants';
-
-/** API 응답 중 하나의 타임슬롯 항목 */
-export interface MyTimeSlot {
-  interviewId: number;
-  date: string; // "2025-05-16"
-  startTime: string; // "12:00"
-  endTime: string; // "12:00"
-  roomName: string;
-  applicants: {
-    applicationId: number;
-    name: string;
-    email: string;
-    positionName: string;
-  }[];
-  interviewers: {
-    userId: number;
-    name: string;
-    role: 'INTERVIEWER' | 'ASSISTANT';
-  }[];
-  assistants: {
-    userId: number;
-    name: string;
-    role: 'INTERVIEWER' | 'ASSISTANT';
-  }[];
-}
+import type { InterviewSchedule } from './useInterviewScheduleQuery';
 
 /**
  * 내 면접 배정 결과 조회 Query
- * interviewId: path param
+ * → GET /api/v1/interviews/{interviewId}/my-time-slots
  */
 export function useMyTimeSlotsQuery(
   interviewId: number
-): UseQueryResult<MyTimeSlot[], Error> {
-  return useQuery<MyTimeSlot[], Error>({
+): UseQueryResult<InterviewSchedule[], Error> {
+  return useQuery<InterviewSchedule[], Error>({
     queryKey: queryKeys.interview.myTimeSlots(interviewId),
     queryFn: async () => {
-      const res = await GET<MyTimeSlot[]>(
+      const res = await GET<InterviewSchedule[]>(
         `api/v1/interviews/${interviewId}/my-time-slots`
       );
-      console.log(res);
-      return res.result;
+      console.log('내 타임테이블', res.result);
+      return res.result.map((sch) => ({
+        ...sch,
+        // 날짜 포맷을 마침표(.)로 통일
+        date: sch.date.replace(/-/g, '.'),
+        timeSlots: sch.timeSlots.map((ts) => ({
+          ...ts,
+          // 고정 컬러
+          color: '#BECEFF',
+        })),
+      }));
     },
     staleTime: 1000 * 60, // 1분
+    enabled: interviewId > 0,
   });
 }

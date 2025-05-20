@@ -45,13 +45,13 @@ export interface TimeSlot {
     userId: number;
     name: string;
     role: string;
-    src?: string;
+    profileUrl: string;
   }[];
   assistants: {
     userId: number;
     name: string;
     role: string;
-    src?: string;
+    profileUrl: string;
   }[];
 
   /** UI용 배경색 (tagColorMap 내 background 값) */
@@ -115,7 +115,7 @@ export function useInterviewScheduleQuery(
       const res = await GET<InterviewSchedule[]>(
         `api/v1/interviews/${interviewId}/schedule`
       );
-      console.log(res);
+      console.log('타임테이블', res.result);
       return res.result.map((sch) => ({
         ...sch,
         timeSlots: sch.timeSlots.map((ts) => {

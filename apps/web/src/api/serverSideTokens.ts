@@ -5,6 +5,9 @@ import { cookies } from 'next/headers';
  */
 export const getServerSideTokens = async () => {
   const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken')?.value;
+
+  console.log('[SSR] accessToken:', accessToken);
 
   return {
     accessToken: cookieStore.get('accessToken')?.value ?? '',

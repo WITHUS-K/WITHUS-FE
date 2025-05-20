@@ -9,6 +9,7 @@ import { IcPlus24 } from '@repo/ui/icons/colored';
 import { Tag } from '@repo/ui/Tag';
 import type { TagColor } from '@repo/utils';
 import * as styles from './FilterForm.css';
+import { TagHex } from '@web/utils/color';
 
 export interface FilterSettings {
   rooms: string[];
@@ -19,6 +20,7 @@ export interface FilterSettings {
 
 interface FilterFormProps {
   parts: string[];
+  partColorMap: Record<string, TagHex>;
   onSettingsChange: (s: FilterSettings) => void;
   disabled?: boolean;
 }
@@ -38,6 +40,7 @@ const TAG_COLORS: TagColor[] = [
 
 export default function FilterForm({
   parts,
+  partColorMap,
   onSettingsChange,
   disabled = false,
 }: FilterFormProps) {
@@ -59,17 +62,6 @@ export default function FilterForm({
     if (disabled) return;
     setCounts((c) => ({ ...c, [name]: Math.max(1, next) }));
   };
-
-  // parts 컬러 매핑
-  const [partColorMap] = useState(() =>
-    parts.reduce(
-      (acc, p) => {
-        acc[p] = TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)]!;
-        return acc;
-      },
-      {} as Record<string, TagColor>
-    )
-  );
 
   useEffect(() => {
     onSettingsChange({
