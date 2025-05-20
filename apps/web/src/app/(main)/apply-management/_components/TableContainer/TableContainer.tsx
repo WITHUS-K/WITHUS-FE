@@ -14,16 +14,26 @@ export interface TableContainerProps {
   headerMeta: HeaderMeta[];
   data: MemberWithEval[];
   availableEvals?: Evaluator[];
+
+  /** 선택된 ID들 (상위에서 관리) */
+  selectedIds: string[];
+  /** 전체 체크/해제 콜백 */
+  onToggleAll: (checked: boolean) => void;
+  /** 개별 체크/해제 콜백 */
+  onToggleOne: (id: string, checked: boolean) => void;
 }
 
 export default function TableContainer({
   headerMeta,
   data: initialData,
   availableEvals,
+  selectedIds,
+  onToggleAll,
+  onToggleOne,
 }: TableContainerProps) {
   // --- state ---
   const [rows, setRows] = useState<MemberWithEval[]>(initialData);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  //const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortState, setSortState] = useState(
     Object.fromEntries(headerMeta.map((h) => [h.key, 'asc'])) as Record<
@@ -55,14 +65,7 @@ export default function TableContainer({
   }, [pageData, sortState]);
 
   // --- 선택 ---
-  const allChecked =
-    sorted.length > 0 && sorted.every((m) => selectedIds.includes(m.id));
-  const toggleAll = (c: boolean) =>
-    setSelectedIds(c ? sorted.map((m) => m.id) : []);
-  const toggleOne = (id: string, c: boolean) =>
-    setSelectedIds((prev) =>
-      c ? [...prev, id] : prev.filter((x) => x !== id)
-    );
+
   const handleAddEval = (rowId: string, ev: Evaluator) => {
     setRows((prev) =>
       prev.map((r) =>
@@ -76,8 +79,8 @@ export default function TableContainer({
       <ApplyList
         data={sorted}
         selectedIds={selectedIds}
-        onToggleAll={toggleAll}
-        onToggleOne={toggleOne}
+        onToggleAll={onToggleAll}
+        onToggleOne={onToggleOne}
         availableEvals={availableEvals!}
         onAddEval={handleAddEval}
         headerMeta={headerMeta}

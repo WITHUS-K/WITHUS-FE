@@ -79,6 +79,10 @@ async function fetchWrapperWithTokenHandler<Data>(
         }
       }
 
+      if (status === STATUS.FORBIDDEN) {
+        window.location.replace(ROUTES.LOGIN);
+      }
+
       // 리소스 없음
       if (status === STATUS.NOT_FOUND) {
         notFound();
