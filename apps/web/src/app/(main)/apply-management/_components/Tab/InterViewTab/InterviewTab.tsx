@@ -1,12 +1,21 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Evaluator } from '../../EvalBubbles/EvalBubbles';
 import { MemberWithEval } from '../../ApplyListItem/ApplyListItem';
 import { HeaderMeta } from '../../ApplyListHeader/ApplyListHeader';
 import TableContainer from '../../TableContainer/TableContainer';
 import ActionToolbar from '../../ActionToolbar/ActionToolbar';
 import { Flex } from '@repo/ui/Flex';
+import {
+  useRouter,
+  useParams,
+  useSearchParams,
+  usePathname,
+} from 'next/navigation';
+import { Template } from '../../SideTabs/TemplatesAccordion/TemplatesAccordion';
+import { MailSideTab } from '../../SideTabs/MailSideTab/MailSideTab';
+import { SmsSideTab } from '../../SideTabs/SmsSideTab/SmsSideTab';
 
 const INT_HEADER: HeaderMeta[] = [
   { key: 'checkbox', label: '', width: '4.7rem' },
@@ -66,14 +75,44 @@ interface InterviewTabProps {
 }
 
 export default function InterviewTab({ clubId }: InterviewTabProps) {
+  const router = useRouter();
+  const params = useParams() as { tab: string };
+  const pathname = usePathname();
+  const activeTab = params.tab;
+  const searchParams = useSearchParams();
+  const side = searchParams.get('sideTab');
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
+
+  const templates: Template[] = [
+    { id: 't1', title: '템플릿 1', body: '안녕하세요, 지원자님…' },
+    { id: 't2', title: '템플릿 2', body: '감사합니다.' },
+  ];
+
+  const recipients = MOCK_DATA.filter((m) => selectedIds.includes(m.id)).map(
+    (m) => m.name
+  );
+
+  const setModalParam = (value: string | null) => {
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    if (value) params.set('sideTab', value);
+    else params.delete('sideTab');
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const openAssignManagerModal = () => {
+    router.push(
+      `/apply-management/${activeTab}/assign-manager?clubId=${clubId}`
+    );
+  };
   return (
     <Flex direction="column" width="100%" height="100%" gap="1.2rem">
       <ActionToolbar
-        hasSelection={false}
-        onDistribute={() => {}}
+        hasSelection={selectedIds.length > 0}
+        onSms={() => setModalParam('sms')}
+        onMail={() => setModalParam('mail')}
+        onDistribute={openAssignManagerModal}
         onAdd={() => {}}
-        onSms={() => {}}
-        onMail={() => {}}
         onFail={() => {}}
         onPass={() => {}}
       />
@@ -82,7 +121,38 @@ export default function InterviewTab({ clubId }: InterviewTabProps) {
         headerMeta={INT_HEADER}
         data={MOCK_DATA}
         availableEvals={AVAILABLE_EVALS}
+        selectedIds={selectedIds}
+        onToggleAll={(c) => setSelectedIds(c ? MOCK_DATA.map((m) => m.id) : [])}
+        onToggleOne={(id, checked) =>
+          setSelectedIds((prev) =>
+            checked ? [...prev, id] : prev.filter((x) => x !== id)
+          )
+        }
       />
+
+      {sideTab === 'sms' && (
+        <SmsSideTab
+          recipients={recipients}
+          templates={templates}
+          onClose={() => setModalParam(null)}
+          onSend={(data) => {
+            console.log('문자 전송:', data);
+            setModalParam(null);
+          }}
+        />
+      )}
+
+      {sideTab === 'mail' && (
+        <MailSideTab
+          recipients={recipients}
+          templates={templates}
+          onClose={() => setModalParam(null)}
+          onSend={(data) => {
+            console.log('메일 전송:', data);
+            setModalParam(null);
+          }}
+        />
+      )}
     </Flex>
   );
 }
