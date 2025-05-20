@@ -4,6 +4,7 @@ import React from 'react';
 import { AvatarStack } from '@repo/ui/Avatar';
 import { Flex, Text } from '@repo/ui';
 import * as styles from './EvaluationStatusCard.css';
+import clsx from 'clsx';
 
 export type Evaluation = {
   evaluator: string;
@@ -34,15 +35,25 @@ export const EvaluationStatusCard = ({
   return (
     <div className={styles.card}>
       {statuses.map(({ label, items }) => (
-        <div key={label} className={styles.row}>
-          <Flex gap="0.8rem" align="center">
+        <div
+          key={label}
+          className={clsx(
+            styles.row,
+            label === '완료' ? styles.complete : styles.waiting
+          )}
+        >
+          <div className={styles.rowLeftSide}>
             <Text variant="md2_text_medium" color="grayscale70">
               {label}
             </Text>
-            <Text variant="md2_text_medium" color="grayscale40">
+            <Text
+              variant="md2_text_medium"
+              color={label === '완료' ? 'primary50' : 'grayscale40'}
+            >
               {items.length}
             </Text>
-          </Flex>
+          </div>
+
           <div className={styles.stack}>
             <AvatarStack items={items} />
           </div>

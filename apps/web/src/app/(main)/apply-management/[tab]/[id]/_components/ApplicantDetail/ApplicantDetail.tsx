@@ -7,17 +7,14 @@ import { AdditionalInfoForm } from '@web/app/(main)/apply-management/add/_compon
 import { QuestionAndFileListForm } from '@web/app/(main)/apply-management/add/_components/QuestionFileListForm/QuestionFileListForm';
 import type { documentEvaluation as DocumentEvaluationType } from '@web/types/document-evaluation';
 import type { DetailItem } from '@web/types/application';
-import { DetailHeader } from '@web/app/(main)/apply-management/[tab]/[id]/_components/DetailHeader/DetailHeader';
 import * as styles from './ApplicantDetail.css';
 
 interface ApplicantDetailProps {
-  tab: string;
   evaluation: DocumentEvaluationType;
   applicant: DocumentEvaluationType['applicantList'][0];
 }
 
 export default function ApplicantDetail({
-  tab,
   evaluation,
   applicant,
 }: ApplicantDetailProps) {
@@ -65,14 +62,10 @@ export default function ApplicantDetail({
     <Flex
       direction="column"
       paddingLeft="1.9rem"
-      paddingTop="2.4rem"
       paddingRight="1.9rem"
       paddingBottom="2.4rem"
       width="100%"
     >
-      {/* 헤더 */}
-      <DetailHeader tab={tab} name={applicant.basicInfo.name} />
-
       <div className={styles.container}>
         <Flex direction="column" width="100%" gap="5rem">
           <div className={styles.title}>{evaluation.title}</div>

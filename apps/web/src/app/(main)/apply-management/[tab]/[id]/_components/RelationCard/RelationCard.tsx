@@ -3,6 +3,7 @@
 import { AvatarChip } from '@repo/ui/Avatar';
 import * as styles from './RelationCard.css';
 import { Text } from '@repo/ui/Text';
+import { Flex } from '@repo/ui/Flex';
 
 interface RelationCardProps {
   relations: string[];
@@ -21,7 +22,12 @@ export const RelationCard = ({ relations }: RelationCardProps) => {
       </div>
       <div className={styles.listContainer}>
         {relations.map((r, i) => (
-          <AvatarChip key={r} label={r} index={i} />
+          <Flex gap="0.8rem" key={i}>
+            <AvatarChip key={r} label={r} index={i} />
+            <Text variant="md2_text_medium" color="grayscale90">
+              {r}
+            </Text>
+          </Flex>
         ))}
       </div>
     </div>

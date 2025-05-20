@@ -5,7 +5,8 @@ export const container = style({
   width: '100%',
   backgroundColor: vars.colors.bg,
   display:'flex',
-  gap: '2rem'
+  gap: '4rem',
+  flexDirection: 'column'
 })
 
 export const rightSection = style({

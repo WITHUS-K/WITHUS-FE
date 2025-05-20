@@ -10,13 +10,13 @@ import {
 import React from 'react';
 
 const details: Evaluation[] = [
-  { evaluator: '홍길동', status: 'pending', score: null },
-  { evaluator: '이영희', status: 'complete', score: 88 },
-  { evaluator: '김철수', status: 'pending', score: null },
-  { evaluator: '박민수', status: 'complete', score: 92 },
-  { evaluator: '최민지', status: 'pending', score: null },
-  { evaluator: '강현우', status: 'complete', score: 95 },
-  { evaluator: '유은정', status: 'pending', score: null },
+  { evaluator: '장수정', status: 'pending', score: null },
+  { evaluator: '김재관', status: 'complete', score: 88 },
+  { evaluator: '김현호', status: 'pending', score: null },
+  { evaluator: '설정원', status: 'complete', score: 92 },
+  { evaluator: '우은진', status: 'pending', score: null },
+  { evaluator: '윤수빈', status: 'complete', score: 95 },
+  { evaluator: '이채원', status: 'pending', score: null },
   { evaluator: '서유빈', status: 'complete', score: 90 },
 ];
 
@@ -28,7 +28,7 @@ const items: AccordianItemType[] = [
     content: (
       <Flex direction="column" gap="1.6rem" align="flexStart">
         {complete.map((d, i) => (
-          <Flex key={i} direction="row" align="center" gap="8rem">
+          <Flex key={i} direction="row" align="center" gap="0.8rem">
             <AvatarChip
               label={d.evaluator}
               index={i}

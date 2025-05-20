@@ -3,7 +3,7 @@ import { style } from '@vanilla-extract/css';
 
 export const wrapper = style({
   padding: '1.6rem',
-  background: vars.colors.grayscale5,
+  background: vars.colors.white,
   borderRadius: '16px',
   display:'flex',
   flexDirection: 'column',

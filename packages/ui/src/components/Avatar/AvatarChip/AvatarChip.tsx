@@ -19,7 +19,7 @@ export const AvatarChip = ({
     <div className={styles.circleWrapper} style={{ zIndex }}>
       <div className={`${styles.circle} ${styles.bg[idx.toString()]}`}>
         <Text variant="sm_caption_medium" color="white">
-          {label.charAt(0)}
+          {label.charAt(1)}
         </Text>
       </div>
     </div>

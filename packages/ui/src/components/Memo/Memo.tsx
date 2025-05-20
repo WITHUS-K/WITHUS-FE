@@ -68,7 +68,7 @@ export const Memo = ({
             className={styles.textarea}
             value={draft}
             onChange={(e) => onDraftChange(e.target.value)}
-            rows={4}
+            rows={3}
           />
           <Button size="32" variant="sub" width="100%" onClick={onSubmit}>
             입력 완료

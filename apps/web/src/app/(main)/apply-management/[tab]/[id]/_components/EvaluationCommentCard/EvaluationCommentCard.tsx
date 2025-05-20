@@ -1,10 +1,10 @@
 'use client';
+import React, { useState } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { IcPlusCircle } from '@repo/ui/icons/colored';
 import { Memo } from '@repo/ui/Memo';
-import React, { useState } from 'react';
-import * as styles from './EvaluationCommentCard.css';
 import { Text } from '@repo/ui/Text';
+import * as styles from './EvaluationCommentCard.css';
 
 export interface Comment {
   evaluator: string;
@@ -46,7 +46,7 @@ export const EvaluationCommentCard = ({
           코멘트
         </Text>
         <Text variant="xl_title_bold" color="primary50">
-          {comments.length}
+          {commentList.length}
         </Text>
       </div>
 
@@ -75,10 +75,11 @@ export const EvaluationCommentCard = ({
             onSubmit={handleSubmit}
           />
         )}
+
         <button
           type="button"
           className={styles.addButton}
-          onClick={handleSubmit}
+          onClick={() => setIsAdding(true)}
         >
           <IcPlusCircle width={24} height={24} />
           코멘트 추가하기

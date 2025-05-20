@@ -6,6 +6,7 @@ import {
   EvaluationStatusCard,
 } from '@web/app/(main)/apply-management/[tab]/[id]/_components/EvaluationStatusCard/EvaluationStatusCard';
 import * as styles from './EvaluationScoreCard.css';
+import { EvaluationDetailScoreList } from '@web/app/(main)/apply-management/[tab]/[id]/_components/EvaluationDetailScoreList/EvaluationDetailScoreList';
 
 interface EvaluationScoreCardProps {
   evaluationType: 'document' | 'interview';
@@ -36,10 +37,7 @@ export const EvaluationScoreCard = ({
       </Flex>
       <Flex direction="column" align="center" gap="1rem">
         <EvaluationStatusCard evaluation={evaluation} />
-        <EvaluationScoreCard
-          evaluation={evaluation}
-          evaluationType={evaluationType}
-        />
+        <EvaluationDetailScoreList />
       </Flex>
     </div>
   );
