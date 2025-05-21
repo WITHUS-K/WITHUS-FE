@@ -39,3 +39,32 @@ export const nameToTagHex: Record<TagColorName, TagHex> = Object.fromEntries(
 export function mapServerColorToTagHex(name: string): TagHex {
   return nameToTagHex[name as TagColorName] ?? '#7F82A1';
 }
+
+export const nameToHex1: Record<string, string> = Object.entries(
+  tagHexToName
+).reduce(
+  (acc, [hex, name]) => {
+    acc[name] = hex;
+    return acc;
+  },
+  {} as Record<string, string>
+);
+
+// 웹앱에서 재사용할 태그 컬러 맵
+export const tagColorMap = {
+  '#FF2A3A': { background: '#FFE6E9', circle: '#FF6974' },
+  '#EE6B00': { background: '#FFEEDE', circle: '#FF995A' },
+  '#E2A500': { background: '#FFF5CF', circle: '#FFD062' },
+  '#009857': { background: '#D9FFE2', circle: '#76E79C' },
+  '#0084BC': { background: '#DBF6FF', circle: '#87DAF9' },
+  '#2C60FF': { background: '#EAEFFF', circle: '#9EB6FF' },
+  '#813DFF': { background: '#EFEAFF', circle: '#C0AAFF' },
+  '#F25DEB': { background: '#FFEDFE', circle: '#FFA5F5' },
+  '#7F82A1': { background: '#F2F3F6', circle: '#C4C6D4' },
+  '#5A5C72': { background: '#D7D8E2', circle: '#A9ABC0' },
+} as const;
+
+// 태그 컬러 키들만 뽑아서 배열로
+export const TAG_COLOR_KEYS = Object.keys(tagColorMap) as Array<
+  keyof typeof tagColorMap
+>;

@@ -30,9 +30,5 @@ export function useCreateInterviewMutation(): UseMutationResult<
       console.log(res);
       return res.result;
     },
-    onSuccess: () => {
-      // 조직 인터뷰 리스트 무효화
-      qc.invalidateQueries({ queryKey: queryKeys.interview.orgList() });
-    },
   });
 }
