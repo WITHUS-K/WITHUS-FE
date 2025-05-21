@@ -7,7 +7,7 @@ export const container = style({
   gap: '1.6rem',
   width: '100%',
   justifyContent: 'center',
-  marginBottom: '3.2rem'
+  marginBottom: '3.2rem',
 });
 
 export const questionRow = style({
@@ -21,7 +21,7 @@ export const questionWrapper = style({
 export const removeButton = style({
   all: 'unset',
   position: 'absolute',
-  right: '1.5rem',
+  right: '15rem',
   top: '54%',
   transform: 'translateY(-50%)',
   cursor: 'pointer',
@@ -40,5 +40,5 @@ export const addButton = style({
       color: vars.colors.grayscale50,
     },
   },
-  ...fontStyles.md2_text_semibold
+  ...fontStyles.md2_text_semibold,
 });

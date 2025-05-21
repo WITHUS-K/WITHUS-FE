@@ -26,17 +26,10 @@ export default function TimetableLayout({
 
   const currentTab = tab as string;
   const currentDate = date as string;
-  const club = searchParams.get('club') ?? '';
 
   const handleTabChange = (nextTab: string) => {
     router.replace(
       `/interview-management/timetable/${nextTab}/${currentDate}?${searchParams}`
-    );
-  };
-
-  const handleDateChange = (nextDate: string) => {
-    router.replace(
-      `/interview-management/timetable/${currentTab}/${nextDate}?${searchParams}`
     );
   };
 
@@ -50,16 +43,10 @@ export default function TimetableLayout({
         direction="column"
         width="100%"
         height="100%"
-        gap="4rem"
         marginTop="3.2rem"
         align="center"
       >
         <TabBar tabs={TABS} active={currentTab} onChange={handleTabChange} />
-        <DateNav
-          dates={timetableDates}
-          active={currentDate}
-          onChange={handleDateChange}
-        />
       </Flex>
       <div style={{ width: '100%' }}>{children}</div>
       {modal}

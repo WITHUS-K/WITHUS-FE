@@ -39,7 +39,7 @@ export interface Evaluation {
 export interface CommentItem {
   id: number;
   content: string;
-  type: 'DOCUMENT' | string;
+  type: 'DOCUMENT' | 'INTERVIEW';
   createdAt: string;
   user: {
     userId: number;
@@ -54,7 +54,12 @@ export interface TimeSlotApplication {
   date: string;
   startTime: string;
   endTime: string;
-  status: 'PENDING' | string;
+  status:
+    | 'PENDING'
+    | 'DOX_PASS'
+    | 'DOX_FAIL'
+    | 'INTERVIEW_PASS'
+    | 'INTERVIEW_FAIL';
   documentAnswers: DocumentAnswer[];
   interviewQuestions: InterviewQuestion[];
   evaluations: Evaluation[];

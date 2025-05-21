@@ -33,9 +33,14 @@ export default function SelectScoreDropdown({
         />
       </Dropdown.Trigger>
 
-      <Dropdown.List>
+      <Dropdown.List width="16.6rem">
         {scores.map((score) => (
-          <DropdownItem key={score} onSelect={() => onSelect(score)}>
+          <DropdownItem
+            size="small"
+            height="3.2rem"
+            key={score}
+            onSelect={() => onSelect(score)}
+          >
             {score}
           </DropdownItem>
         ))}

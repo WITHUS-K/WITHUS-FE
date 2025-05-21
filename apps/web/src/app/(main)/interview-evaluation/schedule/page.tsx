@@ -30,10 +30,8 @@ export default function SchedulePage() {
   if (!orgs.length) return <Text>등록된 면접이 없습니다.</Text>;
 
   // 2) 선택된 인터뷰 결정 (쿼리에 없으면 첫 번째)
-  //    ❗️ 여기서 'orgs[0]!'로 non-null assertion
   const current = (orgs.find((o) => o.interviewId === interviewId) ?? orgs[1])!;
 
-  // 이제 current는 절대 undefined가 아니므로 안전하게 구조분해 할당 가능
   const { availableTimeRanges, interviewDuration } = current;
 
   // 3) 선택된 시간 범위 상태
@@ -43,7 +41,6 @@ export default function SchedulePage() {
   );
 
   const handleRangeSelect = useCallback((range: TimeRange | null) => {
-    console.log('📌 onRangeSelect 호출됨:', range);
     setSelectedRange(range);
   }, []);
 
@@ -57,23 +54,27 @@ export default function SchedulePage() {
       cancelText: '취소',
       confirmText: '저장',
       onConfirm: () => {
-        const { startTime, endTime } = selectedRange;
-        // ISO 배열 생성 (duration 분 단위)
-        const dateIso = availableTimeRanges[0]!.date.replace(/\./g, '-');
         const slots: string[] = [];
-        let cursor = parseISO(`${dateIso}T${startTime}:00`).getTime();
-        const endMs = parseISO(`${dateIso}T${endTime}:00`).getTime();
 
-        while (cursor < endMs) {
-          slots.push(new Date(cursor).toISOString());
-          cursor += interviewDuration * 60 * 1000;
+        // 모든 날짜 순회
+        for (const range of availableTimeRanges) {
+          const dateIso = range.date.replace(/\./g, '-'); // "2025.05.20" -> "2025-05-20"
+          const start = new Date(`${dateIso}T${selectedRange.startTime}:00`);
+          const end = new Date(`${dateIso}T${selectedRange.endTime}:00`);
+          const durationMs = interviewDuration * 60 * 1000;
+
+          let cursor = start.getTime();
+          while (cursor < end.getTime()) {
+            slots.push(format(new Date(cursor), "yyyy-MM-dd'T'HH:mm:ss"));
+            cursor += durationMs;
+          }
         }
 
         registerMutation.mutate(
           { availableTimes: slots },
           {
             onSuccess: () => {
-              // 성공 시 타임테이블 페이지로, interviewId 쿼리 유지
+              console.log('가능한 시간', slots);
               router.replace(
                 `/interview-evaluation/timetable/interviewer?interviewId=${current.interviewId}`
               );

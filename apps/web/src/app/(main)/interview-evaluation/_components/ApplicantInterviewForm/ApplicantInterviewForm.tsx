@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from 'react';
 import * as styles from './ApplicantInterviewForm.css';
-import { Applicant } from '@web/constants/timetable';
 import { AccordianList, List } from '@repo/ui/List';
 import { Divider } from '@repo/ui/Divider';
 import { Flex } from '@repo/ui/Flex';
@@ -11,7 +10,14 @@ import { InterviewQuestions } from '@web/app/(main)/interview-evaluation/_compon
 import { SelectScoreDropdown } from '@repo/ui/DropDown';
 import { CommentInput } from '@repo/ui/InputField';
 import { IcSidebarInfo } from '@repo/ui/icons/mono';
-import { TimeSlotApplication } from '@web/store/query/useTimeSlotApplicationsQuery';
+import {
+  CommentItem,
+  TimeSlotApplication,
+} from '@web/store/query/useTimeSlotApplicationsQuery';
+import { useAddCommentMutation } from '@web/store/mutation/useAddCommentMutation';
+import { useUpdateCommentMutation } from '@web/store/mutation/useUpdateCommentMutation';
+import { useAddEvaluationMutation } from '@web/store/mutation/useAddEvaluationMutation';
+import { useParams, useSearchParams } from 'next/navigation';
 
 interface ApplicantInterviewFormProps {
   detail: TimeSlotApplication;
@@ -20,12 +26,69 @@ interface ApplicantInterviewFormProps {
 export const ApplicantInterviewForm = ({
   detail,
 }: ApplicantInterviewFormProps) => {
-  const [interviewScore, setInterviewScore] = useState<string | undefined>();
-  const [newDocComment, setNewDocComment] = useState('');
-  const [isDocSubmitted, setIsDocSubmitted] = useState(false);
+  // zustand 로 바꾸기!!
+  const myUserId = 1;
+  const params = useParams();
+  const timeSlotId = Number(params.id);
+  console.log('타임슬롯', timeSlotId);
+  // Mutations
+  const addComment = useAddCommentMutation(detail.applicationId, timeSlotId);
+  const updateComment = useUpdateCommentMutation(
+    detail.applicationId,
+    timeSlotId
+  );
 
-  const documentComment = detail.documentComments[0]?.content ?? '';
-  const interviewComment = detail.interviewComments[0]?.content ?? '';
+  const addEvaluation = useAddEvaluationMutation(
+    detail.applicationId,
+    timeSlotId
+  );
+
+  const [newComment, setNewComment] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const [scores, setScores] = useState<Record<number, string>>(() =>
+    detail.evaluations.reduce(
+      (acc, e) => {
+        acc[e.criteria.id] = String(e.score);
+        return acc;
+      },
+      {} as Record<number, string>
+    )
+  );
+
+  const myDocumentComment =
+    detail.documentComments.find((c: CommentItem) => c.user.userId === myUserId)
+      ?.content ?? '';
+
+  // 내 면접 코멘트
+  const existingInterviewCommentItem = detail.interviewComments.find(
+    (c: CommentItem) => c.user.userId === myUserId
+  );
+  // 2) 화면에 보여줄 내용만 추출
+  const myInterviewComment = existingInterviewCommentItem?.content ?? '';
+
+  const handleCommentSubmit = () => {
+    if (!newComment.trim()) return;
+    if (existingInterviewCommentItem) {
+      // 수정: id가 있는 객체를 사용
+      updateComment.mutate({
+        commentId: existingInterviewCommentItem.id,
+        content: newComment,
+      });
+    } else {
+      addComment.mutate({ content: newComment, type: 'INTERVIEW' });
+    }
+    setIsSubmitted(true);
+  };
+
+  const handleScoreSelect = (criteriaId: number, score: string) => {
+    setScores((s) => ({ ...s, [criteriaId]: score }));
+    addEvaluation.mutate({
+      applicationId: detail.applicationId,
+      criteriaId,
+      score: Number(score),
+    });
+  };
 
   return (
     <div className={styles.content}>
@@ -47,7 +110,7 @@ export const ApplicantInterviewForm = ({
 
           <AccordianList
             items={detail.documentAnswers.map((q, i) => ({
-              title: `${i + 1}. ${q.questionTitle}`,
+              title: `${q.questionTitle}`,
               content: q.answerText,
               reviewers: [],
             }))}
@@ -97,7 +160,6 @@ export const ApplicantInterviewForm = ({
           <Text variant="md2_text_semibold" color="grayscale70">
             면접 질문
           </Text>
-          <InterviewQuestions />
           {detail.interviewQuestions.map((q, i) => (
             <List
               key={q.id}
@@ -108,6 +170,7 @@ export const ApplicantInterviewForm = ({
               idx={i + 1}
             />
           ))}
+          <InterviewQuestions applicationId={detail.applicationId} />
         </Flex>
 
         <Flex
@@ -120,20 +183,29 @@ export const ApplicantInterviewForm = ({
             면접 평가
           </Text>
 
-          <Flex width="100%" gap="1.6rem">
-            <AccordianList
-              items={detail.evaluations.map((e) => ({
-                title: e.criteria.content,
-                content: `점수: ${e.score}`,
-              }))}
-              isNumbering={false}
-              width="100%"
-            />
-            <SelectScoreDropdown
-              value={interviewScore}
-              onSelect={setInterviewScore}
-              style={{ width: '16.6rem' }}
-            />
+          <Flex direction="column" width="100%" gap="1.6rem">
+            {detail.evaluations.map((e) => (
+              <Flex
+                key={e.criteria.id}
+                width="100%"
+                gap="1.6rem"
+                align="center"
+              >
+                {/* 한 개짜리 아코디언 리스트 */}
+                <AccordianList
+                  items={[
+                    { title: e.criteria.content, content: `점수: ${e.score}` },
+                  ]}
+                  isNumbering={false}
+                  width="100%"
+                />
+                <SelectScoreDropdown
+                  value={scores[e.criteria.id]}
+                  onSelect={(score) => handleScoreSelect(e.criteria.id, score)}
+                  style={{ width: '16.6rem' }}
+                />
+              </Flex>
+            ))}
           </Flex>
         </Flex>
       </section>
@@ -154,7 +226,7 @@ export const ApplicantInterviewForm = ({
           <Text variant="md2_text_semibold" color="grayscale70">
             서류 평가
           </Text>
-          <div className={styles.comment}>{documentComment}</div>
+          <div className={styles.comment}>{myDocumentComment}</div>
         </Flex>
 
         <Flex
@@ -166,23 +238,19 @@ export const ApplicantInterviewForm = ({
           <Text variant="md2_text_semibold" color="grayscale70">
             면접 평가
           </Text>
-          {!isDocSubmitted ? (
+          {!isSubmitted ? (
             <CommentInput
-              value={newDocComment}
-              onChange={setNewDocComment}
-              onSubmit={() => {
-                if (newDocComment.trim()) {
-                  setIsDocSubmitted(true);
-                }
-              }}
+              value={newComment}
+              onChange={setNewComment}
+              onSubmit={handleCommentSubmit}
             />
           ) : (
             <div className={styles.comment}>
-              {newDocComment}
+              {newComment}
               <button
                 type="button"
                 className={styles.editButton}
-                onClick={() => setIsDocSubmitted(false)}
+                onClick={() => setIsSubmitted(false)}
               >
                 <IcSidebarInfo width={20} height={20} />
                 <Text variant="sm_caption_medium" color="grayscale30">

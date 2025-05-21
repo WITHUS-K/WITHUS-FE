@@ -15,6 +15,7 @@ export default function EvaluationTimetablePage() {
   const tab: Tab = tabParam === 'guide' ? 'guide' : 'interviewer';
 
   const { data: slots = [] } = useMyTimeSlotsQuery(interviewId);
+  console.log('내 배정', slots);
   if (!slots.length) return <Text>배정된 시간이 없습니다.</Text>;
 
   // 날짜별 그룹핑

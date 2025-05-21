@@ -115,7 +115,7 @@ export function useInterviewScheduleQuery(
       const res = await GET<InterviewSchedule[]>(
         `api/v1/interviews/${interviewId}/schedule`
       );
-      console.log('타임테이블', res.result);
+      console.log('타임테이블11', res.result);
       return res.result.map((sch) => ({
         ...sch,
         timeSlots: sch.timeSlots.map((ts) => {
