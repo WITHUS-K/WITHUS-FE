@@ -28,18 +28,15 @@ export default function ClubLayout({
   const search = useSearchParams();
 
   const tab = Array.isArray(params.tab) ? params.tab[0] : params.tab!;
-
+  const id = params.id;
   const clubId = search.get('clubId') ?? clubs[0]!.id;
 
-  // 브레드크럼 클럽 변경
   const onClubChange = (newName: string) => {
     const found = clubs.find((c) => c.name === newName);
     if (found) {
       router.push(`/apply-management/${tab}?clubId=${found.id}`);
     }
   };
-
-  // 탭 변경
   const onTabChange = (newTab: string) => {
     router.push(`/apply-management/${newTab}?clubId=${clubId}`);
   };
@@ -47,40 +44,44 @@ export default function ClubLayout({
   return (
     <>
       <Flex direction="column" width="100%" height="100%">
-        <Flex direction="column" gap="0.4rem" align="flexStart" width="100%">
-          <Breadcrumb>
-            <Breadcrumb.Item>지원 현황 관리</Breadcrumb.Item>
-          </Breadcrumb>
-          <Flex width="100%" justify="spaceBetween">
-            <ClubDropdown
-              value={clubs.find((c) => c.id === clubId)?.name}
-              clubs={clubs.map((c) => c.name)}
-              onSelect={onClubChange}
-            />
-            <Button
-              variant="white"
-              size="40"
-              width="16.3rem"
-              leftIcon={<IcCriteriaBtn />}
-              onClick={() => {
-                /* ... */
-              }}
-            >
-              평가 기준 설정
-            </Button>
+        {!id && (
+          <Flex direction="column" gap="0.4rem" align="flexStart" width="100%">
+            <Breadcrumb>
+              <Breadcrumb.Item>지원 현황 관리</Breadcrumb.Item>
+            </Breadcrumb>
+            <Flex width="100%" justify="spaceBetween">
+              <ClubDropdown
+                value={clubs.find((c) => c.id === clubId)?.name}
+                clubs={clubs.map((c) => c.name)}
+                onSelect={onClubChange}
+              />
+              <Button
+                variant="white"
+                size="40"
+                width="16.3rem"
+                leftIcon={<IcCriteriaBtn />}
+              >
+                평가 기준 설정
+              </Button>
+            </Flex>
+
+            <div style={{ width: '100%', marginTop: '0.8rem' }}>
+              <TabBar
+                tabs={TAB_KEYS as unknown as string[]}
+                active={tab!}
+                counts={{
+                  documents: 12,
+                  interviews: 8,
+                  final: 3,
+                  rejected: 5,
+                }}
+                onChange={onTabChange}
+              />
+            </div>
           </Flex>
+        )}
 
-          <div style={{ width: '100%', marginTop: '0.8rem' }}>
-            <TabBar
-              tabs={TAB_KEYS as unknown as string[]}
-              active={tab!}
-              counts={{ documents: 12, interviews: 8, final: 3, rejected: 5 }}
-              onChange={onTabChange}
-            />
-          </div>
-        </Flex>
-
-        <Flex width="100%" marginTop="2.4rem">
+        <Flex width="100%" marginTop={!id ? '2.4rem' : '0'}>
           {children}
         </Flex>
       </Flex>

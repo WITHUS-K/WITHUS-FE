@@ -10,6 +10,7 @@ import { AccordionRoot } from '../Accordion/AccordionRoot';
 import { AccordionItem } from '../Accordion/AccordionItem';
 import { AccordionTrigger } from '../Accordion/AccordionTrigger';
 import { AccordionContent } from '../Accordion/AccordionContent';
+import { ReactNode } from 'react';
 
 export interface Reviewer {
   name: string;
@@ -19,7 +20,7 @@ export interface Reviewer {
 
 export interface AccordianItemType {
   title: string;
-  content: string;
+  content: ReactNode;
   reviewers?: Reviewer[];
 }
 
@@ -73,7 +74,7 @@ export const AccordianList = ({
                 length="100%"
                 borderColor="grayscale10"
               />
-              <div>{item.content}</div>
+              {item.content}
             </AccordionContent>
           </ListLayout>
         </AccordionItem>

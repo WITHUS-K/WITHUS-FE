@@ -6,7 +6,7 @@ export const wrapper = style({
   display: 'flex',
   flexDirection: 'column',
   gap: '0.8rem',
-  //width: '100%',
+ 
 });
 
 export const titleStyle = style({
@@ -46,6 +46,10 @@ export const inputWrapper = recipe({
       '&:focus-within': {
         border: `1px solid ${vars.colors.primary50}`,
       },
+      '&[data-read-only="true"]': {
+      backgroundColor: vars.colors.bg,
+      border: `1px solid ${vars.colors.grayscale5}`,
+    },
     },
   },
 
@@ -124,6 +128,13 @@ export const commentInputWrapper = style({
   border: `1px solid ${vars.colors.grayscale20}`,
   borderRadius: '16px',
   width: '100%',
+  selectors: {
+    '&[data-read-only="true"]': {
+      backgroundColor: vars.colors.bg,
+        border: `1px solid ${vars.colors.grayscale5}`,
+
+    },
+  },
 });
 
 export const questionTitleInput = style({

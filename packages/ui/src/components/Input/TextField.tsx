@@ -16,6 +16,7 @@ interface TextFieldProps {
   width?: string;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
   containerProps?: React.HTMLAttributes<HTMLDivElement>;
+  readOnly?: boolean;
 }
 
 const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
@@ -30,6 +31,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       width = '100%',
       inputProps = {},
       containerProps = {},
+      readOnly = false,
     },
     ref
   ) => {
@@ -69,6 +71,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           size={size}
           showPasswordToggle={isPasswordField}
           onTogglePassword={() => setShowPassword((prev) => !prev)}
+          readOnly={readOnly}
         />
 
         {errorMessage ? (

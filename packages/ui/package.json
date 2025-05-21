@@ -143,6 +143,14 @@
     "./ChargeDropdown": {
       "types": "./dist/components/DropDown/index.d.ts",
       "import": "./dist/components/DropDown/index.js"
+    },
+    "./Avatar": {
+      "types": "./dist/components/Avatar/index.d.ts",
+      "import": "./dist/components/Avatar/index.js"
+    },
+    "./Memo": {
+      "types": "./dist/components/Memo/index.d.ts",
+      "import": "./dist/components/Memo/index.js"
     }
   },
   "main": "./dist/index.js",

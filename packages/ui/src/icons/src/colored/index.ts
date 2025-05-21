@@ -16,6 +16,7 @@ export { default as IcDelete } from './IcDelete';
 export { default as IcDeleteLg } from './IcDeleteLg';
 export { default as IcDownload } from './IcDownload';
 export { default as IcDropdwonGray90 } from './IcDropdwonGray90';
+export { default as IcFileDelete } from './IcFileDelete';
 export { default as IcFileInfo } from './IcFileInfo';
 export { default as IcFilePlus } from './IcFilePlus';
 export { default as IcHeaderBig } from './IcHeaderBig';

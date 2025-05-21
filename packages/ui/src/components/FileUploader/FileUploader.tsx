@@ -2,7 +2,7 @@ import { ListLayout } from '../List/ListLayout';
 import * as styles from './FileUploader.css';
 import { Text } from '../Text';
 import { Flex } from '../Flex';
-import { IcDownload } from '../../icons/src/colored';
+import { IcDownload, IcDelete, IcFileDelete } from '../../icons/src/colored';
 
 export interface FileInfo {
   name: string;
@@ -13,11 +13,20 @@ export interface FileInfo {
 export interface FileUploaderProps {
   file: FileInfo;
   onDownload?: (file: FileInfo) => void;
+  onDelete?: (file: FileInfo) => void;
+  readOnly?: boolean;
 }
 
-export const FileUploader = ({ file, onDownload }: FileUploaderProps) => {
+export const FileUploader = ({
+  file,
+  onDownload,
+  onDelete,
+  readOnly = false,
+}: FileUploaderProps) => {
+  const isDeletable = typeof onDelete === 'function';
+
   return (
-    <ListLayout>
+    <ListLayout readOnly={readOnly}>
       <Flex direction="row" gap="1.6rem" align="center">
         <div className={styles.pdfIcon}>
           <Text variant="sm_caption_medium" color="grayscale40">
@@ -35,16 +44,26 @@ export const FileUploader = ({ file, onDownload }: FileUploaderProps) => {
       </Flex>
 
       <div className={styles.rightSection}>
-        <button
-          type="button"
-          className={styles.downloadButton}
-          onClick={() => onDownload?.(file)}
-        >
-          <IcDownload width={24} height={24} />
-          <Text variant="sm_caption_medium" color="grayscale60">
-            다운로드
-          </Text>
-        </button>
+        {isDeletable ? (
+          <button
+            type="button"
+            className={styles.deleteButton}
+            onClick={() => onDelete!(file)}
+          >
+            <IcFileDelete width={24} height={24} />
+          </button>
+        ) : (
+          <button
+            type="button"
+            className={styles.downloadButton}
+            onClick={() => onDownload!(file)}
+          >
+            <IcDownload width={24} height={24} />
+            <Text variant="sm_caption_medium" color="grayscale60">
+              다운로드
+            </Text>
+          </button>
+        )}
       </div>
     </ListLayout>
   );

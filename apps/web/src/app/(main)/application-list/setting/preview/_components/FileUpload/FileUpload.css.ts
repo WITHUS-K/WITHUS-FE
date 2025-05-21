@@ -19,7 +19,13 @@ export const bodyContainer = style({
   width: '100%',
   border: `1px solid ${vars.colors.grayscale20}`,
   borderRadius: '16px',
-  padding: '1.6rem'
+  padding: '1.6rem',
+  selectors: {
+    '&[data-read-only="true"]': {
+      backgroundColor: vars.colors.bg,
+      border: `1px solid ${vars.colors.grayscale5}`,
+    },
+  },
 })
 
 
@@ -32,8 +38,8 @@ export const dropZone = style({
   cursor: 'pointer',
   border: `1px dashed ${vars.colors.grayscale10}`,
   borderRadius: '16px',
-  padding: '6.55rem 0'
-
+  padding: '6.55rem 0',
+  marginTop: '1.6rem'
 });
 
 export const input = style({

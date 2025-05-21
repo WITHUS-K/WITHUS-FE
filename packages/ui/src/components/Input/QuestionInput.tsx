@@ -9,6 +9,7 @@ interface QuestionInputProps {
   title?: string;
   info?: string;
   infoDetail?: string;
+  readOnly?: boolean;
 }
 
 export const QuestionInput = ({
@@ -17,9 +18,13 @@ export const QuestionInput = ({
   title = '질문 제목',
   info,
   infoDetail,
+  readOnly = false,
 }: QuestionInputProps) => {
   return (
-    <div className={styles.commentInputWrapper}>
+    <div
+      className={styles.commentInputWrapper}
+      data-read-only={readOnly ? 'true' : 'false'}
+    >
       <Flex justify="spaceBetween" align="center" width="100%">
         <Text variant="md1_text_semibold" color="grayscale70">
           {title}
@@ -35,6 +40,7 @@ export const QuestionInput = ({
         value={value}
         onChange={(e) => onChange(e.currentTarget.value)}
         rows={3}
+        disabled={readOnly}
       />
     </div>
   );
