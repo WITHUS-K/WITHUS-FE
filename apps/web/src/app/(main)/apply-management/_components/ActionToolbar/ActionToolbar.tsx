@@ -8,6 +8,7 @@ import {
   IcMailBtn,
   IcMessageBtn,
   IcChargeBtn,
+  IcCharts,
 } from '@repo/ui/icons/mono';
 
 export interface ActionToolbarProps {
@@ -84,28 +85,9 @@ export default function ActionToolbar({
         메일
       </Button>
 
-      {!communicationOnly && (
-        <>
-          <Button
-            variant="white"
-            size="40"
-            width="10rem"
-            onClick={onFail}
-            disabled={!hasSelection}
-          >
-            불합격
-          </Button>
-          <Button
-            variant="main"
-            size="40"
-            width="10rem"
-            onClick={onPass}
-            disabled={!hasSelection}
-          >
-            합격
-          </Button>
-        </>
-      )}
+      <Button variant="main" size="40" width="16.3rem" leftIcon={<IcCharts />}>
+        평가 기준 설정
+      </Button>
     </Flex>
   );
 }

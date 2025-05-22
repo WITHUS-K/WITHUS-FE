@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Member } from '@web/types/organization';
 import { CheckBox } from '@repo/ui/CheckBox';
 import { Tag } from '@repo/ui/Tag';
@@ -12,6 +12,7 @@ import { Flex } from '@repo/ui/Flex';
 import StatusBadge, { Status } from '../StatusBadge/StatusBadge';
 import { useRouter, useParams } from 'next/navigation';
 import { IcPlusRole } from '@repo/ui/icons/mono';
+import { StatusDropdown } from '@repo/ui/StatusDropdown';
 
 export interface Evaluator {
   name: string;
@@ -49,6 +50,18 @@ export default function ApplyListItem({
   const rawTab = params.tab;
   const clubId = Array.isArray(rawClubId) ? rawClubId[0] : rawClubId;
   const activeTab = Array.isArray(rawTab) ? rawTab[0] : rawTab;
+
+  const [status, setStatus] = useState<Status>(member.status as Status);
+
+  const handleStatusChange = (newStatus: Status) => {
+    setStatus(newStatus);
+    // TODO: 백엔드에 상태 업데이트 API 호출
+  };
+
+  const tabKey =
+    activeTab === 'documents' || activeTab === 'interviews'
+      ? activeTab
+      : 'documents';
 
   // charge 모달 페이지로 이동
   const openChargeModal = () => {
@@ -116,7 +129,11 @@ export default function ApplyListItem({
       </Flex>
 
       <div style={{ width: '7.5rem', marginRight: '3.8rem' }}>
-        <StatusBadge status={member.status as Status} />
+        <StatusDropdown
+          status={status}
+          onChange={handleStatusChange}
+          tab={tabKey}
+        />
       </div>
 
       <Text
