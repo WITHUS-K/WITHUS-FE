@@ -16,6 +16,7 @@ import { useTimeSlotUsersQuery } from '@web/store/query/useTimeSlotUsersQuery';
 import { useAddTimeSlotUsersMutation } from '@web/store/mutation/useAddTimeSlotUsersMutation';
 import { useOrganizationUsersQuery } from '@web/store/query/useOrganizationUsersQuery';
 import { IcInputSearch } from '@repo/ui/icons/colored';
+import { useUserStore } from '@web/store/state/userStore';
 
 const TABS = ['interviewer', 'guide'];
 
@@ -53,7 +54,7 @@ export default function InviteModalContent() {
   }, [assignedRaw]);
 
   // 2) 서버 검색
-  const organizationId = 3;
+  const organizationId = useUserStore.getState().organizationId!;
   const roleId = activeTab === 'interviewer' ? 1 : 2;
   const { data: candidates = [], isFetching } = useOrganizationUsersQuery(
     organizationId,

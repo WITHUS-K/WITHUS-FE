@@ -3,14 +3,22 @@ import { getOrganizationRolesQueryOptions } from '@web/store/query/useOrganizati
 import { getOrganizationMembersQueryOptions } from '@web/store/query/useOrganizationMembersQuery';
 import { ServerFetchBoundary } from '@web/store/query/ServerFetchBoundary';
 import OrganizationPageClient from '../OrganizationPageClient';
+import { useUserStore } from '@web/store/state/userStore';
+import { notFound } from 'next/navigation';
 
 export default async function Page({
   params,
 }: {
   params: Promise<{ modal?: string[] }>;
 }) {
-  const tokens = await getServerSideTokens();
-  const organizationId = 5;
+  const { accessToken, refreshToken, organizationId } =
+    await getServerSideTokens();
+
+  if (!organizationId) {
+    notFound();
+  }
+
+  const tokens = { accessToken, refreshToken };
 
   const roleFetchOptions = getOrganizationRolesQueryOptions({
     organizationId,

@@ -57,8 +57,8 @@ export default function AllCell({ slot }: { slot: TimeSlot }) {
       {/* 면접관 */}
       <Flex marginRight="5rem">
         <ProfileGroup
-          items={slot.interviewers.map(({ src, name }) => ({
-            src: src ?? '',
+          items={slot.interviewers.map(({ profileUrl, name }) => ({
+            src: profileUrl ?? '',
             name,
           }))}
           maxVisible={3}
@@ -68,8 +68,8 @@ export default function AllCell({ slot }: { slot: TimeSlot }) {
 
       {/* 안내자 */}
       <ProfileGroup
-        items={slot.assistants.map(({ src, name }) => ({
-          src: src ?? '',
+        items={slot.assistants.map(({ profileUrl, name }) => ({
+          src: profileUrl ?? '',
           name,
         }))}
         maxVisible={2}

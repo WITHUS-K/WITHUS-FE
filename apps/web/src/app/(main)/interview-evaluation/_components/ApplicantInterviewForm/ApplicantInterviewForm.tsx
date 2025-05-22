@@ -18,6 +18,7 @@ import { useAddCommentMutation } from '@web/store/mutation/useAddCommentMutation
 import { useUpdateCommentMutation } from '@web/store/mutation/useUpdateCommentMutation';
 import { useAddEvaluationMutation } from '@web/store/mutation/useAddEvaluationMutation';
 import { useParams, useSearchParams } from 'next/navigation';
+import { useUserStore } from '@web/store/state/userStore';
 
 interface ApplicantInterviewFormProps {
   detail: TimeSlotApplication;
@@ -27,7 +28,7 @@ export const ApplicantInterviewForm = ({
   detail,
 }: ApplicantInterviewFormProps) => {
   // zustand 로 바꾸기!!
-  const myUserId = 1;
+  const myUserId = useUserStore.getState().userId;
   const params = useParams();
   const timeSlotId = Number(params.id);
   console.log('타임슬롯', timeSlotId);
