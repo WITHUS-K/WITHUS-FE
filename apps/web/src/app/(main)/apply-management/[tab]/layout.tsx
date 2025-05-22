@@ -43,7 +43,15 @@ export default function ClubLayout({
 
   return (
     <>
-      <Flex direction="column" width="100%" height="100%">
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          width: '100%',
+          padding: '2.4rem',
+        }}
+      >
         {!id && (
           <Flex direction="column" gap="0.4rem" align="flexStart" width="100%">
             <Breadcrumb>
@@ -84,7 +92,7 @@ export default function ClubLayout({
         <Flex width="100%" marginTop={!id ? '2.4rem' : '0'}>
           {children}
         </Flex>
-      </Flex>
+      </div>
       {modal}
     </>
   );

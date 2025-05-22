@@ -29,9 +29,7 @@ export function AddHeader() {
           width="10rem"
           onClick={() => router.push('/apply-management')}
         >
-          <Text variant="md2_text_medium" color="white">
-            취소
-          </Text>
+          취소
         </Button>
       </Flex>
     </Flex>

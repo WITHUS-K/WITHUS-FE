@@ -21,23 +21,6 @@ export const EvaluationCommentCard = ({
   currentEvaluator = '크리스탈',
 }: EvaluationCommentCardProps) => {
   const [commentList, setCommentList] = useState<Comment[]>(comments);
-  const [isAdding, setIsAdding] = useState(false);
-  const [draft, setDraft] = useState('');
-
-  const handleSubmit = () => {
-    const trimmed = draft.trim();
-    if (trimmed) {
-      setCommentList([
-        ...commentList,
-        {
-          evaluator: currentEvaluator,
-          comment: trimmed,
-        },
-      ]);
-    }
-    setDraft('');
-    setIsAdding(false);
-  };
 
   return (
     <div className={styles.container}>
@@ -63,27 +46,6 @@ export const EvaluationCommentCard = ({
             onSubmit={() => {}}
           />
         ))}
-
-        {isAdding && (
-          <Memo
-            author={currentEvaluator}
-            comment=""
-            isEditing={true}
-            draft={draft}
-            onEditStart={() => {}}
-            onDraftChange={setDraft}
-            onSubmit={handleSubmit}
-          />
-        )}
-
-        <button
-          type="button"
-          className={styles.addButton}
-          onClick={() => setIsAdding(true)}
-        >
-          <IcPlusCircle width={24} height={24} />
-          코멘트 추가하기
-        </button>
       </Flex>
     </div>
   );

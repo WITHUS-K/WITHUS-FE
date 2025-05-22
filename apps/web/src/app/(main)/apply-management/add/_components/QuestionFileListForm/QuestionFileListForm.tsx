@@ -42,7 +42,6 @@ export const QuestionAndFileListForm = ({
             )}
           </Flex>
           <QuestionInput
-            readOnly
             title={item.description}
             info={item.typeInfo.info}
             infoDetail={item.typeInfo.infoDetail}
@@ -56,9 +55,8 @@ export const QuestionAndFileListForm = ({
         <div key={`f-${idx}`} style={{ marginBottom: '2rem' }}>
           <FileUpload
             item={item}
-            file={files[files.length - 1]}
+            file={files[idx]} // ← 여기!
             onChange={(file) => onFileChange(idx, file)}
-            readOnly
           />
         </div>
       ))}

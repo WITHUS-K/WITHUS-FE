@@ -14,6 +14,7 @@ export { default as IcCheckCopy } from './IcCheckCopy';
 export { default as IcCheck } from './IcCheck';
 export { default as IcClubModalError } from './IcClubModalError';
 export { default as IcDelete } from './IcDelete';
+export { default as IcDeleteCircle } from './IcDeleteCircle';
 export { default as IcDeleteLg } from './IcDeleteLg';
 export { default as IcDownload } from './IcDownload';
 export { default as IcDropdwonGray90 } from './IcDropdwonGray90';

@@ -26,8 +26,7 @@ export const bodyContainer = style({
       border: `1px solid ${vars.colors.grayscale5}`,
     },
   },
-})
-
+});
 
 export const dropZone = style({
   position: 'relative',
@@ -39,7 +38,7 @@ export const dropZone = style({
   border: `1px dashed ${vars.colors.grayscale10}`,
   borderRadius: '16px',
   padding: '6.55rem 0',
-  marginTop: '1.6rem'
+  marginTop: '1.6rem',
 });
 
 export const input = style({
@@ -48,11 +47,10 @@ export const input = style({
   width: '100%',
   height: '100%',
   opacity: 0,
-  cursor: 'pointer',
+  pointerEvents: 'none',
 });
 
 export const commentDivider = style({
-    width: '100%',
-    borderTop: `1px dashed ${vars.colors.grayscale10}`
-  })
-  
+  width: '100%',
+  borderTop: `1px dashed ${vars.colors.grayscale10}`,
+});

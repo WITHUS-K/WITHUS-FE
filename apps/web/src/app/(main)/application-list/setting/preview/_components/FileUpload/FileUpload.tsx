@@ -8,6 +8,7 @@ import { IcFileUpload } from '@repo/ui/icons/mono';
 import * as styles from './FileUpload.css';
 import type { DetailItem } from '@web/types/application';
 import { FileUploader } from '@repo/ui/FileUploader';
+import { AttachmentListItem } from '../AttachmentListItem/AttachmentListItem';
 
 export interface FileUploadProps {
   item: DetailItem;
@@ -38,7 +39,7 @@ export const FileUpload = ({
     onChange(f);
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     const f = e.dataTransfer.files?.[0] ?? null;
     onChange(f);
@@ -92,22 +93,27 @@ export const FileUpload = ({
         ) : (
           <>
             {file && (
-              <FileUploader
-                file={{
-                  name: file.name,
-                  size: formatMB(file.size),
-                  downloadUrl: URL.createObjectURL(file),
-                }}
-                onDelete={() => onChange(null)}
+              <AttachmentListItem
+                name={file.name}
+                size={formatMB(file.size)}
+                extension={file.name.split('.').pop() ?? ''}
+                onRemove={() => onChange(null)}
               />
             )}
 
-            <div
+            <label
               className={styles.dropZone}
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDrop}
-              onClick={() => inputRef.current?.click()}
             >
+              <input
+                type="file"
+                accept=".pdf,.png,.jpg,.jpeg"
+                multiple={false}
+                ref={inputRef}
+                className={styles.input}
+                onChange={handleSelect}
+              />
               <IcApplicationFileUpload width={72} height={73} />
               <Text variant="md2_text_medium" color="grayscale50">
                 파일을 드래그 드랍 or 직접 추가해주세요.
@@ -124,16 +130,7 @@ export const FileUpload = ({
               >
                 파일 추가
               </Button>
-
-              <input
-                type="file"
-                accept=".pdf,.png,.jpg,.jpeg"
-                multiple={false}
-                ref={inputRef}
-                className={styles.input}
-                onChange={handleSelect}
-              />
-            </div>
+            </label>
           </>
         )}
       </div>
