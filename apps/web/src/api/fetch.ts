@@ -3,9 +3,10 @@ import { reissueTokens } from './auth';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 import { ROUTES } from '@web/routes';
 import { HTTPError } from 'ky';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { ApiResponse, STATUS, Tokens } from './types';
 import { clearClientSideTokens } from '@web/utils/clearTokens';
+import { getServerSideTokens } from './serverSideTokens';
 
 type FetchMethod = 'get' | 'post' | 'put' | 'delete' | 'patch';
 
@@ -22,8 +23,6 @@ async function fetchWrapperWithTokenHandler<Data>(
   hasRetried = false
 ): Promise<ApiResponse<Data>> {
   const method = options?.method ?? 'get';
-
-  console.log('토큰', tokens);
 
   // 클라이언트 사이드에서 토큰이 없으면 쿠키에서 읽어옴
   if (!tokens && typeof window !== 'undefined') {
@@ -78,11 +77,6 @@ async function fetchWrapperWithTokenHandler<Data>(
           throw new Error('로그인이 필요해요!');
         }
       }
-
-      if (status === STATUS.FORBIDDEN) {
-        window.location.replace(ROUTES.LOGIN);
-      }
-
       // 리소스 없음
       if (status === STATUS.NOT_FOUND) {
         notFound();

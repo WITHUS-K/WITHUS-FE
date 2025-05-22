@@ -7,6 +7,7 @@ import { Flex } from '@repo/ui/Flex';
 import { HTTPError } from 'ky';
 import { useLoginMutation } from '@web/store/mutation/useLoginMutation';
 import { LoginRequest } from '@web/types/auth';
+import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
   const {
@@ -18,7 +19,6 @@ export default function LoginForm() {
     mode: 'onBlur',
     defaultValues: { email: '', password: '' },
   });
-
   const { mutate } = useLoginMutation();
 
   // 에러 로직 처리 - 서버랑 이야기 후 처리하기!! 임시로 해놓음!

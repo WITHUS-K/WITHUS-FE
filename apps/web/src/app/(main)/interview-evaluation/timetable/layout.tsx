@@ -18,7 +18,7 @@ export default function TimetableLayout({
   const params = useParams();
   const tab = params.tab as string;
   const date = params.date as string;
-  const time = params.time as string | undefined;
+  const id = params.id as string | undefined;
   const router = useRouter();
   const pathname = usePathname()!;
   const sp = useSearchParams();
@@ -31,11 +31,11 @@ export default function TimetableLayout({
       direction="column"
       width="100%"
       height="100%"
-      align={!time ? 'center' : 'flexStart'}
-      gap={!time ? '4rem' : '0'}
-      marginTop="3.2rem"
+      align={!id ? 'center' : 'flexStart'}
+      gap={!id ? '4rem' : '0'}
+      marginTop={!id ? '3.2rem' : '0'}
     >
-      {!time && (
+      {!id && (
         <TabBar
           tabs={TABS}
           active={active}

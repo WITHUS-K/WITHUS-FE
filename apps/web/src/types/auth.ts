@@ -3,6 +3,20 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface LoginPayload {
+  userId: number;
+  name: string;
+  profileImageUrl: string | null;
+  userOrganizationRoles: {
+    id: number;
+    roleName: string;
+    color: string;
+  }[];
+  userOrganizations: {
+    organizationId: number;
+  }[];
+}
+
 export interface AdminJoinRequest {
   name: string;
   organizationName: string;

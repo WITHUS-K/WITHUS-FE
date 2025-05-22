@@ -15,6 +15,7 @@ export { default as IcCriteriaBtn } from './IcCriteriaBtn';
 export { default as IcDateArrowLeft } from './IcDateArrowLeft';
 export { default as IcDateArrowRight } from './IcDateArrowRight';
 export { default as IcDeleteRight } from './IcDeleteRight';
+export { default as IcDocs } from './IcDocs';
 export { default as IcFileBtn } from './IcFileBtn';
 export { default as IcFileUpload } from './IcFileUpload';
 export { default as IcHeaderAlarm } from './IcHeaderAlarm';

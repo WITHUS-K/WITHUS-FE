@@ -39,8 +39,11 @@ export function useCreateScheduleMutation(): UseMutationResult<
       console.log(res);
       return res.result;
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.interview.orgList() });
+    onSuccess: (_data, variables) => {
+      // scheduleCreate 후, 해당 interviewId 로 스케줄 다시 불러오기
+      qc.invalidateQueries({
+        queryKey: queryKeys.interview.schedule(variables.interviewId),
+      });
     },
   });
 }

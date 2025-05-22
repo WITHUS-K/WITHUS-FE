@@ -32,11 +32,15 @@ export async function ServerFetchBoundary<
   TQueryKey extends QueryKey = QueryKey,
 >({ fetchOptions, children }: Props<TQueryFnData, TError, TData, TQueryKey>) {
   const queryClient = getQueryClient();
-
   const options = Array.isArray(fetchOptions) ? fetchOptions : [fetchOptions];
 
-  // 1) 서버에서 미리 모든 쿼리 실행
-  Promise.all(options.map((option) => queryClient.fetchQuery(option)));
+  try {
+    // 1) 서버에서 미리 모든 쿼리 실행 (await + try/catch로 감쌈)
+    await Promise.all(options.map((option) => queryClient.fetchQuery(option)));
+  } catch (err) {
+    console.error('❌ ServerFetchBoundary fetchQuery 실패:', err);
+    // SSR 실패 시에도 fallback할 수 있도록 SSR 자체는 중단하지 않음
+  }
 
   // 2) hydrate state를 children에 주입
   return (

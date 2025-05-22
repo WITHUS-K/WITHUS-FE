@@ -13,6 +13,8 @@ import { useCreateScheduleMutation } from '@web/store/mutation/useCreateSchedule
 import FilterForm, { FilterSettings } from './FilterForm/FilterForm';
 import { IcRefresh, IcSave } from '@repo/ui/icons/colored';
 import { useModal } from '@repo/ui/hooks';
+import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
+import { TagHex, mapServerColorToTagHex } from '@web/utils/color';
 
 export default function Filters() {
   const router = useRouter();
@@ -27,7 +29,7 @@ export default function Filters() {
   // 데이터 로드
   const { data: recruitments = [] } = useRecruitmentsQuery();
   const { data: orgInterviews = [] } = useOrganizationInterviewsQuery();
-
+  const { data: positions = [] } = useRecruitmentPositionsQuery(urlRid ?? 0);
   // Component state
   const [rid, setRid] = useState<number | undefined>(urlRid);
   const [iv, setIv] = useState<number | undefined>(urlIv);
@@ -35,6 +37,13 @@ export default function Filters() {
   const [selectedTitle, setSelectedTitle] = useState<string>(() => {
     return recruitments.find((r) => r.recruitmentId === urlRid)?.title ?? '';
   });
+
+  //파트 가져오깅!
+  const parts = positions.map((p) => p.name);
+  const partColorMap = positions.reduce<Record<string, TagHex>>((acc, p) => {
+    acc[p.name] = mapServerColorToTagHex(p.color);
+    return acc;
+  }, {});
 
   // URL param 변경 감지
   useEffect(() => {
@@ -212,7 +221,8 @@ export default function Filters() {
 
       {effectiveRid && (
         <FilterForm
-          parts={recruitmentDetail?.positions.map((p) => p.name) || []}
+          parts={parts}
+          partColorMap={partColorMap}
           onSettingsChange={setSettings}
           disabled={!isEditing}
         />

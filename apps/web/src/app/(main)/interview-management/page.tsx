@@ -6,8 +6,9 @@ import { ServerFetchBoundary } from '@web/store/query/ServerFetchBoundary';
 import InterviewManagementPageClient from './InterviewManagementPageClient';
 
 export default async function Page() {
+  console.log('[SSR] ⛳️ page.tsx 실행됨');
   const tokens = await getServerSideTokens();
-
+  console.log('[SSR] accessToken:', tokens.accessToken);
   const interviewsOptions = getOrgInterviewsOptions(tokens);
   const recruitmentsOptions = getRecruitmentsListOptions(tokens);
 

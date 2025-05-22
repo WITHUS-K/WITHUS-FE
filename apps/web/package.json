@@ -12,15 +12,16 @@
   "dependencies": {
     "@repo/theme": "workspace:^",
     "@repo/ui": "workspace:^",
+    "@repo/utils": "workspace:^",
     "@tanstack/react-query": "^5.74.9",
     "@tanstack/react-query-devtools": "^5.74.9",
     "cookies-next": "^5.1.0",
     "ky": "^1.8.1",
-    "@repo/utils": "workspace:^",
     "next": "15.2.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-hook-form": "^7.55.0"
+    "react-hook-form": "^7.55.0",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

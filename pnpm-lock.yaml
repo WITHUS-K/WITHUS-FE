@@ -56,6 +56,9 @@ importers:
       react-hook-form:
         specifier: ^7.55.0
         version: 7.55.0(react@19.1.0)
+      zustand:
+        specifier: ^5.0.5
+        version: 5.0.5(@types/react@19.1.0)(react@19.1.0)(use-sync-external-store@1.5.0(react@19.1.0))
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3
@@ -80,7 +83,7 @@ importers:
         version: 1.17.1
       '@vanilla-extract/next-plugin':
         specifier: ^2.4.10
-        version: 2.4.10(next@15.2.5(@babel/core@7.26.10)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(webpack@5.99.5)
+        version: 2.4.10(next@15.2.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(webpack@5.99.5)
       '@vanilla-extract/recipes':
         specifier: ^0.5.5
         version: 0.5.5(@vanilla-extract/css@1.17.1)
@@ -4562,6 +4565,24 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
+  zustand@5.0.5:
+    resolution: {integrity: sha512-mILtRfKW9xM47hqxGIxCv12gXusoY/xTSHBYApXozR0HmQv299whhBeeAcRy+KrPPybzosvJBCOmVjq6x12fCg==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
+
 snapshots:
 
   '@adobe/css-tools@4.4.2': {}
@@ -5876,7 +5897,7 @@ snapshots:
       - supports-color
       - webpack
 
-  '@vanilla-extract/next-plugin@2.4.10(next@15.2.5(@babel/core@7.26.10)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(webpack@5.99.5)':
+  '@vanilla-extract/next-plugin@2.4.10(next@15.2.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(webpack@5.99.5)':
     dependencies:
       '@vanilla-extract/webpack-plugin': 2.3.18(webpack@5.99.5)
       next: 15.2.5(@babel/core@7.26.10)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -9361,3 +9382,9 @@ snapshots:
   yn@3.1.1: {}
 
   yocto-queue@0.1.0: {}
+
+  zustand@5.0.5(@types/react@19.1.0)(react@19.1.0)(use-sync-external-store@1.5.0(react@19.1.0)):
+    optionalDependencies:
+      '@types/react': 19.1.0
+      react: 19.1.0
+      use-sync-external-store: 1.5.0(react@19.1.0)

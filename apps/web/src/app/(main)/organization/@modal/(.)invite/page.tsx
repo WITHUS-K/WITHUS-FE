@@ -10,6 +10,7 @@ import InviteHeader from '../../_components/InviteModal/InviteHeader';
 import { useToast } from '@repo/ui/hooks';
 import { useUserByEmailQuery } from '@web/store/query/useUserByEmailQuery';
 import { useInviteUsersMutation } from '@web/store/mutation/useInviteUsersMutation';
+import { useUserStore } from '@web/store/state/userStore';
 
 export default function InviteModal() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function InviteModal() {
 
   // 이메일로 유저 조회
   const { data, refetch, isFetching } = useUserByEmailQuery(search, false);
-  const organizationId = 3;
+  const organizationId = useUserStore.getState().organizationId!;
   const inviteMutation = useInviteUsersMutation(organizationId);
 
   // 검색어 변경 핸들러

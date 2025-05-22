@@ -19,7 +19,7 @@ export default function GuideCell({ slot }: { slot: TimeSlot }) {
       <Flex align="center" justify="spaceBetween" width="100%">
         {slot.assistants.map((person, i) => (
           <div key={i} className={styles.profileItem}>
-            <Profile src={person.src} alt={person.name} size={23} />
+            <Profile src={person.profileUrl} alt={person.name} size={23} />
           </div>
         ))}
       </Flex>

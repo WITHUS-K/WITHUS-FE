@@ -23,6 +23,11 @@ export const getTabLabel = (tab: string): string => {
       return '최합';
     case 'rejected':
       return '불합격';
+
+    case 'BEFORE':
+      return '평가 전';
+    case 'COMPLETED':
+      return '평가 완료';
     default:
       return tab;
   }
