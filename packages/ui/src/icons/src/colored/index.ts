@@ -8,6 +8,7 @@ export { default as IcBaseInputDelete } from './IcBaseInputDelete';
 export { default as IcBold } from './IcBold';
 export { default as IcBtnPlusCircle } from './IcBtnPlusCircle';
 export { default as IcCalendar } from './IcCalendar';
+export { default as IcCalendar20 } from './IcCalendar20';
 export { default as IcCallout } from './IcCallout';
 export { default as IcCheckCopy } from './IcCheckCopy';
 export { default as IcCheck } from './IcCheck';
