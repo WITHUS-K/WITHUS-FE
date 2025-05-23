@@ -1,19 +1,15 @@
 'use client';
 
 import { useSearchParams, useRouter, useParams } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { Breadcrumb } from '@repo/ui/Breadcrumb';
 import { Flex } from '@repo/ui/Flex';
 import { Button } from '@repo/ui/Button';
 import { ClubDropdown } from '@repo/ui/DropDown';
 import { TabBar } from '@repo/ui/TabBar';
 import { IcCriteriaBtn } from '@repo/ui/icons/mono';
+import { useRecruitmentsQuery } from '@web/store/query/useRecruitmentsQuery';
 
-const clubs = [
-  { id: '0', name: '큐시즘 32기 학회원 리크루팅' },
-  { id: '1', name: '클럽 A' },
-  { id: '2', name: '클럽 B' },
-];
 const TAB_KEYS = ['documents', 'interviews', 'final', 'rejected'] as const;
 
 export default function ClubLayout({
@@ -29,16 +25,37 @@ export default function ClubLayout({
 
   const tab = Array.isArray(params.tab) ? params.tab[0] : params.tab!;
   const id = params.id;
-  const clubId = search.get('clubId') ?? clubs[0]!.id;
+
+  const recruitmentId = search.get('recruitmentId') ?? '';
+  const { data: recs = [] } = useRecruitmentsQuery();
+
+  const options = recs.map((r) => ({
+    id: String(r.recruitmentId),
+    name: r.title,
+  }));
+
+  useEffect(() => {
+    if (!recruitmentId && options.length > 0) {
+      router.replace(
+        `/apply-management/${tab}?recruitmentId=${options[0]!.id}`
+      );
+    }
+  }, [recruitmentId, options, tab, router]);
+
+  // 렌더링 시엔 이미 URL 에 붙어 있을테니
+  const names = options.map((o) => o.name);
+  const selectedName =
+    options.find((o) => o.id === recruitmentId)?.name ?? names[0] ?? '';
 
   const onClubChange = (newName: string) => {
-    const found = clubs.find((c) => c.name === newName);
+    const found = options.find((o) => o.name === newName);
     if (found) {
-      router.push(`/apply-management/${tab}?clubId=${found.id}`);
+      router.push(`/apply-management/${tab}?recruitmentId=${found.id}`);
     }
   };
+
   const onTabChange = (newTab: string) => {
-    router.push(`/apply-management/${newTab}?clubId=${clubId}`);
+    router.push(`/apply-management/${newTab}?recruitmentId=${recruitmentId}`);
   };
 
   return (
@@ -59,18 +76,10 @@ export default function ClubLayout({
             </Breadcrumb>
             <Flex width="100%" justify="spaceBetween">
               <ClubDropdown
-                value={clubs.find((c) => c.id === clubId)?.name}
-                clubs={clubs.map((c) => c.name)}
+                value={selectedName}
+                clubs={names}
                 onSelect={onClubChange}
               />
-              <Button
-                variant="white"
-                size="40"
-                width="16.3rem"
-                leftIcon={<IcCriteriaBtn />}
-              >
-                평가 기준 설정
-              </Button>
             </Flex>
 
             <div style={{ width: '100%', marginTop: '0.8rem' }}>

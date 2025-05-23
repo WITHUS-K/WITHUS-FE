@@ -24,6 +24,8 @@ export interface UserResult {
   email: string;
   /** 프로필 이미지 URL (없으면 null) */
   imageUrl: string | null;
+
+  profileColor: string;
   /** 해당 역할에 할당된 상태 */
   isAssigned: boolean;
 }

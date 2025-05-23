@@ -4,14 +4,21 @@ import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Button } from '@repo/ui/Button';
 import * as styles from '../ChargeModalContent.css';
-import { Evaluator } from '../../EvalBubbles/EvalBubbles';
 import { TAG_COLORS } from '../ProfileChip/ProfileChip';
+import { mapServerColorToTagHex } from '@web/utils/color';
+
+export interface Person {
+  userId: number;
+  name: string;
+  profileImageUrl?: string;
+  profileColor: string;
+}
 
 interface ProfileListItemProps {
-  person: Evaluator;
+  person: Person;
   index: number;
   added: boolean;
-  onAdd: (p: Evaluator) => void;
+  onAdd: (p: Person) => void;
 }
 
 export default function ProfileListItem({
@@ -20,7 +27,8 @@ export default function ProfileListItem({
   added,
   onAdd,
 }: ProfileListItemProps) {
-  const bg = TAG_COLORS[index % TAG_COLORS.length];
+  const color = person.profileColor;
+  const bg = mapServerColorToTagHex(color);
   return (
     <Flex
       align="center"
@@ -35,7 +43,7 @@ export default function ProfileListItem({
         <Text variant="md1_text_regular">{person.name}</Text>
       </Flex>
       <Button
-        variant="basic"
+        variant="sub"
         size="32"
         width="4.9rem"
         disabled={added}

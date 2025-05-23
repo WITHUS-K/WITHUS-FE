@@ -4,18 +4,33 @@ import { useState } from 'react';
 import DistributionContainer, {
   OrgRole,
 } from './DistributionContainer/DistributionContainer';
+import { useUserStore } from '@web/store/state/userStore';
+import { useOrganizationRolesQuery } from '@web/store/query/useOrganizationRolesQuery';
+import { mapServerColorToTagHex } from '@web/utils/color';
 
 const TABS = ['documents', 'interviews'];
 const SUPPORT_PARTS = ['기획', '디자인', '프론트엔드', '백엔드'];
-const AVAILABLE_ROLES: OrgRole[] = [
-  { id: 1, label: '기획', color: '#FF2A3A' },
-  { id: 2, label: '디자인', color: '#EE6B00' },
-  { id: 3, label: '프론트엔드', color: '#FF2A3A' },
-];
 
 export default function AssignModalContent() {
   const [activeTab, setActiveTab] =
     useState<(typeof TABS)[number]>('documents');
+
+  const organizationId = useUserStore.getState().organizationId!;
+
+  // 조직 역할 로드
+  // 조직 역할 로드 (OrganizationRolesData)
+  const { data: rolesData } = useOrganizationRolesQuery(organizationId!);
+
+  // RoleDto[] 배열 추출
+  const rolesArray = rolesData?.roles ?? [];
+
+  // OrgRole 형식으로 매핑
+  const availableRoles: OrgRole[] = rolesArray.map((r) => ({
+    id: r.id,
+    label: r.roleName,
+    color: mapServerColorToTagHex(r.color),
+  }));
+
   return (
     <Flex direction="column" gap="4rem" width="100%">
       <TabBar
@@ -26,7 +41,7 @@ export default function AssignModalContent() {
 
       <DistributionContainer
         parts={SUPPORT_PARTS}
-        availableRoles={AVAILABLE_ROLES}
+        availableRoles={availableRoles}
       />
     </Flex>
   );

@@ -11,14 +11,17 @@ import StatusBadge, { Status } from '../StatusBadge/StatusBadge';
 
 export interface Evaluator {
   name: string;
+  profileColor: string;
 }
 
-export interface MemberWithEval extends Member {
+export interface MemberWithEval {
+  id: string;
+  name: string;
   fieldTags: { label: string; color: TagColor }[];
   evalStatus: string;
-  documentScore: number;
-  interviewScore: number;
-  evaluators: Evaluator[];
+  documentScore?: number;
+  interviewScore?: number;
+  evaluators?: Evaluator[];
   status: string;
   smsSent: boolean;
   mailSent: boolean;

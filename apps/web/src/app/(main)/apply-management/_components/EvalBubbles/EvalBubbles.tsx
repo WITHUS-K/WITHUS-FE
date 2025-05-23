@@ -4,6 +4,7 @@ import React from 'react';
 import { Callout } from '@repo/ui/Callout';
 import * as styles from './EvalBubbles.css';
 import { TagColor } from '@repo/utils';
+import { getTagColors } from '@web/utils/color';
 
 const TAG_COLORS: TagColor[] = [
   '#FF2A3A',
@@ -19,6 +20,7 @@ const TAG_COLORS: TagColor[] = [
 
 export interface Evaluator {
   name: string;
+  profileColor: string;
 }
 
 interface Props {
@@ -47,7 +49,7 @@ export default function EvalBubbles({
       {visible.map((ev, i) => {
         const left = i * overlap;
         const offsetX = left + size / 2;
-        const bg = TAG_COLORS[i % TAG_COLORS.length];
+        const { background } = getTagColors(ev.profileColor);
         return (
           <Callout
             key={ev.name}
@@ -55,7 +57,7 @@ export default function EvalBubbles({
               <div
                 className={styles.bubble}
                 style={{
-                  backgroundColor: bg,
+                  backgroundColor: background,
                   width: size,
                   height: size,
                   left,

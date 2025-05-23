@@ -24,10 +24,10 @@ export default function StatusDropdownTriggerContent({ status }: Props) {
     variantClass = styles.selected;
   } else if (status === '보류') {
     variantClass = styles.onHold;
-  } else if (status.includes('합격')) {
-    variantClass = styles.pass;
   } else if (status.includes('불합격')) {
     variantClass = styles.fail;
+  } else if (status.includes('합격')) {
+    variantClass = styles.pass;
   } else {
     variantClass = styles.selected;
   }

@@ -40,6 +40,11 @@ export function mapServerColorToTagHex(name: string): TagHex {
   return nameToTagHex[name as TagColorName] ?? '#7F82A1';
 }
 
+export function getTagColors(colorName: string) {
+  const hex = mapServerColorToTagHex(colorName);
+  return tagColorMap[hex] ?? tagColorMap['#7F82A1'];
+}
+
 export const nameToHex1: Record<string, string> = Object.entries(
   tagHexToName
 ).reduce(

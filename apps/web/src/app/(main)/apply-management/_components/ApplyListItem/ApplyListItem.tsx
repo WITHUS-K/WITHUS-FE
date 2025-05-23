@@ -10,23 +10,33 @@ import EvalBubbles from '../EvalBubbles/EvalBubbles';
 import { TagColor } from '@repo/utils';
 import { Flex } from '@repo/ui/Flex';
 import StatusBadge, { Status } from '../StatusBadge/StatusBadge';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { IcPlusRole } from '@repo/ui/icons/mono';
 import { StatusDropdown } from '@repo/ui/StatusDropdown';
+import {
+  AdminApplicationStage,
+  UpdateStatusSimple,
+  useUpdateApplicationsStatus,
+} from '@web/store/mutation/useUpdateApplicationsStatus';
+import { stageMap } from '../../[tab]/TabClient';
 
 export interface Evaluator {
   name: string;
+  profileColor: string;
 }
 
-export interface MemberWithEval extends Member {
+export interface MemberWithEval {
+  id: string;
+  name: string;
   fieldTags: { label: string; color: TagColor }[];
   evalStatus: string;
-  documentScore: number;
-  interviewScore: number;
+  documentScore?: number;
+  interviewScore?: number;
   evaluators: Evaluator[];
   status: string;
   smsSent: boolean;
   mailSent: boolean;
+  applicationId?: number;
 }
 
 interface Props {
@@ -45,17 +55,40 @@ export default function ApplyListItem({
 }: Props) {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
 
-  const rawClubId = params.clubId;
   const rawTab = params.tab;
-  const clubId = Array.isArray(rawClubId) ? rawClubId[0] : rawClubId;
   const activeTab = Array.isArray(rawTab) ? rawTab[0] : rawTab;
+  const recruitmentIdParam = searchParams.get('recruitmentId');
+  const recruitmentId = recruitmentIdParam ? Number(recruitmentIdParam) : 0;
 
   const [status, setStatus] = useState<Status>(member.status as Status);
 
+  const stageEnum = stageMap[activeTab!];
+
+  const updateStatus = useUpdateApplicationsStatus(
+    recruitmentId,
+    activeTab as AdminApplicationStage
+  );
+
   const handleStatusChange = (newStatus: Status) => {
     setStatus(newStatus);
-    // TODO: 백엔드에 상태 업데이트 API 호출
+
+    // API 호출
+    const simple: UpdateStatusSimple =
+      newStatus === '보류'
+        ? 'HOLD'
+        : newStatus.includes('불합격')
+          ? 'FAIL'
+          : newStatus.includes('합격')
+            ? 'PASS'
+            : 'FAIL';
+
+    updateStatus.mutate({
+      applicationIds: [Number(member.applicationId)],
+      stage: stageEnum!,
+      status: simple,
+    });
   };
 
   const tabKey =
@@ -65,7 +98,9 @@ export default function ApplyListItem({
 
   // charge 모달 페이지로 이동
   const openChargeModal = () => {
-    router.push(`/apply-management/${activeTab}/charge?clubId=${clubId}`);
+    router.push(
+      `/apply-management/${activeTab}/charge?recruitmentId=${recruitmentId}&applicationId=${member.applicationId}`
+    );
   };
 
   return (
@@ -130,6 +165,7 @@ export default function ApplyListItem({
 
       <div style={{ width: '7.5rem', marginRight: '3.8rem' }}>
         <StatusDropdown
+          key={status}
           status={status}
           onChange={handleStatusChange}
           tab={tabKey}

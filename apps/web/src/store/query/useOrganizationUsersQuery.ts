@@ -12,13 +12,13 @@ const GC_TIME = 1000 * 60 * 2;
  */
 export function useOrganizationUsersQuery(
   organizationId: number,
-  roleId: number,
+  roleId?: number,
   keyword?: string,
   tokens?: Tokens
 ): UseQueryResult<UserResult[], unknown> {
   const key = queryKeys.organization.users.search(
     organizationId,
-    roleId,
+    roleId!,
     keyword
   );
 
@@ -33,11 +33,11 @@ export function useOrganizationUsersQuery(
         params,
         tokens
       );
-      //console.log('운영진 조회', res);
+      console.log('운영진 조회', res);
       return res.result;
     },
     staleTime: STALE_TIME,
     gcTime: GC_TIME,
-    enabled: roleId > 0,
+    enabled: roleId! > 0,
   });
 }

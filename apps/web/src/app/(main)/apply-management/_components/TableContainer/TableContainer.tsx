@@ -21,84 +21,63 @@ export interface TableContainerProps {
   onToggleAll: (checked: boolean) => void;
   /** 개별 체크/해제 콜백 */
   onToggleOne: (id: string, checked: boolean) => void;
+
+  /** 특정 행에 평가자 추가 */
+  onAddEval?: (rowId: string, ev: Evaluator) => void;
+  /** 정렬 상태 */
+  sortState: Record<string, 'asc' | 'desc'>;
+  /** 정렬 변경 */
+  onSortChange: (key: string, dir: 'asc' | 'desc') => void;
+  /** 현재 페이지 (1-based) */
+  currentPage: number;
+  /** 전체 아이템 수 */
+  totalItems: number;
+  /** 페이지당 아이템 수 */
+  pageSize: number;
+  /** 페이지 변경 */
+  onPageChange: (page: number) => void;
 }
 
 export default function TableContainer({
   headerMeta,
-  data: initialData,
-  availableEvals,
+  data,
+  availableEvals = [],
   selectedIds,
   onToggleAll,
   onToggleOne,
+  onAddEval,
+  sortState,
+  onSortChange,
+  currentPage,
+  totalItems,
+  pageSize,
+  onPageChange,
 }: TableContainerProps) {
-  // --- state ---
-  const [rows, setRows] = useState<MemberWithEval[]>(initialData);
-  //const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortState, setSortState] = useState(
-    Object.fromEntries(headerMeta.map((h) => [h.key, 'asc'])) as Record<
-      string,
-      'asc' | 'desc'
-    >
-  );
-
-  // --- pagination ---
-  const pageSize = 10;
-  const start = (currentPage - 1) * pageSize;
-  const pageData = useMemo(
-    () => rows.slice(start, start + pageSize),
-    [rows, start]
-  );
-
-  // --- sorting (간단) ---
-  const sorted = useMemo(() => {
-    // sortState 에서 'asc' 가 아닌 첫 번째 entry 를 찾는다
-    const active = Object.entries(sortState).find(([, dir]) => dir !== 'asc');
-    if (!active) return pageData;
-
-    const [key, dir] = active as [string, 'asc' | 'desc'];
-    return [...pageData].sort((a: any, b: any) =>
-      dir === 'asc'
-        ? String(a[key]).localeCompare(b[key])
-        : String(b[key]).localeCompare(a[key])
-    );
-  }, [pageData, sortState]);
-
-  // --- 선택 ---
-
-  const handleAddEval = (rowId: string, ev: Evaluator) => {
-    setRows((prev) =>
-      prev.map((r) =>
-        r.id === rowId ? { ...r, evaluators: [...r.evaluators, ev] } : r
-      )
-    );
-  };
-
   return (
     <Flex direction="column" width="100%">
       <ApplyList
-        data={sorted}
+        data={data}
         selectedIds={selectedIds}
         onToggleAll={onToggleAll}
         onToggleOne={onToggleOne}
         availableEvals={availableEvals!}
-        onAddEval={handleAddEval}
+        onAddEval={onAddEval ?? (() => {})}
         headerMeta={headerMeta}
         sortState={sortState}
-        onSortChange={(k, d) => setSortState((s) => ({ ...s, [k]: d }))}
+        onSortChange={onSortChange}
         currentPage={currentPage}
-        totalItems={rows.length}
-        onPageChange={setCurrentPage}
+        totalItems={totalItems}
+        onPageChange={onPageChange}
         pageSize={pageSize}
       />
 
       <div className={styles.pagination}>
         <Pagination
-          totalItems={rows.length}
+          totalItems={totalItems}
           itemCountPerPage={pageSize}
-          pageCount={5}
+          pageCount={8}
           currentPage={currentPage}
-          onPageChange={setCurrentPage}
+          onPageChange={onPageChange}
         />
       </div>
     </Flex>

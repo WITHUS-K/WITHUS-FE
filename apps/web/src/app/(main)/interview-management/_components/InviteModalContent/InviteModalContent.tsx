@@ -79,6 +79,12 @@ export default function InviteModalContent() {
     }
   };
 
+  useEffect(() => {
+    if (inputKeyword.trim() === '') {
+      setSearchKeyword('');
+    }
+  }, [inputKeyword]);
+
   const assigned =
     activeTab === 'interviewer' ? assignedInterviewers : assignedGuides;
 

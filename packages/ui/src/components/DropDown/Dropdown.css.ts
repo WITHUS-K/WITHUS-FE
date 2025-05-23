@@ -62,7 +62,7 @@ export const dropdownListWrapper = style({
   top: '100%',
   marginTop: '0.8rem',
   left: 0,
-  zIndex: 3,
+  zIndex: 1000,
 
   borderRadius: '12px',
   backgroundColor: vars.colors.white,

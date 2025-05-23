@@ -8,7 +8,7 @@ import { Tag } from '@repo/ui/Tag';
 import { OrgRole } from '../DistributionContainer/DistributionContainer';
 import { RolesDropdown } from '@repo/ui/DropDown';
 import { Text } from '@repo/ui/Text';
-import { paddingStyle } from './DistributionItem.css';
+import { paddingStyle, itemStyle } from './DistributionItem.css';
 
 interface DistributionItemProps {
   part: string;
@@ -28,7 +28,7 @@ export default function DistributionItem({
   onCountChange,
 }: DistributionItemProps) {
   return (
-    <Flex padding="0.8rem 1.2rem" width="100%" align="center" gap="2.4rem">
+    <div className={itemStyle}>
       {/* 1) 지원 파트 */}
       <Text
         variant="md2_text_medium"
@@ -55,6 +55,6 @@ export default function DistributionItem({
 
       {/* 3) 인원 수 스테퍼 */}
       <Stepper name={part} value={count} onChange={onCountChange} />
-    </Flex>
+    </div>
   );
 }

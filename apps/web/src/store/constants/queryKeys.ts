@@ -67,4 +67,27 @@ export const queryKeys = {
     byRecruitment: (recruitmentId: number) =>
       ['positions', 'byRecruitment', recruitmentId] as const,
   },
+
+  applications: {
+    list: (
+      recruitmentId: number,
+      stage: string,
+      sortBy: string,
+      direction: string,
+      page: number,
+      size: number
+    ) =>
+      [
+        'admin',
+        'applications',
+        'recruitment',
+        recruitmentId,
+        'list',
+        stage,
+        sortBy,
+        direction,
+        page,
+        size,
+      ] as const,
+  },
 } as const;
