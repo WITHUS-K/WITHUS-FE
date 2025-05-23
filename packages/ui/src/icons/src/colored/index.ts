@@ -51,6 +51,7 @@ export { default as IcPwActive } from './IcPwActive';
 export { default as IcPwDefault } from './IcPwDefault';
 export { default as IcRefresh } from './IcRefresh';
 export { default as IcSave } from './IcSave';
+export { default as IcScore } from './IcScore';
 export { default as IcSearch } from './IcSearch';
 export { default as IcStepperMinus } from './IcStepperMinus';
 export { default as IcStepperPlus } from './IcStepperPlus';

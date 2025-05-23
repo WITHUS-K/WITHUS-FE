@@ -5,19 +5,25 @@ import { Text } from '@repo/ui/Text';
 import { BasicInfoForm } from '@web/app/(main)/apply-management/add/_components/BasicInfoForm/BasicInfoForm';
 import { AdditionalInfoForm } from '@web/app/(main)/apply-management/add/_components/AdditionalInfoForm/AdditionalInfoForm';
 import { QuestionAndFileListForm } from '@web/app/(main)/apply-management/add/_components/QuestionFileListForm/QuestionFileListForm';
-import type { documentEvaluation as DocumentEvaluationType } from '@web/types/document-evaluation';
 import type { DetailItem } from '@web/types/application';
 import * as styles from './ApplicantDetail.css';
 
-interface ApplicantDetailProps {
-  evaluation: DocumentEvaluationType;
-  applicant: DocumentEvaluationType['applicantList'][0];
+import type {
+  documentEvaluation as DocumentEvaluationType,
+  DocumentEvaluationDataForUser,
+} from '@web/types/document-evaluation';
+
+type EvaluationType = DocumentEvaluationType | DocumentEvaluationDataForUser;
+
+export interface ApplicantDetailProps<T extends EvaluationType> {
+  evaluation: T;
+  applicant: T['applicantList'][number];
 }
 
-export default function ApplicantDetail({
+export default function ApplicantDetail<T extends EvaluationType>({
   evaluation,
   applicant,
-}: ApplicantDetailProps) {
+}: ApplicantDetailProps<T>) {
   const textItems: DetailItem[] = applicant.documentQuestion.map((dq, idx) => ({
     isEssential: true,
     type: 'text',

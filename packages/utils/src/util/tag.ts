@@ -20,7 +20,8 @@ export type TagColor =
   | '#813DFF'
   | '#F25DEB'
   | '#7F82A1'
-  | '#5A5C72';
+  | '#5A5C72'
+  | '#EAEFFF';
 
 export const tagColorMap = {
   '#FF2A3A': { background: '#FFE6E9', circle: '#FF6974' },
@@ -33,6 +34,8 @@ export const tagColorMap = {
   '#F25DEB': { background: '#FFEDFE', circle: '#FFA5F5' },
   '#7F82A1': { background: '#F2F3F6', circle: '#C4C6D4' },
   '#5A5C72': { background: '#D7D8E2', circle: '#A9ABC0' },
+  '#EAEFFF': { background: '#EAEFFF', circle: '#2C60FF' },
+  '#FFFFFF' : { background: '#FFFFFF', circle: '#7F82A1' },
 } as const;
 
 export function getTagColors(color: TagColor) {
