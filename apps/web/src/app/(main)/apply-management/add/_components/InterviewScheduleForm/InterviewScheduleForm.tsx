@@ -8,7 +8,7 @@ import {
 } from '@web/components/TimeTable/SelectableTimeTable';
 import { parseISO, format } from 'date-fns';
 import type { InterviewScheduleItem } from '@web/types/application';
-import { safeFormatDotDate } from '../../page';
+import { safeFormatDotDate } from '@web/utils/application';
 
 interface InterviewScheduleFormProps {
   dates: string[];

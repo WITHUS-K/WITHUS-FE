@@ -10,26 +10,28 @@ export type Evaluation = {
   evaluator: string;
   status: 'pending' | 'complete';
   score: number | null;
+  color: string; // 서버에서 온 색 이름(e.g. "red")
 };
 
 type EvaluationStatusCardProps = {
   evaluation: Evaluation[];
 };
 
-export const EvaluationStatusCard = ({
+export function EvaluationStatusCard({
   evaluation,
-}: EvaluationStatusCardProps) => {
-  const pendingEvaluator = evaluation
+}: EvaluationStatusCardProps) {
+  // pending, complete 각각 Name+Color 객체 배열로 변환
+  const pendingItems = evaluation
     .filter((e) => e.status === 'pending')
-    .map((e) => e.evaluator);
+    .map((e) => ({ name: e.evaluator, serverColor: e.color }));
 
-  const completeEvaluator = evaluation
+  const completeItems = evaluation
     .filter((e) => e.status === 'complete')
-    .map((e) => e.evaluator);
+    .map((e) => ({ name: e.evaluator, serverColor: e.color }));
 
   const statuses = [
-    { label: '대기중', items: pendingEvaluator },
-    { label: '완료', items: completeEvaluator },
+    { label: '대기중', items: pendingItems },
+    { label: '완료', items: completeItems },
   ] as const;
 
   return (
@@ -55,10 +57,11 @@ export const EvaluationStatusCard = ({
           </div>
 
           <div className={styles.stack}>
+            {/* AvatarStack에 {name, serverColor} 배열을 넘깁니다 */}
             <AvatarStack items={items} />
           </div>
         </div>
       ))}
     </div>
   );
-};
+}

@@ -20,7 +20,7 @@ export const getTabLabel = (tab: string): string => {
     case 'interviews':
       return '면접';
     case 'final':
-      return '최합';
+      return '최종 합격';
     case 'rejected':
       return '불합격';
 

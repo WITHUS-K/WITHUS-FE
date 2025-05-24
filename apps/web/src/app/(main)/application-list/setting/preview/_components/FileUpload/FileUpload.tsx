@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useRef } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
@@ -9,10 +10,16 @@ import * as styles from './FileUpload.css';
 import type { DetailItem } from '@web/types/application';
 import { FileUploader } from '@repo/ui/FileUploader';
 import { AttachmentListItem } from '../AttachmentListItem/AttachmentListItem';
+import { FileInfo } from '@repo/ui';
+import { useFileDownload } from '@web/store/mutation/useFileDownload';
 
 export interface FileUploadProps {
   item: DetailItem;
-  file?: File | null;
+  file?: {
+    name: string | undefined;
+    size: number;
+    downloadUrl: string;
+  } | null;
   onChange: (file: File | null) => void;
   readOnly?: boolean;
 }
@@ -21,16 +28,32 @@ function formatMB(bytes: number, decimals = 2) {
   return (bytes / (1024 * 1024)).toFixed(decimals) + ' MB';
 }
 
-export const FileUpload = ({
+/**
+ * URL의 마지막 세그먼트에서 UUID_를 제거하고 원래 파일명만 반환합니다.
+ */
+function getOriginalFileName(fileUrl: string): string {
+  // URL 에서 마지막 세그먼트만 추출
+  const lastSegment = decodeURIComponent(
+    fileUrl.substring(fileUrl.lastIndexOf('/') + 1)
+  );
+  // 마지막 언더스코어 위치
+  const idx = lastSegment.lastIndexOf('_');
+  // 언더스코어가 있으면 그 뒤만, 없으면 원본 세그먼트 전체
+  return idx !== -1 ? lastSegment.substring(idx + 1) : lastSegment;
+}
+export const FileUpload: React.FC<FileUploadProps> = ({
   item,
   file,
   onChange,
   readOnly = false,
-}: FileUploadProps) => {
+}) => {
   const {
-    isEssential,
     typeInfo: { info, infoDetail },
   } = item;
+
+  const download = useFileDownload();
+
+  if (!file) return null;
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -44,6 +67,23 @@ export const FileUpload = ({
     const f = e.dataTransfer.files?.[0] ?? null;
     onChange(f);
   };
+
+  const handleDownload = (fileInfo: FileInfo) => {
+    download.mutate({
+      imageUrl: fileInfo.downloadUrl!,
+      fileName: fileInfo.name,
+    });
+  };
+
+  console.log('파일네임', getOriginalFileName(file!.downloadUrl));
+  // 읽기 전용 모드에서 FileUploader에 넘길 FileInfo 객체
+  const wrappedFile: FileInfo | undefined = file
+    ? {
+        name: getOriginalFileName(file.downloadUrl),
+        size: file.size,
+        downloadUrl: file.downloadUrl,
+      }
+    : undefined;
 
   return (
     <div className={styles.wrapper}>
@@ -80,23 +120,20 @@ export const FileUpload = ({
         </Flex>
 
         {readOnly ? (
-          <>
+          wrappedFile && (
             <FileUploader
-              readOnly={readOnly}
-              file={{
-                name: file?.name ?? '임시 파일입니다.pdf',
-                size: file ? formatMB(file.size) : '8MB',
-                downloadUrl: file ? URL.createObjectURL(file) : '',
-              }}
+              readOnly
+              file={wrappedFile}
+              onDownload={handleDownload}
             />
-          </>
+          )
         ) : (
           <>
             {file && (
               <AttachmentListItem
-                name={file.name}
+                name={getOriginalFileName(file.name!)}
                 size={formatMB(file.size)}
-                extension={file.name.split('.').pop() ?? ''}
+                extension={file.name!.split('.').pop() ?? ''}
                 onRemove={() => onChange(null)}
               />
             )}
@@ -109,7 +146,6 @@ export const FileUpload = ({
               <input
                 type="file"
                 accept=".pdf,.png,.jpg,.jpeg"
-                multiple={false}
                 ref={inputRef}
                 className={styles.input}
                 onChange={handleSelect}
@@ -122,11 +158,11 @@ export const FileUpload = ({
                 width="13.2rem"
                 variant="stroke"
                 size="40"
+                leftIcon={<IcFileUpload width={24} height={24} />}
                 onClick={(e) => {
                   e.stopPropagation();
                   inputRef.current?.click();
                 }}
-                leftIcon={<IcFileUpload width={24} height={24} />}
               >
                 파일 추가
               </Button>

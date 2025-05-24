@@ -31,17 +31,7 @@ import { InterviewScheduleForm } from './_components/InterviewScheduleForm/Inter
 
 import * as styles from './page.css';
 import { useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@web/store/constants';
-
-export function safeFormatDotDate(
-  dotDate?: string,
-  pattern = 'yyyy.MM.dd'
-): string {
-  if (!dotDate) return '';
-  const dt = parse(dotDate, 'yyyy.MM.dd', new Date(), { locale: ko });
-  if (!isValid(dt)) return '';
-  return format(dt, pattern, { locale: ko });
-}
+import { safeFormatDotDate } from '@web/utils/application';
 
 export default function AddApplicant() {
   const router = useRouter();
@@ -318,7 +308,16 @@ export default function AddApplicant() {
         <QuestionAndFileListForm
           detailItems={detailItems}
           answers={watch('questionAnswers')}
-          files={watch('questionFiles')}
+          files={watch('questionFiles').map(
+            (f) =>
+              f instanceof File
+                ? {
+                    name: f.name,
+                    size: f.size,
+                    downloadUrl: URL.createObjectURL(f),
+                  }
+                : f // 서버에서 받아온 string 형태의 fileUrl일 경우 이미 FileInfo 형태로 있다고 가정
+          )}
           onAnswerChange={(i, v) => setValue(`questionAnswers.${i}`, v)}
           onFileChange={(i, f) => setValue(`questionFiles.${i}`, f)}
         />

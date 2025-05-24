@@ -7,29 +7,39 @@ import { TextField } from '@repo/ui/InputField';
 import * as styles from '../../../../application-list/setting/preview/_components/AdditionalInfoPreview/AdditionalInfoPreview.css';
 import * as s from '../../../../application-list/setting/preview/_components/BasicInfoPreview/BasicInfoPreview.css';
 
+export const statusMap = {
+  ENROLLED: '재학',
+  GRADUATED: '졸업',
+  LEAVE_OF_ABSENCE: '휴학',
+  DEFERRED: '유예',
+};
+
+export type AcademicStatus = keyof typeof statusMap;
+type DisplayStatus = (typeof statusMap)[AcademicStatus];
+
 interface AdditionalInfoFormProps {
   value: {
     school?: string;
-    academicStatus?: string;
+    academicStatus?: AcademicStatus;
     major?: string;
     address?: string;
   };
   onChange: (field: keyof AdditionalInfoFormProps['value'], v: string) => void;
   /** 화면 상에 각 필드를 보여줄지 결정하는 플래그 */
-  needSchool: boolean;
-  needAcademicStatus: boolean;
-  needMajor: boolean;
-  needAddress: boolean;
+  needSchool?: boolean;
+  needAcademicStatus?: boolean;
+  needMajor?: boolean;
+  needAddress?: boolean;
   readOnly?: boolean;
 }
 
 export function AdditionalInfoForm({
   value,
   onChange,
-  needSchool,
-  needAcademicStatus,
-  needMajor,
-  needAddress,
+  needSchool = true,
+  needAcademicStatus = true,
+  needMajor = true,
+  needAddress = true,
   readOnly = false,
 }: AdditionalInfoFormProps) {
   return (
@@ -54,14 +64,17 @@ export function AdditionalInfoForm({
         {needAcademicStatus &&
           (readOnly ? (
             <div className={s.fieldWrapper}>
-              <TextField
+              <InfoField
+                label="학적 상태"
+                itemClass={styles.rowItemAuto}
+                wrapperClass={styles.fieldAuto}
+                readOnly={readOnly}
                 inputProps={{
-                  value: value.academicStatus ?? '',
-                  width: '50%',
-                  disabled: true,
+                  value: value.academicStatus
+                    ? statusMap[value.academicStatus]
+                    : '',
                 }}
-                readOnly
-              />
+              ></InfoField>
             </div>
           ) : (
             <InfoField

@@ -10,7 +10,12 @@ import { FileUpload } from '@web/app/(main)/application-list/setting/preview/_co
 interface QuestionAndFileListFormProps {
   detailItems: DetailItem[];
   answers: string[];
-  files: (File | null)[];
+  files: ({
+    name: string;
+    size: number;
+    downloadUrl: string;
+  } | null)[];
+
   onAnswerChange: (idx: number, value: string) => void;
   onFileChange: (idx: number, file: File | null) => void;
   readOnly?: boolean;
@@ -57,6 +62,7 @@ export const QuestionAndFileListForm = ({
             item={item}
             file={files[idx]} // ← 여기!
             onChange={(file) => onFileChange(idx, file)}
+            readOnly
           />
         </div>
       ))}

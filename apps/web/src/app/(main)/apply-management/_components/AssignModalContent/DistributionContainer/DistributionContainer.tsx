@@ -1,9 +1,11 @@
+'use client';
+
+import React from 'react';
 import { Flex } from '@repo/ui/Flex';
-import { TagColor } from '@repo/utils';
-import { useState } from 'react';
 import DistributionItem from '../DistributionItem/DistributionItem';
 import HeaderItem from '../HeaderItem/HeaderItem';
 import { containerStyle, headerStyle } from './DistributionContainer.css';
+import { TagColor } from '@repo/utils';
 
 export interface OrgRole {
   id: number;
@@ -11,59 +13,31 @@ export interface OrgRole {
   color: TagColor;
 }
 
-interface PartState {
+// extend PartState to carry positionId
+export interface PartState {
   roles: OrgRole[];
   count: number;
+  positionId: number;
 }
 
-interface DistributionContainerProps {
-  parts: string[]; // ex) ['기획','디자인','프론트엔드','백엔드']
+export interface DistributionContainerProps {
+  parts: string[];
   availableRoles: OrgRole[];
+  // controlled props:
+  value: Record<string, PartState>;
+  onRoleSelect: (part: string, role: OrgRole) => void;
+  onCountChange: (part: string, next: number) => void;
 }
 
 export default function DistributionContainer({
   parts,
   availableRoles,
+  value,
+  onRoleSelect,
+  onCountChange,
 }: DistributionContainerProps) {
-  // 초기 state 세팅
-  const initial: Record<string, PartState> = {};
-  parts.forEach((part) => {
-    initial[part] = { roles: [], count: 1 };
-  });
-
-  const [state, setState] = useState<Record<string, PartState>>(initial);
-
-  const handleRoleSelect = (part: string, role: OrgRole) => {
-    setState((prev) => {
-      // 1) 기존 state를 얕게 복제
-      const nextState = { ...prev };
-
-      // 2) 해당 파트만 PartState 타입을 확실히 보장하며 덮어쓰기
-      nextState[part] = {
-        ...prev[part]!, // non-null assertion
-        roles: [...prev[part]!.roles, role], // roles 추가
-        count: prev[part]!.count, // count는 그대로
-      };
-
-      return nextState; // 타입은 Record<string,PartState> 그대로!
-    });
-  };
-
-  const handleCountChange = (name: string, next: number) => {
-    setState((prev) => {
-      const nextState = { ...prev };
-
-      nextState[name] = {
-        ...prev[name]!, // PartState 보장
-        count: Math.max(1, next), // count만 변경
-      };
-
-      return nextState;
-    });
-  };
   return (
     <Flex direction="column" width="100%" className={containerStyle}>
-      {/* 헤더 */}
       <div className={headerStyle}>
         <HeaderItem
           title="지원 파트"
@@ -81,17 +55,16 @@ export default function DistributionContainer({
         />
       </div>
 
-      <Flex padding="1.2rem 0rem" width="100%" direction="column" gap="1.2rem">
-        {/* 각 파트별 Row */}
+      <Flex padding="1.2rem 0" width="100%" direction="column" gap="1.2rem">
         {parts.map((part) => (
           <DistributionItem
             key={part}
             part={part}
             availableRoles={availableRoles}
-            selectedRoles={state[part]!.roles}
-            count={state[part]!.count}
-            onRoleSelect={handleRoleSelect}
-            onCountChange={handleCountChange}
+            selectedRoles={value[part]!.roles}
+            count={value[part]!.count}
+            onRoleSelect={onRoleSelect}
+            onCountChange={onCountChange}
           />
         ))}
       </Flex>

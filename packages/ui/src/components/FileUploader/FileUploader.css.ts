@@ -2,9 +2,9 @@ import { style } from '@vanilla-extract/css';
 import { vars } from '@repo/theme';
 
 export const pdfIcon = style({
-    padding: '1rem 0.7rem',
-    borderRadius: '8px',
-    backgroundColor: vars.colors.grayscale5
+  padding: '1rem 0.7rem',
+  borderRadius: '8px',
+  backgroundColor: vars.colors.grayscale5,
 });
 
 export const downloadButton = style({
@@ -13,9 +13,9 @@ export const downloadButton = style({
   height: '3.2rem',
   display: 'flex',
   gap: '0.8rem',
-  padding: '0 1.6rem',
+  width: '11.3rem',
   justifyContent: 'center',
-  alignItems:'center',
+  alignItems: 'center',
   borderRadius: '8px',
   backgroundColor: vars.colors.grayscale10,
   color: vars.colors.white,
@@ -30,11 +30,11 @@ export const downloadButton = style({
 export const deleteButton = style({
   all: 'unset',
   cursor: 'pointer',
-})
+});
 
 export const rightSection = style({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '0.8rem',
-  });
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '0.8rem',
+});

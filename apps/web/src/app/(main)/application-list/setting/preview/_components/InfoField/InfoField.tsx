@@ -65,7 +65,7 @@ export function InfoField({
               disabled,
               ...inputProps,
             }}
-            width="100%"
+            //width="100%"
             readOnly={readOnly}
           />
         )}

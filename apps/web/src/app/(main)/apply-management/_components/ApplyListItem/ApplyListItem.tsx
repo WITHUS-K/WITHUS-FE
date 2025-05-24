@@ -103,8 +103,19 @@ export default function ApplyListItem({
     );
   };
 
+  const goDetailPage = () => {
+    console.log(member.applicationId);
+    router.push(
+      `/apply-management/${activeTab}/${member.applicationId}?recruitmentId=${recruitmentId}`
+    );
+  };
+
   return (
-    <div className={styles.row} data-selected={isSelected}>
+    <div
+      className={styles.row}
+      data-selected={isSelected}
+      onClick={goDetailPage}
+    >
       <div style={{ marginRight: '2.4rem', height: '2.4rem' }}>
         <CheckBox
           isChecked={isSelected}

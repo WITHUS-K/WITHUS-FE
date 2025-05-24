@@ -44,9 +44,7 @@ export function DetailHeader({ tab, name }: DetailHeaderProps) {
             width="10rem"
             leftIcon={<IcTextMessage width={24} height={24} />}
           >
-            <Text variant="md2_text_medium" color="primary50">
-              문자
-            </Text>
+            문자
           </Button>
           <Button
             variant="sub"
@@ -54,19 +52,13 @@ export function DetailHeader({ tab, name }: DetailHeaderProps) {
             width="10rem"
             leftIcon={<IcMail width={24} height={24} />}
           >
-            <Text variant="md2_text_medium" color="primary50">
-              메일
-            </Text>
+            메일
           </Button>
           <Button variant="basic" size="40" width="10rem">
-            <Text variant="md2_text_medium" color="grayscale60">
-              불합격
-            </Text>
+            불합격
           </Button>
           <Button variant="main" size="40" width="10rem">
-            <Text variant="md2_text_medium" color="white">
-              합격
-            </Text>
+            합격
           </Button>
         </Flex>
       </Flex>

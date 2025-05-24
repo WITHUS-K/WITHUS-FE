@@ -20,16 +20,17 @@ export const RelationCard = ({ relations }: RelationCardProps) => {
           {relations.length}
         </Text>
       </div>
-      <div className={styles.listContainer}>
-        {relations.map((r, i) => (
+
+      {relations.map((r, i) => (
+        <div className={styles.listContainer}>
           <Flex gap="0.8rem" key={i}>
             <AvatarChip key={r} label={r} index={i} />
             <Text variant="md2_text_medium" color="grayscale90">
               {r}
             </Text>
           </Flex>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
   );
 };

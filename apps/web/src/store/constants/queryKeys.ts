@@ -89,5 +89,14 @@ export const queryKeys = {
         page,
         size,
       ] as const,
+
+    detail: (applicationId: number) =>
+      ['applications', 'detail', applicationId] as const,
+  },
+  distribution: {
+    latest: (recruitmentId: number) =>
+      ['distribution', 'latest', recruitmentId] as const,
+    submit: (recruitmentId: number) =>
+      ['distribution', 'submit', recruitmentId] as const,
   },
 } as const;
