@@ -34,10 +34,32 @@ export async function login(data: LoginRequest): Promise<LoginPayload> {
 
 
   console.log(json)
-  const orgId = json.result.userOrganizations[0]?.organizationId;
-  if (orgId != null) {
-    setCookie('organizationId', String(orgId), { path: '/' });
-  }
+  const {
+    userOrganizations,
+    name,
+    profileImageUrl,
+    role,
+    userOrganizationRoles,
+  } = json.result;
+
+  const cookiesToSet: Record<string, unknown> = {
+    organizationId: userOrganizations?.[0]?.organizationId,
+    name,
+    profileImageUrl,
+    role,
+    position: userOrganizationRoles[0]?.roleName,
+    part: userOrganizationRoles[1]?.roleName,
+  };
+
+  Object.entries(cookiesToSet).forEach(([key, value]) => {
+    if (value != null) {
+      const stringValue =
+        typeof value === 'string' ? value : JSON.stringify(value);
+      setCookie(key, stringValue, { path: '/' });
+    }
+  });
+
+  
 
   // result 안에서 필요한 값만 꺼내서 플랫하게 리턴
   return {

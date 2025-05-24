@@ -5,7 +5,7 @@ import { Header } from '@repo/ui/Header';
 import Sidebar from '@web/components/Sidebar/Sidebar';
 import { useUserStore } from '@web/store/state/userStore';
 import { useModal } from 'node_modules/@repo/ui/dist/hooks/useModal';
-import { deleteCookie } from 'cookies-next';
+import { deleteCookie, getCookie } from 'cookies-next';
 import { useRouter } from 'next/navigation';
 
 export default function AuthLayout({
@@ -14,10 +14,17 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const name = useUserStore.getState().name;
-  const role = useUserStore.getState().role;
-  const profileUrl = useUserStore.getState().profileImageUrl;
-  const organizationRole = useUserStore.getState().userOrganizationRoles;
+  const getStringCookie = (key: string): string =>
+    (() => {
+      const v = getCookie(key);
+      return typeof v === 'string' ? v : '';
+    })();
+
+  const name = getStringCookie('name');
+  const role = getStringCookie('role');
+  const profileUrl = getStringCookie('profileUrl');
+  const position = getStringCookie('position');
+  const part = getStringCookie('part');
 
   const clearUser = useUserStore((state) => state.clearUser);
 
@@ -32,6 +39,12 @@ export default function AuthLayout({
       onConfirm: () => {
         deleteCookie('accessToken', { path: '/' });
         deleteCookie('refreshToken', { path: '/' });
+        deleteCookie('name', { path: '/' });
+        deleteCookie('role', { path: '/' });
+        deleteCookie('profileUrl', { path: '/' });
+        deleteCookie('position', { path: '/' });
+        deleteCookie('part', { path: '/' });
+        deleteCookie('organizationId', { path: '/' });
         clearUser();
         router.push('/');
       },
@@ -46,8 +59,8 @@ export default function AuthLayout({
           username={name}
           profileUrl={profileUrl as string}
           role={role}
-          position={organizationRole[0]?.roleName}
-          part={organizationRole[1]?.roleName}
+          position={position}
+          part={part}
           onLogout={handleLogout}
         />
         <div className={styles.containerStyle}>
