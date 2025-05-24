@@ -24,6 +24,7 @@ export async function login(data: LoginRequest): Promise<LoginPayload> {
     result: {
       userId: number;
       name: string;
+      role: string;
       profileImageUrl: string | null;
       userOrganizationRoles: LoginPayload['userOrganizationRoles'];
       userOrganizations: Array<{ organizationId: number; [k: string]: any }>;
@@ -31,6 +32,8 @@ export async function login(data: LoginRequest): Promise<LoginPayload> {
     success: boolean;
   };
 
+
+  console.log(json)
   const orgId = json.result.userOrganizations[0]?.organizationId;
   if (orgId != null) {
     setCookie('organizationId', String(orgId), { path: '/' });
@@ -40,6 +43,7 @@ export async function login(data: LoginRequest): Promise<LoginPayload> {
   return {
     userId: json.result.userId,
     name: json.result.name,
+    role: json.result.role,
     profileImageUrl: json.result.profileImageUrl,
     userOrganizationRoles: json.result.userOrganizationRoles,
     userOrganizations: json.result.userOrganizations.map((u) => ({

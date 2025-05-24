@@ -25,6 +25,7 @@ export function useLoginMutation(): UseMutationResult<
       const {
         userId,
         name,
+        role,
         profileImageUrl,
         userOrganizationRoles,
         userOrganizations,
@@ -33,6 +34,7 @@ export function useLoginMutation(): UseMutationResult<
       setUser({
         userId,
         organizationId: userOrganizations[0]?.organizationId ?? null,
+        role,
         name,
         profileImageUrl,
         userOrganizationRoles,

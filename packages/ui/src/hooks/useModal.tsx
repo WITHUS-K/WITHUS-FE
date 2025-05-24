@@ -3,13 +3,13 @@
 import { useCallback } from 'react';
 import { overlay } from 'overlay-kit';
 import { Modal } from '../components/Modal/Modal';
-import { IcModalCheck, IcModalWarning } from '../icons/src/colored';
+import { IcLogout, IcModalCheck, IcModalWarning } from '../icons/src/colored';
 type Controls = {
   close: () => void;
   unmount: () => void;
 };
 
-type ConfirmType = 'info' | 'warning';
+type ConfirmType = 'info' | 'warning' | 'logout';
 
 const useModal = () => {
   const openBase = useCallback(
@@ -49,8 +49,10 @@ const useModal = () => {
       const icon =
         opts.type === 'warning' ? (
           <IcModalWarning width={36} height={36} />
-        ) : (
+        ) : opts.type === 'info' ? (
           <IcModalCheck width={36} height={36} />
+        ) : (
+          <IcLogout width={36} height={36} />
         );
 
       openBase({
