@@ -1,33 +1,38 @@
 import * as styles from './Header.css';
-import { IcHeaderProfile } from '../../icons/src/colored';
-import { IcAlaram, IcTriangleDown } from '../../icons/src/mono';
+import { IcAlaram } from '../../icons/src/mono';
 import { Text } from '..';
+import { ProfileChip } from '../Chips';
+import { Profile } from '../Profile';
 
 export interface HeaderRightProps {
   username: string;
-  role: 'user' | 'admin';
+  profileUrl?: string;
+  role: string;
   position?: string;
   part?: string;
+  onLogout: () => void;
   onNotificationClick?: () => void;
 }
 
 export const HeaderRight = ({
   username,
+  profileUrl,
   role,
   position,
   part,
+  onLogout,
   onNotificationClick,
 }: HeaderRightProps) => {
   return (
     <div className={styles.headerRightWrapper}>
       <div className={styles.profileWrapper}>
         <div className={styles.profile}>
-          <IcHeaderProfile width={24} height={24} />
-          <Text variant="md2_text_medium" color="grayscale70">
+          <Profile src={profileUrl} alt="profile" />
+          <Text variant="md2_text_medium" color="grayscale60">
             {username}
           </Text>
         </div>
-        {role === 'admin' && (
+        {role === 'ADMIN' && !!position && !!part && (
           <div className={styles.badgeWrapper}>
             <Text variant="xs_caption_medium" color="grayscale50">
               {position}
@@ -38,8 +43,12 @@ export const HeaderRight = ({
             </Text>
           </div>
         )}
-        <IcTriangleDown width={24} height={24} />
       </div>
+      <button className={styles.buttonWrapper} onClick={onLogout}>
+        <Text variant="md2_text_medium" color="grayscale60">
+          로그아웃
+        </Text>
+      </button>
       <button
         className={styles.notificationButton}
         onClick={onNotificationClick}

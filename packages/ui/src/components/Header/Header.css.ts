@@ -77,20 +77,10 @@ export const profileWrapper = style({
   display: 'flex',
   flexDirection: 'row',
   justifyItems: 'center',
-  justifyContent: 'center',
   alignItems: 'center',
-  gap: '0.4rem',
+  gap: '0.8rem',
   flexWrap: 'nowrap',
-  padding: '0.4rem 0.4rem 0.4rem 0.8rem',
-  cursor: 'pointer',
   transition: 'background-color 0.3s ease, color 0.3s ease',
-  borderRadius: '6px',
-  selectors: {
-    '&:hover': {
-      backgroundColor: vars.colors.grayscale5,
-      color: vars.colors.primary30,
-    },
-  },
 });
 
 export const headerRightWrapper = style({
@@ -100,5 +90,17 @@ export const headerRightWrapper = style({
   justifyContent: 'center',
   alignItems: 'center',
   flexWrap: 'nowrap',
-  gap: '1.2rem',
+  gap: '0.8rem',
 });
+
+export const buttonWrapper = style({
+  padding: '0.8rem',
+  cursor: 'pointer',
+  borderRadius: '6px',
+  transition: 'background-color 0.3s ease, color 0.3s ease',
+  selectors: {
+    '&:hover': {
+      backgroundColor: vars.colors.grayscale5,
+    },
+  },
+})

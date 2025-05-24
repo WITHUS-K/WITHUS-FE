@@ -48,7 +48,6 @@ export interface RecruitmentDetailDto {
   UrlSlug: string
   title: string
   content: string
-  fileUrl: string
   needGender: boolean
   needAddress: boolean
   needSchool: boolean
@@ -60,6 +59,7 @@ export interface RecruitmentDetailDto {
     name: string
   }[]
   documentDeadline: string
+  isDocumentResultRequired: boolean         
   documentResultDate: string
   finalResultDate: string
   interviewDuration: number
@@ -81,6 +81,7 @@ export interface RecruitmentDetailDto {
     score: number
   }[]
   applicationQuestions: Array<TextQuestionDto | FileQuestionDto>
+  isInterviewRequired: boolean
   availableTimeRanges: {
     id: number
     date: string
@@ -143,11 +144,11 @@ export interface PublishRecruitmentRequest {
   recruitmentId: number | null
   title: string
   content: string
-  fileUrl: string
   positions: string[]
   applicationQuestions: Array<TextQuestionDto | FileQuestionDto>
-  documentDeadline: string         
-  documentResultDate: string
+  documentDeadline: string
+  isDocumentResultRequired: boolean         
+  documentResultDate: string | null
   finalResultDate: string
   interviewDuration: number
   organizationId: number
@@ -169,6 +170,7 @@ export interface PublishRecruitmentRequest {
     description: string
     type: 'DOCUMENT' | 'INTERVIEW' | string
   }[]
+  isInterviewRequired: boolean
   availableTimeRanges: {
     date: string      
     startTime: string 
@@ -191,11 +193,10 @@ export interface DraftRecruitmentRequest {
   recruitmentId: number | null
   title: string
   content: string
-  fileUrl: string
   positions: string[]
   applicationQuestions: Array<TextQuestionDto | FileQuestionDto>
   documentDeadline: string
-  documentResultDate: string
+  documentResultDate: string | null
   finalResultDate: string
   interviewDuration: number
   organizationId: number

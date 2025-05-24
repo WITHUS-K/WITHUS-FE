@@ -14,7 +14,7 @@ import {
 import { useRouter } from 'next/navigation';
 
 interface SidebarProps {
-  role: 'user' | 'admin';
+  role: string;
 }
 
 const Sidebar = ({ role }: SidebarProps) => {
@@ -69,7 +69,7 @@ const Sidebar = ({ role }: SidebarProps) => {
     },
   ];
 
-  const items = role === 'admin' ? adminItems : userItems;
+  const items = role === 'ADMIN' ? adminItems : userItems;
 
   return (
     <nav className={sidebarContainer}>

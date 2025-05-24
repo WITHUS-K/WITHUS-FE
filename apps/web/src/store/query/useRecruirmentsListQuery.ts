@@ -17,7 +17,7 @@ export function useRecruitmentsListQuery(keyword?: string) {
     queryKey: key,               
     queryFn: async () => {       
       const res = await GET<RecruitmentsResponse['result']>(
-        '/api/v1/recruitments',
+        'api/v1/recruitments',
         keyword ? { keyword } : undefined
       )
       return res.result
@@ -27,3 +27,4 @@ export function useRecruitmentsListQuery(keyword?: string) {
     refetchOnMount: 'always',          
   })
 }
+

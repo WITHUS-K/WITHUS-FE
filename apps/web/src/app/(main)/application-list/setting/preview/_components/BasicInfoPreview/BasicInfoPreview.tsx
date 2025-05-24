@@ -35,14 +35,14 @@ export function BasicInfoPreview({ gender, birthDate }: BasicInfoProps) {
                 wrapperClass={styles.optionWrapper}
               >
                 <Option
-                  width="100%"
+                  width="49%"
                   type="radio"
                   label="남성"
                   isSelected={false}
                   onChange={() => {}}
                 />
                 <Option
-                  width="100%"
+                  width="49%"
                   type="radio"
                   label="여성"
                   isSelected={false}
