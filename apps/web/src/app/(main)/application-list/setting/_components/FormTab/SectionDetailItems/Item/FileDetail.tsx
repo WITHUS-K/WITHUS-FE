@@ -12,6 +12,7 @@ interface Props {
 
 export default function FileDetail({ index }: Props) {
   const { control } = useFormContext<FormValues>();
+  console.log('des', control._formValues.detailItems);
 
   return (
     <>

@@ -48,7 +48,6 @@ export interface RecruitmentDetailDto {
   UrlSlug: string
   title: string
   content: string
-  fileUrl: string
   needGender: boolean
   needAddress: boolean
   needSchool: boolean
