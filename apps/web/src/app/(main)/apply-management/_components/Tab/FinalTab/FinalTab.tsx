@@ -124,7 +124,9 @@ export default function FinalTab({
         onSms={() => setModalParam('sms')}
         onMail={() => setModalParam('mail')}
         onDistribute={() => {}}
-        onAdd={() => {}}
+        onAdd={() =>
+          router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
+        }
         communicationOnly={true}
       />
 

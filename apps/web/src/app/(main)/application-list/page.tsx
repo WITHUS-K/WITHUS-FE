@@ -42,6 +42,7 @@ export default function ApplicationList() {
     const applicationQuestions = copyDetail.applicationQuestions.map((q) => {
       if (q.type === 'TEXT') {
         return {
+          questionId: q.questionId,
           type: 'TEXT' as const,
           title: q.title,
           description: q.description,
@@ -52,6 +53,7 @@ export default function ApplicationList() {
         };
       } else {
         return {
+          questionId: q.questionId,
           type: 'FILE' as const,
           title: q.title,
           description: q.description,

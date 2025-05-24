@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import {
@@ -7,20 +7,44 @@ import {
   TimeRange,
 } from '@web/components/TimeTable/SelectableTimeTable';
 import { parseISO, format } from 'date-fns';
-import { ko } from 'date-fns/locale/ko';
 import type { InterviewScheduleItem } from '@web/types/application';
+import { safeFormatDotDate } from '../../page';
 
 interface InterviewScheduleFormProps {
   dates: string[];
   scheduleMap: Record<string, TimeRange[]>;
+  duration: number;
   onScheduleChange: (date: string, items: InterviewScheduleItem[]) => void;
 }
 
 export function InterviewScheduleForm({
   dates,
   scheduleMap,
+  duration,
   onScheduleChange,
 }: InterviewScheduleFormProps) {
+  // allRanges: 모든 날짜의 모든 TimeRange
+  const allRanges = useMemo(
+    () => Object.values(scheduleMap).flat(),
+    [scheduleMap]
+  );
+
+  // startHour: 가장 이른 시작 시간의 시(hour) 부분
+  const startHour = useMemo(() => {
+    if (allRanges.length === 0) return 0;
+    return Math.min(
+      ...allRanges.map((r) => parseInt(r.startTime.split(':')[0]!, 10))
+    );
+  }, [allRanges]);
+
+  // endHour: 가장 늦은 종료 시간의 시(hour) 부분
+  const endHour = useMemo(() => {
+    if (allRanges.length === 0) return 24;
+    return Math.max(
+      ...allRanges.map((r) => parseInt(r.endTime.split(':')[0]!, 10))
+    );
+  }, [allRanges]);
+
   return (
     <div style={{ width: '100%' }}>
       <Flex gap="0.4rem" direction="column">
@@ -41,7 +65,7 @@ export function InterviewScheduleForm({
       >
         {dates.map((dateStr) => {
           const dt = parseISO(dateStr);
-          const label = format(dt, 'yyyy년 MM월 dd일 (EEE)', { locale: ko });
+          const label = safeFormatDotDate(dateStr, 'yyyy년 MM월 dd일 (EEE)');
 
           const existingRanges = scheduleMap[dateStr] ?? [];
           const scheduleItems: InterviewScheduleItem[] =
@@ -55,9 +79,9 @@ export function InterviewScheduleForm({
             <SelectableTimeTable
               key={dateStr}
               title={label}
-              startHour={10}
-              endHour={18}
-              interval={15}
+              startHour={startHour}
+              endHour={endHour}
+              interval={duration}
               width="40rem"
               interviewSchedule={{
                 isSelected: true,

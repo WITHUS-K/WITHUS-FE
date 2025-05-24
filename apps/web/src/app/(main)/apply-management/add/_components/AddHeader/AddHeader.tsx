@@ -27,7 +27,7 @@ export function AddHeader() {
           variant="basic"
           size="40"
           width="10rem"
-          onClick={() => router.push('/apply-management')}
+          onClick={() => router.back()}
         >
           취소
         </Button>

@@ -138,7 +138,9 @@ export default function DocumentTab({
         onSms={() => setModalParam('sms')}
         onMail={() => setModalParam('mail')}
         onDistribute={openAssignManagerModal}
-        onAdd={() => {}}
+        onAdd={() =>
+          router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
+        }
       />
 
       <TableContainer

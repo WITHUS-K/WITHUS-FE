@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
 import { parseISO } from 'date-fns';
 import { DatePicker } from '@repo/ui/DatePicker';
@@ -6,9 +7,9 @@ import { IcImage } from '@repo/ui/icons/colored';
 import { Option } from '@repo/ui/Option';
 import { InfoField } from '@web/app/(main)/application-list/setting/preview/_components/InfoField/InfoField';
 import { DateChip } from '@web/app/(main)/application-list/setting/preview/_components/DateChip/DateChip';
-import { TextField } from '@repo/ui';
-import * as styles from '../../../../application-list/setting/preview/_components/BasicInfoPreview/BasicInfoPreview.css';
+import { TextField } from '@repo/ui/InputField';
 import Image from 'next/image';
+import * as styles from './BasicInfoForm.css';
 
 interface BasicInfoFormProps {
   value: {
@@ -21,6 +22,8 @@ interface BasicInfoFormProps {
   file?: File | null;
   onChange: (field: keyof BasicInfoFormProps['value'], v: string) => void;
   onImageChange: (file: File | null) => void;
+  needGender: boolean;
+  needBirthDate: boolean;
   readOnly?: boolean;
 }
 
@@ -29,10 +32,11 @@ export function BasicInfoForm({
   file,
   onChange,
   onImageChange,
+  needGender,
+  needBirthDate,
   readOnly = false,
 }: BasicInfoFormProps) {
   const [previewUrl, setPreviewUrl] = useState<string>();
-
   useEffect(() => {
     if (file) {
       const url = URL.createObjectURL(file);
@@ -48,7 +52,6 @@ export function BasicInfoForm({
   const [selectedGender, setSelectedGender] = useState<
     'male' | 'female' | undefined
   >(value.gender);
-
   useEffect(() => {
     setSelectedGender(value.gender);
   }, [value.gender]);
@@ -79,25 +82,22 @@ export function BasicInfoForm({
         </div>
 
         <div className={styles.contentColumn}>
-          {/* 1st row: Name & Gender */}
-          <div className={styles.row}>
-            {/* 이름 */}
-            <InfoField
-              label="이름"
-              required
-              labelWidth="7.4rem"
-              disabled={readOnly}
-              inputProps={{
-                placeholder: '홍길동',
-                value: value.name,
-                onChange: (e) => onChange('name', e.currentTarget.value),
-                disabled: readOnly,
-              }}
-              readOnly={readOnly}
-            />
+          <InfoField
+            label="이름"
+            required
+            labelWidth="7.4rem"
+            disabled={readOnly}
+            inputProps={{
+              placeholder: '홍길동',
+              value: value.name,
+              onChange: (e) => onChange('name', e.currentTarget.value),
+              disabled: readOnly,
+            }}
+            readOnly={readOnly}
+          />
 
-            {/* 성별 */}
-            {readOnly ? (
+          {needGender &&
+            (readOnly ? (
               <div className={styles.fieldWrapper}>
                 <TextField
                   inputProps={{
@@ -128,28 +128,24 @@ export function BasicInfoForm({
                   />
                 ))}
               </InfoField>
-            )}
-          </div>
+            ))}
 
-          {/* 2nd row: Phone & BirthDate */}
-          <div className={styles.row}>
-            {/* 전화번호 */}
-            <InfoField
-              label="전화번호"
-              labelWidth="7.4rem"
-              required
-              disabled={readOnly}
-              inputProps={{
-                placeholder: '010-0000-0000',
-                value: value.phone,
-                onChange: (e) => onChange('phone', e.currentTarget.value),
-                disabled: readOnly,
-              }}
-              readOnly={readOnly}
-            />
+          <InfoField
+            label="전화번호"
+            labelWidth="7.4rem"
+            required
+            disabled={readOnly}
+            inputProps={{
+              placeholder: '010-0000-0000',
+              value: value.phone,
+              onChange: (e) => onChange('phone', e.currentTarget.value),
+              disabled: readOnly,
+            }}
+            readOnly={readOnly}
+          />
 
-            {/* 생년월일 */}
-            {readOnly ? (
+          {needBirthDate &&
+            (readOnly ? (
               <div className={styles.fieldWrapper}>
                 <TextField
                   inputProps={{
@@ -161,7 +157,7 @@ export function BasicInfoForm({
                 />
               </div>
             ) : (
-              <InfoField label="생년월일" disabled={readOnly}>
+              <InfoField label="생년월일">
                 <div style={{ position: 'relative' }}>
                   <DateChip
                     date={value.birthDate}
@@ -194,10 +190,8 @@ export function BasicInfoForm({
                   )}
                 </div>
               </InfoField>
-            )}
-          </div>
+            ))}
 
-          {/* 3rd row: Email */}
           <InfoField
             label="이메일"
             required

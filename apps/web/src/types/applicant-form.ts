@@ -1,5 +1,10 @@
 import type { InterviewScheduleItem } from '@web/types/application';
 
+export type PartOption = {
+  id: number;
+  label: string;
+};
+
 export type ApplicantForm = {
   basicInfo: {
     name: string;
@@ -11,13 +16,13 @@ export type ApplicantForm = {
   };
   additionalInfo: {
     school: string;
-    academicStatus: string;
+    academicStatus?: 'ENROLLED' | 'GRADUATED' | 'LEAVE_OF_ABSENCE' | 'DEFERRED';
     major: string;
     address: string;
   };
-  applicationPart: string;
-  answers: string[];               
-  files: (File | null)[];         
+  applicationPart?: PartOption;
+  questionAnswers: string[];
+  questionFiles: (File | null)[];
   interviewSchedule: {
     scheduleList: InterviewScheduleItem[];
   };
