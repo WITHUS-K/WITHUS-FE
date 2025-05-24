@@ -121,6 +121,7 @@ export function SettingForm() {
   const handleSave = useCallback(() => {
     const values = methods.getValues();
     const payload = convertFormToRequest(values, recruitmentId);
+    console.log('저장 값:', payload);
     draftMutation.mutate(payload, {
       onSuccess: (res) => {
         if (pathname.endsWith('/new')) {

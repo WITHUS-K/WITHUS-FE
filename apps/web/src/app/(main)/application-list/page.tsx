@@ -21,13 +21,10 @@ export default function ApplicationList() {
   const [search, setSearch] = useState<string>('');
 
   const {
-    data: recruitments = [],
+    data: recruitments,
     isFetching,
     refetch,
   } = useRecruitmentsListQuery(search);
-  useEffect(() => {
-    console.log('🏷 recruitments:', recruitments);
-  }, [recruitments]);
 
   const publishMutation = usePublishRecruitmentMutation();
   const deleteMutation = useDeleteRecruitmentMutation();
@@ -67,15 +64,15 @@ export default function ApplicationList() {
       recruitmentId: null,
       title: copyDetail.title + '_사본',
       content: copyDetail.content,
-      fileUrl: copyDetail.fileUrl,
 
       positions: copyDetail.positions.map((p) => p.name),
 
       applicationQuestions: applicationQuestions,
 
-      documentDeadline: copyDetail.documentDeadline,
+      documentDeadline: copyDetail.documentDeadline.replace(/\./g, '-'),
+      isDocumentResultRequired: copyDetail.isDocumentResultRequired,
       documentResultDate: copyDetail.documentResultDate,
-      finalResultDate: copyDetail.finalResultDate,
+      finalResultDate: copyDetail.finalResultDate.replace(/\./g, '-'),
       interviewDuration: copyDetail.interviewDuration,
 
       organizationId: copyDetail.organizationId,
@@ -105,6 +102,7 @@ export default function ApplicationList() {
           type: c.type,
         })
       ),
+      isInterviewRequired: copyDetail.isInterviewRequired,
 
       availableTimeRanges: copyDetail.availableTimeRanges.map((r) => ({
         date: r.date,
@@ -181,7 +179,7 @@ export default function ApplicationList() {
       </Flex>
 
       <Flex direction="column" gap="1.2rem" marginTop="1.2rem" width="100%">
-        {recruitments.map((item) => {
+        {recruitments?.map((item) => {
           const deadline = new Date(item.documentDeadline.replace(/\./g, '-'));
           const today = new Date();
           const diffDays = Math.ceil(
@@ -198,7 +196,7 @@ export default function ApplicationList() {
               id={item.recruitmentId.toString()}
               recruitTitle={item.title}
               dueDate={item.documentDeadline}
-              recruitLink={item.urlSlug}
+              recruitLink={`http://www.withus.co.kr/${item.urlSlug}`}
               count={diffDays}
               currentApplicantList={item.positionSummaries.map((ps) => ({
                 position: ps.name,

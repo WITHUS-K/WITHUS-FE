@@ -60,6 +60,7 @@ export interface RecruitmentDetailDto {
     name: string
   }[]
   documentDeadline: string
+  isDocumentResultRequired: boolean         
   documentResultDate: string
   finalResultDate: string
   interviewDuration: number
@@ -81,6 +82,7 @@ export interface RecruitmentDetailDto {
     score: number
   }[]
   applicationQuestions: Array<TextQuestionDto | FileQuestionDto>
+  isInterviewRequired: boolean
   availableTimeRanges: {
     id: number
     date: string
