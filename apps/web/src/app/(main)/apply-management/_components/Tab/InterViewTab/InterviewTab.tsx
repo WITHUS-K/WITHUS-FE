@@ -109,11 +109,6 @@ export default function InterviewTab({
     });
   }, [data, page, size, posColorMap]);
 
-  const recipients = useMemo(
-    () => rows.filter((r) => selectedIds.includes(r.id)).map((r) => r.name),
-    [rows, selectedIds]
-  );
-
   const selectedRows = rows.filter((r) => selectedIds.includes(r.id));
   const applicationIds = selectedRows.map((r) => r.applicationId);
   const recipientNames = selectedRows.map((r) => r.name);
@@ -130,6 +125,12 @@ export default function InterviewTab({
       `/apply-management/${activeTab}/assign-manager?recruitmentId=${recruitmentId}`
     );
   };
+
+  const handleCloseSideTab = () => {
+    setModalParam(null);
+    setSelectedIds([]); // 체크박스 리셋
+  };
+
   return (
     <Flex direction="column" width="100%" height="100%" gap="1.2rem">
       <ActionToolbar
@@ -168,7 +169,7 @@ export default function InterviewTab({
         <SmsSideTab
           applicationIds={applicationIds}
           recipients={recipientNames}
-          onClose={() => setModalParam(null)}
+          onClose={handleCloseSideTab}
         />
       )}
 
@@ -176,7 +177,7 @@ export default function InterviewTab({
         <MailSideTab
           applicationIds={applicationIds}
           recipients={recipientNames}
-          onClose={() => setModalParam(null)}
+          onClose={handleCloseSideTab}
         />
       )}
     </Flex>

@@ -7,7 +7,23 @@ import { Descendant, Text, Element as SlateElement } from 'slate';
 // 변수(span)와 일반 태그를 모두 처리하는 재귀 함수
 export function deserializeHtml(html: string): Descendant[] {
   const container = new DOMParser().parseFromString(html, 'text/html').body;
-  return Array.from(container.childNodes).flatMap(deserializeNode);
+  // 1) 뽑아낸 노드들
+  const raw = Array.from(container.childNodes).flatMap(deserializeNode);
+
+  // 2) 만약 원본에 <p>나 다른 블록 태그가 전혀 없었다면
+  //    → 한 줄짜리 템플릿으로 간주하고 전부 하나의 paragraph 로 감싸기
+  const hasBlock = /<\/(p|div|ul|ol|h[1-6])>/i.test(html);
+  if (!hasBlock) {
+    return [
+      {
+        type: 'paragraph',
+        children: raw.length ? raw : [{ text: '' }],
+      } as SlateElement,
+    ];
+  }
+
+  // 3) 블록 태그가 있었다면, 기존 로직대로 raw 를 리턴
+  return raw;
 }
 
 // utils/deserializeHtml.ts

@@ -45,13 +45,16 @@ export function SmsSideTab({
 }: SmsSideTabProps) {
   // 1) 기존 템플릿 리스트 불러오기
   const { data: tplSummaries = [] } = useTemplatesQuery('SMS');
-  const [templates, setTemplates] = useState<Template[]>(() =>
-    tplSummaries.map((t) => ({
-      id: String(t.id),
-      title: t.name,
-      body: '',
-    }))
-  );
+  const [templates, setTemplates] = useState<Template[]>([]);
+  useEffect(() => {
+    setTemplates(
+      tplSummaries.map((t) => ({
+        id: String(t.id),
+        title: t.name,
+        body: '', // body 는 detail 로 따로 불러오니까 빈 문자열로 둡니다
+      }))
+    );
+  }, [tplSummaries]);
 
   const [localRecipients, setLocalRecipients] = useState<string[]>(recipients);
   useEffect(() => {

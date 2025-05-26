@@ -112,16 +112,6 @@ export default function DocumentTab({
   const applicationIds = selectedRows.map((r) => r.applicationId);
   const recipientNames = selectedRows.map((r) => r.name);
 
-  const recipients = useMemo(
-    () => rows.filter((r) => selectedIds.includes(r.id)).map((r) => r.name),
-    [rows, selectedIds]
-  );
-
-  const templates: Template[] = [
-    { id: 't1', title: '템플릿 1', body: '안녕하세요, 지원자님…' },
-    { id: 't2', title: '템플릿 2', body: '감사합니다.' },
-  ];
-
   const setModalParam = (value: string | null) => {
     const params = new URLSearchParams(Array.from(searchParams.entries()));
     if (value) params.set('sideTab', value);
@@ -133,6 +123,11 @@ export default function DocumentTab({
     router.push(
       `/apply-management/${activeTab}/assign-manager?recruitmentId=${recruitmentId}`
     );
+  };
+
+  const handleCloseSideTab = () => {
+    setModalParam(null);
+    setSelectedIds([]); // 체크박스 리셋
   };
 
   return (
@@ -173,7 +168,7 @@ export default function DocumentTab({
         <SmsSideTab
           applicationIds={applicationIds}
           recipients={recipientNames}
-          onClose={() => setModalParam(null)}
+          onClose={handleCloseSideTab}
         />
       )}
 
@@ -181,7 +176,7 @@ export default function DocumentTab({
         <MailSideTab
           applicationIds={applicationIds}
           recipients={recipientNames}
-          onClose={() => setModalParam(null)}
+          onClose={handleCloseSideTab}
         />
       )}
     </Flex>
