@@ -9,8 +9,11 @@ export const row = style({
   padding: '1.1rem 0.6rem',
   width: '100%',
   selectors: {
+    '&:hover': { backgroundColor: vars.colors.grayscale5 },
     '&[data-selected="true"]': { backgroundColor: vars.colors.primary5 },
   },
+
+  cursor: 'pointer',
 });
 
 export const cbCell = style({ width: '4rem', textAlign: 'center' });

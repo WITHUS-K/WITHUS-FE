@@ -19,7 +19,6 @@ export const contentColumn = style({
   display: 'flex',
   flexDirection: 'column',
   gap: '2rem',
-  flex: 1,
   width: '100%',
 });
 

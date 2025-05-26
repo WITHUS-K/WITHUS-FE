@@ -3,11 +3,12 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { documentEvaluationDummyDataForUser } from '@web/constants/document-evaluation';
 import ApplicantDetail from '@web/app/(main)/apply-management/[tab]/[id]/_components/ApplicantDetail/ApplicantDetail';
-import { EvaluationCommentCard } from '@web/app/(main)/apply-management/[tab]/[id]/_components/EvaluationCommentCard/EvaluationCommentCard';
+
 import { Flex } from '@repo/ui/Flex';
-import { DocsDetailHeader } from '@web/app/(main)/docs-evaluation/(tabs)/[tab]/[id]/_components/DocsDetailHeader/DocsDetailHeader';
-import { DocsEvaluation } from '@web/app/(main)/docs-evaluation/(tabs)/[tab]/[id]/_components/DocsEvaluation/DocsEvaluation';
+import { DocsDetailHeader } from '@web/app/(main)/docs-evaluation/application/[id]/_components/DocsDetailHeader/DocsDetailHeader';
+import { DocsEvaluation } from '@web/app/(main)/docs-evaluation/application/[id]/_components/DocsEvaluation/DocsEvaluation';
 import * as styles from './page.css';
+import { EvaluationAddCommentCard } from './_components/EvaluationAddCommentCard/EvaluationAddCommentCard';
 
 export default function Page() {
   const router = useRouter();
@@ -48,10 +49,10 @@ export default function Page() {
       />
 
       <Flex gap="2rem">
-        <ApplicantDetail evaluation={evaluation} applicant={applicant} />
+        <ApplicantDetail applicant={applicant} />
 
         <div className={styles.rightSection}>
-          <EvaluationCommentCard comments={applicant.comments} />
+          <EvaluationAddCommentCard comments={applicant.comments} />
         </div>
       </Flex>
 

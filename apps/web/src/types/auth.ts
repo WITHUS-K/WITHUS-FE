@@ -8,6 +8,7 @@ export interface LoginPayload {
   name: string;
   role: string;
   profileImageUrl: string | null;
+
   userOrganizationRoles: {
     id: number;
     roleName: string;

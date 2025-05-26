@@ -37,7 +37,7 @@ export const EvaluationScoreCard = ({
       </Flex>
       <Flex direction="column" align="center" gap="1rem">
         <EvaluationStatusCard evaluation={evaluation} />
-        <EvaluationDetailScoreList />
+        <EvaluationDetailScoreList evaluations={evaluation} />
       </Flex>
     </div>
   );

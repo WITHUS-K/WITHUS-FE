@@ -36,6 +36,7 @@ export function useLoginMutation(): UseMutationResult<
         organizationId: userOrganizations[0]?.organizationId ?? null,
         role,
         name,
+
         profileImageUrl,
         userOrganizationRoles,
       });

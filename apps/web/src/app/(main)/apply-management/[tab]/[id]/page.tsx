@@ -9,39 +9,56 @@ import { RelationCard } from '@web/app/(main)/apply-management/[tab]/[id]/_compo
 import { EvaluationCommentCard } from '@web/app/(main)/apply-management/[tab]/[id]/_components/EvaluationCommentCard/EvaluationCommentCard';
 import { DetailHeader } from '@web/app/(main)/apply-management/[tab]/[id]/_components/DetailHeader/DetailHeader';
 import { Flex } from '@repo/ui/Flex';
+import { useApplicationDetailQuery } from '@web/store/query/useApplicationDetailQuery';
 
 export default function Page() {
-  const router = useRouter();
+  const { id, tab } = useParams() as { id: string; tab: string };
+  const applicationId = Number(id);
 
-  const params = useParams();
-  const tab = params.tab as string;
-  const id = params.id as string;
-  const evaluation = documentEvaluationDummyData as DocumentEvaluationType;
-  const applicant = evaluation.applicantList.find((a) => a.id === Number(id));
+  const { data, isLoading, isError } = useApplicationDetailQuery(applicationId);
 
-  if (!applicant) {
-    router.push('/404');
-    return null;
+  if (isError || !data) {
+    return <div>지원서 정보를 불러올 수 없습니다.</div>;
   }
 
   return (
     <div className={styles.container}>
       {/* 헤더 */}
-      <DetailHeader tab={tab} name={applicant.basicInfo.name} />
+      <DetailHeader tab={tab} name={data.name} />
       <Flex gap="2rem">
-        <ApplicantDetail evaluation={evaluation} applicant={applicant} />
+        <ApplicantDetail application={data} />
 
         <div className={styles.rightSection}>
           <EvaluationScoreCard
             evaluationType="document"
-            evaluation={applicant.documentEvaluation}
+            evaluation={data.evaluations
+              .filter((e) => e.criteria.type === 'DOCUMENT')
+              .map((e) => ({
+                evaluator: e.user.name,
+                status: 'complete', // 예시: score가 null이면 대기중, 있으면 완료로 처리
+                score: e.score ?? null,
+                color: e.user.profileColor,
+              }))}
           />
+
           <EvaluationScoreCard
             evaluationType="interview"
-            evaluation={applicant.interviewEvaluation}
+            evaluation={data.evaluations
+              .filter((e) => e.criteria.type === 'INTERVIEW')
+              .map((e) => ({
+                evaluator: e.user.name,
+                status: e.score != null ? 'complete' : 'pending',
+                score: e.score ?? null,
+                color: e.user.profileColor,
+              }))}
           />
-          <RelationCard relations={applicant.relations} />
-          <EvaluationCommentCard comments={applicant.comments} />
+          <RelationCard relations={data.acquaintances.map((a) => a.name)} />
+          <EvaluationCommentCard
+            comments={data.documentComments.map((c) => ({
+              evaluator: c.user.name,
+              comment: c.content,
+            }))}
+          />
         </div>
       </Flex>
     </div>

@@ -20,7 +20,7 @@ export interface DetailItem {
   type: 'text' | 'file';
   description: string;
   addDescription?: string;
-  responseTarget: number;
+  responseTarget?: number;
   typeInfo: {
     info: string;
     infoDetail: string;

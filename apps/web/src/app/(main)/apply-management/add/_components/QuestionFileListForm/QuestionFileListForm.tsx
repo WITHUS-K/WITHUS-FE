@@ -10,7 +10,12 @@ import { FileUpload } from '@web/app/(main)/application-list/setting/preview/_co
 interface QuestionAndFileListFormProps {
   detailItems: DetailItem[];
   answers: string[];
-  files: (File | null)[];
+  files: ({
+    name: string;
+    size: number;
+    downloadUrl: string;
+  } | null)[];
+
   onAnswerChange: (idx: number, value: string) => void;
   onFileChange: (idx: number, file: File | null) => void;
   readOnly?: boolean;
@@ -42,7 +47,6 @@ export const QuestionAndFileListForm = ({
             )}
           </Flex>
           <QuestionInput
-            readOnly
             title={item.description}
             info={item.typeInfo.info}
             infoDetail={item.typeInfo.infoDetail}
@@ -56,7 +60,7 @@ export const QuestionAndFileListForm = ({
         <div key={`f-${idx}`} style={{ marginBottom: '2rem' }}>
           <FileUpload
             item={item}
-            file={files[files.length - 1]}
+            file={files[idx]} // ← 여기!
             onChange={(file) => onFileChange(idx, file)}
             readOnly
           />

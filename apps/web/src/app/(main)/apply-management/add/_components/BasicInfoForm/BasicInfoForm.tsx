@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
 import { parseISO } from 'date-fns';
 import { DatePicker } from '@repo/ui/DatePicker';
@@ -6,9 +7,10 @@ import { IcImage } from '@repo/ui/icons/colored';
 import { Option } from '@repo/ui/Option';
 import { InfoField } from '@web/app/(main)/application-list/setting/preview/_components/InfoField/InfoField';
 import { DateChip } from '@web/app/(main)/application-list/setting/preview/_components/DateChip/DateChip';
-import { TextField } from '@repo/ui';
-import * as styles from '../../../../application-list/setting/preview/_components/BasicInfoPreview/BasicInfoPreview.css';
+import { TextField } from '@repo/ui/InputField';
 import Image from 'next/image';
+import * as styles from './BasicInfoForm.css';
+import { Flex } from '@repo/ui/Flex';
 
 interface BasicInfoFormProps {
   value: {
@@ -18,9 +20,12 @@ interface BasicInfoFormProps {
     birthDate?: string;
     email: string;
   };
-  file?: File | null;
+  // file를 File 뿐 아니라 URL 문자열도 받을 수 있도록 확장
+  file?: File | string | null;
   onChange: (field: keyof BasicInfoFormProps['value'], v: string) => void;
   onImageChange: (file: File | null) => void;
+  needGender?: boolean;
+  needBirthDate?: boolean;
   readOnly?: boolean;
 }
 
@@ -29,12 +34,15 @@ export function BasicInfoForm({
   file,
   onChange,
   onImageChange,
+  needGender = true,
+  needBirthDate = true,
   readOnly = false,
 }: BasicInfoFormProps) {
   const [previewUrl, setPreviewUrl] = useState<string>();
 
   useEffect(() => {
-    if (file) {
+    // File 객체인 경우 blob URL 생성
+    if (file instanceof File) {
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
       return () => {
@@ -42,13 +50,18 @@ export function BasicInfoForm({
         setPreviewUrl(undefined);
       };
     }
+    // URL 문자열인 경우 직접 사용
+    if (typeof file === 'string') {
+      setPreviewUrl(file);
+      return;
+    }
+    // 파일 없을 때
     setPreviewUrl(undefined);
   }, [file]);
 
   const [selectedGender, setSelectedGender] = useState<
     'male' | 'female' | undefined
   >(value.gender);
-
   useEffect(() => {
     setSelectedGender(value.gender);
   }, [value.gender]);
@@ -73,15 +86,13 @@ export function BasicInfoForm({
             type="file"
             className={styles.imageInput}
             accept="image/*"
-            onChange={(e) => onImageChange(e.target.files?.[0] ?? null)}
+            onChange={(e) => onImageChange(e.currentTarget.files?.[0] ?? null)}
             disabled={readOnly}
           />
         </div>
 
         <div className={styles.contentColumn}>
-          {/* 1st row: Name & Gender */}
-          <div className={styles.row}>
-            {/* 이름 */}
+          <Flex gap="1.6rem" width="100%">
             <InfoField
               label="이름"
               required
@@ -96,44 +107,41 @@ export function BasicInfoForm({
               readOnly={readOnly}
             />
 
-            {/* 성별 */}
-            {readOnly ? (
-              <div className={styles.fieldWrapper}>
-                <TextField
-                  inputProps={{
-                    value: value.gender ?? '',
-                    disabled: true,
-                    width: '100%',
-                  }}
-                  readOnly
-                />
-              </div>
-            ) : (
-              <InfoField
-                label="성별"
-                labelWidth="6.3rem"
-                wrapperClass={styles.optionWrapper}
-              >
-                {(['male', 'female'] as const).map((g) => (
-                  <Option
-                    key={g}
-                    type="radio"
-                    label={g === 'male' ? '남성' : '여성'}
-                    width="50%"
-                    isSelected={selectedGender === g}
-                    onChange={() => {
-                      setSelectedGender(g);
-                      onChange('gender', g);
+            {needGender &&
+              (readOnly ? (
+                <div>
+                  <TextField
+                    inputProps={{
+                      value: value.gender == 'male' ? '남성' : '여성',
+                      disabled: true,
                     }}
+                    readOnly
                   />
-                ))}
-              </InfoField>
-            )}
-          </div>
+                </div>
+              ) : (
+                <InfoField
+                  label="성별"
+                  labelWidth="6.3rem"
+                  wrapperClass={styles.optionWrapper}
+                >
+                  {(['male', 'female'] as const).map((g) => (
+                    <Option
+                      key={g}
+                      type="radio"
+                      label={g === 'male' ? '남성' : '여성'}
+                      width="50%"
+                      isSelected={selectedGender === g}
+                      onChange={() => {
+                        setSelectedGender(g);
+                        onChange('gender', g);
+                      }}
+                    />
+                  ))}
+                </InfoField>
+              ))}
+          </Flex>
 
-          {/* 2nd row: Phone & BirthDate */}
-          <div className={styles.row}>
-            {/* 전화번호 */}
+          <Flex gap="1.6rem" width="100%">
             <InfoField
               label="전화번호"
               labelWidth="7.4rem"
@@ -148,56 +156,59 @@ export function BasicInfoForm({
               readOnly={readOnly}
             />
 
-            {/* 생년월일 */}
-            {readOnly ? (
-              <div className={styles.fieldWrapper}>
-                <TextField
-                  inputProps={{
-                    value: value.birthDate ?? '',
-                    disabled: true,
-                    width: '100%',
-                  }}
-                  readOnly
-                />
-              </div>
-            ) : (
-              <InfoField label="생년월일" disabled={readOnly}>
-                <div style={{ position: 'relative' }}>
-                  <DateChip
-                    date={value.birthDate}
-                    selected={isPickerOpen}
+            {needBirthDate &&
+              (readOnly ? (
+                <div className={styles.fieldWrapper}>
+                  <InfoField
+                    label="생년월일"
+                    required
+                    labelWidth="7.4rem"
                     disabled={readOnly}
-                    onClick={() => setPickerOpen((o) => !o)}
+                    inputProps={{
+                      value: value.birthDate ?? '',
+                      disabled: true,
+                      width: '100%',
+                    }}
+                    readOnly={readOnly}
                   />
-                  {isPickerOpen && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: '100%',
-                        left: 0,
-                        zIndex: 10,
-                        marginTop: '0.4rem',
-                      }}
-                    >
-                      <DatePicker
-                        selectedDate={
-                          value.birthDate
-                            ? parseISO(value.birthDate)
-                            : new Date()
-                        }
-                        onSelect={(date) => {
-                          onChange('birthDate', date.toISOString());
-                          setPickerOpen(false);
-                        }}
-                      />
-                    </div>
-                  )}
                 </div>
-              </InfoField>
-            )}
-          </div>
+              ) : (
+                <InfoField label="생년월일">
+                  <div style={{ position: 'relative' }}>
+                    <DateChip
+                      date={value.birthDate}
+                      selected={isPickerOpen}
+                      disabled={readOnly}
+                      onClick={() => setPickerOpen((o) => !o)}
+                    />
+                    {isPickerOpen && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: '100%',
+                          left: 0,
+                          zIndex: 10,
+                          marginTop: '0.4rem',
+                        }}
+                      >
+                        <DatePicker
+                          selectedDate={
+                            value.birthDate
+                              ? parseISO(value.birthDate)
+                              : new Date()
+                          }
+                          onSelect={(date) => {
+                            onChange('birthDate', date.toISOString());
+                            setPickerOpen(false);
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </InfoField>
+              ))}
+          </Flex>
 
-          {/* 3rd row: Email */}
           <InfoField
             label="이메일"
             required

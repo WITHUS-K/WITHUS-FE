@@ -55,7 +55,7 @@ const Sidebar = ({ role }: SidebarProps) => {
     {
       icon: <IcSidebarPaper width={24} height={24} />,
       label: '서류 평가',
-      route: '/',
+      route: '/docs-evaluation',
     },
     {
       icon: <IcSidebarCalender width={24} height={24} />,

@@ -22,5 +22,6 @@ export const footer = styleVariants({
     justifyContent: 'center',
     gap: '1rem',
     paddingBottom: '2rem',
+    paddingInline: '2rem',
   },
 });

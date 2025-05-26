@@ -16,7 +16,7 @@ export const bubble = style({
   left: '50%',
   transform: 'translateX(-50%)',
   marginLeft: 'var(--offset-x, 0px)',
-  backgroundColor: vars.colors.primary10,
+  backgroundColor: vars.colors.grayscale70,
   borderRadius: '6px',
   padding: '0.5rem 1.4rem',
   whiteSpace: 'nowrap',
@@ -46,13 +46,13 @@ export const arrow = style({
 export const arrowTop = style({
   borderLeft: '6px solid transparent',
   borderRight: '6px solid transparent',
-  borderTop: `6px solid ${vars.colors.primary10}`,
+  borderTop: `6px solid ${vars.colors.grayscale70}`,
   bottom: '-6px',
 });
 
 export const arrowBottom = style({
   borderLeft: '6px solid transparent',
   borderRight: '6px solid transparent',
-  borderBottom: `6px solid ${vars.colors.primary10}`,
+  borderBottom: `6px solid ${vars.colors.grayscale70}`,
   top: '-6px',
 });

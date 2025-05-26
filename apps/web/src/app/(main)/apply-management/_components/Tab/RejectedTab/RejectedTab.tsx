@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { MemberWithEval } from '../../ApplyListItem/ApplyListItem';
 import { HeaderMeta } from '../../ApplyListHeader/ApplyListHeader';
 import { Flex } from '@repo/ui/Flex';
@@ -15,6 +15,9 @@ import {
 import { Template } from '../../SideTabs/TemplatesAccordion/TemplatesAccordion';
 import { SmsSideTab } from '../../SideTabs/SmsSideTab/SmsSideTab';
 import { MailSideTab } from '../../SideTabs/MailSideTab/MailSideTab';
+import { useAdminApplicationsQuery } from '@web/store/query/useAdminApplicationsQuery';
+import { sortByMap, stageMap } from '../../../[tab]/TabClient';
+import { mapServerColorToTagHex } from '@web/utils/color';
 
 const HEADER: HeaderMeta[] = [
   { key: 'checkbox', label: '', width: '4.7rem' },
@@ -38,36 +41,15 @@ const HEADER: HeaderMeta[] = [
   { key: 'mailSent', label: '메일 발송' },
 ];
 
-export const MOCK_DATA: MemberWithEval[] = Array.from(
-  { length: 5 },
-  (_, i) => ({
-    id: String(i + 1).padStart(3, '0'),
-    name: `지원자`,
-    email: `user${i + 1}@example.com`,
-    roles: [{ label: '프론트엔드', color: '#E2A500' }],
-    gender: '남',
-    dob: '2001.01.01',
-    phone: '010-1234-5678',
-    joined: '2025.05.12',
-    profileUrl: 'https://…jpg',
-
-    fieldTags: [{ label: '기획', color: '#FF2A3A' }],
-    evalStatus: `${(i % 12) + 1}/12`,
-    documentScore: (i * 7) % 100,
-    interviewScore: (i * 7) % 100,
-
-    status: '불합격',
-    smsSent: i % 2 === 0,
-    mailSent: i % 4 === 0,
-    evaluators: [],
-  })
-);
-
 interface RejectedTabProps {
-  clubId: string;
+  recruitmentId: number;
+  posColorMap: Record<string, string>;
 }
 
-export default function RejectedTab({ clubId }: RejectedTabProps) {
+export default function RejectedTab({
+  recruitmentId,
+  posColorMap,
+}: RejectedTabProps) {
   const router = useRouter();
   const params = useParams() as { tab: string };
   const pathname = usePathname();
@@ -77,20 +59,62 @@ export default function RejectedTab({ clubId }: RejectedTabProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
 
-  const templates: Template[] = [
-    { id: 't1', title: '템플릿 1', body: '안녕하세요, 지원자님…' },
-    { id: 't2', title: '템플릿 2', body: '감사합니다.' },
-  ];
+  const [page, setPage] = useState(0);
+  const size = 7;
+  const [sortKey, setSortKey] = useState<keyof typeof sortByMap>('name');
+  const [direction, setDirection] = useState<'ASC' | 'DESC'>('ASC');
 
-  const recipients = MOCK_DATA.filter((m) => selectedIds.includes(m.id)).map(
-    (m) => m.name
-  );
+  const { data, isLoading } = useAdminApplicationsQuery({
+    recruitmentId,
+    stage: stageMap[activeTab],
+    sortBy: sortByMap[sortKey] as any,
+    direction,
+    page,
+    size,
+  });
+
+  const rows = useMemo(() => {
+    if (!data) return [];
+    return data.data.map((item, idx) => {
+      const hex = mapServerColorToTagHex(posColorMap[item.positionName]!);
+      return {
+        applicationId: item.id,
+        id: String(page * size + idx + 1).padStart(3, '0'), // 순번
+        name: item.name,
+        fieldTags: [
+          {
+            label: item.positionName,
+            color: hex,
+          },
+        ],
+        evalStatus: `${item.documentEvaluatedCount}/${item.documentAssignedCount}`,
+        documentScore: Number(item.documentAverageScore),
+        interviewScore: Number(item.interviewAverageScore),
+        status: '불합격',
+        smsSent: item.isSmsSent,
+        mailSent: item.isMailSent,
+        evaluators: item.documentEvaluators.map((e) => ({
+          name: e.name,
+          profileColor: e.profileColor,
+        })),
+      };
+    });
+  }, [data, page, size, posColorMap]);
+
+  const selectedRows = rows.filter((r) => selectedIds.includes(r.id));
+  const applicationIds = selectedRows.map((r) => r.applicationId);
+  const recipientNames = selectedRows.map((r) => r.name);
 
   const setModalParam = (value: string | null) => {
     const params = new URLSearchParams(Array.from(searchParams.entries()));
     if (value) params.set('sideTab', value);
     else params.delete('sideTab');
     router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleCloseSideTab = () => {
+    setModalParam(null);
+    setSelectedIds([]); // 체크박스 리셋
   };
 
   return (
@@ -100,17 +124,26 @@ export default function RejectedTab({ clubId }: RejectedTabProps) {
         onSms={() => setModalParam('sms')}
         onMail={() => setModalParam('mail')}
         onDistribute={() => {}}
-        onAdd={() => {}}
-        onFail={() => {}}
-        onPass={() => {}}
+        onAdd={() =>
+          router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
+        }
         communicationOnly={true}
       />
 
       <TableContainer
         headerMeta={HEADER}
-        data={MOCK_DATA}
+        data={rows}
         selectedIds={selectedIds}
-        onToggleAll={(c) => setSelectedIds(c ? MOCK_DATA.map((m) => m.id) : [])}
+        sortState={{ [sortKey]: direction.toLowerCase() as any }}
+        onSortChange={(key: string, dir: 'asc' | 'desc') => {
+          setSortKey(key as any);
+          setDirection(dir.toUpperCase() as any);
+        }}
+        currentPage={page + 1}
+        totalItems={data?.pagination.totalElements ?? 0}
+        pageSize={size}
+        onPageChange={(p) => setPage(p - 1)}
+        onToggleAll={(c) => setSelectedIds(c ? rows.map((m) => m.id) : [])}
         onToggleOne={(id, checked) =>
           setSelectedIds((prev) =>
             checked ? [...prev, id] : prev.filter((x) => x !== id)
@@ -120,25 +153,17 @@ export default function RejectedTab({ clubId }: RejectedTabProps) {
 
       {sideTab === 'sms' && (
         <SmsSideTab
-          recipients={recipients}
-          templates={templates}
-          onClose={() => setModalParam(null)}
-          onSend={(data) => {
-            console.log('문자 전송:', data);
-            setModalParam(null);
-          }}
+          applicationIds={applicationIds}
+          recipients={recipientNames}
+          onClose={handleCloseSideTab}
         />
       )}
 
       {sideTab === 'mail' && (
         <MailSideTab
-          recipients={recipients}
-          templates={templates}
-          onClose={() => setModalParam(null)}
-          onSend={(data) => {
-            console.log('메일 전송:', data);
-            setModalParam(null);
-          }}
+          applicationIds={applicationIds}
+          recipients={recipientNames}
+          onClose={handleCloseSideTab}
         />
       )}
     </Flex>

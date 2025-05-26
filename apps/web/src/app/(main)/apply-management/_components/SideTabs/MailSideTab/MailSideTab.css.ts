@@ -1,5 +1,5 @@
 // components/SideTabs/MailSideTab.css.ts
-import { style } from '@vanilla-extract/css';
+import { style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '@repo/theme';
 import { fontStyles } from '@repo/theme';
 
@@ -110,4 +110,43 @@ export const textarea = style({
       boxShadow: 'none',
     },
   },
+});
+
+const variableCommon = style({
+  borderRadius: '4px',
+  padding: '0.15rem 0.4rem',
+  //display: 'inline-block',
+  ...fontStyles.xs_caption_medium,
+  cursor: 'pointer',
+});
+
+export const variableStyles = styleVariants({
+  name: [
+    variableCommon,
+    {
+      backgroundColor: '#DBF6FF',
+      color: '#0084BC',
+    },
+  ],
+  position: [
+    variableCommon,
+    {
+      backgroundColor: '#EAEFFF',
+      color: '#2C60FF',
+    },
+  ],
+  interviewRoom: [
+    variableCommon,
+    {
+      backgroundColor: '#EDE7F6',
+      color: '#5E35B1',
+    },
+  ],
+  interviewDateTime: [
+    variableCommon,
+    {
+      backgroundColor: '#FFEDFE',
+      color: '#F25DEB',
+    },
+  ],
 });

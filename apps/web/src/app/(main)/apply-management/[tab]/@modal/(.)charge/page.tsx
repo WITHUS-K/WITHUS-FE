@@ -2,11 +2,17 @@
 
 import { useRouter } from 'next/navigation';
 import { Modal } from '@repo/ui/Modal';
-import ChargeModalContent from '@web/app/(main)/apply-management/_components/ChargeModalContent/ChargeModalContent';
+import {
+  ChargeModalContent,
+  ChargeModalContentRef,
+} from '@web/app/(main)/apply-management/_components/ChargeModalContent/ChargeModalContent';
+import { useRef } from 'react';
 
 export default function ChargeModal() {
   const router = useRouter();
   const close = () => router.back();
+
+  const contentRef = useRef<ChargeModalContentRef>(null);
 
   return (
     <Modal.Overlay open onClose={close}>
@@ -14,7 +20,7 @@ export default function ChargeModal() {
         <Modal.Header text="평가 담당자 추가" />
 
         <Modal.Content>
-          <ChargeModalContent />
+          <ChargeModalContent ref={contentRef} onClose={close} />
         </Modal.Content>
 
         <Modal.Footer hasTopBorder>
@@ -24,7 +30,7 @@ export default function ChargeModal() {
             cancelProps={{ onClick: close }}
             confirmProps={{
               onClick: () => {
-                close();
+                contentRef.current?.handleConfirm();
               },
             }}
           />

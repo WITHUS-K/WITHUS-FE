@@ -6,3 +6,4 @@ export { default as RolesDropdown } from './SelectDropdown/RolesDropdown';
 export { default as CommonDropdown } from './SelectDropdown/CommonDropdowm';
 export { default as ChargeDropdown } from './SelectDropdown/ChargeDropdown';
 export { default as SelectAcademicStatusDropdown } from './SelectDropdown/SelectAcademicStatusDropdown';
+export { default as StatusDropdown } from './SelectDropdown/StatusDropdown';

@@ -13,6 +13,14 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/utils/application.ts",
+    "src/utils/application.ts",
+    "src/types/**/*.d.ts"
+  ],
   "exclude": ["node_modules"]
 }

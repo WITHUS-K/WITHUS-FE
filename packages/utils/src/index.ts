@@ -15,3 +15,4 @@ export type { TagColor } from './util/tag';
 export { tagColorMap } from './util/tag';
 export { getTagColors } from './util/tag';
 export type { PaletteColor } from './util/tag';
+export { mapServerColorToTagHex } from './util/tag';

@@ -53,7 +53,7 @@ export const ApplicantDetailContent = ({
         <Text variant="md2_text_semibold" color="grayscale70">
           포트폴리오
         </Text>
-        <FileUploader file={detail.portfolioFile} onDownload={() => {}} />
+        <FileUploader readOnly file={detail.portfolioFile} />
       </Flex>
     </section>
 

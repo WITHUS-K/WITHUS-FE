@@ -25,6 +25,7 @@ export default function ApplicationList() {
     isFetching,
     refetch,
   } = useRecruitmentsListQuery(search);
+  console.log('공고', recruitments);
 
   const publishMutation = usePublishRecruitmentMutation();
   const deleteMutation = useDeleteRecruitmentMutation();
@@ -39,6 +40,7 @@ export default function ApplicationList() {
     const applicationQuestions = copyDetail.applicationQuestions.map((q) => {
       if (q.type === 'TEXT') {
         return {
+          questionId: q.questionId,
           type: 'TEXT' as const,
           title: q.title,
           description: q.description,
@@ -49,6 +51,7 @@ export default function ApplicationList() {
         };
       } else {
         return {
+          questionId: q.questionId,
           type: 'FILE' as const,
           title: q.title,
           description: q.description,
@@ -172,9 +175,7 @@ export default function ApplicationList() {
           leftIcon={<IcFileUpload width={24} height={24} />}
           onClick={() => router.push(`/application-list/setting/new`)}
         >
-          <Text variant="md2_text_medium" color="white">
-            지원서 생성
-          </Text>
+          지원서 생성
         </Button>
       </Flex>
 

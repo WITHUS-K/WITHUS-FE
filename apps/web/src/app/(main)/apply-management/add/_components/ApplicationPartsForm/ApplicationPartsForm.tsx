@@ -3,15 +3,20 @@ import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Option } from '@repo/ui/Option';
 
+export interface PartOption {
+  id: number;
+  label: string;
+}
+
 interface ApplicationPartsFormProps {
-  parts: string[];
-  selectedPart: string;
-  onChange: (part: string) => void;
+  parts: PartOption[];
+  selectedPartId?: number;
+  onChange: (part: PartOption) => void;
 }
 
 export function ApplicationPartsForm({
   parts,
-  selectedPart,
+  selectedPartId,
   onChange,
 }: ApplicationPartsFormProps) {
   return (
@@ -32,11 +37,11 @@ export function ApplicationPartsForm({
       <Flex gap="1rem">
         {parts.map((part) => (
           <Option
-            key={part}
+            key={part.id}
             type="radio"
-            label={part}
+            label={part.label}
             width="19.6rem"
-            isSelected={selectedPart === part}
+            isSelected={selectedPartId === part.id}
             onChange={() => onChange(part)}
           />
         ))}

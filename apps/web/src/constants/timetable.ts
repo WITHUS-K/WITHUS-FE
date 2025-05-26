@@ -9,7 +9,7 @@ export interface IntroductionContent {
 
 export interface FileInfo {
   name: string;
-  size: string;
+  size: number;
   downloadUrl: string;
 }
 
@@ -68,7 +68,7 @@ export interface TimeTableDay {
   rooms: TimeTableRoom[];
 }
 
-export const timetableMock: TimeTableDay[] = [
+/*export const timetableMock: TimeTableDay[] = [
   {
     date: '2025-04-22',
     rooms: [
@@ -1244,3 +1244,4 @@ export const ALL_GUIDES: ProfileItem[] = [
     name: '최운영1',
   },
 ];
+*/

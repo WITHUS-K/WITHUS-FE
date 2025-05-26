@@ -137,7 +137,7 @@ export const ApplicantInterviewForm = ({
                 file={{
                   name: `첨부파일_${q.questionId}`, // 혹은 실제 파일명 정보가 있다면 그걸 사용
                   downloadUrl: q.fileUrl!,
-                  size: '0KB',
+                  size: 5,
                 }}
                 onDownload={() => {}}
               />

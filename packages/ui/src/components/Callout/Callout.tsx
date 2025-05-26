@@ -40,7 +40,7 @@ export function Callout({
           style={varStyle}
         >
           {items.map((t, i) => (
-            <Text key={i} variant="xs_caption_semibold" color="primary60">
+            <Text key={i} variant="xs_caption_semibold" color="white">
               {t}
             </Text>
           ))}

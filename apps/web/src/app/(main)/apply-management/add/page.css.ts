@@ -1,6 +1,11 @@
 import { fontStyles, vars } from '@repo/theme';
 import { style } from '@vanilla-extract/css';
 
+export const layout = style({
+  width: '100%',
+  padding: '2.4rem',
+});
+
 export const container = style({
   width: '100%',
   padding: '5.2rem',
@@ -10,9 +15,9 @@ export const container = style({
   justifyContent: 'center',
   alignItems: 'flex-start',
   borderRadius: '24px',
-  border:`1px solid ${vars.colors.grayscale5}`,
-  backgroundColor: vars.colors.white
-})
+  border: `1px solid ${vars.colors.grayscale5}`,
+  backgroundColor: vars.colors.white,
+});
 
 export const title = style({
   width: '100%',
@@ -21,8 +26,8 @@ export const title = style({
   alignItems: 'center',
   alignSelf: 'center',
   color: vars.colors.black,
-  ...fontStyles.xxl_title_bold
-})
+  ...fontStyles.xxl_title_bold,
+});
 
 export const headerWrapper = style({
   display: 'flex',
@@ -39,14 +44,14 @@ export const headerWrapper = style({
 export const item = style({
   flex: 1,
   textAlign: 'center',
-  gap: '0.8rem'
+  gap: '0.8rem',
 });
 
 export const imageContainer = style({
-  position: 'relative',      
+  position: 'relative',
   width: '15.6rem',
   height: '20.8rem',
-  flexShrink: 0,   
+  flexShrink: 0,
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -54,7 +59,7 @@ export const imageContainer = style({
   border: `1px solid ${vars.colors.grayscale10}`,
   backgroundColor: vars.colors.grayscale5,
   cursor: 'pointer',
-})
+});
 
 export const questionRow = style({
   position: 'relative',
@@ -77,4 +82,4 @@ export const saveButton = style({
   display: 'flex',
   alignSelf: 'center',
   marginTop: '-6rem',
-})
+});
