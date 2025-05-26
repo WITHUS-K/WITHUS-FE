@@ -17,7 +17,7 @@ export function convertFormToRequest(
         : 60;
 
   const positions = form.applicationParts?.isSelected
-    ? form.applicationParts.parts
+    ? ['공통', ...form.applicationParts.parts]
     : ['공통'];
 
   const applicationQuestions: Array<TextQuestionDto | FileQuestionDto> =
@@ -75,13 +75,15 @@ export function convertFormToRequest(
   return {
     recruitmentId,
     title: form.title,
+
     content: '큐시즘 학회원 모집합니다.',
-    fileUrl: 'https://withus.com/files/recruit.pdf',
     positions,
     applicationQuestions,
+    isDocumentResultRequired: form.documentResult?.isSelected as boolean,
     documentDeadline: form.deadline || '2025-06-01',
-    documentResultDate: form.documentResult?.date || '',
+    documentResultDate: form.documentResult?.date || null,
     finalResultDate: form.finalResultDate || '2025-06-01',
+
     interviewDuration,
     organizationId: 1,
     needGender: form.basicInfo.gender,
@@ -98,6 +100,7 @@ export function convertFormToRequest(
       | 'RANK',
     documentEvaluationCriteria,
     interviewEvaluationCriteria,
+    isInterviewRequired: form.interviewSchedule?.isSelected as boolean,
     availableTimeRanges,
   };
 }

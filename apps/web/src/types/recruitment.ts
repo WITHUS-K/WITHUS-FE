@@ -62,12 +62,14 @@ export interface RecruitmentDetailDto {
     color: string;
   }[];
   documentDeadline: string;
+  isDocumentResultRequired: boolean;
   documentResultDate: string;
   finalResultDate: string;
   interviewDuration: number;
   organizationName: string;
   documentScaleType: 'SCORE' | 'LEVEL' | string;
   interviewScaleType: 'SCORE' | 'LEVEL' | string;
+
   documentEvaluationCriteria: {
     id: number;
     content: string;
@@ -83,6 +85,7 @@ export interface RecruitmentDetailDto {
     score: number;
   }[];
   applicationQuestions: Array<TextQuestionDto | FileQuestionDto>;
+  isInterviewRequired: boolean;
   availableTimeRanges: {
     id: number;
     date: string;
@@ -105,7 +108,7 @@ export interface UpdateRecruitmentRequest {
   fileUrl: string;
   positions: string;
   documentDeadline: string;
-  documentResultDate: string;
+  documentResultDate: string | null;
   finalResultDate: string;
   interviewDuration: number;
   needGender: boolean;
@@ -144,11 +147,11 @@ export interface PublishRecruitmentRequest {
   recruitmentId: number | null;
   title: string;
   content: string;
-  fileUrl: string;
   positions: string[];
   applicationQuestions: Array<TextQuestionDto | FileQuestionDto>;
   documentDeadline: string;
-  documentResultDate: string;
+  isDocumentResultRequired: boolean;
+  documentResultDate: string | null;
   finalResultDate: string;
   interviewDuration: number;
   organizationId: number;
@@ -160,6 +163,7 @@ export interface PublishRecruitmentRequest {
   needAcademicStatus: boolean;
   documentScaleType: 'SCORE' | 'RANK' | string;
   interviewScaleType: 'SCORE' | 'RANK' | string;
+
   documentEvaluationCriteria: {
     content: string;
     description: string;
@@ -170,6 +174,8 @@ export interface PublishRecruitmentRequest {
     description: string;
     type: 'DOCUMENT' | 'INTERVIEW' | string;
   }[];
+
+  isInterviewRequired: boolean;
   availableTimeRanges: {
     date: string;
     startTime: string;
@@ -192,11 +198,10 @@ export interface DraftRecruitmentRequest {
   recruitmentId: number | null;
   title: string;
   content: string;
-  fileUrl: string;
   positions: string[];
   applicationQuestions: Array<TextQuestionDto | FileQuestionDto>;
   documentDeadline: string;
-  documentResultDate: string;
+  documentResultDate: string | null;
   finalResultDate: string;
   interviewDuration: number;
   organizationId: number;
@@ -208,6 +213,7 @@ export interface DraftRecruitmentRequest {
   needAcademicStatus: boolean;
   documentScaleType: 'SCORE' | 'RANK' | string;
   interviewScaleType: 'SCORE' | 'RANK' | string;
+
   documentEvaluationCriteria: {
     content: string;
     description: string;

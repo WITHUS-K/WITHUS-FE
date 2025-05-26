@@ -48,12 +48,12 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
   });
 
   const documentResult = {
-    isSelected: Boolean(detail.documentResultDate),
+    isSelected: detail.isDocumentResultRequired,
     date: detail.documentResultDate,
   };
 
   const interviewSchedule = {
-    isSelected: detail.availableTimeRanges.length > 0,
+    isSelected: detail.isInterviewRequired,
     scheduleList: detail.availableTimeRanges.map((r) => ({
       date: r.date,
       startTime: r.startTime,

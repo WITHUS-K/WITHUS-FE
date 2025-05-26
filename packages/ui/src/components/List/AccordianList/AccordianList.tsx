@@ -11,6 +11,7 @@ import { AccordionItem } from '../Accordion/AccordionItem';
 import { AccordionTrigger } from '../Accordion/AccordionTrigger';
 import { AccordionContent } from '../Accordion/AccordionContent';
 import { ReactNode } from 'react';
+import { AccordianListLayout } from './AccordianListLayout';
 
 export interface Reviewer {
   name: string;
@@ -28,12 +29,14 @@ interface AccordianListProps {
   items: AccordianItemType[];
   isNumbering?: boolean;
   width?: string;
+  readOnly?: boolean;
 }
 
 export const AccordianList = ({
   items,
   isNumbering = true,
   width = '100%',
+  readOnly = false,
 }: AccordianListProps) => (
   <AccordionRoot multiple={false}>
     {items.map((item, idx) => {
@@ -46,7 +49,11 @@ export const AccordianList = ({
 
       return (
         <AccordionItem key={idx} value={idx.toString()}>
-          <ListLayout width={width} direction="column">
+          <AccordianListLayout
+            width={width}
+            direction="column"
+            readOnly={readOnly}
+          >
             <Flex
               direction="row"
               justify="spaceBetween"
@@ -68,7 +75,11 @@ export const AccordianList = ({
               {scoreItems.length > 0 && <ScoreChip items={scoreItems} />}
             </Flex>
 
-            <AccordionContent className={styles.contentWrapper}>
+            <AccordionContent
+              className={
+                readOnly ? styles.readOnlyContentWrapper : styles.contentWrapper
+              }
+            >
               <Divider
                 direction="row"
                 length="100%"
@@ -76,7 +87,7 @@ export const AccordianList = ({
               />
               {item.content}
             </AccordionContent>
-          </ListLayout>
+          </AccordianListLayout>
         </AccordionItem>
       );
     })}

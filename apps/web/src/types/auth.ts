@@ -6,6 +6,7 @@ export interface LoginRequest {
 export interface LoginPayload {
   userId: number;
   name: string;
+  role: string;
   profileImageUrl: string | null;
 
   userOrganizationRoles: {

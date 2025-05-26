@@ -8,7 +8,6 @@ import {
   AdditionalInfoForm,
 } from '@web/app/(main)/apply-management/add/_components/AdditionalInfoForm/AdditionalInfoForm';
 import { QuestionAndFileListForm } from '@web/app/(main)/apply-management/add/_components/QuestionFileListForm/QuestionFileListForm';
-import type { documentEvaluation as DocumentEvaluationType } from '@web/types/document-evaluation';
 import type { DetailItem } from '@web/types/application';
 import * as styles from './ApplicantDetail.css';
 import { ApplicationDetail } from '@web/store/query/useApplicationDetailQuery';

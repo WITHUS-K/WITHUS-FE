@@ -21,7 +21,11 @@ import { convertFormToRequest } from '@web/utils/convertFormToRequest';
 type TabKey = 'form' | 'stages' | 'criteria';
 const TAB_KEYS: TabKey[] = ['form', 'stages', 'criteria'];
 
-export function SettingForm() {
+interface SettingFormProps {
+  existentForm?: FormValues;
+}
+
+export function SettingForm({ existentForm }: SettingFormProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -33,7 +37,7 @@ export function SettingForm() {
 
   // 1. useForm 초기화 (Context에서 받은 초기값)
   const methods = useForm<FormValues>({
-    defaultValues: ctx.form,
+    defaultValues: existentForm || ctx.form,
     mode: 'onChange',
     criteriaMode: 'all',
     shouldUnregister: false,
@@ -121,6 +125,7 @@ export function SettingForm() {
   const handleSave = useCallback(() => {
     const values = methods.getValues();
     const payload = convertFormToRequest(values, recruitmentId);
+    console.log('저장 값:', payload);
     draftMutation.mutate(payload, {
       onSuccess: (res) => {
         if (pathname.endsWith('/new')) {

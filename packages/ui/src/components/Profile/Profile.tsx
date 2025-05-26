@@ -1,3 +1,4 @@
+import { IcHeaderProfile } from '../../icons/src/colored';
 import * as styles from './Profile.css';
 
 interface ProfileProps {
@@ -17,7 +18,8 @@ export const Profile = ({ src, alt, size = 24 }: ProfileProps) => {
       {src ? (
         <img src={src} alt={alt} className={styles.profileImage} />
       ) : (
-        <div className={styles.emptyProfile} />
+        // <div className={styles.emptyProfile} />
+        <IcHeaderProfile width={24} height={24} />
       )}
     </div>
   );

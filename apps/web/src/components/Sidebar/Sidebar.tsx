@@ -14,7 +14,7 @@ import {
 import { useRouter } from 'next/navigation';
 
 interface SidebarProps {
-  role: 'user' | 'admin';
+  role: string;
 }
 
 const Sidebar = ({ role }: SidebarProps) => {
@@ -55,7 +55,7 @@ const Sidebar = ({ role }: SidebarProps) => {
     {
       icon: <IcSidebarPaper width={24} height={24} />,
       label: '서류 평가',
-      route: '/',
+      route: '/docs-evaluation',
     },
     {
       icon: <IcSidebarCalender width={24} height={24} />,
@@ -69,7 +69,7 @@ const Sidebar = ({ role }: SidebarProps) => {
     },
   ];
 
-  const items = role === 'admin' ? adminItems : userItems;
+  const items = role === 'ADMIN' ? adminItems : userItems;
 
   return (
     <nav className={sidebarContainer}>

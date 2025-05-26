@@ -15,7 +15,9 @@ export default function TabsLayout({ children }: { children: ReactNode }) {
 
   const router = useRouter();
   const sp = useSearchParams();
+  const params = useParams();
   const qs = sp.toString();
+  const id = params.id;
 
   const handleTabChange = (next: string) => {
     const base = `/docs-evaluation/${next}`;
@@ -24,20 +26,25 @@ export default function TabsLayout({ children }: { children: ReactNode }) {
 
   return (
     <div style={{ width: '100%' }}>
-      <Breadcrumb>
-        <Breadcrumb.Item active>서류 평가</Breadcrumb.Item>
-      </Breadcrumb>
-      <Text variant="xl_title_semibold" style={{ margin: '0.8rem 0 1.6rem' }}>
-        서류 평가
-      </Text>
-
-      <FilterBar />
-
-      <TabBar
-        tabs={TABS as unknown as string[]}
-        active={activeTab}
-        onChange={handleTabChange}
-      />
+      {!id && (
+        <>
+          <Breadcrumb>
+            <Breadcrumb.Item active>서류 평가</Breadcrumb.Item>
+          </Breadcrumb>
+          <Text
+            variant="xl_title_semibold"
+            style={{ margin: '0.8rem 0 1.6rem' }}
+          >
+            서류 평가
+          </Text>
+          <FilterBar />
+          <TabBar
+            tabs={TABS as unknown as string[]}
+            active={activeTab}
+            onChange={handleTabChange}
+          />
+        </>
+      )}
 
       <div style={{ marginTop: '4rem' }}>{children}</div>
     </div>

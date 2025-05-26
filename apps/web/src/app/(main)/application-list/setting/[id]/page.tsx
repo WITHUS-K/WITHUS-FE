@@ -15,7 +15,9 @@ export default function EditSettingPage() {
 
   useEffect(() => {
     if (detail) {
-      setForm(convertDetailToForm(detail));
+      const detailForm = convertDetailToForm(detail);
+      setForm(detailForm);
+      console.log('detailform', detailForm);
     }
   }, [detail]);
 
@@ -23,5 +25,5 @@ export default function EditSettingPage() {
     return <div>로딩 중…</div>;
   }
 
-  return <SettingForm />;
+  return <SettingForm existentForm={form} />;
 }
