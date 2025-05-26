@@ -8,7 +8,7 @@ import {
 } from '../../hooks/useRangeSelection';
 import { rangeToTimeRange, parseToMin } from '@web/utils/time';
 import * as styles from './TimeTable.css';
-import type { InterviewSchedule } from '@web/constants/timetable';
+import { InterviewSchedule } from '@web/types/application';
 
 export interface TimeRange {
   startTime: string;

@@ -71,7 +71,7 @@ export default function ApplicantDetailPage() {
       name:
         app.documentAnswers.find((d) => d.fileUrl)?.questionTitle ??
         'portfolio',
-      size: '0KB', // you can replace with real file size if your API provides it
+      size: 5, // you can replace with real file size if your API provides it
       downloadUrl: app.documentAnswers.find((d) => d.fileUrl)?.fileUrl ?? '',
     },
     interviewQuestions: app.interviewQuestions.map((q) => ({

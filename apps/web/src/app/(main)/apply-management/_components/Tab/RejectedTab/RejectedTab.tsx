@@ -59,11 +59,6 @@ export default function RejectedTab({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
 
-  const templates: Template[] = [
-    { id: 't1', title: '템플릿 1', body: '안녕하세요, 지원자님…' },
-    { id: 't2', title: '템플릿 2', body: '감사합니다.' },
-  ];
-
   const [page, setPage] = useState(0);
   const size = 7;
   const [sortKey, setSortKey] = useState<keyof typeof sortByMap>('name');
@@ -83,6 +78,7 @@ export default function RejectedTab({
     return data.data.map((item, idx) => {
       const hex = mapServerColorToTagHex(posColorMap[item.positionName]!);
       return {
+        applicationId: item.id,
         id: String(page * size + idx + 1).padStart(3, '0'), // 순번
         name: item.name,
         fieldTags: [
@@ -105,16 +101,20 @@ export default function RejectedTab({
     });
   }, [data, page, size, posColorMap]);
 
-  const recipients = useMemo(
-    () => rows.filter((r) => selectedIds.includes(r.id)).map((r) => r.name),
-    [rows, selectedIds]
-  );
+  const selectedRows = rows.filter((r) => selectedIds.includes(r.id));
+  const applicationIds = selectedRows.map((r) => r.applicationId);
+  const recipientNames = selectedRows.map((r) => r.name);
 
   const setModalParam = (value: string | null) => {
     const params = new URLSearchParams(Array.from(searchParams.entries()));
     if (value) params.set('sideTab', value);
     else params.delete('sideTab');
     router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleCloseSideTab = () => {
+    setModalParam(null);
+    setSelectedIds([]); // 체크박스 리셋
   };
 
   return (
@@ -153,25 +153,17 @@ export default function RejectedTab({
 
       {sideTab === 'sms' && (
         <SmsSideTab
-          recipients={recipients}
-          templates={templates}
-          onClose={() => setModalParam(null)}
-          onSend={(data) => {
-            console.log('문자 전송:', data);
-            setModalParam(null);
-          }}
+          applicationIds={applicationIds}
+          recipients={recipientNames}
+          onClose={handleCloseSideTab}
         />
       )}
 
       {sideTab === 'mail' && (
         <MailSideTab
-          recipients={recipients}
-          templates={templates}
-          onClose={() => setModalParam(null)}
-          onSend={(data) => {
-            console.log('메일 전송:', data);
-            setModalParam(null);
-          }}
+          applicationIds={applicationIds}
+          recipients={recipientNames}
+          onClose={handleCloseSideTab}
         />
       )}
     </Flex>

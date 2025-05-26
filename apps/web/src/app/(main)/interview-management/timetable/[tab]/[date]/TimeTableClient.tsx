@@ -89,7 +89,9 @@ export default function TimetableClient({
   );
 
   schedule.timeSlots.forEach((ts) => {
-    roomsMap[ts.roomName]!.push(ts);
+    if (roomsMap[ts.roomName]) {
+      roomsMap[ts.roomName]!.push(ts);
+    }
   });
 
   const getWidth = rooms.length === 3 ? '31.3rem' : '51.45rem';
