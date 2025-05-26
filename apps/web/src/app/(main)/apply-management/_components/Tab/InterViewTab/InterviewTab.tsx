@@ -114,6 +114,10 @@ export default function InterviewTab({
     [rows, selectedIds]
   );
 
+  const selectedRows = rows.filter((r) => selectedIds.includes(r.id));
+  const applicationIds = selectedRows.map((r) => r.applicationId);
+  const recipientNames = selectedRows.map((r) => r.name);
+
   const setModalParam = (value: string | null) => {
     const params = new URLSearchParams(Array.from(searchParams.entries()));
     if (value) params.set('sideTab', value);
@@ -162,25 +166,17 @@ export default function InterviewTab({
 
       {sideTab === 'sms' && (
         <SmsSideTab
-          recipients={recipients}
-          templates={templates}
+          applicationIds={applicationIds}
+          recipients={recipientNames}
           onClose={() => setModalParam(null)}
-          onSend={(data) => {
-            console.log('문자 전송:', data);
-            setModalParam(null);
-          }}
         />
       )}
 
       {sideTab === 'mail' && (
         <MailSideTab
-          recipients={recipients}
-          templates={templates}
+          applicationIds={applicationIds}
+          recipients={recipientNames}
           onClose={() => setModalParam(null)}
-          onSend={(data) => {
-            console.log('메일 전송:', data);
-            setModalParam(null);
-          }}
         />
       )}
     </Flex>

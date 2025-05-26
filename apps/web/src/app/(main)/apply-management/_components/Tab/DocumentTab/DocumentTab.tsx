@@ -108,6 +108,10 @@ export default function DocumentTab({
     });
   }, [data, page, size, posColorMap]);
 
+  const selectedRows = rows.filter((r) => selectedIds.includes(r.id));
+  const applicationIds = selectedRows.map((r) => r.applicationId);
+  const recipientNames = selectedRows.map((r) => r.name);
+
   const recipients = useMemo(
     () => rows.filter((r) => selectedIds.includes(r.id)).map((r) => r.name),
     [rows, selectedIds]
@@ -167,25 +171,17 @@ export default function DocumentTab({
 
       {sideTab === 'sms' && (
         <SmsSideTab
-          recipients={recipients}
-          templates={templates}
+          applicationIds={applicationIds}
+          recipients={recipientNames}
           onClose={() => setModalParam(null)}
-          onSend={(data) => {
-            console.log('문자 전송:', data);
-            setModalParam(null);
-          }}
         />
       )}
 
       {sideTab === 'mail' && (
         <MailSideTab
-          recipients={recipients}
-          templates={templates}
+          applicationIds={applicationIds}
+          recipients={recipientNames}
           onClose={() => setModalParam(null)}
-          onSend={(data) => {
-            console.log('메일 전송:', data);
-            setModalParam(null);
-          }}
         />
       )}
     </Flex>

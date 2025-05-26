@@ -92,11 +92,19 @@ export const queryKeys = {
 
     detail: (applicationId: number) =>
       ['applications', 'detail', applicationId] as const,
+
+    bulkSms: () => ['admin', 'applications', 'bulk-sms'] as const,
+    bulkMail: () => ['admin', 'applications', 'bulk-mail'] as const,
   },
   distribution: {
     latest: (recruitmentId: number) =>
       ['distribution', 'latest', recruitmentId] as const,
     submit: (recruitmentId: number) =>
       ['distribution', 'submit', recruitmentId] as const,
+  },
+  templates: {
+    list: (medium: 'SMS' | 'MAIL') => ['templates', 'list', medium] as const,
+    detail: (templateId: number) =>
+      ['templates', 'detail', templateId] as const,
   },
 } as const;
