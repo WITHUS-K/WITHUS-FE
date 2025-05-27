@@ -62,9 +62,17 @@ export interface PaginationMeta {
   isLast: boolean;
 }
 
+export interface ApplicationCounts {
+  document: number;
+  interview: number;
+  finalPass: number;
+  fail: number;
+}
+
 export interface AdminApplicationsResult {
   data: AdminApplicationSummary[];
   pagination: PaginationMeta;
+  counts: ApplicationCounts;
 }
 
 export interface AdminApplicationsResponse {

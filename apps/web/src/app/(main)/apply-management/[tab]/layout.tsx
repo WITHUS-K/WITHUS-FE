@@ -9,6 +9,7 @@ import { ClubDropdown } from '@repo/ui/DropDown';
 import { TabBar } from '@repo/ui/TabBar';
 import { IcCriteriaBtn } from '@repo/ui/icons/mono';
 import { useRecruitmentsQuery } from '@web/store/query/useRecruitmentsQuery';
+import { useAdminApplicationsQuery } from '@web/store/query/useAdminApplicationsQuery';
 
 const TAB_KEYS = ['documents', 'interviews', 'final', 'rejected'] as const;
 
@@ -26,13 +27,29 @@ export default function ClubLayout({
   const tab = Array.isArray(params.tab) ? params.tab[0] : params.tab!;
   const id = params.id;
 
-  const recruitmentId = search.get('recruitmentId') ?? '';
+  const recruitmentIdStr = search.get('recruitmentId') ?? '';
+  const recruitmentId = Number(recruitmentIdStr);
+
   const { data: recs = [] } = useRecruitmentsQuery();
 
   const options = recs.map((r) => ({
     id: String(r.recruitmentId),
     name: r.title,
   }));
+
+  const { data: adminData } = useAdminApplicationsQuery({
+    recruitmentId,
+    stage: 'DOCUMENT', // 이 값은 counts 전체를 반환해 주기 때문에, 아무 stage나 넣어도 OK
+    page: 0,
+    size: 1, // 리스트는 필요 없으니 size 최소로
+  });
+
+  const counts = {
+    documents: adminData?.counts.document ?? 0,
+    interviews: adminData?.counts.interview ?? 0,
+    final: adminData?.counts.finalPass ?? 0,
+    rejected: adminData?.counts.fail ?? 0,
+  };
 
   useEffect(() => {
     if (!recruitmentId && options.length > 0) {
@@ -45,7 +62,7 @@ export default function ClubLayout({
   // 렌더링 시엔 이미 URL 에 붙어 있을테니
   const names = options.map((o) => o.name);
   const selectedName =
-    options.find((o) => o.id === recruitmentId)?.name ?? names[0] ?? '';
+    options.find((o) => o.id === recruitmentIdStr)?.name ?? names[0] ?? '';
 
   const onClubChange = (newName: string) => {
     const found = options.find((o) => o.name === newName);
@@ -86,12 +103,7 @@ export default function ClubLayout({
               <TabBar
                 tabs={TAB_KEYS as unknown as string[]}
                 active={tab!}
-                counts={{
-                  documents: 12,
-                  interviews: 8,
-                  final: 3,
-                  rejected: 5,
-                }}
+                counts={counts}
                 onChange={onTabChange}
               />
             </div>

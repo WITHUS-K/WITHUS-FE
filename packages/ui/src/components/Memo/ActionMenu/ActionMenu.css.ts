@@ -28,6 +28,7 @@ export const list = style({
   zIndex: 3,
   boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.10)',
 });
+
 export const item = style({
   display: 'flex',
   width: '100%',
