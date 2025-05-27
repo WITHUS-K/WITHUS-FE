@@ -21,47 +21,47 @@ export interface FilterSettings {
 interface FilterFormProps {
   parts: string[];
   partColorMap: Record<string, TagHex>;
+  initialSettings?: FilterSettings;
   onSettingsChange: (s: FilterSettings) => void;
   disabled?: boolean;
 }
-
-const TAG_COLORS: TagColor[] = [
-  '#FF2A3A',
-  '#EE6B00',
-  '#E2A500',
-  '#009857',
-  '#0084BC',
-  '#2C60FF',
-  '#813DFF',
-  '#F25DEB',
-  '#7F82A1',
-  '#5A5C72',
-];
 
 export default function FilterForm({
   parts,
   partColorMap,
   onSettingsChange,
+  initialSettings,
   disabled = false,
 }: FilterFormProps) {
-  const [rooms, setRooms] = useState<string[]>(['']);
-  const addRoom = () =>
-    !disabled && rooms.length < 3 && setRooms((r) => [...r, '']);
-  const updateRoom = (i: number, v: string) =>
-    !disabled &&
-    setRooms((r) => {
-      const a = [...r];
-      a[i] = v;
-      return a;
-    });
-  const deleteRoom = (i: number) =>
-    !disabled && setRooms((r) => r.filter((_, idx) => idx !== i));
+  const [rooms, setRooms] = useState<string[]>(initialSettings?.rooms ?? ['']);
+  const [counts, setCounts] = useState({
+    면접관: initialSettings?.interviewerPerSlot ?? 1,
+    지원자: initialSettings?.applicantPerSlot ?? 1,
+    안내자: initialSettings?.assistantPerSlot ?? 1,
+  });
 
-  const [counts, setCounts] = useState({ 면접관: 1, 지원자: 1, 안내자: 1 });
-  const onCountChange = (name: string, next: number) => {
-    if (disabled) return;
-    setCounts((c) => ({ ...c, [name]: Math.max(1, next) }));
-  };
+  useEffect(() => {
+    if (!initialSettings) return;
+
+    const roomsEqual =
+      rooms.length === initialSettings.rooms.length &&
+      rooms.every((r, i) => r === initialSettings.rooms[i]);
+    if (!roomsEqual) {
+      setRooms(initialSettings.rooms);
+    }
+
+    const countsEqual =
+      counts.면접관 === initialSettings.interviewerPerSlot &&
+      counts.지원자 === initialSettings.applicantPerSlot &&
+      counts.안내자 === initialSettings.assistantPerSlot;
+    if (!countsEqual) {
+      setCounts({
+        면접관: initialSettings.interviewerPerSlot,
+        지원자: initialSettings.applicantPerSlot,
+        안내자: initialSettings.assistantPerSlot,
+      });
+    }
+  }, [initialSettings, rooms, counts.면접관, counts.지원자, counts.안내자]);
 
   useEffect(() => {
     onSettingsChange({
@@ -71,6 +71,33 @@ export default function FilterForm({
       assistantPerSlot: counts.안내자,
     });
   }, [rooms, counts, onSettingsChange]);
+
+  const addRoom = () => {
+    if (disabled || rooms.length >= 3) return;
+    setRooms((prev) => [...prev, '']);
+  };
+
+  const updateRoom = (index: number, value: string) => {
+    if (disabled) return;
+    setRooms((prev) => {
+      const copy = [...prev];
+      copy[index] = value;
+      return copy;
+    });
+  };
+
+  const deleteRoom = (index: number) => {
+    if (disabled) return;
+    setRooms((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const onCountChange = (name: string, next: number) => {
+    if (disabled) return;
+    setCounts((prev) => ({
+      ...prev,
+      [name]: Math.max(1, next),
+    }));
+  };
 
   return (
     <div className={styles.wrapper}>

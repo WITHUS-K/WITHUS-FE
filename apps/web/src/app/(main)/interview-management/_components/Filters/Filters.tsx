@@ -15,6 +15,7 @@ import { IcRefresh, IcSave } from '@repo/ui/icons/colored';
 import { useModal } from '@repo/ui/hooks';
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { TagHex, mapServerColorToTagHex } from '@web/utils/color';
+import { useInterviewConfigQuery } from '@web/store/query/useInterviewConfigQuery';
 
 export default function Filters() {
   const router = useRouter();
@@ -30,12 +31,26 @@ export default function Filters() {
   const { data: recruitments = [] } = useRecruitmentsQuery();
   const { data: orgInterviews = [] } = useOrganizationInterviewsQuery();
   const { data: positions = [] } = useRecruitmentPositionsQuery(urlRid ?? 0);
+  const { data: config } = useInterviewConfigQuery(urlIv ?? 0);
+
   // Component state
   const [rid, setRid] = useState<number | undefined>(urlRid);
   const [iv, setIv] = useState<number | undefined>(urlIv);
   const [isEditing, setIsEditing] = useState<boolean>(urlIv == null);
   const [selectedTitle, setSelectedTitle] = useState<string>(() => {
     return recruitments.find((r) => r.recruitmentId === urlRid)?.title ?? '';
+  });
+
+  // 면접실, 인원수 state
+  const [rooms, setRooms] = useState<string[]>(config?.roomNames ?? ['']);
+  const [counts, setCounts] = useState<{
+    면접관: number;
+    지원자: number;
+    안내자: number;
+  }>({
+    면접관: config?.interviewerCount ?? 1,
+    지원자: config?.applicantCount ?? 1,
+    안내자: config?.assistantCount ?? 1,
   });
 
   //파트 가져오깅!
@@ -55,6 +70,19 @@ export default function Filters() {
       setSelectedTitle(found?.title ?? '');
     }
   }, [urlRid, urlIv, recruitments]);
+
+  // config 데이터가 변경되면 rooms/counts 상태 초기화
+  useEffect(() => {
+    if (config && iv != null) {
+      setRooms(config.roomNames);
+      setCounts({
+        면접관: config.interviewerCount,
+        지원자: config.applicantCount,
+        안내자: config.assistantCount,
+      });
+      setIsEditing(false);
+    }
+  }, [config, iv]);
 
   // 첫 진입: rid 없으면 목록 첫 번째 선택
   useEffect(() => {
@@ -81,7 +109,7 @@ export default function Filters() {
 
   // 9) 이미 면접이 생성되어 있고 URL에 iv 없으면 자동으로 timetable로 이동
   useEffect(() => {
-    // ① 모달 경로라면 아무 것도 하지 않는다
+    // 모달 경로라면 아무 것도 하지 않는다
     if (pathname.includes('/invite')) return;
 
     if (
@@ -225,6 +253,12 @@ export default function Filters() {
           partColorMap={partColorMap}
           onSettingsChange={setSettings}
           disabled={!isEditing}
+          initialSettings={{
+            rooms,
+            interviewerPerSlot: counts.면접관,
+            applicantPerSlot: counts.지원자,
+            assistantPerSlot: counts.안내자,
+          }}
         />
       )}
     </Flex>

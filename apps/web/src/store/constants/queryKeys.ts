@@ -57,6 +57,8 @@ export const queryKeys = {
     schedule: (id: number) => ['interview', 'schedule', id] as const,
     create: () => ['interview', 'create'] as const,
     scheduleCreate: () => ['interview', 'schedule', 'create'] as const,
+    config: (interviewId: number) =>
+      ['interview', 'config', interviewId] as const,
   },
   timeSlot: {
     users: (timeSlotId: number) => ['timeSlot', 'users', timeSlotId] as const,
