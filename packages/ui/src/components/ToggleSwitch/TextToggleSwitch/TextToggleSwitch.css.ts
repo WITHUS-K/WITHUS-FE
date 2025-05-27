@@ -1,24 +1,37 @@
 import { colors, fontStyles } from '@repo/theme';
 import { style, styleVariants } from '@vanilla-extract/css';
 
-export const wrapper = style({
-  padding: '0.3rem',
-  display: 'inline-block',
+export const wrapper = styleVariants({
+  base: {
+    padding: '0.3rem',
+    display: 'inline-block',
+
+  },
+  full: {
+    padding: '0.3rem',
+    display: 'inline-block',
+    width: '100%',
+  },
 });
 
+
 export const container = style({
-  position: 'relative',      
+  position: 'relative',
   display: 'inline-flex',
   alignItems: 'center',
   borderRadius: '14px',
   backgroundColor: colors.grayscale5,
   padding: '0.3rem',
+  width: '100%',
+  vars: {
+    '--segment-width': '120px',
+  },
 });
 
 export const highlight = style({
   position: 'absolute',
-  width: `12rem`,
-  height: '4rem',            
+  width: 'var(--segment-width)',     
+  height: '4rem',
   backgroundColor: colors.white,
   borderRadius: '12px',
   transition: 'transform 0.3s ease',
@@ -26,9 +39,9 @@ export const highlight = style({
 });
 
 export const segment = style({
-  position: 'relative',     
+  position: 'relative',
   zIndex: 1,
-  width: `12rem`,
+  width: 'var(--segment-width)',     
   height: '4rem',
   display: 'flex',
   alignItems: 'center',

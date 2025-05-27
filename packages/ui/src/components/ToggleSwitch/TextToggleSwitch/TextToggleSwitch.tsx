@@ -1,5 +1,14 @@
+'use client';
+
+import React from 'react';
 import clsx from 'clsx';
-import * as styles from './TextToggleSwitch.css';
+import {
+  wrapper,
+  container,
+  highlight,
+  segment,
+  variants,
+} from './TextToggleSwitch.css';
 
 export interface Option<T extends string | number> {
   value: T;
@@ -17,6 +26,7 @@ export interface TextToggleSwitchProps<T extends string | number> {
   selected: T;
   onChange: (value: T) => void;
   className?: string;
+  fullWidth?: boolean;
 }
 
 export function TextToggleSwitch<T extends string | number>({
@@ -24,22 +34,28 @@ export function TextToggleSwitch<T extends string | number>({
   selected,
   onChange,
   className,
+  fullWidth = false,
 }: TextToggleSwitchProps<T>) {
   const SEGMENT_WIDTH = 120;
-
+  const count = options.length;
   const selectedIndex = options.findIndex((opt) => opt.value === selected);
-  const isFirst = selectedIndex === 0;
 
-  const offsetX = isFirst ? 0 : selectedIndex * SEGMENT_WIDTH;
+  const wrapperClass = fullWidth ? wrapper.full : wrapper.base;
+  const offset = fullWidth
+    ? `${98.5 * selectedIndex}%`
+    : `${SEGMENT_WIDTH * selectedIndex}px`;
+
+  const inlineStyle = fullWidth
+    ? ({ '--segment-width': `${100 / count}%` } as React.CSSProperties)
+    : undefined;
 
   return (
-    <div className={clsx(styles.wrapper, className)}>
-      <div className={styles.container}>
+    <div className={clsx(wrapperClass, className)}>
+      <div className={container} style={inlineStyle}>
         <div
-          className={styles.highlight}
-          style={{ transform: `translateX(${offsetX}px)` }}
+          className={highlight}
+          style={{ transform: `translateX(${offset})` }}
         />
-
         {options.map((opt) => {
           const isSelected = opt.value === selected;
           return (
@@ -48,11 +64,10 @@ export function TextToggleSwitch<T extends string | number>({
               role="tab"
               aria-selected={isSelected}
               tabIndex={0}
-              className={`${styles.segment} ${
-                isSelected
-                  ? styles.variants.selected
-                  : styles.variants.unselected
-              }`}
+              className={clsx(
+                segment,
+                isSelected ? variants.selected : variants.unselected
+              )}
               onClick={() => onChange(opt.value)}
             >
               {opt.label}
