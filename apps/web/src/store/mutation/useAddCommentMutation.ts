@@ -31,6 +31,9 @@ export function useAddCommentMutation(
       qc.invalidateQueries({
         queryKey: queryKeys.timeSlot.applications(timeSlotId),
       });
+      qc.invalidateQueries({
+        queryKey: queryKeys.applications.detail(applicationId),
+      });
     },
   });
 }

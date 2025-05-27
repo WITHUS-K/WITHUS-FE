@@ -69,6 +69,24 @@ export const queryKeys = {
   },
 
   applications: {
+    userList: (
+      recruitmentId: number,
+      evaluationStatus: string,
+      keyword: string,
+      page: number,
+      size: number
+    ) =>
+      [
+        'applications',
+        'recruitment',
+        recruitmentId,
+        'list',
+        evaluationStatus,
+        keyword,
+        page,
+        size,
+      ] as const,
+
     list: (
       recruitmentId: number,
       stage: string,

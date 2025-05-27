@@ -45,6 +45,7 @@ export default function AuthLayout({
         deleteCookie('position', { path: '/' });
         deleteCookie('part', { path: '/' });
         deleteCookie('organizationId', { path: '/' });
+        deleteCookie('userId', { path: '/' });
         clearUser();
         router.push('/');
       },

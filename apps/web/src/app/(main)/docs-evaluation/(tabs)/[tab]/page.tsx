@@ -1,31 +1,67 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Flex } from '@repo/ui/Flex';
 import { ITEMS, Item } from '@web/constants/document';
 import ItemCard from '../../_components/ItemCard/ItemCard';
 import { Pagination } from '@repo/ui/Pagination';
+import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
+import { useApplicationsQuery } from '@web/store/query/useApplicationsQuery';
+import { mapServerColorToTagHex } from '@web/utils/color';
 
 const PER_PAGE = 9;
 
 export default function TabPage() {
+  const router = useRouter();
+  const sp = useSearchParams();
+
   const { tab } = useParams() as { tab?: 'all' | 'BEFORE' | 'COMPLETED' };
   const activeTab = tab ?? 'all';
 
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const recruitmentId = Number(sp.get('recruitmentId'));
+  const keyword = sp.get('keyword') ?? '';
+  const page = sp.get('page') ? Number(sp.get('page')) : 1;
 
-  // 탭 필터링: all 이면 전체, 아니면 status 일치 항목만
-  const filtered = useMemo<Item[]>(() => {
-    if (activeTab === 'all') return ITEMS;
-    return ITEMS.filter((it) => it.evaluationStatus === activeTab);
-  }, [activeTab]);
+  // 포지션(태그) 컬러 매칭용 조회
+  const { data: positions = [] } = useRecruitmentPositionsQuery(recruitmentId);
 
-  // 현재 페이지에 보여줄 슬라이스
-  const pageItems = useMemo<Item[]>(() => {
-    const start = (currentPage - 1) * PER_PAGE;
-    return filtered.slice(start, start + PER_PAGE);
-  }, [filtered, currentPage]);
+  // 탭 → API evaluationStatus 매핑
+  const evaluationStatus = (() => {
+    switch (activeTab) {
+      case 'all':
+        return 'ALL';
+      case 'BEFORE':
+        return 'NOT_EVALUATED';
+      case 'COMPLETED':
+        return 'EVALUATED';
+      default:
+        return 'ALL';
+    }
+  })() as 'ALL' | 'EVALUATED' | 'NOT_EVALUATED';
+
+  // 지원서 목록 조회
+  const { data: appsResult, isLoading } = useApplicationsQuery({
+    recruitmentId,
+    evaluationStatus,
+    keyword,
+    page: page - 1,
+    size: PER_PAGE,
+  });
+
+  const apps = appsResult?.data ?? [];
+  const pagination = appsResult?.pagination;
+
+  // 페이징 버튼 클릭 시
+  const onPageChange = (newPage: number) => {
+    const params = new URLSearchParams(sp.toString());
+    params.set('page', String(newPage));
+    router.replace(`?${params.toString()}`);
+  };
+
+  if (isLoading || !pagination) {
+    return null;
+  }
 
   return (
     <>
@@ -35,9 +71,31 @@ export default function TabPage() {
         justify="flexStart"
         style={{ minHeight: '36rem' }}
       >
-        {pageItems.map((item) => (
-          <ItemCard key={item.id} item={item} />
-        ))}
+        {apps.map((app) => {
+          // 서버에서 가져온 포지션 이름으로 컬러 찾기
+          const pos = positions.find((p) => p.name === app.positionName);
+          const color = mapServerColorToTagHex(pos!.color);
+          return (
+            <ItemCard
+              key={app.id}
+              item={{
+                id: app.id,
+                name: app.name,
+                positionName: app.positionName,
+                tagColor: color,
+                // 과거 mock의 BEFORE/COMPLETED 구분
+                evaluationStatus:
+                  app.documentEvaluated === false ? 'BEFORE' : 'COMPLETED',
+                pass:
+                  app.status === 'DOX_PASS' || app.status === 'INTERVIEW_PASS',
+                evaluationScore: app.myScoreTotal ?? 0,
+                interviewDate: app.interviewSchedule?.split('T')[0] ?? '',
+                interviewTime:
+                  app.interviewSchedule?.split('T')[1]?.slice(0, 5) ?? '',
+              }}
+            />
+          );
+        })}
       </Flex>
 
       <div
@@ -48,10 +106,10 @@ export default function TabPage() {
         }}
       >
         <Pagination
-          totalItems={filtered.length}
+          totalItems={pagination!.totalElements}
           itemCountPerPage={PER_PAGE}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
+          currentPage={page}
+          onPageChange={onPageChange}
         />
       </div>
     </>

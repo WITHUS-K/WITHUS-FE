@@ -22,7 +22,7 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
     type: 'text',
     description: a.questionTitle,
     responseTarget: idx,
-    typeInfo: { info: '', infoDetail: '' }, // 기존 구조에 맞춰 필요 시 추가
+    typeInfo: { info: '공백포함', infoDetail: '500자' }, // 기존 구조에 맞춰 필요 시 추가
   }));
 
   const fileItem: DetailItem | undefined = application.documentAnswers.some(
@@ -34,7 +34,7 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
         description: '첨부파일',
         addDescription: '',
         responseTarget: 0,
-        typeInfo: { info: '', infoDetail: '' },
+        typeInfo: { info: '1', infoDetail: '10' },
       }
     : undefined;
 
@@ -47,7 +47,7 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
       a.fileUrl
         ? {
             name: decodeURIComponent(a.fileUrl.split('/').pop() ?? '파일.pdf'),
-            size: 0, // 서버에서는 알 수 없으므로 0 or unknown
+            size: 10, // 서버에서는 알 수 없으므로 0 or unknown
             downloadUrl: a.fileUrl,
           }
         : null

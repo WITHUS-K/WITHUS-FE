@@ -32,9 +32,9 @@ export async function login(data: LoginRequest): Promise<LoginPayload> {
     success: boolean;
   };
 
-
-  console.log(json)
+  console.log(json);
   const {
+    userId,
     userOrganizations,
     name,
     profileImageUrl,
@@ -43,6 +43,7 @@ export async function login(data: LoginRequest): Promise<LoginPayload> {
   } = json.result;
 
   const cookiesToSet: Record<string, unknown> = {
+    userId,
     organizationId: userOrganizations?.[0]?.organizationId,
     name,
     profileImageUrl,
@@ -58,8 +59,6 @@ export async function login(data: LoginRequest): Promise<LoginPayload> {
       setCookie(key, stringValue, { path: '/' });
     }
   });
-
-  
 
   // result 안에서 필요한 값만 꺼내서 플랫하게 리턴
   return {
