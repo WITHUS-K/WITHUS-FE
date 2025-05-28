@@ -3,6 +3,7 @@
 
 import { useMutation } from '@tanstack/react-query';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+import { sanitizeFileName } from '@web/utils/serializers';
 
 // ——— 요청 DTO 타입 ———
 export interface CreateApplicationRequest {
@@ -77,6 +78,12 @@ export function useCreateApplication() {
       }
 
       // 4) 질문 첨부 파일들
+      /*for (const file of answerFiles) {
+        const safeName = sanitizeFileName(file.name);
+        // 새 File 객체로 이름만 교체
+        const safeFile = new File([file], safeName, { type: file.type });
+        form.append('files', safeFile, safeName);
+      }*/
       for (const file of answerFiles) {
         form.append('files', file, file.name);
       }

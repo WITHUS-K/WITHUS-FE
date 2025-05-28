@@ -25,20 +25,18 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
     typeInfo: { info: '공백포함', infoDetail: '500자' }, // 기존 구조에 맞춰 필요 시 추가
   }));
 
-  const fileItem: DetailItem | undefined = application.documentAnswers.some(
-    (a) => a.questionType === 'FILE'
-  )
-    ? {
-        isEssential: false,
-        type: 'file',
-        description: '첨부파일',
-        addDescription: '',
-        responseTarget: 0,
-        typeInfo: { info: '1', infoDetail: '10' },
-      }
-    : undefined;
+  const fileItem: DetailItem[] = application.documentAnswers
+    .filter((a) => a.questionType === 'FILE')
+    .map((a, idx) => ({
+      isEssential: true,
+      type: 'file',
+      description: a.questionTitle, // questionTitle 사용
+      addDescription: '', // 필요시 질문 설명 사용
+      responseTarget: textItems.length + idx, // textItems 뒤 인덱스
+      typeInfo: { info: '1', infoDetail: '10' },
+    }));
 
-  const detailItems = [...textItems, ...(fileItem ? [fileItem] : [])];
+  const detailItems = [...textItems, ...fileItem];
 
   const answers = application.documentAnswers.map((a) => a.answerText);
   const files = application.documentAnswers
@@ -47,7 +45,7 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
       a.fileUrl
         ? {
             name: decodeURIComponent(a.fileUrl.split('/').pop() ?? '파일.pdf'),
-            size: 10, // 서버에서는 알 수 없으므로 0 or unknown
+            size: 10,
             downloadUrl: a.fileUrl,
           }
         : null

@@ -53,7 +53,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
   const download = useFileDownload();
 
-  if (!file) return null;
+  //if (!file) return null;
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -75,7 +75,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     });
   };
 
-  console.log('파일네임', getOriginalFileName(file!.downloadUrl));
+  //console.log('파일네임', getOriginalFileName(file!.downloadUrl));
   // 읽기 전용 모드에서 FileUploader에 넘길 FileInfo 객체
   const wrappedFile: FileInfo | undefined = file
     ? {

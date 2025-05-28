@@ -1,7 +1,7 @@
 // src/web/app/(main)/apply-management/add/page.tsx
 'use client';
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Flex } from '@repo/ui/Flex';
@@ -16,7 +16,7 @@ import {
   CreateApplicationRequest,
 } from '@web/store/mutation/useCreateApplication';
 import { ApplicantForm } from '@web/types/applicant-form';
-import { DetailItem } from '@web/types/application';
+import { DetailItem, InterviewScheduleItem } from '@web/types/application';
 import { FileQuestionDto, TextQuestionDto } from '@web/types/recruitment';
 
 import { AddHeader } from './_components/AddHeader/AddHeader';
@@ -32,6 +32,7 @@ import { InterviewScheduleForm } from './_components/InterviewScheduleForm/Inter
 import * as styles from './page.css';
 import { useQueryClient } from '@tanstack/react-query';
 import { safeFormatDotDate } from '@web/utils/application';
+import { sanitizeFileName } from '@web/utils/serializers';
 
 export default function AddApplicant() {
   const router = useRouter();
@@ -42,6 +43,7 @@ export default function AddApplicant() {
   // — Hooks 순서 고정 —
   const createApp = useCreateApplication();
   const { data, isLoading, error } = useRecruitmentDetailQuery(recruitmentId);
+  console.log('공고 디테일', data);
   const { watch, setValue, handleSubmit } = useForm<ApplicantForm>({
     defaultValues: {
       basicInfo: {
@@ -66,6 +68,20 @@ export default function AddApplicant() {
       },
     },
   });
+
+  const currentScheduleList = watch('interviewSchedule.scheduleList') || [];
+  const handleScheduleChange = useCallback(
+    (date: string, itemsForDate: InterviewScheduleItem[]) => {
+      // (1) 기존에 선택된 항목 중, 해당 날짜가 아닌 것만 필터링
+      const others = currentScheduleList.filter((item) => item.date !== date);
+
+      // (2) 새로 받은 itemsForDate + 기존 다른 날짜 항목 합치기
+      const newList = [...others, ...itemsForDate];
+
+      setValue('interviewSchedule.scheduleList', newList);
+    },
+    [currentScheduleList, setValue]
+  );
 
   // — data 없을 때는 빈 배열로 안전 처리 —
   const scheduleList =
@@ -111,46 +127,54 @@ export default function AddApplicant() {
     [data, dates]
   );
 
+  const selectedPartLabel = watch('applicationPart')?.label;
+
+  // ② detailItems 정의부를 이렇게 바꿔주세요.
   const detailItems: (DetailItem & { questionId: number })[] = useMemo(
     () =>
-      data?.applicationQuestions.map((q) => {
-        if (q.type === 'TEXT') {
-          const tq = q as TextQuestionDto;
-          return {
-            questionId: tq.questionId,
-            isEssential: tq.required,
-            type: 'text',
-            description: tq.description,
-            addDescription: '',
-            typeInfo: {
-              info: `${tq.textLimit}자`,
-              infoDetail: tq.includeWhitespace ? '공백 포함' : '공백 제외',
-            },
-          };
-        } else {
-          const fq = q as FileQuestionDto;
-          return {
-            questionId: fq.questionId,
-            isEssential: fq.required,
-            type: 'file',
-            description: fq.description,
-            addDescription: '',
-            typeInfo: {
-              info: `${fq.maxFileCount}개`,
-              infoDetail: `${fq.maxFileSizeMb}MB`,
-            },
-          };
-        }
-      }) ?? [],
-    [data]
+      data?.applicationQuestions
+        // 파트 이름(positionName) 이 선택된 파트 라벨과 같은 것만
+        .filter((q) => q.positionName === selectedPartLabel)
+        .map((q) => {
+          console.log(q);
+          if (q.type === 'TEXT') {
+            const tq = q as TextQuestionDto;
+            return {
+              questionId: tq.questionId,
+              isEssential: tq.required,
+              type: 'text',
+              description: tq.title,
+              addDescription: tq.description,
+              typeInfo: {
+                info: `${tq.textLimit}자`,
+                infoDetail: tq.includeWhitespace ? '공백 포함' : '공백 제외',
+              },
+            };
+          } else {
+            const fq = q as FileQuestionDto;
+            return {
+              questionId: fq.questionId,
+              isEssential: fq.required,
+              type: 'file',
+              description: fq.title,
+              addDescription: fq.description,
+              typeInfo: {
+                info: `${fq.maxFileCount}`,
+                infoDetail: `${fq.maxFileSizeMb}`,
+              },
+            };
+          }
+        }) ?? [],
+    [data?.applicationQuestions, selectedPartLabel]
   );
-
   const onSubmit = useCallback(
     (vals: ApplicantForm) => {
       if (!data) return;
 
       let textIndex = 0;
       let fileIndex = 0;
+
+      // const safeFiles: File[] = [];
 
       const answers = detailItems.map((item) => {
         if (item.type === 'text') {
@@ -162,6 +186,7 @@ export default function AddApplicant() {
           };
         } else {
           const file = vals.questionFiles[fileIndex++];
+          //const safeName = sanitizeFileName(origFile.name);
           return {
             questionId: item.questionId,
             answerText: '',
@@ -169,6 +194,26 @@ export default function AddApplicant() {
           };
         }
       });
+
+      const rawTimes = vals.interviewSchedule.scheduleList.flatMap((slot) => {
+        const date = slot.date.replace(/\./g, '-');
+        const start = new Date(`${date}T${slot.startTime}:00`);
+        const end = new Date(`${date}T${slot.endTime}:00`);
+        const interval = data.interviewDuration;
+
+        const result: string[] = [];
+        let current = start;
+
+        while (current < end) {
+          result.push(formatDate(current, "yyyy-MM-dd'T'HH:mm:ss"));
+          current = addMinutes(current, interval);
+        }
+
+        return result;
+      });
+
+      // 2) Set 으로 중복 제거
+      const availableTimes = Array.from(new Set(rawTimes));
 
       const payload: CreateApplicationRequest = {
         name: vals.basicInfo.name,
@@ -180,24 +225,9 @@ export default function AddApplicant() {
         recruitmentId,
         positionId: vals.applicationPart!.id,
         answers,
-        availableTimes: vals.interviewSchedule.scheduleList.flatMap((slot) => {
-          const date = slot.date.replace(/\./g, '-');
-          const start = new Date(`${date}T${slot.startTime}:00`);
-          const end = new Date(`${date}T${slot.endTime}:00`);
-          const interval = data.interviewDuration; // 예: 30 (분 단위)
-
-          const result: string[] = [];
-          let current = start;
-
-          while (current < end) {
-            result.push(formatDate(current, "yyyy-MM-dd'T'HH:mm:ss"));
-            current = addMinutes(current, interval);
-          }
-
-          return result;
-        }),
+        availableTimes,
         // 선택 항목은 조건부로만 포함
-        ...(vals.additionalInfo.school && {
+        /* ...(vals.additionalInfo.school && {
           university: vals.additionalInfo.school,
         }),
         ...(vals.additionalInfo.major && { major: vals.additionalInfo.major }),
@@ -209,7 +239,14 @@ export default function AddApplicant() {
         }),
         ...(vals.additionalInfo.address && {
           address: vals.additionalInfo.address,
-        }),
+        }),*/
+        university: vals.additionalInfo.school ?? '',
+        major: vals.additionalInfo.major ?? '',
+        academicStatus: vals.additionalInfo.academicStatus ?? undefined,
+        birthDate: vals.basicInfo.birthDate
+          ? vals.basicInfo.birthDate.slice(0, 10)
+          : '',
+        address: vals.additionalInfo.address ?? '',
       };
 
       const profileImage = vals.basicInfo.profileImage ?? undefined;
@@ -217,6 +254,7 @@ export default function AddApplicant() {
         (f): f is File => f instanceof File
       );
 
+      console.log(payload);
       createApp.mutate(
         { payload, profileImage, answerFiles },
         {
@@ -326,16 +364,12 @@ export default function AddApplicant() {
           dates={dates}
           scheduleMap={scheduleMap}
           duration={data.interviewDuration}
-          onScheduleChange={(date, items) =>
-            setValue('interviewSchedule.scheduleList', items)
-          }
+          onScheduleChange={handleScheduleChange}
+          selectedScheduleList={currentScheduleList}
         />
 
         <div className={styles.saveButton}>
-          {createApp.error && (
-            <Text color="error">{createApp.error.message}</Text>
-          )}
-          <Button type="submit" variant="basic" size="40" width="10rem">
+          <Button type="submit" variant="main" size="40" width="10rem">
             저장
           </Button>
         </div>
