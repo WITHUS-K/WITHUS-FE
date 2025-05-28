@@ -1,7 +1,5 @@
-'use client';
-
 import React from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { BaseInput } from '@repo/ui/BaseInput';
 import type { FormValues } from '@web/types/application';
 import BorderlessInput from './BorderlessInput';
@@ -12,7 +10,12 @@ interface Props {
 
 export default function FileDetail({ index }: Props) {
   const { control } = useFormContext<FormValues>();
-  console.log('des', control._formValues.detailItems);
+
+  const addDescription = useWatch({
+    control,
+    name: `detailItems.${index}.addDescription`,
+    defaultValue: '',
+  });
 
   return (
     <>
@@ -33,12 +36,17 @@ export default function FileDetail({ index }: Props) {
           />
         )}
       />
-      <BorderlessInput
-        defaultValue={
-          control._formValues.detailItems?.[index]?.addDescription ?? ''
-        }
-        {...control.register(`detailItems.${index}.addDescription`)}
-        placeholder="추가적인 설명을 작성해주세요."
+
+      <Controller
+        name={`detailItems.${index}.addDescription`}
+        control={control}
+        defaultValue={addDescription}
+        render={({ field }) => (
+          <BorderlessInput
+            {...field}
+            placeholder="추가적인 설명을 작성해주세요."
+          />
+        )}
       />
     </>
   );

@@ -231,46 +231,6 @@ export function SettingForm({ existentForm }: SettingFormProps) {
           {activeTab === 'stages' && <StageTab />}
           {activeTab === 'criteria' && <CriteriaTab />}
         </form>
-
-        {/* <form
-          id="application-form"
-          onSubmit={methods.handleSubmit(onSubmit)}
-          style={{ position: 'relative', width: '100%' }}
-        >
-          <div
-            style={{
-              display: activeTab === 'form' ? 'block' : 'none',
-              width: '100%',
-              position: activeTab === 'form' ? 'static' : 'absolute',
-              top: 0,
-              left: 0,
-            }}
-          >
-            <FormTab />
-          </div>
-          <div
-            style={{
-              display: activeTab === 'stages' ? 'block' : 'none',
-              width: '100%',
-              position: activeTab === 'stages' ? 'static' : 'absolute',
-              top: 0,
-              left: 0,
-            }}
-          >
-            <StageTab />
-          </div>
-          <div
-            style={{
-              display: activeTab === 'criteria' ? 'block' : 'none',
-              width: '100%',
-              position: activeTab === 'criteria' ? 'static' : 'absolute',
-              top: 0,
-              left: 0,
-            }}
-          >
-            <CriteriaTab />
-          </div>
-        </form> */}
       </Flex>
     </FormProvider>
   );

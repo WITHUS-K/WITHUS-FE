@@ -25,6 +25,7 @@ export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   children: React.ReactNode;
   width?: CSSProperties['width'];
   disabled?: boolean;
+  rightIcon?: ReactElement;
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -39,6 +40,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       disabled,
       className,
       style,
+      rightIcon,
       type = 'button',
       ...props
     },
@@ -70,6 +72,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         >
           {children}
         </Text>
+        {rightIcon && <span className={iconSizeClass}>{rightIcon}</span>}
       </button>
     );
   }

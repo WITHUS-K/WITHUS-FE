@@ -35,9 +35,6 @@ export default function DetailItemCard({ index, onRemove }: Props) {
 
   useEffect(() => {
     if (prevTypeRef.current !== type) {
-      setValue(`detailItems.${index}.description`, '');
-      setValue(`detailItems.${index}.addDescription`, '');
-
       if (type === 'text') {
         setValue(`detailItems.${index}.typeInfo.info`, C.BLANK_OPTIONS[0]);
         setValue(`detailItems.${index}.typeInfo.infoDetail`, C.CHAR_LIMITS[2]);

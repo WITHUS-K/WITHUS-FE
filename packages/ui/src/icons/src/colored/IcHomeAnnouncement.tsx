@@ -1,0 +1,62 @@
+import * as React from 'react';
+import type { SVGProps } from 'react';
+const SvgIcHomeAnnouncement = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={33}
+    height={40}
+    fill="none"
+    {...props}
+  >
+    <rect
+      width={32}
+      height={36.667}
+      x={0.5}
+      y={3.333}
+      fill="#D7D8E2"
+      rx={4.444}
+    />
+    <rect
+      width={25.143}
+      height={30}
+      x={3.929}
+      y={6.667}
+      fill="#fff"
+      rx={2.222}
+    />
+    <rect width={16} height={8} x={8.5} fill="#C4C6D4" rx={2.222} />
+    <rect
+      width={18.286}
+      height={2.222}
+      x={7.357}
+      y={11.111}
+      fill="#D7D8E2"
+      rx={1.111}
+    />
+    <rect
+      width={18.286}
+      height={2.222}
+      x={7.357}
+      y={17.778}
+      fill="#D7D8E2"
+      rx={1.111}
+    />
+    <rect
+      width={18.286}
+      height={2.222}
+      x={7.357}
+      y={24.444}
+      fill="#D7D8E2"
+      rx={1.111}
+    />
+    <rect
+      width={18.286}
+      height={2.222}
+      x={7.357}
+      y={31.111}
+      fill="#D7D8E2"
+      rx={1.111}
+    />
+  </svg>
+);
+export default SvgIcHomeAnnouncement;

@@ -10,18 +10,18 @@ export type PaletteColor =
   | '#C4C6D4'
   | '#A9ABC0';
 
-export type TagColor =
-  | '#FF2A3A'
-  | '#EE6B00'
-  | '#E2A500'
-  | '#009857'
-  | '#0084BC'
-  | '#2C60FF'
-  | '#813DFF'
-  | '#F25DEB'
-  | '#7F82A1'
-  | '#5A5C72'
-  | '#EAEFFF';
+// export type TagColor =
+//   | '#FF2A3A'
+//   | '#EE6B00'
+//   | '#E2A500'
+//   | '#009857'
+//   | '#0084BC'
+//   | '#2C60FF'
+//   | '#813DFF'
+//   | '#F25DEB'
+//   | '#7F82A1'
+//   | '#5A5C72'
+//   | '#EAEFFF';
 
 export const tagColorMap = {
   '#FF2A3A': { background: '#FFE6E9', circle: '#FF6974' },
@@ -36,12 +36,16 @@ export const tagColorMap = {
   '#5A5C72': { background: '#D7D8E2', circle: '#A9ABC0' },
   '#EAEFFF': { background: '#EAEFFF', circle: '#2C60FF' },
   '#FFFFFF' : { background: '#FFFFFF', circle: '#7F82A1' },
+  '#FFE6E9' : { background: '#FFE6E9',  circle: '#FF2A3A' },
 } as const;
+
+export type TagColor = keyof typeof tagColorMap;
+
+export const allTagColors = Object.keys(tagColorMap) as TagColor[];
 
 export function getTagColors(color: TagColor) {
   return tagColorMap[color];
 }
-
 // ——— 태그용 (OrgListItem 의 Tag) ———
 export const tagHexToName = {
   '#FF2A3A': 'red',

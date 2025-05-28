@@ -1,3 +1,4 @@
+export { default as BarLineChart } from './BarLineChart';
 export { default as IcAlaram } from './IcAlaram';
 export { default as IcArrowDown } from './IcArrowDown';
 export { default as IcArrowLeft } from './IcArrowLeft';
@@ -9,7 +10,6 @@ export { default as IcButtonSetting } from './IcButtonSetting';
 export { default as IcCalendar } from './IcCalendar';
 export { default as IcCalender } from './IcCalender';
 export { default as IcChargeBtn } from './IcChargeBtn';
-export { default as IcCharts } from './IcCharts';
 export { default as IcCommonModal } from './IcCommonModal';
 export { default as IcCopy } from './IcCopy';
 export { default as IcCriteriaBtn } from './IcCriteriaBtn';
