@@ -27,7 +27,6 @@ interface ApplicantInterviewFormProps {
 export const ApplicantInterviewForm = ({
   detail,
 }: ApplicantInterviewFormProps) => {
-  // zustand 로 바꾸기!!
   const myUserId = useUserStore.getState().userId;
   const params = useParams();
   const timeSlotId = Number(params.id);
@@ -161,17 +160,13 @@ export const ApplicantInterviewForm = ({
           <Text variant="md2_text_semibold" color="grayscale70">
             면접 질문
           </Text>
-          {detail.interviewQuestions.map((q, i) => (
-            <List
-              key={q.id}
-              question={q.content}
-              src={q.user.profileImageUrl ?? ''}
-              alt={q.user.name}
-              name={q.user.name}
-              idx={i + 1}
-            />
-          ))}
-          <InterviewQuestions applicationId={detail.applicationId} />
+
+          <InterviewQuestions
+            existingQuestions={detail.interviewQuestions}
+            applicationId={detail.applicationId}
+            timeSlotId={timeSlotId}
+            currentUserId={myUserId}
+          />
         </Flex>
 
         <Flex

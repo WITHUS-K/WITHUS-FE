@@ -20,6 +20,7 @@ export { default as IcDeleteMenu } from './IcDeleteMenu';
 export { default as IcDotsMenu } from './IcDotsMenu';
 export { default as IcDownload } from './IcDownload';
 export { default as IcDropdwonGray90 } from './IcDropdwonGray90';
+export { default as IcEdit } from './IcEdit';
 export { default as IcEditMenu } from './IcEditMenu';
 export { default as IcFileDelete } from './IcFileDelete';
 export { default as IcFileInfo } from './IcFileInfo';

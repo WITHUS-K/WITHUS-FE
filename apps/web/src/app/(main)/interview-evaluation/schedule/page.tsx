@@ -30,7 +30,7 @@ export default function SchedulePage() {
   if (!orgs.length) return <Text>등록된 면접이 없습니다.</Text>;
 
   // 2) 선택된 인터뷰 결정 (쿼리에 없으면 첫 번째)
-  const current = (orgs.find((o) => o.interviewId === interviewId) ?? orgs[1])!;
+  const current = (orgs.find((o) => o.interviewId === interviewId) ?? orgs[0])!;
 
   const { availableTimeRanges, interviewDuration } = current;
 

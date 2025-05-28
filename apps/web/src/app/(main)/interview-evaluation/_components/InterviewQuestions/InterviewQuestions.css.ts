@@ -18,6 +18,12 @@ export const questionWrapper = style({
   width: '100%',
 });
 
+export const btn = style({
+  display: 'flex',
+  alignItems: 'content',
+  gap: '0.4rem',
+});
+
 export const removeButton = style({
   all: 'unset',
   position: 'absolute',
@@ -41,4 +47,24 @@ export const addButton = style({
     },
   },
   ...fontStyles.md2_text_semibold,
+});
+
+export const listContainer = style({
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  backgroundColor: vars.colors.grayscale5,
+  borderRadius: '12px',
+  padding: '1.6rem',
+  gap: '1.6rem',
+});
+
+export const editContainer = style({
+  width: '100%',
+  display: 'flex',
+  backgroundColor: vars.colors.white,
+  borderRadius: '12px',
+  padding: '1.6rem',
+  border: `1px solod ${vars.colors.grayscale10}`,
+  justifyContent: 'space-between',
 });

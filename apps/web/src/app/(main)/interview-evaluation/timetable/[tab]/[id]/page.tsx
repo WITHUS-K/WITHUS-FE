@@ -31,11 +31,7 @@ export default function ApplicantDetailPage() {
   }, [tab, timeSlotId]);
 
   if (!timeSlotId || applicants.length === 0) {
-    return (
-      <Text variant="xl_title_semibold" color="black">
-        이 회차에 지원자가 없습니다.
-      </Text>
-    );
+    return <></>;
   }
 
   const applicant = applicants[current]!;
@@ -58,6 +54,7 @@ export default function ApplicantDetailPage() {
         height="100%"
         align="center"
         marginTop="0.4rem"
+        paddingBottom="10rem"
       >
         <div className={pageContainer}>
           <Text variant="xl_title_semibold" color="black">
