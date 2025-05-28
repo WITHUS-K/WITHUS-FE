@@ -231,6 +231,7 @@ export default function InterviewPanel() {
 
             {/* 면접 시간 추가 버튼 */}
             <Button
+              type="button"
               variant="stroke"
               size="40"
               leftIcon={<IcPlusCircle width={20} height={20} />}
@@ -244,6 +245,7 @@ export default function InterviewPanel() {
           {/* 하단 액션 버튼 */}
           <Flex gap="1.6rem" width="100%">
             <Button
+              type="button"
               variant="basic"
               size="40"
               disabled={currentGroup!.slots.length + localSlots.length === 0}
@@ -252,6 +254,7 @@ export default function InterviewPanel() {
               일정 전체 삭제
             </Button>
             <Button
+              type="button"
               variant="main"
               size="40"
               disabled={localSlots.length === 0}

@@ -174,6 +174,7 @@ export default function LeftPanel() {
           </div>
         ))}
         <Button
+          type="button"
           variant="stroke"
           size="48"
           disabled={!schedOn}

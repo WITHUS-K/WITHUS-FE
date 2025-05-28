@@ -17,6 +17,9 @@ import CriteriaTab from '@web/app/(main)/application-list/setting/_components/Cr
 import { useDraftRecruitmentMutation } from '@web/store/mutation/useDraftRecruitmentMutation';
 import { usePublishRecruitmentMutation } from '@web/store/mutation/usePublishRecruitmentMutation';
 import { convertFormToRequest } from '@web/utils/convertFormToRequest';
+import * as styles from './SettingForm.css';
+import { useUserStore } from '@web/store/state/userStore';
+import * as C from '@web/constants/application';
 
 type TabKey = 'form' | 'stages' | 'criteria';
 const TAB_KEYS: TabKey[] = ['form', 'stages', 'criteria'];
@@ -32,12 +35,45 @@ export function SettingForm({ existentForm }: SettingFormProps) {
   const activeTab = (searchParams.get('tab') as TabKey) || 'form';
   const ctx = useContext(SettingContext)!;
 
+  const organizationId = useUserStore.getState().organizationId!;
+
   const draftMutation = useDraftRecruitmentMutation();
   const publishMutation = usePublishRecruitmentMutation();
 
+  const initial = existentForm || ctx.form;
+  const seeded: FormValues = {
+    ...initial,
+    paperEvaluateItems:
+      initial.paperEvaluateItems && initial.paperEvaluateItems.length > 0
+        ? initial.paperEvaluateItems
+        : [{ evaluate: '', evaluateDetail: '' }],
+    interviewEvaluateItems:
+      initial.interviewEvaluateItems &&
+      initial.interviewEvaluateItems.length > 0
+        ? initial.interviewEvaluateItems
+        : [{ evaluate: '', evaluateDetail: '' }],
+
+    detailItems:
+      initial.detailItems && initial.detailItems.length > 0
+        ? initial.detailItems
+        : [
+            {
+              isEssential: false,
+              type: 'text',
+              description: '',
+              addDescription: '',
+              responseTarget: 0,
+              typeInfo: {
+                info: C.BLANK_OPTIONS[0]!,
+                infoDetail: C.CHAR_LIMITS[2]!,
+              },
+            },
+          ],
+  };
+
   // 1. useForm 초기화 (Context에서 받은 초기값)
   const methods = useForm<FormValues>({
-    defaultValues: existentForm || ctx.form,
+    defaultValues: seeded,
     mode: 'onChange',
     criteriaMode: 'all',
     shouldUnregister: false,
@@ -124,7 +160,7 @@ export function SettingForm({ existentForm }: SettingFormProps) {
 
   const handleSave = useCallback(() => {
     const values = methods.getValues();
-    const payload = convertFormToRequest(values, recruitmentId);
+    const payload = convertFormToRequest(values, recruitmentId, organizationId);
     console.log('저장 값:', payload);
     draftMutation.mutate(payload, {
       onSuccess: (res) => {
@@ -140,7 +176,7 @@ export function SettingForm({ existentForm }: SettingFormProps) {
 
   const onSubmit = useCallback(
     (data: FormValues) => {
-      const payload = convertFormToRequest(data, recruitmentId);
+      const payload = convertFormToRequest(data, recruitmentId, organizationId);
       publishMutation.mutate(payload, {
         onSuccess: () => {
           router.push('/application-list');
@@ -152,16 +188,7 @@ export function SettingForm({ existentForm }: SettingFormProps) {
 
   return (
     <FormProvider {...methods}>
-      <Flex
-        direction="column"
-        paddingLeft="2.4rem"
-        paddingTop="2.4rem"
-        paddingRight="2.4rem"
-        paddingBottom="2.4rem"
-        gap="2.4rem"
-        height="100%"
-        width="100%"
-      >
+      <div className={styles.container}>
         <Breadcrumb style={{ marginTop: '1.2rem' }}>
           <Breadcrumb.Item asChild>
             <Link href="/application-list">지원서 리스트</Link>
@@ -222,16 +249,23 @@ export function SettingForm({ existentForm }: SettingFormProps) {
         />
 
         {/* Form */}
-        <form
-          id="application-form"
-          onSubmit={methods.handleSubmit(onSubmit)}
-          style={{ display: 'flex', width: '100%' }}
-        >
-          {activeTab === 'form' && <FormTab />}
-          {activeTab === 'stages' && <StageTab />}
-          {activeTab === 'criteria' && <CriteriaTab />}
-        </form>
-      </Flex>
+        <div className={styles.scrollArea}>
+          <form
+            id="application-form"
+            onSubmit={methods.handleSubmit(onSubmit)}
+            style={{ display: 'flex', width: '100%' }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+              }
+            }}
+          >
+            {activeTab === 'form' && <FormTab />}
+            {activeTab === 'stages' && <StageTab />}
+            {activeTab === 'criteria' && <CriteriaTab />}
+          </form>
+        </div>
+      </div>
     </FormProvider>
   );
 }

@@ -25,5 +25,9 @@ export default function EditSettingPage() {
     return <div>로딩 중…</div>;
   }
 
-  return <SettingForm existentForm={form} />;
+  return (
+    <div style={{ overflow: 'hidden' }}>
+      <SettingForm existentForm={form} />
+    </div>
+  );
 }

@@ -52,6 +52,7 @@ export const DatePicker = ({ selectedDate, onSelect }: DatePickerProps) => {
     <div className={styles.wrapper}>
       <div className={styles.header}>
         <button
+          type="button"
           className={styles.navLeftButton}
           onClick={() => setCurrentMonth((d) => startOfMonth(addDays(d, -1)))}
         >
@@ -64,6 +65,7 @@ export const DatePicker = ({ selectedDate, onSelect }: DatePickerProps) => {
         />
 
         <button
+          type="button"
           className={styles.navRightButton}
           onClick={() =>
             setCurrentMonth((d) => startOfMonth(addDays(endOfMonth(d), 1)))

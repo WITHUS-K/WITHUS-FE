@@ -4,10 +4,12 @@ import type {
   TextQuestionDto,
   FileQuestionDto,
 } from '@web/types/recruitment';
+import { format } from 'date-fns';
 
 export function convertFormToRequest(
   form: FormValues,
-  recruitmentId: number | null
+  recruitmentId: number | null,
+  organizationId: number
 ): PublishRecruitmentRequest {
   const interviewDuration =
     form.interviewDuration === '15분'
@@ -72,6 +74,18 @@ export function convertFormToRequest(
       }))
     : [];
 
+  const documentDeadlineStr = form.deadline
+    ? format(new Date(form.deadline), 'yyyy-MM-dd')
+    : format(new Date(), 'yyyy-MM-dd');
+
+  const documentResultDateStr = form.documentResult?.date
+    ? format(new Date(form.documentResult.date), 'yyyy-MM-dd')
+    : null;
+
+  const finalResultDateStr = form.finalResultDate
+    ? format(new Date(form.finalResultDate), 'yyyy-MM-dd')
+    : format(new Date(), 'yyyy-MM-dd');
+
   return {
     recruitmentId,
     title: form.title,
@@ -80,12 +94,12 @@ export function convertFormToRequest(
     positions,
     applicationQuestions,
     isDocumentResultRequired: form.documentResult?.isSelected as boolean,
-    documentDeadline: form.deadline || '2025-06-01',
-    documentResultDate: form.documentResult?.date || null,
-    finalResultDate: form.finalResultDate || '2025-06-01',
+    documentDeadline: documentDeadlineStr,
+    documentResultDate: documentResultDateStr,
+    finalResultDate: finalResultDateStr,
 
     interviewDuration,
-    organizationId: 1,
+    organizationId,
     needGender: form.basicInfo.gender,
     needAddress: form.basicInfo.address,
     needSchool: form.basicInfo.school,

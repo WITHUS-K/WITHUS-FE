@@ -15,7 +15,7 @@ export default function SectionDetailItems() {
     control,
   });
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (fields.length === 0) {
       append({
         isEssential: false,
@@ -30,6 +30,7 @@ export default function SectionDetailItems() {
       });
     }
   }, []);
+*/
 
   return (
     <Flex direction="column" width="100%" align="flexStart" gap="1.6rem">
@@ -43,6 +44,7 @@ export default function SectionDetailItems() {
         ))}
 
         <button
+          type="button"
           className={styles.addButton}
           onClick={() =>
             append({
