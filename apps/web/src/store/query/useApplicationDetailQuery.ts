@@ -2,6 +2,7 @@
 export interface ApplicationAnswer {
   questionId: number;
   questionTitle: string;
+  questionDescription: string;
   questionType: 'TEXT' | 'FILE';
   answerText: string;
   fileUrl: string;

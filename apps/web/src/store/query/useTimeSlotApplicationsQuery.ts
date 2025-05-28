@@ -26,6 +26,7 @@ export interface Evaluation {
   criteria: {
     id: number;
     content: string;
+    description: string;
     type: 'DOCUMENT' | string;
   };
   score: number;

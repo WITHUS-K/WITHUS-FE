@@ -17,7 +17,7 @@ export default function EvaluationPage() {
     useOrganizationInterviewsQuery();
 
   const chosenId = urlIv ?? orgs[0]?.interviewId;
-
+  const recruitmentId = orgs[0]?.recruitmentId;
   const { data: slots = [], isLoading: loadingSlots } = useMyTimeSlotsQuery(
     chosenId ?? 0
   );
@@ -30,10 +30,14 @@ export default function EvaluationPage() {
 
     // 빈 배열이면 스케줄 페이지로, 아니면 타임테이블 페이지로
     if (isAllEmpty) {
-      router.replace(`/interview-evaluation/schedule?interviewId=${chosenId}`);
+      router.replace(
+        `/interview-evaluation/schedule?interviewId=${chosenId}` +
+          `&recruitmentId=${recruitmentId}`
+      );
     } else {
       router.replace(
-        `/interview-evaluation/timetable/interviewer?interviewId=${chosenId}`
+        `/interview-evaluation/timetable/interviewer?interviewId=${chosenId}` +
+          `&recruitmentId=${recruitmentId}`
       );
     }
   }, [loadingOrgs, loadingSlots, chosenId, slots, router]);

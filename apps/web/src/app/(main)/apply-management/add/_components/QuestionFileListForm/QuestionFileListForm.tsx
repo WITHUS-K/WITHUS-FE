@@ -62,7 +62,6 @@ export const QuestionAndFileListForm = ({
             item={item}
             file={files[idx]} // ← 여기!
             onChange={(file) => onFileChange(idx, file)}
-            readOnly
           />
         </div>
       ))}

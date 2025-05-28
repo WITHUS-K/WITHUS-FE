@@ -10,6 +10,7 @@ import { queryKeys } from '../constants';
 export interface TimeSlotUser {
   userId: number;
   name: string;
+  profileImageUrl: string;
   role: 'INTERVIEWER' | 'ASSISTANT';
 }
 

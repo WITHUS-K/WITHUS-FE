@@ -35,9 +35,9 @@ export default function FilterForm({
 }: FilterFormProps) {
   const [rooms, setRooms] = useState<string[]>(initialSettings?.rooms ?? ['']);
   const [counts, setCounts] = useState({
-    면접관: initialSettings?.interviewerPerSlot ?? 1,
-    지원자: initialSettings?.applicantPerSlot ?? 1,
-    안내자: initialSettings?.assistantPerSlot ?? 1,
+    면접관: initialSettings?.interviewerPerSlot ?? 0,
+    지원자: initialSettings?.applicantPerSlot ?? 0,
+    안내자: initialSettings?.assistantPerSlot ?? 0,
   });
 
   useEffect(() => {

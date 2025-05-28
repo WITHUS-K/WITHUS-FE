@@ -4,7 +4,7 @@ import DropdownItem from '../DropdownItem';
 import SelectScoreDropdownTriggerContent from './SelectScoreDropdownTriggerContent';
 import Dropdown from '../Dropdown';
 
-const scores = ['0', '1', '2', '3', '4', '5'];
+const scores = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
 export interface SelectDropdownProps
   extends Omit<ComponentPropsWithoutRef<'div'>, 'onSelect'> {

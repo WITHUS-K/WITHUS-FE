@@ -19,6 +19,15 @@ import { useUpdateCommentMutation } from '@web/store/mutation/useUpdateCommentMu
 import { useAddEvaluationMutation } from '@web/store/mutation/useAddEvaluationMutation';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useUserStore } from '@web/store/state/userStore';
+import { getOriginalFileName } from '@web/utils/file';
+import { useFileDownload } from '@web/store/mutation/useFileDownload';
+import { useRecruitmentDetailQuery } from '@web/store/query/useRecruitmentDetailQuery';
+
+export interface FileInfo {
+  name: string;
+  size: number;
+  downloadUrl?: string;
+}
 
 interface ApplicantInterviewFormProps {
   detail: TimeSlotApplication;
@@ -30,7 +39,17 @@ export const ApplicantInterviewForm = ({
   const myUserId = useUserStore.getState().userId;
   const params = useParams();
   const timeSlotId = Number(params.id);
+  const sp = useSearchParams();
+  const recruitmentId = Number(sp.get('recruitmentId'));
+  const { data: recruitmentDetail } = useRecruitmentDetailQuery(recruitmentId);
+
   console.log('타임슬롯', timeSlotId);
+
+  const interviewCriteria =
+    recruitmentDetail?.interviewEvaluationCriteria.filter(
+      (c) => c.type === 'INTERVIEW'
+    ) ?? [];
+
   // Mutations
   const addComment = useAddCommentMutation(detail.applicationId, timeSlotId);
   const updateComment = useUpdateCommentMutation(
@@ -67,6 +86,8 @@ export const ApplicantInterviewForm = ({
   // 2) 화면에 보여줄 내용만 추출
   const myInterviewComment = existingInterviewCommentItem?.content ?? '';
 
+  const download = useFileDownload();
+
   const handleCommentSubmit = () => {
     if (!newComment.trim()) return;
     if (existingInterviewCommentItem) {
@@ -90,6 +111,13 @@ export const ApplicantInterviewForm = ({
     });
   };
 
+  const handleDownload = (file: FileInfo) => {
+    download.mutate({
+      imageUrl: file.downloadUrl!,
+      fileName: file.name,
+    });
+  };
+
   return (
     <div className={styles.content}>
       <section aria-labelledby="self-intro-and-portfolio">
@@ -109,11 +137,13 @@ export const ApplicantInterviewForm = ({
           </Text>
 
           <AccordianList
-            items={detail.documentAnswers.map((q, i) => ({
-              title: `${q.questionTitle}`,
-              content: q.answerText,
-              reviewers: [],
-            }))}
+            items={detail.documentAnswers
+              .filter((q) => q.questionType === 'TEXT')
+              .map((q, i) => ({
+                title: `${q.questionTitle}`,
+                content: q.answerText,
+                reviewers: [],
+              }))}
             isNumbering
             width="100%"
           />
@@ -134,11 +164,11 @@ export const ApplicantInterviewForm = ({
               <FileUploader
                 key={q.questionId}
                 file={{
-                  name: `첨부파일_${q.questionId}`, // 혹은 실제 파일명 정보가 있다면 그걸 사용
+                  name: getOriginalFileName(q.fileUrl!), // 혹은 실제 파일명 정보가 있다면 그걸 사용
                   downloadUrl: q.fileUrl!,
-                  size: 5,
+                  size: 10 * 1024 * 1024,
                 }}
-                onDownload={() => {}}
+                onDownload={handleDownload}
               />
             ))}
         </Flex>
@@ -180,24 +210,16 @@ export const ApplicantInterviewForm = ({
           </Text>
 
           <Flex direction="column" width="100%" gap="1.6rem">
-            {detail.evaluations.map((e) => (
-              <Flex
-                key={e.criteria.id}
-                width="100%"
-                gap="1.6rem"
-                align="center"
-              >
-                {/* 한 개짜리 아코디언 리스트 */}
+            {interviewCriteria.map((c) => (
+              <Flex key={c.id} width="100%" gap="1.6rem">
                 <AccordianList
-                  items={[
-                    { title: e.criteria.content, content: `점수: ${e.score}` },
-                  ]}
+                  items={[{ title: c.content, content: c.description }]}
                   isNumbering={false}
                   width="100%"
                 />
                 <SelectScoreDropdown
-                  value={scores[e.criteria.id]}
-                  onSelect={(score) => handleScoreSelect(e.criteria.id, score)}
+                  value={scores[c.id] ?? ''}
+                  onSelect={(score) => handleScoreSelect(c.id, score)}
                   style={{ width: '16.6rem' }}
                 />
               </Flex>

@@ -23,7 +23,7 @@ export function useInterviewConfigQuery(interviewId: number) {
       const res = await GET<InterviewConfigResponse['result']>(
         `api/v1/interviews/${interviewId}/config`
       );
-      console.log(res);
+      console.log('config', res);
       return res.result;
     },
     enabled: interviewId > 0,

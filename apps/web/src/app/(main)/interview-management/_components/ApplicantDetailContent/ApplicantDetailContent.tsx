@@ -51,11 +51,13 @@ export const ApplicantDetailContent = ({
           </Text>
 
           <AccordianList
-            items={detail.selfIntroductionContent.content.map((q) => ({
-              title: q.question,
-              content: q.standardDetail,
-              reviewers: [],
-            }))}
+            items={detail.selfIntroductionContent.content
+              .filter((q) => q.questionType === 'TEXT')
+              .map((q) => ({
+                title: q.question,
+                content: q.standardDetail,
+                reviewers: [],
+              }))}
             isNumbering
             width="100%"
           />

@@ -31,7 +31,7 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
       isEssential: true,
       type: 'file',
       description: a.questionTitle, // questionTitle 사용
-      addDescription: '', // 필요시 질문 설명 사용
+      addDescription: a.questionDescription, // 필요시 질문 설명 사용
       responseTarget: textItems.length + idx, // textItems 뒤 인덱스
       typeInfo: { info: '1', infoDetail: '10' },
     }));

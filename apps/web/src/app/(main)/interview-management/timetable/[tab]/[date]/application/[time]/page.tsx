@@ -60,18 +60,6 @@ export default function ApplicantDetailPage() {
     (d) => d.fileUrl
   )?.fileUrl;
 
-  const [portfolioSize, setPortfolioSize] = useState<number>(0);
-
-  useEffect(() => {
-    fetch(portfolioUrl!, { method: 'HEAD' }).then((res) => {
-      const len = res.headers.get('content-length');
-      if (len) {
-        setPortfolioSize(+len); // bytes
-      }
-    });
-  }, [portfolioUrl]);
-
-  // **Build a detail object that exactly matches `Applicant`**
   const detail: Applicant = {
     id: app.applicationId.toString(),
     name: app.name,
@@ -81,11 +69,12 @@ export default function ApplicantDetailPage() {
       content: app.documentAnswers.map((d) => ({
         question: d.questionTitle,
         standardDetail: d.answerText,
+        questionType: d.questionType,
       })),
     },
     portfolioFile: {
       name: getOriginalFileName(portfolioUrl!),
-      size: 10 * 1024 * 1024, // you can replace with real file size if your API provides it
+      size: 10 * 1024 * 1024,
       downloadUrl: portfolioUrl || '',
     },
     interviewQuestions: app.interviewQuestions.map((q) => ({

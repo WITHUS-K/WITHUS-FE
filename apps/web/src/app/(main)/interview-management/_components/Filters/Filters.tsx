@@ -1,7 +1,7 @@
 // app/(main)/interview-management/_components/Filters/Filters.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Flex, Text, Button } from '@repo/ui';
 import { ClubDropdown } from '@repo/ui/DropDown';
@@ -16,8 +16,11 @@ import { useModal } from '@repo/ui/hooks';
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { TagHex, mapServerColorToTagHex } from '@web/utils/color';
 import { useInterviewConfigQuery } from '@web/store/query/useInterviewConfigQuery';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@web/store/constants';
 
 export default function Filters() {
+  const qc = useQueryClient();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { confirm } = useModal();
@@ -27,30 +30,28 @@ export default function Filters() {
   const urlRid = Number(searchParams.get('recruitmentId') ?? NaN) || undefined;
   const urlIv = Number(searchParams.get('interviewId') ?? NaN) || undefined;
 
+  const [rid, setRid] = useState<number | undefined>(urlRid);
+  const [iv, setIv] = useState<number | undefined>(urlIv);
+  const [isEditing, setIsEditing] = useState<boolean>(urlIv == null);
+
   // 데이터 로드
   const { data: recruitments = [] } = useRecruitmentsQuery();
   const { data: orgInterviews = [] } = useOrganizationInterviewsQuery();
   const { data: positions = [] } = useRecruitmentPositionsQuery(urlRid ?? 0);
-  const { data: config } = useInterviewConfigQuery(urlIv ?? 0);
+  const { data: config } = useInterviewConfigQuery(iv ?? 0);
 
-  // Component state
-  const [rid, setRid] = useState<number | undefined>(urlRid);
-  const [iv, setIv] = useState<number | undefined>(urlIv);
-  const [isEditing, setIsEditing] = useState<boolean>(urlIv == null);
   const [selectedTitle, setSelectedTitle] = useState<string>(() => {
     return recruitments.find((r) => r.recruitmentId === urlRid)?.title ?? '';
   });
 
   // 면접실, 인원수 state
-  const [rooms, setRooms] = useState<string[]>(config?.roomNames ?? ['']);
-  const [counts, setCounts] = useState<{
-    면접관: number;
-    지원자: number;
-    안내자: number;
-  }>({
-    면접관: config?.interviewerCount ?? 1,
-    지원자: config?.applicantCount ?? 1,
-    안내자: config?.assistantCount ?? 1,
+  const [rooms, setRooms] = useState<string[]>([]);
+  const [counts, setCounts] = useState({ 면접관: 0, 지원자: 0, 안내자: 0 });
+  const [settings, setSettings] = useState<FilterSettings>({
+    rooms: [],
+    interviewerPerSlot: 0,
+    applicantPerSlot: 0,
+    assistantPerSlot: 0,
   });
 
   //파트 가져오깅!
@@ -73,15 +74,23 @@ export default function Filters() {
 
   // config 데이터가 변경되면 rooms/counts 상태 초기화
   useEffect(() => {
-    if (config && iv != null) {
-      setRooms(config.roomNames);
-      setCounts({
-        면접관: config.interviewerCount,
-        지원자: config.applicantCount,
-        안내자: config.assistantCount,
-      });
-      setIsEditing(false);
-    }
+    if (!config || iv == null) return;
+    const { roomNames, interviewerCount, applicantCount, assistantCount } =
+      config;
+
+    setRooms(roomNames);
+    setCounts({
+      면접관: interviewerCount,
+      지원자: applicantCount,
+      안내자: assistantCount,
+    });
+    setSettings({
+      rooms: roomNames,
+      interviewerPerSlot: interviewerCount,
+      applicantPerSlot: applicantCount,
+      assistantPerSlot: assistantCount,
+    });
+    setIsEditing(false);
   }, [config, iv]);
 
   // 첫 진입: rid 없으면 목록 첫 번째 선택
@@ -107,12 +116,46 @@ export default function Filters() {
     effectiveRid ?? 0
   );
 
+  const didAutoRedirect = useRef(false);
+  useEffect(() => {
+    if (
+      didAutoRedirect.current || // 이미 한 번 처리했다면 건너뛴다
+      pathname.includes('/invite') || // 모달 경로면 건너뛴다
+      effectiveRid == null || // rid 없으면 건너뛴다
+      existingInterview == null || // interviewId 없으면 건너뛴다
+      iv != null || // iv(state)에 값이 있으면 (편집 모드 아님) 건너뛴다
+      !recruitmentDetail?.availableTimeRanges?.length
+    ) {
+      return;
+    }
+
+    // 여기까지 왔으면 “초기 렌더링 + interview 생성됨 + iv URL 파라미터 없음” 상태
+    const firstDate = recruitmentDetail.availableTimeRanges[0]!.date.replace(
+      /-/g,
+      '.'
+    );
+    router.replace(
+      `/interview-management/timetable/all/${firstDate}` +
+        `?recruitmentId=${effectiveRid}&interviewId=${existingInterview}`
+    );
+
+    didAutoRedirect.current = true; // 한 번만 실행되도록 표시
+  }, [
+    effectiveRid,
+    existingInterview,
+    iv,
+    recruitmentDetail,
+    router,
+    pathname,
+  ]);
+
   // 9) 이미 면접이 생성되어 있고 URL에 iv 없으면 자동으로 timetable로 이동
   useEffect(() => {
     // 모달 경로라면 아무 것도 하지 않는다
     if (pathname.includes('/invite')) return;
 
     if (
+      !isEditing &&
       effectiveRid != null &&
       existingInterview != null &&
       iv == null &&
@@ -134,30 +177,53 @@ export default function Filters() {
     recruitmentDetail,
     router,
     pathname,
+    isEditing,
   ]);
 
   // 핸들러: 재생성 -> 편집 모드
+  // 핸들러: 재생성 -> 편집 모드 + 필터 리셋
   const handleRegenerate = () => {
     setIv(undefined);
     setIsEditing(true);
+
+    // 1) 필터 폼 상태들(config 값)으로 리셋
+    setRooms(config?.roomNames ?? ['']);
+    setCounts({
+      면접관: config?.interviewerCount ?? 0,
+      지원자: config?.applicantCount ?? 0,
+      안내자: config?.assistantCount ?? 0,
+    });
+
+    // 2) onSettingsChange 를 바로 트리거하도록 settings 리셋
+    setSettings({
+      rooms: config?.roomNames ?? [''],
+      interviewerPerSlot: config?.interviewerCount ?? 0,
+      applicantPerSlot: config?.applicantCount ?? 0,
+      assistantPerSlot: config?.assistantCount ?? 0,
+    });
+
+    qc.invalidateQueries({
+      queryKey: queryKeys.interview.schedule(existingInterview!),
+    });
+    qc.invalidateQueries({
+      queryKey: queryKeys.interview.orgList(),
+    });
+
+    // 3) interviewId 없는 URL 로 돌아가면 timetable 컴포넌트가 placeholder 를 보여줍니다
     router.replace(`/interview-management?recruitmentId=${effectiveRid}`);
   };
 
   // 핸들러: 생성
   const createInterview = useCreateInterviewMutation();
   const createSchedule = useCreateScheduleMutation();
-  const [settings, setSettings] = useState<FilterSettings>({
-    rooms: [''],
-    interviewerPerSlot: 1,
-    applicantPerSlot: 1,
-    assistantPerSlot: 1,
-  });
 
   const handleGenerate = async () => {
     if (!effectiveRid) return;
+
     const newIv =
       existingInterview ??
       (await createInterview.mutateAsync({ recruitmentId: effectiveRid }));
+
     setIv(newIv);
     setIsEditing(false);
 
@@ -168,6 +234,7 @@ export default function Filters() {
         interviewerPerSlot: settings.interviewerPerSlot,
         applicantPerSlot: settings.applicantPerSlot,
         roomCount: settings.rooms.length,
+        roomNames: settings.rooms, // ← 방 이름 배열 추가
       },
     });
 
@@ -180,19 +247,27 @@ export default function Filters() {
     );
   };
 
+  const handleRegenerateConfirm = () =>
+    confirm({
+      type: 'info',
+      description: '면접 테이블을 확정하시겠습니까?',
+      cancelText: '취소',
+      confirmText: '저장',
+      onConfirm: handleRegenerate,
+    });
+
   // 버튼 레이블/액션 분기
   const isGenerated = iv != null;
   const btnLabel =
     isGenerated && !isEditing ? '타임테이블 재생성' : '타임테이블 생성';
   const btnAction =
-    isGenerated && !isEditing ? handleRegenerate : handleGenerate;
+    isGenerated && !isEditing ? handleRegenerateConfirm : handleGenerate;
 
   // 저장 핸들러
   const handleSave = () =>
     confirm({
       type: 'info',
-      description:
-        '면접 타임테이블을 저장하시겠습니까? 저장 후에도 언제든 수정 가능합니다.',
+      description: `면접 타임테이블을 저장하시겠습니까?\n 저장 후에도 언제든 수정 가능합니다.`,
       cancelText: '취소',
       confirmText: '저장',
       onConfirm: () => {
@@ -249,16 +324,21 @@ export default function Filters() {
 
       {effectiveRid && (
         <FilterForm
+          key={iv ?? 'new'}
           parts={parts}
           partColorMap={partColorMap}
           onSettingsChange={setSettings}
           disabled={!isEditing}
-          initialSettings={{
-            rooms,
-            interviewerPerSlot: counts.면접관,
-            applicantPerSlot: counts.지원자,
-            assistantPerSlot: counts.안내자,
-          }}
+          initialSettings={
+            iv != null
+              ? {
+                  rooms,
+                  interviewerPerSlot: counts.면접관,
+                  applicantPerSlot: counts.지원자,
+                  assistantPerSlot: counts.안내자,
+                }
+              : undefined
+          }
         />
       )}
     </Flex>

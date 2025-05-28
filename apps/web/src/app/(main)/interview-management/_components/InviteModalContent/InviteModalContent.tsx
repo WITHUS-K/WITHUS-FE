@@ -17,41 +17,22 @@ import { useAddTimeSlotUsersMutation } from '@web/store/mutation/useAddTimeSlotU
 import { useOrganizationUsersQuery } from '@web/store/query/useOrganizationUsersQuery';
 import { IcInputSearch } from '@repo/ui/icons/colored';
 import { useUserStore } from '@web/store/state/userStore';
+import { useUpdateTimeSlotUsersMutation } from '@web/store/mutation/useUpdateTimeSlotUsersMutation';
 
 const TABS = ['interviewer', 'guide'];
+type TabKey = (typeof TABS)[number];
 
 export default function InviteModalContent() {
   const sp = useSearchParams();
   const timeSlotId = Number(sp.get('timeSlotId') ?? NaN);
-  console.log(timeSlotId);
   const interviewId = Number(sp.get('interviewId'));
 
-  const [activeTab, setActiveTab] =
-    useState<(typeof TABS)[number]>('interviewer');
+  const [activeTab, setActiveTab] = useState<TabKey>('interviewer');
   const [inputKeyword, setInputKeyword] = useState('');
   const [searchKeyword, setSearchKeyword] = useState('');
 
   // 1) 이미 배정된 사용자 조회
-  const { data: assignedRaw } = useTimeSlotUsersQuery(timeSlotId);
-  console.log('데이터', assignedRaw);
-  const [assignedInterviewers, setAssignedInterviewers] = useState<
-    ProfileItem[]
-  >([]);
-  const [assignedGuides, setAssignedGuides] = useState<ProfileItem[]>([]);
-
-  useEffect(() => {
-    if (!assignedRaw) return;
-
-    const interviewers = assignedRaw
-      .filter((u) => u.role === 'INTERVIEWER')
-      .map((u) => ({ name: u.name, src: '', userId: u.userId }));
-    const guides = assignedRaw
-      .filter((u) => u.role === 'ASSISTANT')
-      .map((u) => ({ name: u.name, src: '', userId: u.userId }));
-
-    setAssignedInterviewers(interviewers);
-    setAssignedGuides(guides);
-  }, [assignedRaw]);
+  const { data: assignedRaw = [] } = useTimeSlotUsersQuery(timeSlotId);
 
   // 2) 서버 검색
   const organizationId = useUserStore.getState().organizationId!;
@@ -62,32 +43,43 @@ export default function InviteModalContent() {
     searchKeyword
   );
 
-  // 3) 추가 / 제거
-  const addMutation = useAddTimeSlotUsersMutation(timeSlotId, interviewId);
-  const handleAdd = (p: ProfileItem) =>
-    addMutation.mutate({
-      userIds: [p.userId!],
-      role: activeTab === 'interviewer' ? 'INTERVIEWER' : 'ASSISTANT',
+  // 3) 전체 수정 훅
+  const updateUsers = useUpdateTimeSlotUsersMutation(timeSlotId, interviewId);
+  const role = activeTab === 'interviewer' ? 'INTERVIEWER' : 'ASSISTANT';
+
+  // 현재 탭에 배정된 userId 배열
+  const assignedIds = assignedRaw
+    .filter((u) => u.role === role)
+    .map((u) => u.userId);
+
+  const assigned: ProfileItem[] = assignedRaw
+    .filter((u) => u.role === role)
+    .map((u) => ({
+      name: u.name,
+      src: u.profileImageUrl ?? '',
+      userId: u.userId,
+    }));
+
+  const handleAdd = (p: ProfileItem) => {
+    updateUsers.mutate({
+      userIds: [...assignedIds, p.userId!],
+      role,
     });
-  const handleRemove = (p: ProfileItem) => {
-    if (activeTab === 'interviewer') {
-      setAssignedInterviewers((prev) =>
-        prev.filter((a) => a.userId !== p.userId)
-      );
-    } else {
-      setAssignedGuides((prev) => prev.filter((a) => a.userId !== p.userId));
-    }
   };
 
+  const handleRemove = (p: ProfileItem) => {
+    updateUsers.mutate({
+      userIds: assignedIds.filter((id) => id !== p.userId),
+      role,
+    });
+  };
+
+  // 검색어 적용
   useEffect(() => {
     if (inputKeyword.trim() === '') {
       setSearchKeyword('');
     }
   }, [inputKeyword]);
-
-  const assigned =
-    activeTab === 'interviewer' ? assignedInterviewers : assignedGuides;
-
   return (
     <Flex direction="column" gap="1.5rem">
       {/* 탭 */}
@@ -152,7 +144,7 @@ export default function InviteModalContent() {
                 userId: p.userId,
               })
             }
-            added={assigned.some((a) => a.userId === p.userId)}
+            added={assignedIds.includes(p.userId!)}
           />
         ))}
       </Flex>
