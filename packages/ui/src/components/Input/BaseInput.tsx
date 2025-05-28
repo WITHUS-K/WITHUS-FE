@@ -59,6 +59,7 @@ const BaseInput = forwardRef<HTMLInputElement, BaseInputProps>(
       >
         <input
           {...inputProps}
+          autoComplete="off"
           ref={ref}
           className={inputStyleVariants[size]}
           {...props}

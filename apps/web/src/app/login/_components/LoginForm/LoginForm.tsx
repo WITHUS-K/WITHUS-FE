@@ -7,7 +7,6 @@ import { Flex } from '@repo/ui/Flex';
 import { HTTPError } from 'ky';
 import { useLoginMutation } from '@web/store/mutation/useLoginMutation';
 import { LoginRequest } from '@web/types/auth';
-import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
   const {
