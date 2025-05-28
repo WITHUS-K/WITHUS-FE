@@ -21,8 +21,6 @@ export interface Item {
   interviewDate?: string;
   /** 평가 완료 · 합격일 때만 면접 시간 (ex. "10:00 - 10:30") */
   interviewTime?: string;
-  /** 클럽 필터용 ID */
-  clubId: string;
 }
 
 export const ITEMS: Item[] = [
@@ -32,7 +30,6 @@ export const ITEMS: Item[] = [
     positionName: '기획',
     tagColor: '#EE6B00',
     evaluationStatus: 'BEFORE',
-    clubId: 'A',
   },
   {
     id: 2,
@@ -44,7 +41,6 @@ export const ITEMS: Item[] = [
     evaluationScore: 85,
     interviewDate: '4/18 (금)',
     interviewTime: '10:00 - 10:30',
-    clubId: 'B',
   },
   {
     id: 3,
@@ -53,7 +49,6 @@ export const ITEMS: Item[] = [
     tagColor: '#2C60FF',
     evaluationStatus: 'COMPLETED',
     pass: false,
-    clubId: 'A',
   },
   {
     id: 4,
@@ -61,7 +56,6 @@ export const ITEMS: Item[] = [
     positionName: '프론트엔드',
     tagColor: '#813DFF',
     evaluationStatus: 'BEFORE',
-    clubId: 'C',
   },
   {
     id: 5,
@@ -73,7 +67,6 @@ export const ITEMS: Item[] = [
     evaluationScore: 90,
     interviewDate: '4/19 (토)',
     interviewTime: '14:00 - 14:30',
-    clubId: 'C',
   },
   {
     id: 6,
@@ -81,7 +74,6 @@ export const ITEMS: Item[] = [
     positionName: '기획',
     tagColor: '#EE6B00',
     evaluationStatus: 'BEFORE',
-    clubId: 'A',
   },
   {
     id: 7,
@@ -93,7 +85,6 @@ export const ITEMS: Item[] = [
     evaluationScore: 85,
     interviewDate: '4/18 (금)',
     interviewTime: '10:00 - 10:30',
-    clubId: 'B',
   },
   {
     id: 8,
@@ -102,7 +93,6 @@ export const ITEMS: Item[] = [
     tagColor: '#2C60FF',
     evaluationStatus: 'COMPLETED',
     pass: false,
-    clubId: 'A',
   },
   {
     id: 9,
@@ -110,7 +100,6 @@ export const ITEMS: Item[] = [
     positionName: '프론트엔드',
     tagColor: '#813DFF',
     evaluationStatus: 'BEFORE',
-    clubId: 'C',
   },
   {
     id: 10,
@@ -122,6 +111,5 @@ export const ITEMS: Item[] = [
     evaluationScore: 90,
     interviewDate: '4/19 (토)',
     interviewTime: '14:00 - 14:30',
-    clubId: 'C',
   },
 ];

@@ -177,7 +177,10 @@ export default function ApplyListItem({
         </div>
       </Flex>
 
-      <div style={{ width: '7.5rem', marginRight: '3.8rem' }}>
+      <div
+        style={{ width: '7.5rem', marginRight: '3.8rem' }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <StatusDropdown
           key={status}
           status={status}

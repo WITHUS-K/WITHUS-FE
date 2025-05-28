@@ -57,6 +57,8 @@ export const queryKeys = {
     schedule: (id: number) => ['interview', 'schedule', id] as const,
     create: () => ['interview', 'create'] as const,
     scheduleCreate: () => ['interview', 'schedule', 'create'] as const,
+    config: (interviewId: number) =>
+      ['interview', 'config', interviewId] as const,
   },
   timeSlot: {
     users: (timeSlotId: number) => ['timeSlot', 'users', timeSlotId] as const,
@@ -69,6 +71,24 @@ export const queryKeys = {
   },
 
   applications: {
+    userList: (
+      recruitmentId: number,
+      evaluationStatus: string,
+      keyword: string,
+      page: number,
+      size: number
+    ) =>
+      [
+        'applications',
+        'recruitment',
+        recruitmentId,
+        'list',
+        evaluationStatus,
+        keyword,
+        page,
+        size,
+      ] as const,
+
     list: (
       recruitmentId: number,
       stage: string,

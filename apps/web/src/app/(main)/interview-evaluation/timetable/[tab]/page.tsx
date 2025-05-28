@@ -5,6 +5,8 @@ import { Flex, Text } from '@repo/ui';
 import { useMyTimeSlotsQuery } from '@web/store/query/useMyTimeSlotsQuery';
 import { TimeTable } from '@web/components/TimeTable/TimeTable';
 import { CellRenderer, Tab } from '../../_components/CellRender/CellRenderer';
+import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
 
 export default function EvaluationTimetablePage() {
   const params = useParams();
@@ -33,10 +35,16 @@ export default function EvaluationTimetablePage() {
         const startHour = Number(startTime.split(':')[0]);
         const endHour = Number(endTime.split(':')[0]);
 
+        const formattedDate = format(
+          new Date(date.replace(/\./g, '-')),
+          'yyyy년 MM월 dd일 (EEE)',
+          { locale: ko }
+        );
+
         return (
           <TimeTable
             key={date}
-            title={`${date} (${tab === 'guide' ? '안내자' : '면접관'})`}
+            title={`${formattedDate}`}
             headers={tab === 'interviewer' ? ['지원자', '면접관'] : undefined}
             startHour={startHour}
             endHour={endHour}

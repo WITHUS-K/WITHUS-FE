@@ -11,7 +11,7 @@ export interface AddEvaluationRequest {
 }
 export type EvaluationItem = {
   id: number;
-  criteria: { id: number; content: string; type: string };
+  criteria: { id: number; content: string; description: string; type: string };
   score: number;
   user: { userId: number; name: string; profileImageUrl?: string };
 };

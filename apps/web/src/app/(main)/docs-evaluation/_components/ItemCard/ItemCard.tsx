@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Tag } from '@repo/ui/Tag';
 import { Flex } from '@repo/ui/Flex';
 import { IcCalendar20 } from '@repo/ui/icons/colored';
@@ -15,6 +15,8 @@ interface Props {
 
 export default function ItemCard({ item }: Props) {
   const router = useRouter();
+  const sp = useSearchParams();
+  const recruitmentId = sp.get('recruitmentId');
   const {
     id,
     name,
@@ -40,11 +42,17 @@ export default function ItemCard({ item }: Props) {
     variant = 'danger';
   }
 
+  const handleClick = () => {
+    const base = `/docs-evaluation/application/${id}`;
+    // recruitmentId가 있으면 쿼리스트링으로 추가
+    const url = recruitmentId
+      ? `${base}?recruitmentId=${encodeURIComponent(recruitmentId)}`
+      : base;
+    router.push(url);
+  };
+
   return (
-    <div
-      className={styles.card}
-      onClick={() => router.push(`/docs-evaluation/application/${id}`)}
-    >
+    <div className={styles.card} onClick={handleClick}>
       {/* 제목 영역 */}
       <Flex align="center" gap="1.2rem">
         <Tag color={tagColor}>{positionName}</Tag>

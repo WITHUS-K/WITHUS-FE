@@ -13,12 +13,10 @@ export interface Comment {
 
 interface EvaluationCommentCardProps {
   comments: Comment[];
-  currentEvaluator?: string;
 }
 
 export const EvaluationCommentCard = ({
   comments,
-  currentEvaluator = '크리스탈',
 }: EvaluationCommentCardProps) => {
   const [commentList, setCommentList] = useState<Comment[]>(comments);
 
@@ -44,6 +42,7 @@ export const EvaluationCommentCard = ({
             onEditStart={() => {}}
             onDraftChange={() => {}}
             onSubmit={() => {}}
+            onDelete={() => {}}
           />
         ))}
       </Flex>

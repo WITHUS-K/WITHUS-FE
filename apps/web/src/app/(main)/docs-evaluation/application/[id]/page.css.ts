@@ -4,13 +4,14 @@ import { style } from '@vanilla-extract/css';
 export const container = style({
   width: '100%',
   backgroundColor: vars.colors.bg,
-  display:'flex',
+  display: 'flex',
   gap: '4rem',
-  flexDirection: 'column'
-})
+  flexDirection: 'column',
+  paddingBottom: '20rem',
+});
 
 export const rightSection = style({
   display: 'flex',
   flexDirection: 'column',
-  gap:'2rem'
-})
+  gap: '2rem',
+});

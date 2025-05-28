@@ -5,10 +5,19 @@ import { IcPlusCircle } from '@repo/ui/icons/colored';
 import { Memo } from '@repo/ui/Memo';
 import { Text } from '@repo/ui/Text';
 import * as styles from './EvaluationAddCommentCard.css';
+import {
+  DocumentCommentItem,
+  useAddDocumentCommentMutation,
+  useDeleteDocumentCommentMutation,
+  useUpdateDocumentCommentMutation,
+} from '@web/store/mutation/useDocumentCommentMutations';
+import { useUserStore } from '@web/store/state/userStore';
+import { useParams } from 'next/navigation';
 
-export interface Comment {
-  evaluator: string;
-  comment: string;
+interface Comment extends DocumentCommentItem {}
+
+interface Props {
+  comments: Comment[];
 }
 
 interface EvaluationAddCommentCardProps {
@@ -16,27 +25,73 @@ interface EvaluationAddCommentCardProps {
   currentEvaluator?: string;
 }
 
-export const EvaluationAddCommentCard = ({
-  comments,
-  currentEvaluator = '크리스탈',
-}: EvaluationAddCommentCardProps) => {
+export const EvaluationAddCommentCard = ({ comments }: Props) => {
+  const params = useParams();
+  const applicationId = Number(params.id);
   const [commentList, setCommentList] = useState<Comment[]>(comments);
+  const userName = useUserStore.getState().name;
+  const addComment = useAddDocumentCommentMutation(applicationId);
+  const updateComment = useUpdateDocumentCommentMutation(applicationId);
+  const deleteComment = useDeleteDocumentCommentMutation(applicationId);
 
   const [isAdding, setIsAdding] = useState(false);
-  const [draft, setDraft] = useState('');
-  const handleSubmit = () => {
-    const trimmed = draft.trim();
-    if (trimmed) {
-      setCommentList([
-        ...commentList,
-        {
-          evaluator: currentEvaluator,
-          comment: trimmed,
+  const [newDraft, setNewDraft] = useState('');
+
+  // 수정용
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editingDraft, setEditingDraft] = useState('');
+
+  // 날짜 포맷 YYYY.MM.DD
+  const today = new Date().toISOString().split('T')[0]!.replace(/-/g, '.');
+
+  const handleAdd = () => {
+    const content = newDraft.trim();
+    if (!content) return;
+    addComment.mutate(
+      { content, type: 'DOCUMENT' },
+      {
+        onSuccess: (newComment) => {
+          setCommentList((prev) => [
+            ...prev,
+            { ...newComment, createdAt: today },
+          ]);
+          setNewDraft('');
+          setIsAdding(false);
         },
-      ]);
-    }
-    setDraft('');
-    setIsAdding(false);
+      }
+    );
+  };
+
+  const handleUpdate = (commentId: number) => {
+    updateComment.mutate(
+      { commentId, content: editingDraft },
+      {
+        onSuccess: (updated) => {
+          setCommentList((prev) =>
+            prev.map((c) =>
+              c.id === commentId ? { ...c, content: updated.content } : c
+            )
+          );
+          setEditingCommentId(null);
+          setEditingDraft('');
+        },
+      }
+    );
+  };
+
+  const handleDelete = (commentId: number) => {
+    deleteComment.mutate(
+      { commentId },
+      {
+        onSuccess: () => {
+          setCommentList((prev) => prev.filter((c) => c.id !== commentId));
+          if (editingCommentId === commentId) {
+            setEditingCommentId(null);
+            setEditingDraft('');
+          }
+        },
+      }
+    );
   };
 
   return (
@@ -51,28 +106,35 @@ export const EvaluationAddCommentCard = ({
       </div>
 
       <Flex direction="column" gap="2rem" align="center">
-        {commentList.map((c, idx) => (
+        {commentList.map((c) => (
           <Memo
-            key={idx}
-            author={c.evaluator}
-            comment={c.comment}
-            isEditing={false}
-            draft=""
-            onEditStart={() => {}}
-            onDraftChange={() => {}}
-            onSubmit={() => {}}
+            key={c.id}
+            author={c.user.name}
+            date={c.createdAt}
+            comment={c.content}
+            isEditing={editingCommentId === c.id}
+            draft={editingCommentId === c.id ? editingDraft : ''}
+            onEditStart={() => {
+              setEditingCommentId(c.id);
+              setEditingDraft(c.content);
+            }}
+            onDraftChange={(val) => setEditingDraft(val)}
+            onSubmit={() => handleUpdate(c.id)}
+            onDelete={() => handleDelete(c.id)}
           />
         ))}
 
         {isAdding && (
           <Memo
-            author={currentEvaluator}
+            author={userName}
+            date={today}
             comment=""
             isEditing={true}
-            draft={draft}
+            draft={newDraft}
             onEditStart={() => {}}
-            onDraftChange={setDraft}
-            onSubmit={handleSubmit}
+            onDraftChange={setNewDraft}
+            onSubmit={handleAdd}
+            onDelete={() => {}}
           />
         )}
         <button

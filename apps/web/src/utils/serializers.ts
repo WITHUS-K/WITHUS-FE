@@ -65,3 +65,12 @@ function nodeToHtml(node: Descendant): string {
     return childrenHtml;
   }
 }
+
+// 파일명에서 공백·콜론·한글 등 제거하고 _ 로 치환
+export function sanitizeFileName(name: string) {
+  return name
+    .normalize('NFC') // 유니코드 정규화
+    .replace(/\s+/g, '_') // 공백 → _
+    .replace(/[:]/g, '-') // 콜론 → -
+    .replace(/[^0-9A-Za-z_.-]/g, ''); // 나머지 특수문자/한글 제거
+}

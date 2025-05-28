@@ -6,6 +6,7 @@ import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { Divider } from '../Divider';
 import { Button } from '../Button';
+import { ActionMenu } from './ActionMenu/ActionMenu';
 
 interface MemoProps {
   avatarUrl?: string;
@@ -17,18 +18,20 @@ interface MemoProps {
   onEditStart: () => void;
   onDraftChange: (newValue: string) => void;
   onSubmit: () => void;
+  onDelete: () => void;
 }
 
 export const Memo = ({
   avatarUrl,
   author,
-  date = '2024.04.30',
+  date,
   comment,
   isEditing,
   draft,
   onEditStart,
   onDraftChange,
   onSubmit,
+  onDelete,
 }: MemoProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -54,9 +57,12 @@ export const Memo = ({
             {author}
           </Text>
         </Flex>
-        <Text variant="xs_caption_regular" color="grayscale50">
-          {date}
-        </Text>
+        <Flex align="center" gap="0.8rem">
+          <Text variant="xs_caption_regular" color="grayscale50">
+            {date}
+          </Text>
+          <ActionMenu onEdit={onEditStart} onDelete={onDelete} />
+        </Flex>
       </div>
 
       <Divider length="100%" borderColor="grayscale10" />

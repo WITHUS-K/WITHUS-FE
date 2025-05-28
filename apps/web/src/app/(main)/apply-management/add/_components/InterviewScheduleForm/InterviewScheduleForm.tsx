@@ -14,6 +14,7 @@ interface InterviewScheduleFormProps {
   dates: string[];
   scheduleMap: Record<string, TimeRange[]>;
   duration: number;
+  selectedScheduleList: InterviewScheduleItem[];
   onScheduleChange: (date: string, items: InterviewScheduleItem[]) => void;
 }
 
@@ -21,6 +22,7 @@ export function InterviewScheduleForm({
   dates,
   scheduleMap,
   duration,
+  selectedScheduleList,
   onScheduleChange,
 }: InterviewScheduleFormProps) {
   // allRanges: 모든 날짜의 모든 TimeRange
@@ -64,16 +66,13 @@ export function InterviewScheduleForm({
         style={{ marginTop: '1.6rem' }}
       >
         {dates.map((dateStr) => {
-          const dt = parseISO(dateStr);
           const label = safeFormatDotDate(dateStr, 'yyyy년 MM월 dd일 (EEE)');
 
-          const existingRanges = scheduleMap[dateStr] ?? [];
-          const scheduleItems: InterviewScheduleItem[] =
-            existingRanges.map<InterviewScheduleItem>((r) => ({
-              date: dateStr,
-              startTime: r.startTime,
-              endTime: r.endTime,
-            }));
+          const selectedForDate = selectedScheduleList.filter(
+            (item) => item.date === dateStr
+          );
+          // (3) 가능한 그리드: scheduleMap
+          const availableForDate = scheduleMap[dateStr] ?? [];
 
           return (
             <SelectableTimeTable
@@ -85,34 +84,41 @@ export function InterviewScheduleForm({
               width="40rem"
               interviewSchedule={{
                 isSelected: true,
-                scheduleList: scheduleItems,
+                scheduleList: availableForDate.map((r) => ({
+                  date: dateStr,
+                  startTime: r.startTime,
+                  endTime: r.endTime,
+                })), //
               }}
               onRangeSelect={(range) => {
-                let newItems: InterviewScheduleItem[];
+                let updated: InterviewScheduleItem[];
                 if (range) {
-                  const exists = existingRanges.some(
+                  const exists = selectedForDate.some(
                     (r) =>
                       r.startTime === range.startTime &&
                       r.endTime === range.endTime
                   );
-                  const updated: TimeRange[] = exists
-                    ? existingRanges.filter(
+                  const nextSet = exists
+                    ? selectedForDate.filter(
                         (r) =>
                           !(
                             r.startTime === range.startTime &&
                             r.endTime === range.endTime
                           )
                       )
-                    : [...existingRanges, range];
-                  newItems = updated.map<InterviewScheduleItem>((r) => ({
-                    date: dateStr,
-                    startTime: r.startTime,
-                    endTime: r.endTime,
-                  }));
+                    : [
+                        ...selectedForDate,
+                        {
+                          date: dateStr,
+                          startTime: range.startTime,
+                          endTime: range.endTime,
+                        },
+                      ];
+                  updated = nextSet;
                 } else {
-                  newItems = [];
+                  updated = [];
                 }
-                onScheduleChange(dateStr, newItems);
+                onScheduleChange(dateStr, updated);
               }}
             />
           );

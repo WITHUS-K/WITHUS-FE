@@ -1,11 +1,14 @@
+/** 지원서 상세 조회 DTO */
 export interface ApplicationAnswer {
   questionId: number;
   questionTitle: string;
+  questionDescription: string;
   questionType: 'TEXT' | 'FILE';
   answerText: string;
   fileUrl: string;
 }
 
+/** 사용자 요약 정보 */
 export interface Evaluator {
   userId: number;
   name: string;
@@ -14,17 +17,31 @@ export interface Evaluator {
   totalScore?: number;
 }
 
-export interface Evaluation {
+/** 면접 질문 DTO */
+export interface InterviewQuestion {
   id: number;
-  score: number;
-  criteria: {
-    id: number;
-    content: string;
-    type: 'DOCUMENT' | 'INTERVIEW';
-  };
+  content: string;
   user: Evaluator;
 }
 
+/** 평가 기준 DTO */
+export interface DocumentEvaluationCriteria {
+  id: number;
+  content: string;
+  description: string;
+  type: 'DOCUMENT' | 'INTERVIEW';
+  score: number | null;
+}
+
+/** 평가 내역 DTO */
+export interface Evaluation {
+  id: number;
+  score: number | null;
+  criteria: DocumentEvaluationCriteria;
+  user: Evaluator;
+}
+
+/** 코멘트 DTO */
 export interface Comment {
   id: number;
   content: string;
@@ -33,36 +50,53 @@ export interface Comment {
   user: Evaluator;
 }
 
+/** 완료/미완료 평가자 정보 DTO */
+export interface EvaluatorInfo {
+  evaluator: Evaluator;
+  totalScore: number;
+}
+
+/** 지원서 상세 조회 결과 */
 export interface ApplicationDetail {
   id: number;
+  title: string;
+  appliedPosition: string;
   name: string;
+  gender: 'MALE' | 'FEMALE' | 'NONE';
   email: string;
   phoneNumber: string;
-  gender: 'MALE' | 'FEMALE' | 'NONE';
   university?: string;
   major?: string;
-  academicStatus?: string;
+  academicStatus?: 'ENROLLED' | 'GRADUATED' | 'LEAVE_OF_ABSENCE' | 'DEFERRED';
   birthDate?: string;
   imageUrl?: string;
   address?: string;
-  appliedPosition: string;
+  status:
+    | 'PENDING'
+    | 'DOX_PASS'
+    | 'DOX_FAIL'
+    | 'INTERVIEW_PASS'
+    | 'INTERVIEW_FAIL';
   documentAnswers: ApplicationAnswer[];
   availableTimes: string[];
   interviewDates: string[];
+  interviewQuestions: InterviewQuestion[];
   evaluations: Evaluation[];
   documentComments: Comment[];
   interviewComments: Comment[];
+  documentScaleTypeKey: string;
+  documentEvaluationCriterias: DocumentEvaluationCriteria[];
   acquaintances: Evaluator[];
+  acquaintanceCount: number;
   documentAverageScore: string;
-  interviewAverageScore: string;
-  documentCompleted: Evaluator[];
+  documentCompleted: EvaluatorInfo[];
   documentPending: Evaluator[];
-  interviewCompleted: Evaluator[];
+  interviewAverageScore: string;
+  interviewCompleted: EvaluatorInfo[];
   interviewPending: Evaluator[];
   documentDeadline: string;
   documentResultDate: string;
   finalResultDate: string;
-  title: string;
 }
 
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';

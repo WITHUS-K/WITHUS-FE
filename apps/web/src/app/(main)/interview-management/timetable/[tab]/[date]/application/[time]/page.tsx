@@ -13,6 +13,7 @@ import { useTimeSlotApplicationsQuery } from '@web/store/query/useTimeSlotApplic
 import { ApplicantSliderHeader } from '@web/app/(main)/interview-management/_components/ApplicantHeader/ApplicantHeader';
 import { ApplicantDetailContent } from '@web/app/(main)/interview-management/_components/ApplicantDetailContent/ApplicantDetailContent';
 import { Applicant } from '@web/constants/timetable';
+import { getOriginalFileName } from '@web/utils/file';
 
 export default function ApplicantDetailPage() {
   const router = useRouter();
@@ -55,7 +56,10 @@ export default function ApplicantDetailPage() {
   const total = applications.length;
   const app = applications[current]!;
 
-  // **Build a detail object that exactly matches `Applicant`**
+  const portfolioUrl = apps?.[current]?.documentAnswers.find(
+    (d) => d.fileUrl
+  )?.fileUrl;
+
   const detail: Applicant = {
     id: app.applicationId.toString(),
     name: app.name,
@@ -65,14 +69,13 @@ export default function ApplicantDetailPage() {
       content: app.documentAnswers.map((d) => ({
         question: d.questionTitle,
         standardDetail: d.answerText,
+        questionType: d.questionType,
       })),
     },
     portfolioFile: {
-      name:
-        app.documentAnswers.find((d) => d.fileUrl)?.questionTitle ??
-        'portfolio',
-      size: 5, // you can replace with real file size if your API provides it
-      downloadUrl: app.documentAnswers.find((d) => d.fileUrl)?.fileUrl ?? '',
+      name: getOriginalFileName(portfolioUrl!),
+      size: 10 * 1024 * 1024,
+      downloadUrl: portfolioUrl || '',
     },
     interviewQuestions: app.interviewQuestions.map((q) => ({
       question: q.content,

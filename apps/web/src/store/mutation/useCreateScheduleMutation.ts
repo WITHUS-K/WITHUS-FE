@@ -14,6 +14,7 @@ export interface ScheduleBody {
   interviewerPerSlot: number;
   applicantPerSlot: number;
   roomCount: number;
+  roomNames: string[];
 }
 export type CreateScheduleResult = string;
 export type CreateScheduleVariables = {
@@ -36,7 +37,7 @@ export function useCreateScheduleMutation(): UseMutationResult<
       // RESTful 경로로 변경
       const url = `api/v1/interviews/recruitments/${recruitmentId}/interviews/${interviewId}/schedule`;
       const res = await POST<CreateScheduleResult>(url, body);
-      console.log(res);
+      console.log('타임테이블 생성', res);
       return res.result;
     },
     onSuccess: (_data, variables) => {

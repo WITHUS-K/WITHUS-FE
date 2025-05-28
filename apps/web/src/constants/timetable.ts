@@ -5,6 +5,7 @@ export const timetableDates = ['2025-04-22', '2025-04-23'];
 export interface IntroductionContent {
   question: string;
   standardDetail: string;
+  questionType: string;
 }
 
 export interface FileInfo {

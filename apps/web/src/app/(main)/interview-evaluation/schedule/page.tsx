@@ -18,6 +18,10 @@ export default function SchedulePage() {
   const router = useRouter();
   const sp = useSearchParams();
   const { confirm } = useModal();
+  const recruitmentIdParam = sp.get('recruitmentId');
+  const recruitmentId = recruitmentIdParam
+    ? Number(recruitmentIdParam)
+    : undefined;
 
   // 쿼리에서 interviewId 가져오기
   const interviewIdParam = sp.get('interviewId');
@@ -30,7 +34,7 @@ export default function SchedulePage() {
   if (!orgs.length) return <Text>등록된 면접이 없습니다.</Text>;
 
   // 2) 선택된 인터뷰 결정 (쿼리에 없으면 첫 번째)
-  const current = (orgs.find((o) => o.interviewId === interviewId) ?? orgs[1])!;
+  const current = (orgs.find((o) => o.interviewId === interviewId) ?? orgs[0])!;
 
   const { availableTimeRanges, interviewDuration } = current;
 
@@ -76,7 +80,9 @@ export default function SchedulePage() {
             onSuccess: () => {
               console.log('가능한 시간', slots);
               router.replace(
-                `/interview-evaluation/timetable/interviewer?interviewId=${current.interviewId}`
+                `/interview-evaluation/timetable/interviewer` +
+                  `?interviewId=${current.interviewId}` +
+                  `&recruitmentId=${recruitmentId}`
               );
             },
           }
