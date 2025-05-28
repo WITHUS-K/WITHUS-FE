@@ -5,7 +5,10 @@ import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Tag } from '@repo/ui/Tag';
 import { allTagColors, TagColor } from '@repo/utils';
-import { IcHomeDocsColored } from '@repo/ui/icons/colored';
+import {
+  IcHomeDocsColored,
+  IcHomeInterviewColored,
+} from '@repo/ui/icons/colored';
 
 export interface Task {
   id: string;
@@ -55,11 +58,13 @@ export const OverallProgress = ({ tasks }: OverallProgressProps) => {
         {filtered.map((t, idx) => {
           const tagColor = getRandomTagColor(idx);
           const pct = Math.round((t.completed / t.total) * 100);
+          const Icon =
+            t.type === '면접' ? IcHomeInterviewColored : IcHomeDocsColored;
           return (
             <div key={t.id} className={styles.card}>
               <Flex gap="1.2rem" align="center">
                 <div className={styles.icon}>
-                  <IcHomeDocsColored width={24} height={24} />
+                  <Icon width={24} height={24} />
                 </div>
                 <div className={styles.meta}>
                   <Flex direction="column" gap="0" align="flexStart">
