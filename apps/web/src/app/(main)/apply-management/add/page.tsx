@@ -134,7 +134,10 @@ export default function AddApplicant() {
     () =>
       data?.applicationQuestions
         // 파트 이름(positionName) 이 선택된 파트 라벨과 같은 것만
-        .filter((q) => q.positionName === selectedPartLabel)
+        .filter(
+          (q) =>
+            q.positionName === '공통' || q.positionName === selectedPartLabel
+        )
         .map((q) => {
           console.log(q);
           if (q.type === 'TEXT') {

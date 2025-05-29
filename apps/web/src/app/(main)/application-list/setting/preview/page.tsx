@@ -6,7 +6,7 @@ import {
   SettingContextType,
 } from '@web/app/(main)/application-list/setting/_context/SettingContext';
 import { FormValues, InterviewSchedule } from '@web/types/application';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import * as styles from './page.css';
 import { PreviewHeader } from '@web/app/(main)/application-list/setting/preview/_components/PreivewHeader/PreivewHeader';
 import { BasicInfoPreview } from '@web/app/(main)/application-list/setting/preview/_components/BasicInfoPreview/BasicInfoPreview';
@@ -16,6 +16,7 @@ import { QuestionAndFileList } from '@web/app/(main)/application-list/setting/pr
 import { SelectableTimeTable } from '@web/components/TimeTable/SelectableTimeTable';
 import { format, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale/ko';
+import { TIME_STEP } from '@web/utils/application';
 
 export default function ApplicationPreview() {
   const ctx = useContext<SettingContextType | null>(SettingContext);
@@ -59,6 +60,26 @@ export default function ApplicationPreview() {
       ]
     )
   );
+
+  const interval = TIME_STEP[form.interviewDuration];
+
+  // 2) admin이 설정한 scheduleList 전체
+  const allSlots = form.interviewSchedule?.scheduleList ?? [];
+
+  console.log('시간', allSlots);
+  // 3) 날짜별로 묶어서 unique dates 추출
+  const dates = useMemo(
+    () => Array.from(new Set(allSlots.map((s) => s.date))),
+    [allSlots]
+  );
+
+  // 4) 전체 슬롯에서 최소 시작시간 / 최대 종료시간(시(hour)만) 계산
+  const hours = allSlots.flatMap((s) => [
+    parseInt(s.startTime.split(':')[0]!, 10),
+    parseInt(s.endTime.split(':')[0]!, 10),
+  ]);
+  const startHour = Math.min(...hours);
+  const endHour = Math.max(...hours);
 
   return (
     <Flex
@@ -135,30 +156,30 @@ export default function ApplicationPreview() {
             width="100%"
             style={{ marginTop: '1.6rem' }}
           >
-            {timetableDates.map((isoDate) => {
+            {dates.map((isoDate) => {
               const dt = parseISO(isoDate);
               const label = format(dt, 'yyyy년 MM월 dd일 (EEE)', {
                 locale: ko,
               });
 
-              const interviewSchedule: InterviewSchedule = {
-                isSelected: true,
-                scheduleList: [
-                  { date: isoDate, startTime: '10:00', endTime: '14:00' },
-                  { date: isoDate, startTime: '17:00', endTime: '18:00' },
-                ],
-              };
+              // 5) 해당 날짜 슬롯만 필터링
+              const scheduleListForDate = allSlots.filter(
+                (s) => s.date === isoDate
+              );
 
               return (
                 <SelectableTimeTable
                   key={isoDate}
                   title={label}
-                  startHour={10}
-                  endHour={18}
-                  interval={15}
+                  startHour={startHour}
+                  endHour={endHour}
+                  interval={interval}
                   width="40rem"
                   selectable={false}
-                  interviewSchedule={interviewSchedule}
+                  interviewSchedule={{
+                    isSelected: form.interviewSchedule?.isSelected ?? false,
+                    scheduleList: scheduleListForDate,
+                  }}
                 />
               );
             })}

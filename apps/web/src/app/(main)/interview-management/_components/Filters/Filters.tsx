@@ -18,6 +18,7 @@ import { TagHex, mapServerColorToTagHex } from '@web/utils/color';
 import { useInterviewConfigQuery } from '@web/store/query/useInterviewConfigQuery';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@web/store/constants';
+import { queryClient } from '@web/store/query/QueryClientProvider';
 
 export default function Filters() {
   const qc = useQueryClient();
@@ -238,6 +239,8 @@ export default function Filters() {
       },
     });
 
+    // 3) config를 fetchQuery로 직접 가져오기 (객체 한 개 인자)
+
     const firstDate =
       recruitmentDetail?.availableTimeRanges?.[0]!.date.replace(/-/g, '.') ??
       '';
@@ -286,12 +289,35 @@ export default function Filters() {
             clubs={recruitments.map((r) => r.title)}
             value={selectedTitle}
             onSelect={(title) => {
-              setSelectedTitle(title);
               const found = recruitments.find((r) => r.title === title);
-              if (found) {
-                setIv(undefined);
-                setRid(found.recruitmentId);
-                setIsEditing(true);
+              if (!found) return;
+
+              // 1) state 동기화
+              setSelectedTitle(title);
+              setRid(found.recruitmentId);
+              setIv(undefined);
+              setIsEditing(true);
+
+              // 2) 해당 공고에 이미 생성된 interviewId가 있는지 확인
+              const foundInterview = orgInterviews.find(
+                (x) => x.recruitmentId === found.recruitmentId
+              )?.interviewId;
+
+              if (foundInterview != null) {
+                const detail = queryClient.getQueryData<{
+                  availableTimeRanges: { date: string }[];
+                }>(queryKeys.recruitment.detail(found.recruitmentId));
+
+                const firstDate =
+                  detail?.availableTimeRanges?.[0]?.date.replace(/-/g, '.') ??
+                  '';
+
+                router.replace(
+                  `/interview-management/timetable/all/${firstDate}` +
+                    `?recruitmentId=${found.recruitmentId}&interviewId=${foundInterview}`
+                );
+              } else {
+                // interview 생성 전이면 → 필터 페이지
                 router.replace(
                   `/interview-management?recruitmentId=${found.recruitmentId}`
                 );

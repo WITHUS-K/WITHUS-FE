@@ -18,17 +18,21 @@ export function convertFormToRequest(
         ? 30
         : 60;
 
-  const positions = form.applicationParts?.isSelected
-    ? ['공통', ...form.applicationParts.parts]
+  const customParts = form.applicationParts?.isSelected
+    ? form.applicationParts.parts
+    : [];
+  const uiPositions = form.applicationParts?.isSelected
+    ? ['공통', ...customParts]
     : ['공통'];
+
+  const positions = customParts;
 
   const applicationQuestions: Array<TextQuestionDto | FileQuestionDto> =
     form.detailItems.map((item) => {
-      const idx =
-        item.responseTarget! >= 0 && item.responseTarget! < positions.length
-          ? item.responseTarget
-          : 0;
-      const positionName = positions[idx!];
+      const idx = item.responseTarget ?? 0;
+
+      // 공통은 null, 나머지는 customParts[idx-1]
+      const positionName = idx > 0 ? customParts[idx - 1] : null;
 
       if (item.type === 'text') {
         return {

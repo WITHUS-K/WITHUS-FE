@@ -1,5 +1,5 @@
 import type { ToastType } from '../../Toast';
-import { IcNotice, IcToastSuccess } from '../../../../icons/src/colored';
+import { IcNotice, IcToastSuccess } from '../../../../icons/src/mono';
 
 export interface ToastIconProps {
   /** 'default' | 'success' | 'error' */

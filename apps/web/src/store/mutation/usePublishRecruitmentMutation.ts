@@ -26,6 +26,7 @@ export function usePublishRecruitmentMutation() {
     onSuccess: (data, variables, context) => {
       console.log('[PublishRecruitment] onSuccess data:', data);
       qc.invalidateQueries({ queryKey: queryKeys.recruitments.list() });
+      qc.invalidateQueries({ queryKey: queryKeys.recruitment.list() });
     },
     // 4) 실패 시
     onError: (error, variables, context) => {

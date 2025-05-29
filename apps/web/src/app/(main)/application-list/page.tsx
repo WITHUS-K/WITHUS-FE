@@ -190,6 +190,7 @@ export default function ApplicationList() {
           const handleCopy = () => {
             setCopyId(item.recruitmentId);
           };
+          console.log(item);
 
           return (
             <RecruitmentCard

@@ -45,7 +45,7 @@ export default function StandardSection({ label, standardName }: Props) {
   const infoText =
     std === 'score'
       ? '10점 만점으로 표시되는 점수제 평가입니다.'
-      : '세 가지 선택지로 평가할 수 있는 항목입니다.';
+      : '만족, 보통, 불만족, 세 가지 선택지로 평가할 수 있는 항목입니다.';
 
   return (
     <Flex direction="column" gap="1.6rem" align="flexStart">
@@ -79,7 +79,6 @@ export default function StandardSection({ label, standardName }: Props) {
             {infoText}
           </div>
         </Flex>
-        <div>{controlEl}</div>
       </Flex>
     </Flex>
   );

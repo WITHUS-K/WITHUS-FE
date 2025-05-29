@@ -124,7 +124,7 @@ const ToastComponent = forwardRef<HTMLDivElement, ToastProps>(
               {leftAddon ?? (
                 <ToastIcon toastType={toastType} aria-hidden="true" />
               )}
-              <Text variant="sm_caption_semibold" color="primary50">
+              <Text variant="sm_caption_semibold" color="white">
                 {children}
               </Text>
             </div>

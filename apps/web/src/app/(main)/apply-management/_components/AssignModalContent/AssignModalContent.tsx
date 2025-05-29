@@ -18,6 +18,7 @@ import DistributionContainer, {
   OrgRole,
   PartState,
 } from './DistributionContainer/DistributionContainer';
+import { useUserStore } from '@web/store/state/userStore';
 
 export interface AssignModalContentRef {
   handleConfirm: () => Promise<void>;
@@ -31,7 +32,9 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
   const searchParams = useSearchParams();
   const recruitmentId = Number(searchParams.get('recruitmentId'));
 
-  const { data: rolesData } = useOrganizationRolesQuery(recruitmentId);
+  const organizationId = useUserStore.getState().organizationId!;
+
+  const { data: rolesData } = useOrganizationRolesQuery(organizationId);
   const latestQuery = useLatestDistributionQuery(recruitmentId);
   const positionsQuery = useRecruitmentPositionsQuery(recruitmentId);
   const distribute = useDistributeEvaluators(recruitmentId);
@@ -41,6 +44,7 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
     label: r.roleName,
     color: mapServerColorToTagHex(r.color),
   }));
+  console.log('안녕', availableRoles);
 
   // 현재 탭에 맞춰 DOCUMENT/INTERVIEW 로 매핑
   const currentEvalType: 'DOCUMENT' | 'INTERVIEW' =

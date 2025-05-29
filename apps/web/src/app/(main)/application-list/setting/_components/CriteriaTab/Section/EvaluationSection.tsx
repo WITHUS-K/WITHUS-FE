@@ -38,7 +38,7 @@ export default function EvaluationSection({
   }, [append, fields.length]);*/
 
   return (
-    <Flex width="100%" direction="column">
+    <div className={styles.container}>
       <StandardSection label={label} standardName={standardName} />
       <Flex
         direction="column"
@@ -66,6 +66,6 @@ export default function EvaluationSection({
           </Text>
         </button>
       </Flex>
-    </Flex>
+    </div>
   );
 }

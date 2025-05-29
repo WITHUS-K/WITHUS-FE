@@ -29,7 +29,7 @@ export const OverallProgress = ({ tasks }: OverallProgressProps) => {
   const filtered = tasks.filter((t) => t.type === tab);
 
   function getRandomTagColor(idx: number): TagColor {
-    return allTagColors[idx];
+    return allTagColors[idx]!;
   }
 
   return (
