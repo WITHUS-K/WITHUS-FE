@@ -10,13 +10,7 @@ export default function CriteriaTab() {
   const [showHeaderInfo, setShowHeaderInfo] = useState(true);
 
   return (
-    <Flex
-      direction="column"
-      width="100%"
-      marginTop="4rem"
-      gap="1.6rem"
-      paddingBottom="5rem"
-    >
+    <Flex direction="column" width="100%" gap="1.6rem" paddingBottom="5rem">
       {showHeaderInfo && (
         <div className={styles.headerInfo}>
           <div className={styles.headerInfoDetail}>

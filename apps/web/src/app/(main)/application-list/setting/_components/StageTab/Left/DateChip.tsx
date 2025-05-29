@@ -24,6 +24,7 @@ export function DateChip({
   const label = date ? format(new Date(date), 'yyyy/MM/dd') : placeholder;
   return (
     <button
+      type="button"
       className={`${s.dateChip} ${selected ? s.dateChipSelected : ''}`}
       disabled={disabled}
       onClick={onClick}

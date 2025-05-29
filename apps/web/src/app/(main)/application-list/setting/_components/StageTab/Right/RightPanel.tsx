@@ -10,6 +10,7 @@ import FinalPanel from './Panal/FinalPanel';
 import { Text } from '@repo/ui/Text';
 import { IcPanalCalendar } from '@repo/ui/icons/colored';
 import InterviewPanel from './Panal/InterviewPanel';
+import { format } from 'date-fns';
 
 export default function RightPanel() {
   const { watch, setValue } = useFormContext();
@@ -28,7 +29,8 @@ export default function RightPanel() {
 
   // 패널에서 날짜 고르면 폼에 반영
   const mkOnSelect = (field: string) => (d: Date) => {
-    setValue(field, d.toISOString());
+    const dateStr = format(d, 'yyyy-MM-dd');
+    setValue(field, dateStr);
     setValue('activeSection', null);
   };
 

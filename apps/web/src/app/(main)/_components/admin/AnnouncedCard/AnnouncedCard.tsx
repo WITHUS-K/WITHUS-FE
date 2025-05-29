@@ -6,7 +6,7 @@ import { IcArrowRight } from '@repo/ui/icons/mono';
 import { Flex } from '@repo/ui/Flex';
 import { Divider } from '@repo/ui/Divider';
 import { Tag } from '@repo/ui/Tag';
-import { allTagColors, TagColor } from 'node_modules/@repo/utils/src/util/tag';
+import { allTagColors, TagColor } from '@repo/utils';
 export interface PartCount {
   name: string;
   color: string;
@@ -21,7 +21,7 @@ export interface AnnounceCardProps {
 }
 
 function getRandomTagColor(idx: number): TagColor {
-  return allTagColors[idx];
+  return allTagColors[idx]!;
 }
 
 export const AnnounceCard = ({

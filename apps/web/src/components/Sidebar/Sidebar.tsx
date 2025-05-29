@@ -11,7 +11,7 @@ import {
   IcSidebarPaper,
   IcSidebarSearch,
 } from '@repo/ui/icons/mono';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface SidebarProps {
   role: string;
@@ -19,6 +19,7 @@ interface SidebarProps {
 
 const Sidebar = ({ role }: SidebarProps) => {
   const router = useRouter();
+  const pathname = usePathname();
   const [activeItem, setActiveItem] = useState<string>('');
 
   const adminItems = [
@@ -71,6 +72,15 @@ const Sidebar = ({ role }: SidebarProps) => {
 
   const items = role === 'ADMIN' ? adminItems : userItems;
 
+  const activeItemLabel =
+    items.find((i) => {
+      // 정확히 루트 매핑 또는 하위 경로 포함 여부
+      return (
+        pathname === i.route ||
+        (i.route !== '/' && pathname.startsWith(i.route + '/'))
+      );
+    })?.label ?? '홈';
+
   return (
     <nav className={sidebarContainer}>
       <SidebarList>
@@ -79,7 +89,7 @@ const Sidebar = ({ role }: SidebarProps) => {
             key={item.label}
             label={item.label}
             icon={item.icon}
-            isActive={activeItem === item.label}
+            isActive={item.label === activeItemLabel}
             onClick={() => {
               setActiveItem(item.label);
               router.push(item.route);

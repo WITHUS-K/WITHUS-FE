@@ -4,10 +4,12 @@ import type {
   TextQuestionDto,
   FileQuestionDto,
 } from '@web/types/recruitment';
+import { format } from 'date-fns';
 
 export function convertFormToRequest(
   form: FormValues,
-  recruitmentId: number | null
+  recruitmentId: number | null,
+  organizationId: number
 ): PublishRecruitmentRequest {
   const interviewDuration =
     form.interviewDuration === '15분'
@@ -16,17 +18,21 @@ export function convertFormToRequest(
         ? 30
         : 60;
 
-  const positions = form.applicationParts?.isSelected
-    ? ['공통', ...form.applicationParts.parts]
+  const customParts = form.applicationParts?.isSelected
+    ? form.applicationParts.parts
+    : [];
+  const uiPositions = form.applicationParts?.isSelected
+    ? ['공통', ...customParts]
     : ['공통'];
+
+  const positions = customParts;
 
   const applicationQuestions: Array<TextQuestionDto | FileQuestionDto> =
     form.detailItems.map((item) => {
-      const idx =
-        item.responseTarget! >= 0 && item.responseTarget! < positions.length
-          ? item.responseTarget
-          : 0;
-      const positionName = positions[idx!];
+      const idx = item.responseTarget ?? 0;
+
+      // 공통은 null, 나머지는 customParts[idx-1]
+      const positionName = idx > 0 ? customParts[idx - 1] : null;
 
       if (item.type === 'text') {
         return {
@@ -72,6 +78,18 @@ export function convertFormToRequest(
       }))
     : [];
 
+  const documentDeadlineStr = form.deadline
+    ? format(new Date(form.deadline), 'yyyy-MM-dd')
+    : format(new Date(), 'yyyy-MM-dd');
+
+  const documentResultDateStr = form.documentResult?.date
+    ? format(new Date(form.documentResult.date), 'yyyy-MM-dd')
+    : null;
+
+  const finalResultDateStr = form.finalResultDate
+    ? format(new Date(form.finalResultDate), 'yyyy-MM-dd')
+    : format(new Date(), 'yyyy-MM-dd');
+
   return {
     recruitmentId,
     title: form.title,
@@ -80,12 +98,12 @@ export function convertFormToRequest(
     positions,
     applicationQuestions,
     isDocumentResultRequired: form.documentResult?.isSelected as boolean,
-    documentDeadline: form.deadline || '2025-06-01',
-    documentResultDate: form.documentResult?.date || null,
-    finalResultDate: form.finalResultDate || '2025-06-01',
+    documentDeadline: documentDeadlineStr,
+    documentResultDate: documentResultDateStr,
+    finalResultDate: finalResultDateStr,
 
     interviewDuration,
-    organizationId: 1,
+    organizationId,
     needGender: form.basicInfo.gender,
     needAddress: form.basicInfo.address,
     needSchool: form.basicInfo.school,

@@ -38,7 +38,11 @@ export const MonthSelect = ({
 
   return (
     <div className={styles.monthSelectWrapper} ref={wrapperRef}>
-      <button className={styles.monthSelect} onClick={() => setOpen((o) => !o)}>
+      <button
+        type="button"
+        className={styles.monthSelect}
+        onClick={() => setOpen((o) => !o)}
+      >
         <Text variant="lg_subtitle_semibold" color="grayscale90">
           {format(currentMonth, 'yyyy년 M월')}
         </Text>

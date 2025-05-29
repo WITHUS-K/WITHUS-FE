@@ -31,14 +31,14 @@ export default function EvaluationSection({
   });
 
   // 첫 렌더링 시 필드가 비어 있으면 1개 추가
-  useEffect(() => {
+  /*useEffect(() => {
     if (fields.length === 0) {
       append({ evaluate: '', evaluateDetail: '' });
     }
-  }, [append, fields.length]);
+  }, [append, fields.length]);*/
 
   return (
-    <Flex width="100%" direction="column">
+    <div className={styles.container}>
       <StandardSection label={label} standardName={standardName} />
       <Flex
         direction="column"
@@ -66,6 +66,6 @@ export default function EvaluationSection({
           </Text>
         </button>
       </Flex>
-    </Flex>
+    </div>
   );
 }

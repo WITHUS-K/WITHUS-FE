@@ -25,7 +25,7 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
         type: "text" as const,
         description: tq.title,
         addDescription: tq.description,
-        responseTarget: parts.indexOf(tq.positionName),
+        responseTarget: parts.indexOf(tq.positionName!),
         typeInfo: {
           info: tq.includeWhitespace ? "공백 포함" : "공백 미포함",
           infoDetail: `${tq.textLimit}자`,
@@ -38,7 +38,7 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
         type: "file" as const,
         description: fq.title,
         addDescription: fq.description,
-        responseTarget: parts.indexOf(fq.positionName),
+        responseTarget: parts.indexOf(fq.positionName!),
         typeInfo: {
           info: `${fq.maxFileCount}`,
           infoDetail: `${fq.maxFileSizeMb}MB`,

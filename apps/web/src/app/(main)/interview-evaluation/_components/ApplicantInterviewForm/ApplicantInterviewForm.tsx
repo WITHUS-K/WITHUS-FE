@@ -50,6 +50,7 @@ export const ApplicantInterviewForm = ({
       (c) => c.type === 'INTERVIEW'
     ) ?? [];
 
+  console.log('면접', interviewCriteria);
   // Mutations
   const addComment = useAddCommentMutation(detail.applicationId, timeSlotId);
   const updateComment = useUpdateCommentMutation(

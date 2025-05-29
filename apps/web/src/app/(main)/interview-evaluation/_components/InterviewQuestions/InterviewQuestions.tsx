@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import * as styles from './InterviewQuestions.css';
 import { TextField } from '@repo/ui/InputField';
-import { IcDeleteLg, IcEdit, IcPlusCircle } from '@repo/ui/icons/colored';
+import { IcDeleteLg, IcEditMenu, IcPlusCircle } from '@repo/ui/icons/colored';
 import { Flex } from '@repo/ui/Flex';
 import { Button } from '@repo/ui/Button';
 import { useParams } from 'next/navigation';
@@ -175,7 +175,7 @@ export const InterviewQuestions = ({
                     onClick={() => startEdit(r.id)}
                     className={styles.btn}
                   >
-                    <IcEdit width={20} height={20} />
+                    <IcEditMenu width={20} height={20} />
                     <Text variant="sm_caption_medium" color="grayscale30">
                       수정하기
                     </Text>

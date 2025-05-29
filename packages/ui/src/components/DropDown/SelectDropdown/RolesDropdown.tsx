@@ -18,24 +18,24 @@ interface Props {
 }
 
 export default function RolesDropdown({ availableRoles, onSelect }: Props) {
+  console.log('RolesDropdown availableRoles:', availableRoles);
+
   return (
     <Dropdown>
-      <div className={rolesDropdwon}>
-        <Dropdown.Trigger>
-          <RolesDropdownTriggerContent />
-        </Dropdown.Trigger>
+      <Dropdown.Trigger>
+        <RolesDropdownTriggerContent />
+      </Dropdown.Trigger>
 
-        {/* 리스트 */}
-        <Dropdown.List width="14.8rem">
-          {availableRoles.map((r) => (
-            <Dropdown.Item key={r.label} onSelect={() => onSelect(r)}>
-              <Tag color={r.color} withCircle>
-                {r.label}
-              </Tag>
-            </Dropdown.Item>
-          ))}
-        </Dropdown.List>
-      </div>
+      {/* 리스트 */}
+      <Dropdown.List width="14.8rem">
+        {availableRoles.map((r) => (
+          <Dropdown.Item key={r.label} onSelect={() => onSelect(r)}>
+            <Tag color={r.color} withCircle>
+              {r.label}
+            </Tag>
+          </Dropdown.Item>
+        ))}
+      </Dropdown.List>
     </Dropdown>
   );
 }

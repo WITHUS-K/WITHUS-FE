@@ -1,6 +1,9 @@
+// src/web/app/(main)/application-list/setting/_components/FormTab/SectionParts.tsx
+'use client';
+
+import React, { useState } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
-import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { SimpleToggleSwitch } from '@repo/ui/SimpleToggleSwitch';
 import { PartInput } from './Tag/PartInput';
@@ -43,6 +46,7 @@ export default function SectionParts() {
 
   return (
     <Flex direction="column" gap="1.6rem" align="flexStart" width="100%">
+      {/* 토글 스위치 */}
       <Flex align="center" gap="1rem">
         <Text variant="md1_text_semibold" color="grayscale70">
           지원 파트
@@ -56,7 +60,9 @@ export default function SectionParts() {
         />
       </Flex>
 
+      {/* 파트 태그 및 입력, 추가 버튼 */}
       <Flex wrap="wrap" gap="2.3rem" width="100%">
+        {/* 기존 파트 태그 */}
         {parts.map((p, i) =>
           editingIndex === i ? (
             <PartInput
@@ -79,17 +85,17 @@ export default function SectionParts() {
           )
         )}
 
-        {/* 항상 AddButton은 렌더, 클릭은 enabled 상태에서만 동작 */}
-        {editingIndex === null &&
-          (isAdding ? (
-            <PartInput
-              defaultValue=""
-              onConfirm={handleConfirm}
-              onCancel={handleCancel}
-            />
-          ) : (
-            <AddButton onClick={() => setIsAdding(true)} disabled={!enabled} />
-          ))}
+        {/* 입력창: isAdding 상태일 때만 */}
+        {editingIndex === null && isAdding && (
+          <PartInput
+            defaultValue=""
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+          />
+        )}
+
+        {/* 항상 마지막에 추가 버튼 유지 */}
+        <AddButton onClick={() => setIsAdding(true)} disabled={!enabled} />
       </Flex>
     </Flex>
   );

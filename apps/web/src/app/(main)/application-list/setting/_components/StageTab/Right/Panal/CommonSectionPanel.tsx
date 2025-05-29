@@ -68,6 +68,7 @@ export default function CommonSectionPanel({
 
         {/* 등록 버튼: localDate 가 있을 때만 활성화 */}
         <Button
+          type="button"
           variant="main"
           size="40"
           disabled={!localDate}

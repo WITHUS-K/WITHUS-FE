@@ -28,7 +28,7 @@ interface BaseQuestionDto {
   title: string;
   description: string;
   required: boolean;
-  positionName: string;
+  positionName: string | null;
 }
 
 export interface TextQuestionDto extends BaseQuestionDto {
