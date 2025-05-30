@@ -14,11 +14,7 @@ import { format, parseISO } from 'date-fns';
 
 const DRAFT_FUTURE_DATE = '2027.05.30';
 
-interface RightPanelProps {
-  containerRef: React.Ref<HTMLDivElement>;
-}
-
-export default function RightPanel({ containerRef }: RightPanelProps) {
+export default function RightPanel() {
   const { watch, setValue } = useFormContext();
 
   const active = watch('activeSection');
@@ -43,7 +39,7 @@ export default function RightPanel({ containerRef }: RightPanelProps) {
   };
 
   return (
-    <div ref={containerRef} className={s.right}>
+    <div className={s.right}>
       {!active && (
         <Flex direction="column" align="center" justify="center" gap="2rem">
           <IcPanalCalendar width={48} height={48} />

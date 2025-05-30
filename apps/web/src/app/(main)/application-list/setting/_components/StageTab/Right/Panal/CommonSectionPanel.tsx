@@ -49,13 +49,18 @@ export default function CommonSectionPanel({
       <Flex
         direction="column"
         align="center"
-        justify="spaceBetween"
+        //justify="spaceBetween"
         width="100%"
         height="100%"
-        gap="13.6rem"
-        paddingTop="16.2rem"
       >
-        <Flex direction="column" align="center" gap="2rem">
+        <Flex
+          direction="column"
+          align="center"
+          justify="center"
+          gap="2rem"
+          paddingTop="6rem"
+          height="39.5rem"
+        >
           {icon}
           <Text
             variant="lg_subtitle_medium"
