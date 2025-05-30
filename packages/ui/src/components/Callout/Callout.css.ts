@@ -12,15 +12,14 @@ export const trigger = style({
 });
 
 export const bubble = style({
-  position: 'absolute',
-  left: '50%',
-  transform: 'translateX(-50%)',
-  marginLeft: 'var(--offset-x, 0px)',
+  //position: 'absolute',
+  //left: '50%',
+  //transform: 'translateX(-50%)',
+  //marginLeft: 'var(--offset-x, 0px)',
   backgroundColor: vars.colors.grayscale70,
   borderRadius: '6px',
   padding: '0.5rem 1.4rem',
   whiteSpace: 'nowrap',
-  zIndex: 4,
 });
 
 export const top = style({

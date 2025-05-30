@@ -6,7 +6,10 @@ import { IcDelete } from '@repo/ui/icons/colored';
 import * as styles from '../ChargeModalContent.css';
 import { Evaluator } from '../../EvalBubbles/EvalBubbles';
 import { TagColor } from '@repo/utils';
-import { mapServerColorToTagHex } from '@web/utils/color';
+import {
+  mapServerColorToProfileHex,
+  mapServerColorToTagHex,
+} from '@web/utils/color';
 import { Person } from '../ProfileListItem/ProfileListItem';
 
 export const TAG_COLORS: TagColor[] = [
@@ -33,7 +36,7 @@ export default function ProfileChip({
   onRemove,
 }: ProfileChipProps) {
   const color = person.profileColor;
-  const bg = mapServerColorToTagHex(color);
+  const bg = mapServerColorToProfileHex(color);
   return (
     <Flex align="center" gap="0.8rem" className={styles.profileContainer}>
       <div className={styles.bubble} style={{ backgroundColor: bg }}>

@@ -20,7 +20,8 @@ export function useDistributeEvaluators(recruitmentId: number) {
         'api/v1/admin/applications/distribute-evaluators',
         body
       );
-      console.log(res);
+      console.log('분배', body);
+      console.log('분배', res);
       return res.result;
     },
     onSuccess: () => {

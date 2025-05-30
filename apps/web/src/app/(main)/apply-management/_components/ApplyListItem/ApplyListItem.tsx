@@ -164,7 +164,12 @@ export default function ApplyListItem({
         {member.documentScore}
       </Text>
 
-      <Flex align="center" gap="1rem" marginRight="3.8rem">
+      <Flex
+        align="center"
+        gap="1rem"
+        marginRight="3.8rem"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           type="button"
           onClick={openChargeModal}

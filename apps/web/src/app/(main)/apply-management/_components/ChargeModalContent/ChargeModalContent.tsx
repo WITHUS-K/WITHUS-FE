@@ -155,7 +155,7 @@ export const ChargeModalContent = forwardRef<ChargeModalContentRef, Props>(
         <Flex direction="column" width="100%" style={{ height: '33rem' }}>
           {candidates.map((p, idx) => (
             <ProfileListItem
-              key={p.name}
+              key={`${p.userId}-${p.name}`}
               person={p}
               onAdd={handleAdd}
               index={idx}

@@ -57,6 +57,7 @@ export { default as IcPanalCalendar } from './IcPanalCalendar';
 export { default as IcPanalEnd } from './IcPanalEnd';
 export { default as IcPanalPass } from './IcPanalPass';
 export { default as IcPasswordComplete } from './IcPasswordComplete';
+export { default as IcPencil } from './IcPencil';
 export { default as IcPlus24 } from './IcPlus24';
 export { default as IcPlusCircle } from './IcPlusCircle';
 export { default as IcPwActive } from './IcPwActive';

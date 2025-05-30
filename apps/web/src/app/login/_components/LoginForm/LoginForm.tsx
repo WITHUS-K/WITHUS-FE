@@ -15,7 +15,7 @@ export default function LoginForm() {
     setError,
     formState: { errors, isValid },
   } = useForm<LoginRequest>({
-    mode: 'onBlur',
+    mode: 'onTouched',
     defaultValues: { email: '', password: '' },
   });
   const { mutate } = useLoginMutation();

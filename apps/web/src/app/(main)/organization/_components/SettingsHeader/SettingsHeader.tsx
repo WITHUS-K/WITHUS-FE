@@ -9,7 +9,7 @@ export default function SettingsHeader({ onSave }: { onSave: () => void }) {
     <Flex direction="column" width="100%" gap="1.8rem">
       <Breadcrumb>
         <Breadcrumb.Item>조직 관리</Breadcrumb.Item>
-        <Breadcrumb.Item active>세부 설정</Breadcrumb.Item>
+        <Breadcrumb.Item active>역할 세부 설정</Breadcrumb.Item>
       </Breadcrumb>
 
       <Flex align="center" justify="spaceBetween" width="100%">

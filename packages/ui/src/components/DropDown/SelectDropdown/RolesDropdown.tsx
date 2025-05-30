@@ -18,7 +18,7 @@ interface Props {
 }
 
 export default function RolesDropdown({ availableRoles, onSelect }: Props) {
-  console.log('RolesDropdown availableRoles:', availableRoles);
+  //console.log('RolesDropdown availableRoles:', availableRoles);
 
   return (
     <Dropdown>
