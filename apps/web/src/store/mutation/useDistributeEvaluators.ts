@@ -27,6 +27,10 @@ export function useDistributeEvaluators(recruitmentId: number) {
       qc.invalidateQueries({
         queryKey: queryKeys.distribution.latest(recruitmentId),
       });
+
+      qc.invalidateQueries({
+        queryKey: ['admin', 'applications', 'recruitment', recruitmentId],
+      });
     },
   });
 }

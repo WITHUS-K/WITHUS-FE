@@ -104,6 +104,7 @@ export const right = style({
   background: vars.colors.grayscale5,
   borderRadius: '22px',
   display: 'flex',
+  flexDirection: 'column',
   minHeight: '48.2rem',
   alignItems: 'center',
   justifyContent: 'center',

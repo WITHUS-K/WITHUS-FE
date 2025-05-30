@@ -12,7 +12,11 @@ import { IcPanalCalendar } from '@repo/ui/icons/colored';
 import InterviewPanel from './Panal/InterviewPanel';
 import { format } from 'date-fns';
 
-export default function RightPanel() {
+interface RightPanelProps {
+  containerRef: React.Ref<HTMLDivElement>;
+}
+
+export default function RightPanel({ containerRef }: RightPanelProps) {
   const { watch, setValue } = useFormContext();
 
   const active = watch('activeSection');
@@ -35,7 +39,7 @@ export default function RightPanel() {
   };
 
   return (
-    <Flex direction="column" className={s.right}>
+    <div ref={containerRef} className={s.right}>
       {!active && (
         <Flex direction="column" align="center" justify="center" gap="2rem">
           <IcPanalCalendar width={48} height={48} />
@@ -69,6 +73,6 @@ export default function RightPanel() {
           onSelect={mkOnSelect('finalResultDate')}
         />
       )}
-    </Flex>
+    </div>
   );
 }
