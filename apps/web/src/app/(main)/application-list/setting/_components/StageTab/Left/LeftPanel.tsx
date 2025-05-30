@@ -18,11 +18,7 @@ import { CommonDropdown } from '@repo/ui/CommonDropdown';
 import { Button } from '@repo/ui/Button';
 import { IcPlusCircle } from '@repo/ui/icons/mono';
 
-interface LeftPanelProps {
-  onDateChipClick: () => void;
-}
-
-export default function LeftPanel({ onDateChipClick }: LeftPanelProps) {
+export default function LeftPanel() {
   const { watch, control, setValue } = useFormContext<FormValues>();
 
   const scheduleList = useWatch<FormValues, 'interviewSchedule.scheduleList'>({
@@ -66,7 +62,6 @@ export default function LeftPanel({ onDateChipClick }: LeftPanelProps) {
 
   const openSection = (sec: string) => () => {
     setValue('activeSection', sec);
-    onDateChipClick();
   };
 
   return (
