@@ -1,6 +1,9 @@
 import type { RecruitmentDetailDto, TextQuestionDto, FileQuestionDto } from "@web/types/recruitment";
 import type { FormValues } from "@web/types/application";
 
+const DRAFT_FUTURE_DATE = '2027-05-30';
+
+
 export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
   const interviewDuration: FormValues["interviewDuration"] =
     detail.interviewDuration === 15
@@ -47,10 +50,30 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
     }
   });
 
-  const documentResult = {
+  /*const documentResult = {
     isSelected: detail.isDocumentResultRequired,
     date: detail.documentResultDate,
+  };*/
+  const deadline = detail.documentDeadline === DRAFT_FUTURE_DATE
+    ? ''
+    : detail.documentDeadline;
+
+  // detail.documentResultDate 이 DRAFT_FUTURE_DATE 면 빈값, 선택도 false
+  const docDate = detail.documentResultDate === DRAFT_FUTURE_DATE
+    ? ''
+    : detail.documentResultDate ?? '';
+  const isDocSelected = detail.isDocumentResultRequired
+    && detail.documentResultDate !== DRAFT_FUTURE_DATE;
+  const documentResult = {
+    isSelected: isDocSelected,
+    date: docDate,
   };
+
+  // finalResultDate 도 마찬가지로 DRAFT_FUTURE_DATE 면 빈값
+  const finalDate = detail.finalResultDate === DRAFT_FUTURE_DATE
+    ? ''
+    : detail.finalResultDate;
+
 
   const interviewSchedule = {
     isSelected: detail.isInterviewRequired,
@@ -86,11 +109,11 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
     },
     applicationParts,
     detailItems,
-    deadline: detail.documentDeadline,
+    deadline,
     documentResult,
+    finalResultDate: finalDate,
     interviewDuration,
     interviewSchedule,
-    finalResultDate: detail.finalResultDate,
     paperEvaluateStandard,
     paperEvaluateItems,
     interviewEvaluateStandard,

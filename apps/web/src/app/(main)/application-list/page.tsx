@@ -15,10 +15,12 @@ import {
   TextQuestionDto,
 } from '@web/types/recruitment';
 import { useRecruitmentsListQuery } from '@web/store/query/useRecruirmentsListQuery';
+import { useModal } from '@repo/ui/hooks';
 
 export default function ApplicationList() {
   const router = useRouter();
   const [search, setSearch] = useState<string>('');
+  const { confirm } = useModal();
 
   const {
     data: recruitments,
@@ -190,7 +192,18 @@ export default function ApplicationList() {
           const handleCopy = () => {
             setCopyId(item.recruitmentId);
           };
-          console.log(item);
+          //console.log(item);
+
+          const handleDelete = () => {
+            confirm({
+              type: 'warning',
+              title: '모집 공고 삭제',
+              description: `${item.title} 모집 공고를\n 정말 삭제 하시겠습니까?`,
+              cancelText: '취소',
+              confirmText: '삭제',
+              onConfirm: () => deleteMutation.mutate(item.recruitmentId),
+            });
+          };
 
           return (
             <RecruitmentCard
@@ -206,7 +219,7 @@ export default function ApplicationList() {
               }))}
               onModify={() => handleModify(item.recruitmentId)}
               onCopy={handleCopy}
-              onDelete={() => deleteMutation.mutate(item.recruitmentId)}
+              onDelete={handleDelete}
             />
           );
         })}
