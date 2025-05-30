@@ -7,7 +7,7 @@ export const wrapper = style({
   borderRadius: '12px',
   padding: '2.7rem',
   userSelect: 'none',
-  position: 'relative', 
+  position: 'relative',
   boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.10)',
 });
 
@@ -87,24 +87,24 @@ export const dropdownFull = style({
   backgroundColor: colors.white,
   borderRadius: '12px',
   zIndex: 20,
-  msOverflowStyle: 'none',  
-  overflowY: 'auto',   
-  scrollbarWidth: 'none',       
+  msOverflowStyle: 'none',
+  overflowY: 'auto',
+  scrollbarWidth: 'none',
   selectors: {
-      '&::-webkit-scrollbar': {
+    '&::-webkit-scrollbar': {
       display: 'none',
-      },
     },
-  padding: '0 2.7rem', 
+  },
+  padding: '0 2.7rem',
 });
 
 export const arrowStyle = styleVariants({
-  open: { 
-    transform: 'rotate(180deg)',   
+  open: {
+    transform: 'rotate(180deg)',
     transition: 'transform 0.2s ease',
   },
-  closed: { 
-    transform: 'rotate(0deg)',  
+  closed: {
+    transform: 'rotate(0deg)',
     transition: 'transform 0.2s ease',
   },
 });
@@ -113,7 +113,7 @@ export const dropdownList = style({
   display: 'flex',
   flexDirection: 'column',
   gap: '0.4rem',
-  marginTop: '1rem', 
+  marginTop: '1rem',
 });
 
 export const dropdownItem = style({
@@ -204,4 +204,18 @@ export const dayVariants = styleVariants({
     },
   },
   sunday: { color: colors.error },
+});
+
+// 추가: 연도/월 선택 섹션 스타일
+export const dropdownSection = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.4rem',
+  marginTop: '1.6rem',
+});
+
+export const sectionTitle = style({
+  ...fontStyles.md1_text_semibold,
+  color: colors.grayscale60,
+  marginBottom: '0.8rem',
 });

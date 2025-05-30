@@ -73,7 +73,7 @@ export default function HoverCallout({
               <Text
                 key={i}
                 variant="xs_caption_semibold"
-                color="primary60"
+                color="white"
                 style={{ marginBottom: i < items.length - 1 ? 4 : 0 }}
               >
                 {t}

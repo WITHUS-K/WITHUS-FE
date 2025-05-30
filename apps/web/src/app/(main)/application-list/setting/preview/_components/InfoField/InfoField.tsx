@@ -32,7 +32,12 @@ export function InfoField({
   return (
     <div className={itemClass}>
       {labelWidth ? (
-        <Flex gap="0.4rem" align="center" width={labelWidth}>
+        <Flex
+          gap="0.4rem"
+          align="center"
+          width={labelWidth}
+          style={{ whiteSpace: 'nowrap' }}
+        >
           <Text variant="md1_text_semibold" color="grayscale70">
             {label}
           </Text>

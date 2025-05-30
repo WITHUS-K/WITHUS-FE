@@ -299,10 +299,9 @@ export default function AddApplicant() {
   // — 실제 폼 렌더링 —
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={styles.layout}>
+      <AddHeader />
       <div className={styles.container}>
-        <AddHeader />
-
-        <Flex direction="column" width="100%" gap="5rem">
+        <Flex direction="column" width="100%" gap="5rem" align="center">
           <Text variant="xl_title_semibold">{data.title}</Text>
           <div className={styles.headerWrapper}>
             {applicationSchedule.map((s, i) => (

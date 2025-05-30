@@ -10,6 +10,7 @@ import { Tag } from '@repo/ui/Tag';
 import type { TagColor } from '@repo/utils';
 import * as styles from './FilterForm.css';
 import { TagHex } from '@web/utils/color';
+import { IcRoomPlus } from '@repo/ui/icons/colored';
 
 export interface FilterSettings {
   rooms: string[];
@@ -118,7 +119,7 @@ export default function FilterForm({
             ))}
             {!disabled && rooms.length < 3 && (
               <button onClick={addRoom}>
-                <IcPlus24 width={24} height={24} />
+                <IcRoomPlus width={28} height={28} />
               </button>
             )}
           </Flex>

@@ -6,6 +6,7 @@ export const DropdownContext = createContext<
       close: () => void;
       toggle: () => void;
       isOpen: boolean;
+      triggerRef: React.RefObject<HTMLElement | null>;
     }
   | undefined
 >(undefined);

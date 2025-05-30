@@ -19,6 +19,8 @@ import { useInterviewConfigQuery } from '@web/store/query/useInterviewConfigQuer
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@web/store/constants';
 import { queryClient } from '@web/store/query/QueryClientProvider';
+import { GET } from '@web/api';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 export default function Filters() {
   const qc = useQueryClient();
@@ -26,6 +28,7 @@ export default function Filters() {
   const searchParams = useSearchParams();
   const { confirm } = useModal();
   const pathname = usePathname();
+  const tokens = getClientSideTokens();
 
   // URL 파라미터 파싱
   const urlRid = Number(searchParams.get('recruitmentId') ?? NaN) || undefined;
@@ -288,36 +291,43 @@ export default function Filters() {
           <ClubDropdown
             clubs={recruitments.map((r) => r.title)}
             value={selectedTitle}
-            onSelect={(title) => {
+            onSelect={async (title) => {
               const found = recruitments.find((r) => r.title === title);
               if (!found) return;
 
-              // 1) state 동기화
               setSelectedTitle(title);
               setRid(found.recruitmentId);
               setIv(undefined);
               setIsEditing(true);
 
-              // 2) 해당 공고에 이미 생성된 interviewId가 있는지 확인
-              const foundInterview = orgInterviews.find(
+              const interview = orgInterviews.find(
                 (x) => x.recruitmentId === found.recruitmentId
-              )?.interviewId;
+              );
 
-              if (foundInterview != null) {
-                const detail = queryClient.getQueryData<{
-                  availableTimeRanges: { date: string }[];
-                }>(queryKeys.recruitment.detail(found.recruitmentId));
+              try {
+                const detail = await queryClient.fetchQuery({
+                  queryKey: queryKeys.recruitment.detail(found.recruitmentId),
+                  queryFn: () =>
+                    GET<{ availableTimeRanges: { date: string }[] }>(
+                      `api/v1/recruitments/${found.recruitmentId}`,
+                      tokens
+                    ),
+                });
 
-                const firstDate =
-                  detail?.availableTimeRanges?.[0]?.date.replace(/-/g, '.') ??
-                  '';
-
-                router.replace(
-                  `/interview-management/timetable/all/${firstDate}` +
-                    `?recruitmentId=${found.recruitmentId}&interviewId=${foundInterview}`
-                );
-              } else {
-                // interview 생성 전이면 → 필터 페이지
+                const ranges = detail?.result.availableTimeRanges;
+                if (interview?.interviewId && ranges?.length > 0) {
+                  const firstDate = ranges[0]!.date.replace(/-/g, '.');
+                  router.replace(
+                    `/interview-management/timetable/all/${firstDate}` +
+                      `?recruitmentId=${found.recruitmentId}&interviewId=${interview.interviewId}`
+                  );
+                } else {
+                  router.replace(
+                    `/interview-management?recruitmentId=${found.recruitmentId}`
+                  );
+                }
+              } catch (error) {
+                console.error('모집공고 상세 조회 실패:', error);
                 router.replace(
                   `/interview-management?recruitmentId=${found.recruitmentId}`
                 );

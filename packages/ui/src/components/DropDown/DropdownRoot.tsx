@@ -1,6 +1,6 @@
 import { DropdownContext } from './context';
 import { dropdownRootStyle } from './Dropdown.css';
-import { ComponentPropsWithoutRef } from 'react';
+import { ComponentPropsWithoutRef, useRef } from 'react';
 import { useOutsideClick, useOverlay } from '@repo/utils';
 const DropdownRoot = ({
   children,
@@ -8,9 +8,11 @@ const DropdownRoot = ({
 }: ComponentPropsWithoutRef<'div'>) => {
   const { isOpen, open, close, toggle } = useOverlay();
   const ref = useOutsideClick(close);
-
+  const triggerRef = useRef<HTMLElement>(null);
   return (
-    <DropdownContext.Provider value={{ isOpen, open, close, toggle }}>
+    <DropdownContext.Provider
+      value={{ isOpen, open, close, toggle, triggerRef }}
+    >
       <div ref={ref} className={dropdownRootStyle} {...props}>
         {children}
       </div>

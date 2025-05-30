@@ -8,6 +8,7 @@ import { SlotItem } from '@web/constants/timetable';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { OverflowChips } from '@web/components/OverflowChips/OverflowChips';
 import { TimeSlot } from '@web/store/query/useInterviewScheduleQuery';
+import { HoverCallout } from '@repo/ui/Callout';
 
 export default function AllCell({ slot }: { slot: TimeSlot }) {
   const router = useRouter();
@@ -16,7 +17,6 @@ export default function AllCell({ slot }: { slot: TimeSlot }) {
   const date = params.date as string;
   const sp = useSearchParams();
   console.log('타임슬롯', slot.timeSlotId);
-  // 모달 열기
 
   // 현재 쿼리스트링 (recruitmentId, interviewId 등)
   const baseQs = sp.toString(); // e.g. "recruitmentId=4&interviewId=5"
@@ -78,15 +78,23 @@ export default function AllCell({ slot }: { slot: TimeSlot }) {
 
       {/* 버튼 */}
       <Flex align="center" gap="0.4rem">
-        <button className={styles.buttonStyle} onClick={openInviteModal}>
-          <IcTimetablePlus width={16} height={16} />
-        </button>
-        <button
-          className={styles.buttonStyle}
-          onClick={() => openApplication()}
-        >
-          <IcTimetableExpand width={16} height={16} />
-        </button>
+        <HoverCallout
+          trigger={
+            <button className={styles.buttonStyle} onClick={openInviteModal}>
+              <IcTimetablePlus width={16} height={16} />
+            </button>
+          }
+          texts="면접관 / 안내자 추가"
+        />
+
+        <HoverCallout
+          trigger={
+            <button className={styles.buttonStyle} onClick={openApplication}>
+              <IcTimetableExpand width={16} height={16} />
+            </button>
+          }
+          texts="자세히 보기"
+        />
       </Flex>
     </Flex>
   );
