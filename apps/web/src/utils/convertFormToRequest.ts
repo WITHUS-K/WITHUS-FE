@@ -4,7 +4,13 @@ import type {
   TextQuestionDto,
   FileQuestionDto,
 } from '@web/types/recruitment';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
+
+const DRAFT_FUTURE_DATE = '2027-05-30';
+
+export function normalizeDateStr(s: string) {
+  return s.replace(/\./g, '-');
+}
 
 export function convertFormToRequest(
   form: FormValues,
@@ -78,17 +84,24 @@ export function convertFormToRequest(
       }))
     : [];
 
+  // documentDeadline: 선택 안 했으면 2027-05-30
   const documentDeadlineStr = form.deadline
-    ? format(new Date(form.deadline), 'yyyy-MM-dd')
-    : format(new Date(), 'yyyy-MM-dd');
+    ? format(parseISO(normalizeDateStr(form.deadline)), 'yyyy-MM-dd')
+    : DRAFT_FUTURE_DATE;
 
-  const documentResultDateStr = form.documentResult?.date
-    ? format(new Date(form.documentResult.date), 'yyyy-MM-dd')
-    : null;
+  // documentResultDate: isSelected=false 이면 2027-05-30
+  const documentResultDateStr =
+    form.documentResult?.isSelected && form.documentResult.date
+      ? format(
+          parseISO(normalizeDateStr(form.documentResult.date)),
+          'yyyy-MM-dd'
+        )
+      : DRAFT_FUTURE_DATE;
 
+  // finalResultDate: 항상 보내야 하므로, 빈 문자열일 땐 2027-05-30
   const finalResultDateStr = form.finalResultDate
-    ? format(new Date(form.finalResultDate), 'yyyy-MM-dd')
-    : format(new Date(), 'yyyy-MM-dd');
+    ? format(parseISO(normalizeDateStr(form.finalResultDate)), 'yyyy-MM-dd')
+    : DRAFT_FUTURE_DATE;
 
   return {
     recruitmentId,
@@ -110,12 +123,9 @@ export function convertFormToRequest(
     needBirthDate: form.basicInfo.birthDate,
     needMajor: form.basicInfo.major,
     needAcademicStatus: form.basicInfo.academicStatus,
-    documentScaleType: form.paperEvaluateStandard.toUpperCase() as
-      | 'SCORE'
-      | 'RANK',
-    interviewScaleType: form.interviewEvaluateStandard.toUpperCase() as
-      | 'SCORE'
-      | 'RANK',
+    //일단 에러 안나게 score로 보내기
+    documentScaleType: 'SCORE',
+    interviewScaleType: 'SCORE',
     documentEvaluationCriteria,
     interviewEvaluationCriteria,
     isInterviewRequired: form.interviewSchedule?.isSelected as boolean,

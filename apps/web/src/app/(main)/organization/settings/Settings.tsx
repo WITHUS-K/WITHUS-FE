@@ -13,6 +13,7 @@ import { useOrganizationUsersQuery } from '@web/store/query/useOrganizationUsers
 import { useAddOrganizationRoleMutation } from '@web/store/mutation/useAddOrganizationRoleMutation';
 import { useUpdateOrganizationRoleMutation } from '@web/store/mutation/useUpdateOrganizationRoleMutation';
 import { useAssignOrganizationUsersMutation } from '@web/store/mutation/useAssignOrganizationUsersMutation';
+import { useToast } from '@repo/ui/hooks';
 
 interface Props {
   organizationId: number;
@@ -21,6 +22,8 @@ interface Props {
 export default function Settings({ organizationId }: Props) {
   const [roleSearch, setRoleSearch] = useState('');
   const [selectedRoleIdx, setSelectedRoleIdx] = useState<number | null>(null);
+
+  const toast = useToast();
 
   // 역할 목록
   const { data: rolesData } = useSuspenseQuery(
@@ -40,6 +43,8 @@ export default function Settings({ organizationId }: Props) {
   }));
   const selectedRoleId =
     selectedRoleIdx != null ? filteredRoles[selectedRoleIdx]!.id : 0;
+  const selectedRoleName =
+    selectedRoleIdx != null ? filteredRoles[selectedRoleIdx]!.roleName : '';
 
   // 서버에서 users
   const { data: users } = useOrganizationUsersQuery(
@@ -84,11 +89,21 @@ export default function Settings({ organizationId }: Props) {
     if (!selectedRoleId) return;
     const userIds =
       addedMembers.length > 0 ? addedMembers.map((u) => u.userId) : [0];
-    assignUsers({ roleId: selectedRoleId, userIds });
+    assignUsers(
+      { roleId: selectedRoleId, userIds },
+      {
+        onSuccess: () => {
+          const count = addedMembers.length;
+          toast.success(
+            `${count}명의 멤버가 ${selectedRoleName}에 추가되었습니다.`
+          );
+        },
+      }
+    );
   };
 
   return (
-    <Flex direction="column">
+    <Flex direction="column" width="100%" height="100%">
       <SettingsHeader onSave={handleSave} />
       <Flex align="center" gap="1.9rem" width="100%" marginTop="1.8rem">
         <RolePalettePanel

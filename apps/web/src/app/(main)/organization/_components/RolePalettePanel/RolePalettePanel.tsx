@@ -12,14 +12,14 @@ import { RoleEditor } from './RoleEditor';
 import { RoleItem } from './RoleItem';
 
 const COLOR_OPTIONS: PaletteColor[] = [
-  '#FF5360',
-  '#FF995A',
-  '#FFD062',
-  '#5BDF87',
-  '#86DAF9',
-  '#6289FF',
-  '#AD90FF',
-  '#F196F8',
+  '#FF5C6C',
+  '#FF9D32',
+  '#FFD732',
+  '#32CA89',
+  '#32B6EE',
+  '#5E92FF',
+  '#B36FFF',
+  '#FF8FFF',
   '#C4C6D4',
   '#A9ABC0',
 ];
@@ -69,16 +69,17 @@ export default function RolePalettePanel({
     <div className={styles.root}>
       <Flex align="center" gap="0.8rem">
         <Text variant="md1_text_semibold">역할</Text>
-        <Text variant="md1_text_medium">{roles.length}</Text>
+        <Text variant="md1_text_medium" color="grayscale30">
+          {roles.length}
+        </Text>
       </Flex>
-      <div style={{ height: '4rem' }}>
-        <SearchInput
-          value={search}
-          onChange={(e) => onSearchChange?.(e.target.value)}
-          width="100%"
-        />
-      </div>
-      <Flex direction="column" gap="1.2rem" marginTop="0.8rem">
+
+      <Flex
+        direction="column"
+        gap="1.2rem"
+        marginTop="0.8rem"
+        className={styles.listContainer}
+      >
         <Button
           leftIcon={<IcRoleBtn />}
           onClick={() => {

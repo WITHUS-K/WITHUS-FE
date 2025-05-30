@@ -40,7 +40,10 @@ export default function ApplyListLastItem({
 }: Props) {
   return (
     <div className={styles.row} data-selected={isSelected}>
-      <div style={{ marginRight: '2.4rem', height: '2.4rem' }}>
+      <div
+        style={{ marginRight: '2.4rem', height: '2.4rem' }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <CheckBox
           isChecked={isSelected}
           onChange={() => onToggle(!isSelected)}

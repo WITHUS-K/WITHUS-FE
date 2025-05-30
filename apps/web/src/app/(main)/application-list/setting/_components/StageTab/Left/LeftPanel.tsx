@@ -18,7 +18,11 @@ import { CommonDropdown } from '@repo/ui/CommonDropdown';
 import { Button } from '@repo/ui/Button';
 import { IcPlusCircle } from '@repo/ui/icons/mono';
 
-export default function LeftPanel() {
+interface LeftPanelProps {
+  onDateChipClick: () => void;
+}
+
+export default function LeftPanel({ onDateChipClick }: LeftPanelProps) {
   const { watch, control, setValue } = useFormContext<FormValues>();
 
   const scheduleList = useWatch<FormValues, 'interviewSchedule.scheduleList'>({
@@ -62,6 +66,7 @@ export default function LeftPanel() {
 
   const openSection = (sec: string) => () => {
     setValue('activeSection', sec);
+    onDateChipClick();
   };
 
   return (
@@ -154,11 +159,7 @@ export default function LeftPanel() {
                 date={group.date || undefined}
                 disabled={!schedOn}
                 selected={activeSection === `interview-${gi}`}
-                onClick={
-                  schedOn
-                    ? () => setValue('activeSection', `interview-${gi}`)
-                    : undefined
-                }
+                onClick={schedOn ? openSection(`interview-${gi}`) : undefined}
               />
 
               {/* 해당 날짜의 모든 TimeChip */}

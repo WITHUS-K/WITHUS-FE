@@ -22,6 +22,7 @@ export default function ClubDropdown({
   const defaultValue = clubs[0] ?? '';
   const selected = value ?? defaultValue;
 
+  console.log('클럽', clubs);
   return (
     <Dropdown {...rest} style={style}>
       <Dropdown.Trigger>

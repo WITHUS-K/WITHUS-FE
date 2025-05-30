@@ -44,7 +44,7 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
     label: r.roleName,
     color: mapServerColorToTagHex(r.color),
   }));
-  console.log('안녕', availableRoles);
+  //console.log('안녕', availableRoles);
 
   // 현재 탭에 맞춰 DOCUMENT/INTERVIEW 로 매핑
   const currentEvalType: 'DOCUMENT' | 'INTERVIEW' =

@@ -17,6 +17,7 @@ export function useDeleteRecruitmentMutation(): UseMutationResult<
     onSuccess: (_data, recruitmentId) => {
       qc.invalidateQueries({ queryKey: recruitmentDetailKey(recruitmentId) })
       qc.invalidateQueries({ queryKey: queryKeys.recruitments.list() })
+      qc.invalidateQueries({ queryKey: queryKeys.recruitment.list() })
     },
   })
 }

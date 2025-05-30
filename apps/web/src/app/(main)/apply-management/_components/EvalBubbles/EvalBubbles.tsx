@@ -3,8 +3,8 @@
 import React from 'react';
 import { Callout } from '@repo/ui/Callout';
 import * as styles from './EvalBubbles.css';
-import { TagColor } from '@repo/utils';
-import { getTagColors } from '@web/utils/color';
+import { TagColor, mapServerColorToTagHex } from '@repo/utils';
+import { getTagColors, mapServerColorToProfileHex } from '@web/utils/color';
 
 const TAG_COLORS: TagColor[] = [
   '#FF2A3A',
@@ -49,7 +49,7 @@ export default function EvalBubbles({
       {visible.map((ev, i) => {
         const left = i * overlap;
         const offsetX = left + size / 2;
-        const { background } = getTagColors(ev.profileColor);
+
         return (
           <Callout
             key={ev.name}
@@ -57,7 +57,7 @@ export default function EvalBubbles({
               <div
                 className={styles.bubble}
                 style={{
-                  backgroundColor: background,
+                  backgroundColor: mapServerColorToProfileHex(ev.profileColor),
                   width: size,
                   height: size,
                   left,

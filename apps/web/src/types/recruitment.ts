@@ -28,7 +28,7 @@ interface BaseQuestionDto {
   title: string;
   description: string;
   required: boolean;
-  positionName: string | null;
+  positionName: string;
 }
 
 export interface TextQuestionDto extends BaseQuestionDto {
@@ -117,8 +117,8 @@ export interface UpdateRecruitmentRequest {
   needBirthDate: boolean;
   needAcademicStatus: boolean;
   isTemporary: boolean;
-  documentScaleType: 'SCORE' | 'RANK' | string;
-  interviewScaleType: 'SCORE' | 'RANK' | string;
+  documentScaleType: 'SCORE' | 'LEVEL' | string;
+  interviewScaleType: 'SCORE' | 'LEVEL' | string;
   documentEvaluationCriteria: {
     content: string;
     description: string;
@@ -161,8 +161,8 @@ export interface PublishRecruitmentRequest {
   needBirthDate: boolean;
   needMajor: boolean;
   needAcademicStatus: boolean;
-  documentScaleType: 'SCORE' | 'RANK' | string;
-  interviewScaleType: 'SCORE' | 'RANK' | string;
+  documentScaleType: 'SCORE' | 'LEVEL' | string;
+  interviewScaleType: 'SCORE' | 'LEVEL' | string;
 
   documentEvaluationCriteria: {
     content: string;
@@ -211,8 +211,8 @@ export interface DraftRecruitmentRequest {
   needBirthDate: boolean;
   needMajor: boolean;
   needAcademicStatus: boolean;
-  documentScaleType: 'SCORE' | 'RANK' | string;
-  interviewScaleType: 'SCORE' | 'RANK' | string;
+  documentScaleType: 'SCORE' | 'LEVEL' | string;
+  interviewScaleType: 'SCORE' | 'LEVEL' | string;
 
   documentEvaluationCriteria: {
     content: string;

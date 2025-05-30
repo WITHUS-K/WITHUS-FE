@@ -3,8 +3,11 @@
 import React from 'react';
 import { IcCalendar, IcPlus } from '@repo/ui/icons/mono';
 import { Flex } from '@repo/ui/Flex';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import * as s from '../StageTab.css';
+import { normalizeDateStr } from '@web/utils/convertFormToRequest';
+
+const DRAFT_FUTURE_DATE = '2027.05.30';
 
 interface Props {
   date?: string;
@@ -21,7 +24,13 @@ export function DateChip({
   disabled = false,
   onClick,
 }: Props) {
-  const label = date ? format(new Date(date), 'yyyy/MM/dd') : placeholder;
+  const isDraft = date === DRAFT_FUTURE_DATE;
+
+  const label =
+    !date || isDraft
+      ? placeholder
+      : format(parseISO(normalizeDateStr(date)), 'yyyy/MM/dd');
+
   return (
     <button
       type="button"

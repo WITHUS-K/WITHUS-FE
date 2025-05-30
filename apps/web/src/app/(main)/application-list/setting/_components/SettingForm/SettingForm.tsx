@@ -20,6 +20,7 @@ import { convertFormToRequest } from '@web/utils/convertFormToRequest';
 import * as styles from './SettingForm.css';
 import { useUserStore } from '@web/store/state/userStore';
 import * as C from '@web/constants/application';
+import { useToast } from '@repo/ui/hooks';
 
 type TabKey = 'form' | 'stages' | 'criteria';
 const TAB_KEYS: TabKey[] = ['form', 'stages', 'criteria'];
@@ -34,6 +35,7 @@ export function SettingForm({ existentForm }: SettingFormProps) {
   const searchParams = useSearchParams();
   const activeTab = (searchParams.get('tab') as TabKey) || 'form';
   const ctx = useContext(SettingContext)!;
+  const toast = useToast();
 
   const organizationId = useUserStore.getState().organizationId!;
 
@@ -167,6 +169,7 @@ export function SettingForm({ existentForm }: SettingFormProps) {
         if (pathname.endsWith('/new')) {
           router.replace(`/application-list/setting/${res.recruitmentId}`);
         }
+        toast.success('임시 저장 되었습니다.');
       },
       onError: (err) => {
         console.error('임시 저장 실패', err);

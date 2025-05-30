@@ -9,15 +9,17 @@ interface AgreementItemProps {
   isChecked: boolean;
   onChange: () => void;
   label: string;
+  onClick?: () => void;
 }
 
 export default function AgreementItem({
   isChecked,
   onChange,
   label,
+  onClick,
 }: AgreementItemProps) {
   return (
-    <Flex align="center" gap="1.2rem" className={listStyle}>
+    <Flex align="center" gap="1.2rem" className={listStyle} onClick={onClick}>
       <CheckBox isChecked={isChecked} onChange={onChange} />
       <Flex align="center" gap="0.3rem">
         <Text variant="md2_text_medium" color="primary50">

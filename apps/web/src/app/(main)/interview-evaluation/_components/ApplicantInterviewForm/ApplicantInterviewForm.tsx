@@ -63,9 +63,6 @@ export const ApplicantInterviewForm = ({
     timeSlotId
   );
 
-  const [newComment, setNewComment] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
   const [scores, setScores] = useState<Record<number, string>>(() =>
     detail.evaluations.reduce(
       (acc, e) => {
@@ -86,6 +83,11 @@ export const ApplicantInterviewForm = ({
   );
   // 2) 화면에 보여줄 내용만 추출
   const myInterviewComment = existingInterviewCommentItem?.content ?? '';
+
+  const [newComment, setNewComment] = useState(myInterviewComment);
+  const [isSubmitted, setIsSubmitted] = useState(
+    !!existingInterviewCommentItem
+  );
 
   const download = useFileDownload();
 

@@ -23,8 +23,8 @@ export function useAddCommentMutation(
         `api/v1/applications/${applicationId}/comments`,
         body
       );
-      console.log(body);
-      console.log(res);
+      console.log('코멘트', body);
+      console.log('코멘트', res);
       return res.result;
     },
     onSuccess: () => {

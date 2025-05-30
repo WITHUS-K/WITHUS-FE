@@ -27,10 +27,15 @@ export const button = style({
 });
 
 export const value = style({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  textAlign: 'center',
   color: vars.colors.grayscale90,
   width: '8.4rem',
   height: '3.6rem',
   marginInline: '0.2rem',
   backgroundColor: vars.colors.white,
   ...fontStyles.md2_text_medium,
+  outline: 'none',
 });

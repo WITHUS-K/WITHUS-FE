@@ -29,8 +29,8 @@ export function useUpdateCommentMutation(
         `api/v1/applications/${applicationId}/comments/${commentId}`,
         { content }
       );
-      console.log(content);
-      console.log(res);
+      console.log('코멘트', content);
+      console.log('코멘트', res);
       return { ...res.result, user: res.result.user as CommentItem['user'] };
     },
     onSuccess: () => {

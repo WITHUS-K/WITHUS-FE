@@ -9,20 +9,43 @@ import AgreementItem from './AgreementItem';
 import { containerStyle } from './Step2.css';
 import { buttonStyle } from '../Step1/Step1.css';
 import { useModal } from '@repo/ui/hooks';
-import AgreementContent from '../AgreementContent/AgreementContent';
+import {
+  privacyModalContent,
+  termsModalContent,
+} from '../AgreementContent/AgreementContent';
+import { useSearchParams } from 'next/navigation';
+const typeFromQuery = (t: string | null): 'user' | 'admin' | null =>
+  t === 'user' || t === 'admin' ? t : null;
+
 interface Step2Props {
   onBack: () => void;
   onNext: () => void;
 }
 
+type MemberType = 'admin' | 'user';
+
 export default function Step2({ onBack, onNext }: Step2Props) {
   const { agreement } = useModal();
+
+  const searchParams = useSearchParams();
+  const memberType = typeFromQuery(searchParams.get('type'));
 
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreePrivacy, setAgreePrivacy] = useState(false);
   const [agreeMarketing, setAgreeMarketing] = useState(false);
 
   const allAgreed = agreeTerms && agreePrivacy && agreeMarketing;
+
+  const openTerms = () =>
+    agreement({ content: termsModalContent, confirmText: '확인' });
+  const openPrivacy = () =>
+    agreement({
+      content:
+        memberType === 'admin'
+          ? privacyModalContent.admin
+          : privacyModalContent.user,
+      confirmText: '확인',
+    });
 
   const handleAllChange = () => {
     const next = !allAgreed;
@@ -32,12 +55,12 @@ export default function Step2({ onBack, onNext }: Step2Props) {
   };
 
   // 이용약관 모달
-  const handleOpenAgreementModal = () => {
+  /*const handleOpenAgreementModal = () => {
     agreement({
       content: <AgreementContent />,
       confirmText: '확인',
     });
-  };
+  };*/
 
   return (
     <Flex
@@ -58,7 +81,6 @@ export default function Step2({ onBack, onNext }: Step2Props) {
           <Text
             variant="md2_text_medium"
             color="grayscale80"
-            onClick={handleOpenAgreementModal}
             style={{ cursor: 'pointer' }}
           >
             전체 동의
@@ -68,11 +90,13 @@ export default function Step2({ onBack, onNext }: Step2Props) {
         <AgreementItem
           isChecked={agreeTerms}
           onChange={() => setAgreeTerms((prev) => !prev)}
+          onClick={openTerms}
           label="이용 약관 동의"
         />
         <AgreementItem
           isChecked={agreePrivacy}
           onChange={() => setAgreePrivacy((prev) => !prev)}
+          onClick={openPrivacy}
           label="개인정보 수집 동의"
         />
         <AgreementItem

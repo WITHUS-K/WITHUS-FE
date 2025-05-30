@@ -52,7 +52,7 @@ export default function MemberAssignmentPanel({
   return (
     <div className={styles.root}>
       <Text variant="md1_text_semibold" color="grayscale90">
-        멤버 할당
+        역할 부여
       </Text>
       <div style={{ height: '4rem' }}>
         <SearchInput

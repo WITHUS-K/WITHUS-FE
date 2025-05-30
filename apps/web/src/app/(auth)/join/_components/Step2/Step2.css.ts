@@ -13,4 +13,5 @@ export const listStyle = style({
   borderRadius: '8px',
   padding: '2rem 1.6rem',
   width: '100%',
+  cursor: 'pointer',
 });

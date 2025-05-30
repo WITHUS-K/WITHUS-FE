@@ -10,9 +10,15 @@ import FinalPanel from './Panal/FinalPanel';
 import { Text } from '@repo/ui/Text';
 import { IcPanalCalendar } from '@repo/ui/icons/colored';
 import InterviewPanel from './Panal/InterviewPanel';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
-export default function RightPanel() {
+const DRAFT_FUTURE_DATE = '2027.05.30';
+
+interface RightPanelProps {
+  containerRef: React.Ref<HTMLDivElement>;
+}
+
+export default function RightPanel({ containerRef }: RightPanelProps) {
   const { watch, setValue } = useFormContext();
 
   const active = watch('activeSection');
@@ -22,10 +28,12 @@ export default function RightPanel() {
   const rawDocDate = watch('documentResult.date');
   const rawFinalDate = watch('finalResultDate');
 
-  // 선택 값이 없다면 undefined, 있으면 Date로 변환
-  const deadlineDate = rawDeadline ? new Date(rawDeadline) : undefined;
-  const docDate = rawDocDate ? new Date(rawDocDate) : undefined;
-  const finalDate = rawFinalDate ? new Date(rawFinalDate) : undefined;
+  const parseDateOrUndefined = (d?: string) =>
+    d && d !== DRAFT_FUTURE_DATE ? parseISO(d) : undefined;
+
+  const deadlineDate = parseDateOrUndefined(rawDeadline);
+  const docDate = parseDateOrUndefined(rawDocDate);
+  const finalDate = parseDateOrUndefined(rawFinalDate);
 
   // 패널에서 날짜 고르면 폼에 반영
   const mkOnSelect = (field: string) => (d: Date) => {
@@ -35,7 +43,7 @@ export default function RightPanel() {
   };
 
   return (
-    <Flex direction="column" className={s.right}>
+    <div ref={containerRef} className={s.right}>
       {!active && (
         <Flex direction="column" align="center" justify="center" gap="2rem">
           <IcPanalCalendar width={48} height={48} />
@@ -69,6 +77,6 @@ export default function RightPanel() {
           onSelect={mkOnSelect('finalResultDate')}
         />
       )}
-    </Flex>
+    </div>
   );
 }

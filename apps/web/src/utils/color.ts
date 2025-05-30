@@ -27,17 +27,46 @@ export const tagHexToName = {
   '#7F82A1': 'gray',
   '#5A5C72': 'darkgray',
 } as const;
+
+export const tagHexToProfile = {
+  '#FF5C6C': 'red',
+  '#FF9D32': 'orange',
+  '#FFD732': 'yellow',
+  '#32CA89': 'green',
+  '#32B6EE': 'bluesky',
+  '#5E92FF': 'blue',
+  '#B36FFF': 'purple',
+  '#FF8FFF': 'pink',
+  '#7F82A1': 'gray',
+  '#5A5C72': 'darkgray',
+} as const;
+
 export type TagHex = keyof typeof tagHexToName; // '#FF2A3A' | …
 export type TagColorName = (typeof tagHexToName)[TagHex]; // 'red' | …
+
+export type ProfileHex = keyof typeof tagHexToProfile; // '#FF2A3A' | …
+export type ProfileColorName = (typeof tagHexToProfile)[ProfileHex]; // 'red' | …
+
 export const nameToTagHex: Record<TagColorName, TagHex> = Object.fromEntries(
   (Object.entries(tagHexToName) as [TagHex, TagColorName][]).map(
     ([hex, name]) => [name, hex]
   )
 ) as Record<TagColorName, TagHex>;
 
+export const nameToProfileHex: Record<ProfileColorName, ProfileHex> =
+  Object.fromEntries(
+    (Object.entries(tagHexToProfile) as [ProfileHex, ProfileColorName][]).map(
+      ([hex, name]) => [name, hex]
+    )
+  ) as Record<ProfileColorName, ProfileHex>;
+
 /** 서버 colorName → 태그 헥스 */
 export function mapServerColorToTagHex(name: string): TagHex {
   return nameToTagHex[name as TagColorName] ?? '#7F82A1';
+}
+
+export function mapServerColorToProfileHex(name: string): ProfileHex {
+  return nameToProfileHex[name as ProfileColorName] ?? '#7F82A1';
 }
 
 export function getTagColors(colorName: string) {
