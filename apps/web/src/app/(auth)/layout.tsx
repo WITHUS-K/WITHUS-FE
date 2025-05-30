@@ -18,7 +18,7 @@ export default function AuthLayout({
           paddingLeft="2.4rem"
           className={headerStyle}
         >
-          <IcAuthLogo width={120} height={24} />
+          <IcAuthLogo width={130} height={32} />
         </Flex>
         <main className={containerStyle}>{children}</main>
       </div>
