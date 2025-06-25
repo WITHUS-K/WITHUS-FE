@@ -8,14 +8,12 @@ import { useFormContext } from 'react-hook-form';
 import { ProfileFormValues } from '../../ProfilePage';
 interface AvatarSectionProps {
   role: 'ADMIN' | 'USER';
-  isEditing: boolean;
   imageUrl: string;
   organizations: { id: number; name: string }[];
 }
 
 export default function AvatarSection({
   role,
-  isEditing,
   imageUrl,
   organizations,
 }: AvatarSectionProps) {

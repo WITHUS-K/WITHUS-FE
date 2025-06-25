@@ -3,7 +3,7 @@
 import { Flex } from '@repo/ui/Flex';
 import LabeledField from '../LabeledField/LabeledField';
 import { MyPageData } from '@web/store/query/useGetMyPageQuery';
-import { useFormContext } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import { ProfileFormValues } from '../../ProfilePage';
 
 interface InfoSectionProps {
@@ -13,21 +13,28 @@ interface InfoSectionProps {
 
 export default function InfoSection({ role, user }: InfoSectionProps) {
   const {
-    register,
+    control,
     formState: { errors },
   } = useFormContext<ProfileFormValues>();
 
   return (
     <Flex width="100%" direction="column" gap="3.2rem">
-      <LabeledField
-        label="이름"
-        inputProps={{
-          ...register('name', { required: '이름을 입력해주세요' }),
-          defaultValue: user.name,
-          placeholder: '이름을 입력해주세요',
-          width: '100%',
-        }}
-        errorMessage={errors.name?.message}
+      <Controller
+        name="name"
+        control={control}
+        defaultValue={user.name}
+        rules={{ required: '이름을 입력해주세요' }}
+        render={({ field }) => (
+          <LabeledField
+            label="이름"
+            inputProps={{
+              ...field,
+              placeholder: '이름을 입력해주세요',
+              width: '100%',
+            }}
+            errorMessage={errors.name?.message}
+          />
+        )}
       />
 
       {role === 'USER' && (
@@ -42,15 +49,22 @@ export default function InfoSection({ role, user }: InfoSectionProps) {
         />
       )}
 
-      <LabeledField
-        label="전화번호"
-        inputProps={{
-          ...register('phoneNumber', { required: '전화번호를 입력해주세요' }),
-          defaultValue: user.phoneNumber,
-          placeholder: '전화번호를 입력해주세요',
-          width: '100%',
-        }}
-        errorMessage={errors.phoneNumber?.message}
+      <Controller
+        name="phoneNumber"
+        control={control}
+        defaultValue={user.phoneNumber}
+        rules={{ required: '전화번호를 입력해주세요' }}
+        render={({ field }) => (
+          <LabeledField
+            label="전화번호"
+            inputProps={{
+              ...field,
+              placeholder: '전화번호를 입력해주세요',
+              width: '100%',
+            }}
+            errorMessage={errors.phoneNumber?.message}
+          />
+        )}
       />
     </Flex>
   );

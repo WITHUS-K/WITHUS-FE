@@ -27,7 +27,6 @@ export interface ProfileFormValues {
 }
 
 export default function ProfilePage({ role }: ProfilePageProps) {
-  const [isEditing, setIsEditing] = useState(false);
   const { data: user } = useGetMyPageQuery();
   const updateMut = useUpdateUserMutation();
 
@@ -39,8 +38,8 @@ export default function ProfilePage({ role }: ProfilePageProps) {
       newPassword1: '',
       newPassword2: '',
     },
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    mode: 'onBlur',
+    reValidateMode: 'onBlur',
   });
 
   const {
@@ -59,17 +58,10 @@ export default function ProfilePage({ role }: ProfilePageProps) {
 
     const profileImageFile = values.profileImageFile;
 
-    updateMut.mutate(
-      {
-        data,
-        profileImageFile,
-      },
-      {
-        onSuccess: () => {
-          setIsEditing(false);
-        },
-      }
-    );
+    updateMut.mutate({
+      data,
+      profileImageFile,
+    });
   };
 
   return (
@@ -102,7 +94,6 @@ export default function ProfilePage({ role }: ProfilePageProps) {
         <Flex width="100%" marginTop="4rem" gap="4rem">
           <AvatarSection
             role={role}
-            isEditing={isEditing}
             imageUrl={user.imageUrl}
             organizations={user.organizations}
           />

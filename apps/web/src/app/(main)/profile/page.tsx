@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import ProfilePage from './ProfilePage';
 import { getServerSideTokens } from '@web/api/serverSideTokens';
-import { FetchOptions, ServerFetchBoundary } from '@web/store/query/ServerFetchBoundary';
+import { ServerFetchBoundary } from '@web/store/query/ServerFetchBoundary';
 import { getMyPageQueryOptions } from '@web/store/query/useGetMyPageQuery';
 
 export default async function Page() {
@@ -13,7 +13,7 @@ export default async function Page() {
 
   return (
     <ServerFetchBoundary fetchOptions={fetchOptions}>
- <ProfilePage role={role} />
+      <ProfilePage role={role} />
     </ServerFetchBoundary>
   );
 }

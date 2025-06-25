@@ -39,7 +39,6 @@ export function getMyPageQueryOptions(tokens?: Tokens) {
         undefined,
         tokens
       );
-      console.log('정보', res);
       return res.result;
     },
     staleTime: STALE_TIME,

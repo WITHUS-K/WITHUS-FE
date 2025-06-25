@@ -40,32 +40,20 @@ export function useUpdateUserMutation() {
     }) => {
       const fd = new FormData();
 
-      // ✅ 핵심: data를 JSON으로 묶어서 "request" 필드에 넣기
       const jsonBlob = new Blob([JSON.stringify(data)], {
         type: 'application/json',
       });
       fd.append('request', jsonBlob);
 
-      // ✅ 이미지도 함께 전송
       if (profileImageFile) {
         fd.append('profileImage', profileImageFile, profileImageFile.name);
       }
 
-      console.log('[PATCH 요청 FormData]');
-      for (const [key, val] of fd.entries()) {
-        console.log(`${key}:`, val);
-      }
-
-      return updateUser(fd); // → 기존 patch 호출 유지
+      return updateUser(fd);
     },
 
     onSuccess: (data) => {
-      console.log('[회원정보 수정 성공]', data);
       qc.invalidateQueries({ queryKey: queryKeys.user.myPage() });
-    },
-
-    onError: (error) => {
-      console.error('[회원정보 수정 실패]', error);
     },
   });
 }
