@@ -12,9 +12,6 @@ export const wrapper = style({
 
 export const circle = style({
   display: 'flex',
-  // alignItems:'center',
-  //justifyContent:'center',
-
   position: 'relative',
   width: '18rem',
   height: '18rem',
@@ -26,6 +23,7 @@ export const circle = style({
 export const profileImage = style({
   width: '100%',
   height: '100%',
+  borderRadius: '50%',
   objectFit: 'cover',
 });
 

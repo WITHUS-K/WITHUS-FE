@@ -5,7 +5,10 @@
       "@web/*": ["./src/*"],
       "@repo/ui/*": ["packages/ui/src/*"],
       "@repo/theme/*": ["packages/theme/src/*"],
-      "./types": ["node_modules/@tanstack/react-query/build/modern/types.d.ts"] // 여기랑
+      "./types": ["node_modules/@tanstack/react-query/build/modern/types.d.ts"],
+      "@tanstack/query-core/build/modern/*": [
+        "node_modules/@tanstack/query-core/build/modern/*"
+      ]
     },
     "baseUrl": "./",
 

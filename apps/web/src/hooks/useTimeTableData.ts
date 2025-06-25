@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { parseToMin } from '@web/utils/time';
 import type { SlotItem } from '@web/constants/timetable';
-import { TimeSlot } from '@web/store/query/useInterviewScheduleQuery';
+import type { TimeSlot } from '@web/store/query/useInterviewScheduleQuery';
 
 export function useTimeTableData(
   slots: TimeSlot[],

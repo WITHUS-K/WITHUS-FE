@@ -127,4 +127,8 @@ export const queryKeys = {
     detail: (templateId: number) =>
       ['templates', 'detail', templateId] as const,
   },
+
+  user: {
+    myPage: () => ['user', 'myPage'] as const,
+  },
 } as const;

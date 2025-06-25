@@ -4,12 +4,22 @@ import { IcProfileBasic, IcProfileEdit } from '@repo/ui/icons/colored';
 import * as styles from './AvatarSection.css';
 import { Text } from '@repo/ui/Text';
 import { Flex } from '@repo/ui/Flex';
+import { useFormContext } from 'react-hook-form';
+import { ProfileFormValues } from '../../ProfilePage';
 interface AvatarSectionProps {
   role: 'ADMIN' | 'USER';
   isEditing: boolean;
+  imageUrl: string;
+  organizations: { id: number; name: string }[];
 }
 
-export default function AvatarSection({ role, isEditing }: AvatarSectionProps) {
+export default function AvatarSection({
+  role,
+  isEditing,
+  imageUrl,
+  organizations,
+}: AvatarSectionProps) {
+  const { setValue } = useFormContext<ProfileFormValues>();
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -20,11 +30,10 @@ export default function AvatarSection({ role, isEditing }: AvatarSectionProps) {
     const file = e.target.files?.[0];
     if (!file) return;
     setPreview(URL.createObjectURL(file));
+    setValue('profileImageFile', file);
   };
 
-  const serverImageUrl: string | null = null;
-
-  const src = preview ?? serverImageUrl;
+  const src = preview ?? imageUrl;
 
   return (
     <div className={styles.wrapper}>
@@ -56,7 +65,7 @@ export default function AvatarSection({ role, isEditing }: AvatarSectionProps) {
       <Flex direction="column" gap="0.5rem" marginTop="2.4rem" align="center">
         {role === 'ADMIN' && (
           <Text variant="lg_subtitle_semibold" color="grayscale90">
-            위더스
+            {organizations[0]?.name}
           </Text>
         )}
         <Text variant="md1_text_regular" color="grayscale70">
