@@ -60,6 +60,8 @@ export { default as IcPasswordComplete } from './IcPasswordComplete';
 export { default as IcPencil } from './IcPencil';
 export { default as IcPlus24 } from './IcPlus24';
 export { default as IcPlusCircle } from './IcPlusCircle';
+export { default as IcProfileBasic } from './IcProfileBasic';
+export { default as IcProfileEdit } from './IcProfileEdit';
 export { default as IcPwActive } from './IcPwActive';
 export { default as IcPwDefault } from './IcPwDefault';
 export { default as IcRefresh } from './IcRefresh';

@@ -47,7 +47,7 @@ const Sidebar = ({ role }: SidebarProps) => {
     {
       icon: <IcSidebarInfo width={24} height={24} />,
       label: '관리자 정보',
-      route: '/',
+      route: '/profile',
     },
   ];
 
@@ -66,7 +66,7 @@ const Sidebar = ({ role }: SidebarProps) => {
     {
       icon: <IcSidebarInfo width={24} height={24} />,
       label: '사용자 정보',
-      route: '/',
+      route: '/profile',
     },
   ];
 

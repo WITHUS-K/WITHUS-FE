@@ -6,7 +6,6 @@ export const wrapper = style({
   display: 'flex',
   flexDirection: 'column',
   gap: '0.8rem',
- 
 });
 
 export const titleStyle = style({
@@ -39,7 +38,7 @@ export const inputWrapper = recipe({
     alignItems: 'center',
     justifyContent: 'center',
     border: `1px solid ${vars.colors.grayscale20}`,
-    backgroundColor: vars.colors.white,
+    background: vars.colors.white,
     position: 'relative',
 
     selectors: {
@@ -47,9 +46,9 @@ export const inputWrapper = recipe({
         border: `1px solid ${vars.colors.primary50}`,
       },
       '&[data-read-only="true"]': {
-      backgroundColor: vars.colors.bg,
-      border: `1px solid ${vars.colors.grayscale5}`,
-    },
+        backgroundColor: vars.colors.bg,
+        border: `1px solid ${vars.colors.grayscale5}`,
+      },
     },
   },
 
@@ -131,8 +130,7 @@ export const commentInputWrapper = style({
   selectors: {
     '&[data-read-only="true"]': {
       backgroundColor: vars.colors.bg,
-        border: `1px solid ${vars.colors.grayscale5}`,
-
+      border: `1px solid ${vars.colors.grayscale5}`,
     },
   },
 });
@@ -141,7 +139,7 @@ export const questionTitleInput = style({
   all: 'unset',
   width: '100%',
   height: 'auto',
-})
+});
 
 export const commentInput = style({
   all: 'unset',
@@ -156,15 +154,15 @@ export const commentInput = style({
       color: vars.colors.grayscale40,
     },
   },
-  ...fontStyles.md2_text_regular
+  ...fontStyles.md2_text_regular,
 });
 
 export const commentDivider = style({
   width: '100%',
-  borderTop: `1px dashed ${colors.grayscale10}`
-})
+  borderTop: `1px dashed ${colors.grayscale10}`,
+});
 
 export const commentButton = style({
   width: 'auto',
   flex: '0 0 auto',
-})
+});
