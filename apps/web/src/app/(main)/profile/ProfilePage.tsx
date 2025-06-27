@@ -64,18 +64,18 @@ export default function ProfilePage({ role }: ProfilePageProps) {
     });
   };
 
+  const pageTitle = role === 'ADMIN' ? '관리자 정보' : '사용자 정보';
+
   return (
     <div className={styles.container}>
       <Flex width="100%" direction="column" align="flexStart" gap="1.8rem">
         <Breadcrumb>
-          <Breadcrumb.Item active>
-            {role === 'ADMIN' ? '관리자 정보' : '사용자 정보'}
-          </Breadcrumb.Item>
+          <Breadcrumb.Item active>{pageTitle}</Breadcrumb.Item>
         </Breadcrumb>
 
         <Flex width="100%" justify="spaceBetween" align="center">
           <Text variant="xl_title_semibold" color="black">
-            {role === 'ADMIN' ? '관리자 정보' : '사용자 정보'}
+            {pageTitle}
           </Text>
           <Button
             onClick={handleSubmit(handleSave)}
@@ -95,6 +95,7 @@ export default function ProfilePage({ role }: ProfilePageProps) {
           <AvatarSection
             role={role}
             imageUrl={user.imageUrl}
+            email={user.email}
             organizations={user.organizations}
           />
           <Flex direction="column" width="100%" gap="3.2rem">

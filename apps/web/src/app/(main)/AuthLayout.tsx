@@ -4,31 +4,29 @@ import { Suspense } from 'react';
 import { Header } from '@repo/ui/Header';
 import Sidebar from '@web/components/Sidebar/Sidebar';
 import { useUserStore } from '@web/store/state/userStore';
-import { useModal } from 'node_modules/@repo/ui/dist/hooks/useModal';
-import { deleteCookie, getCookie } from 'cookies-next';
+import { useModal } from '@repo/ui/hooks';
+import { deleteCookie } from 'cookies-next';
 import { useRouter } from 'next/navigation';
 
+interface AuthLayoutProps {
+  children: React.ReactNode;
+  username: string;
+  role: string;
+  profileUrl: string;
+  position: string;
+  part: string;
+}
+
 export default function AuthLayout({
-    children,
-    username,
-    role,
-    profileUrl,
-    position,
-    part,
-  }: {
-    children: React.ReactNode;
-    username: string;
-    role: string;
-    profileUrl: string;
-    position: string;
-    part: string;
-  }) {
-
+  children,
+  username,
+  role,
+  profileUrl,
+  position,
+  part,
+}: AuthLayoutProps) {
   const router = useRouter();
-
-
   const clearUser = useUserStore((state) => state.clearUser);
-
   const { confirm } = useModal();
 
   const handleLogout = () => {
@@ -38,15 +36,21 @@ export default function AuthLayout({
       cancelText: '취소',
       confirmText: '로그아웃',
       onConfirm: () => {
-        deleteCookie('accessToken', { path: '/' });
-        deleteCookie('refreshToken', { path: '/' });
-        deleteCookie('name', { path: '/' });
-        deleteCookie('role', { path: '/' });
-        deleteCookie('profileUrl', { path: '/' });
-        deleteCookie('position', { path: '/' });
-        deleteCookie('part', { path: '/' });
-        deleteCookie('organizationId', { path: '/' });
-        deleteCookie('userId', { path: '/' });
+        const cookiesToRemove = [
+          'accessToken',
+          'refreshToken',
+          'name',
+          'role',
+          'profileUrl',
+          'position',
+          'part',
+          'organizationId',
+          'userId',
+        ];
+        cookiesToRemove.forEach((cookieName) =>
+          deleteCookie(cookieName, { path: '/' })
+        );
+
         clearUser();
         router.push('/');
       },
@@ -54,7 +58,6 @@ export default function AuthLayout({
   };
 
   return (
-  
     <Suspense fallback={null}>
       <div className={styles.layoutStyle}>
         <Header

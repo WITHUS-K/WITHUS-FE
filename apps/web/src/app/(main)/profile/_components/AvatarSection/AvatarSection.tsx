@@ -9,12 +9,14 @@ import { ProfileFormValues } from '../../ProfilePage';
 interface AvatarSectionProps {
   role: 'ADMIN' | 'USER';
   imageUrl: string;
+  email: string;
   organizations: { id: number; name: string }[];
 }
 
 export default function AvatarSection({
   role,
   imageUrl,
+  email,
   organizations,
 }: AvatarSectionProps) {
   const { setValue } = useFormContext<ProfileFormValues>();
@@ -67,7 +69,7 @@ export default function AvatarSection({
           </Text>
         )}
         <Text variant="md1_text_regular" color="grayscale70">
-          withus@email.com
+          {email}
         </Text>
       </Flex>
     </div>
