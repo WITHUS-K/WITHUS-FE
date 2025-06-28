@@ -9,7 +9,7 @@ import { IcFileUpload } from '@repo/ui/icons/mono';
 import * as styles from './FileUpload.css';
 import type { DetailItem } from '@web/types/application';
 import { FileUploader } from '@repo/ui/FileUploader';
-import { AttachmentListItem } from '../AttachmentListItem/AttachmentListItem';
+import { AttachmentListItem } from '../../app/(main)/application-list/setting/(preview)/_components/AttachmentListItem/AttachmentListItem';
 import { FileInfo } from '@repo/ui';
 import { useFileDownload } from '@web/store/mutation/useFileDownload';
 

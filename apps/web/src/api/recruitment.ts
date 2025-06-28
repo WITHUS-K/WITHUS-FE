@@ -61,6 +61,7 @@ export async function draftRecruitmentApi(
   return result
 }
 
+// 슬러그 기반 공고 디테일
 export async function getRecruitmentBySlugApi(
   slug: string
 ): Promise<RecruitmentDetailDto> {

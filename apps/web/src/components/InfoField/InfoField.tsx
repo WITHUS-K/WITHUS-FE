@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { TextField } from '@repo/ui/TextField';
-import * as styles from '../BasicInfoPreview/BasicInfoPreview.css';
+import * as styles from '../../app/(main)/application-list/setting/(preview)/_components/BasicInfoPreview/BasicInfoPreview.css';
 
 interface InfoFieldProps {
   label: string;

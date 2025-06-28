@@ -1,7 +1,7 @@
 import React from 'react';
 import * as styles from './AdditionalInfoPreview.css';
 import { SelectAcademicStatusDropdown } from '@repo/ui/DropDown';
-import { InfoField } from '@web/app/(main)/application-list/setting/preview/_components/InfoField/InfoField';
+import { InfoField } from '@web/components/InfoField/InfoField';
 
 interface AdditionalProps {
   school: boolean;

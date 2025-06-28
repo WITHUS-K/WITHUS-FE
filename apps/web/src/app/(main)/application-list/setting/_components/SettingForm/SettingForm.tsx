@@ -158,7 +158,9 @@ export function SettingForm({ existentForm }: SettingFormProps) {
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const handlePreview = () => router.push('/application-list/setting/preview');
+  const handlePreview = () => {
+    router.push(`${pathname}/preview`);
+  };
 
   const handleSave = useCallback(() => {
     const values = methods.getValues();

@@ -4,7 +4,7 @@ import type { DetailItem } from '@web/types/application';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { QuestionInput } from '@repo/ui/InputField';
-import { FileUpload } from '../FileUpload/FileUpload';
+import { FileUpload } from '../../../../../../../components/FileUpload/FileUpload';
 import * as s from './QuestionFileList.css';
 
 interface Props {

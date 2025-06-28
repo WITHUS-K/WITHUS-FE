@@ -7,18 +7,18 @@ import {
 } from '@web/app/(main)/application-list/setting/_context/SettingContext';
 import { FormValues, InterviewSchedule } from '@web/types/application';
 import { useContext, useMemo } from 'react';
-import * as styles from './page.css';
-import { PreviewHeader } from '@web/app/(main)/application-list/setting/preview/_components/PreivewHeader/PreivewHeader';
-import { BasicInfoPreview } from '@web/app/(main)/application-list/setting/preview/_components/BasicInfoPreview/BasicInfoPreview';
-import { AdditionalInfoPreview } from '@web/app/(main)/application-list/setting/preview/_components/AdditionalInfoPreview/AdditionalInfoPreview';
-import { ApplicationPartsPreview } from '@web/app/(main)/application-list/setting/preview/_components/ApplicationPartPreview/ApplicationPartsPreview';
-import { QuestionAndFileList } from '@web/app/(main)/application-list/setting/preview/_components/QuestionFileList/QuestionFileList';
+import * as styles from './PreviewComponent.css';
+import { PreviewHeader } from '@web/app/(main)/application-list/setting/(preview)/_components/PreivewHeader/PreivewHeader';
+import { BasicInfoPreview } from '@web/app/(main)/application-list/setting/(preview)/_components/BasicInfoPreview/BasicInfoPreview';
+import { AdditionalInfoPreview } from '@web/app/(main)/application-list/setting/(preview)/_components/AdditionalInfoPreview/AdditionalInfoPreview';
+import { ApplicationPartsPreview } from '@web/app/(main)/application-list/setting/(preview)/_components/ApplicationPartPreview/ApplicationPartsPreview';
+import { QuestionAndFileList } from '@web/app/(main)/application-list/setting/(preview)/_components/QuestionFileList/QuestionFileList';
 import { SelectableTimeTable } from '@web/components/TimeTable/SelectableTimeTable';
 import { format, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale/ko';
 import { TIME_STEP } from '@web/utils/application';
 
-export default function ApplicationPreview() {
+export default function PreviewComponent() {
   const ctx = useContext<SettingContextType | null>(SettingContext);
   if (!ctx) return null;
   const form: FormValues = ctx.form;
@@ -26,15 +26,13 @@ export default function ApplicationPreview() {
   const applicationSchedule = [
     {
       label: '지원 마감',
-      date: form.deadline
-        ? format(parseISO(form.deadline), 'yyyy/MM/dd')
-        : '2025/04/20',
+      date: form.deadline ? format(parseISO(form.deadline), 'yyyy/MM/dd') : '',
     },
     {
       label: '서류 합격 발표',
       date: form.documentResult?.date
         ? format(parseISO(form.documentResult.date), 'yyyy/MM/dd')
-        : '2025/04/24',
+        : '',
     },
     {
       label: '면접 일정',
@@ -42,13 +40,13 @@ export default function ApplicationPreview() {
         ? form.interviewSchedule.scheduleList
             .map((s) => format(parseISO(s.date), 'yyyy/MM/dd'))
             .join(', ')
-        : '2025/04/29, 2025/04/30',
+        : '',
     },
     {
       label: '최종 합격 발표',
       date: form.finalResultDate
         ? format(parseISO(form.finalResultDate), 'yyyy/MM/dd')
-        : '2025/05/03',
+        : '',
     },
   ];
 
