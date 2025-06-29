@@ -48,7 +48,10 @@ async function fetchWrapperWithTokenHandler<Data>(
       const status = error.response.status;
 
       // 인증 실패 시
-      if (status === STATUS.UNAUTHORIZED && tokens?.accessToken) {
+      if (
+        (status === STATUS.UNAUTHORIZED || status === STATUS.FORBIDDEN) &&
+        tokens?.accessToken
+      ) {
         if (!hasRetried) {
           // 첫 401 → 토큰 재발급 시도
           try {
