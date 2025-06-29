@@ -116,9 +116,12 @@ export default function Filters() {
   const existingInterview = orgInterviews.find(
     (x) => x.recruitmentId === rid
   )?.interviewId;
-  const { data: recruitmentDetail } = useRecruitmentDetailQuery(
-    effectiveRid ?? 0
-  );
+
+  // ssr 도입하기
+  const recruitmentId = effectiveRid ?? 0;
+  const { data: recruitmentDetail } = useRecruitmentDetailQuery({
+    recruitmentId,
+  });
 
   const didAutoRedirect = useRef(false);
   useEffect(() => {

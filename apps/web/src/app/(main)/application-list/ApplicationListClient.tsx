@@ -32,7 +32,7 @@ export default function ApplicationListClient() {
   };
 
   const handleCopy = (slug: string, organization: string) => {
-    const url = `${window.location.origin}/${organization}/${slug}`;
+    const url = `${window.location.origin}/apply/${organization}/${slug}`;
     navigator.clipboard
       .writeText(url)
       .then(() => toast.success('응답자 링크가 복사되었습니다!'))
@@ -120,7 +120,7 @@ export default function ApplicationListClient() {
               id={item.recruitmentId.toString()}
               recruitTitle={item.title}
               dueDate={item.documentDeadline}
-              recruitLink={`${window.location.origin}/${item.organizationName}/${item.urlSlug}`}
+              recruitLink={`${window.location.origin}/apply/${item.organizationName}/${item.urlSlug}`}
               count={diffDays}
               currentApplicantList={item.positionSummaries.map((ps) => ({
                 position: ps.name,

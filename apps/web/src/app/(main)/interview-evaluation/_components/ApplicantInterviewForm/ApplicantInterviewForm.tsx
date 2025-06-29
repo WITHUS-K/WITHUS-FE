@@ -41,7 +41,11 @@ export const ApplicantInterviewForm = ({
   const timeSlotId = Number(params.id);
   const sp = useSearchParams();
   const recruitmentId = Number(sp.get('recruitmentId'));
-  const { data: recruitmentDetail } = useRecruitmentDetailQuery(recruitmentId);
+
+  // ssr 도입 시급!!
+  const { data: recruitmentDetail } = useRecruitmentDetailQuery({
+    recruitmentId,
+  });
 
   console.log('타임슬롯', timeSlotId);
 
