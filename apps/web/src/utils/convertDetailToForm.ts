@@ -1,18 +1,23 @@
-import type { RecruitmentDetailDto, TextQuestionDto, FileQuestionDto } from "@web/types/recruitment";
-import type { FormValues } from "@web/types/application";
+import type {
+  RecruitmentDetailDto,
+  TextQuestionDto,
+  FileQuestionDto,
+} from '@web/types/recruitment';
+import type { FormValues } from '@web/types/application';
+import { normalizeDateStr } from './convertFormToRequest';
 
 const DRAFT_FUTURE_DATE = '2027-05-30';
 
-
 export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
-  const interviewDuration: FormValues["interviewDuration"] =
+  
+  const interviewDuration: FormValues['interviewDuration'] =
     detail.interviewDuration === 15
-      ? "15분"
+      ? '15분'
       : detail.interviewDuration === 30
-      ? "30분"
-      : detail.interviewDuration === 60
-      ? "1시간"
-      : "30분";
+        ? '30분'
+        : detail.interviewDuration === 60
+          ? '1시간'
+          : '30분';
 
   const parts = detail.positions.map((p) => p.name);
   const applicationParts = {
@@ -21,16 +26,16 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
   };
 
   const detailItems = detail.applicationQuestions.map((q) => {
-    if (q.type === "TEXT") {
+    if (q.type === 'TEXT') {
       const tq = q as TextQuestionDto;
       return {
         isEssential: tq.required,
-        type: "text" as const,
+        type: 'text' as const,
         description: tq.title,
         addDescription: tq.description,
         responseTarget: parts.indexOf(tq.positionName!),
         typeInfo: {
-          info: tq.includeWhitespace ? "공백 포함" : "공백 미포함",
+          info: tq.includeWhitespace ? '공백 포함' : '공백 미포함',
           infoDetail: `${tq.textLimit}자`,
         },
       };
@@ -38,7 +43,7 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
       const fq = q as FileQuestionDto;
       return {
         isEssential: fq.required,
-        type: "file" as const,
+        type: 'file' as const,
         description: fq.title,
         addDescription: fq.description,
         responseTarget: parts.indexOf(fq.positionName!),
@@ -54,48 +59,53 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
     isSelected: detail.isDocumentResultRequired,
     date: detail.documentResultDate,
   };*/
-  const deadline = detail.documentDeadline === DRAFT_FUTURE_DATE
-    ? ''
-    : detail.documentDeadline;
+  const deadline =
+    detail.documentDeadline === DRAFT_FUTURE_DATE
+      ? ''
+      : normalizeDateStr(detail.documentDeadline);
 
   // detail.documentResultDate 이 DRAFT_FUTURE_DATE 면 빈값, 선택도 false
-  const docDate = detail.documentResultDate === DRAFT_FUTURE_DATE
-    ? ''
-    : detail.documentResultDate ?? '';
-  const isDocSelected = detail.isDocumentResultRequired
-    && detail.documentResultDate !== DRAFT_FUTURE_DATE;
+  const docDate =
+    normalizeDateStr(detail.documentResultDate) === DRAFT_FUTURE_DATE
+      ? ''
+      : (normalizeDateStr(detail.documentResultDate) ?? '');
+  const isDocSelected =
+    detail.isDocumentResultRequired &&
+    normalizeDateStr(detail.documentResultDate) !== DRAFT_FUTURE_DATE;
   const documentResult = {
     isSelected: isDocSelected,
     date: docDate,
   };
 
   // finalResultDate 도 마찬가지로 DRAFT_FUTURE_DATE 면 빈값
-  const finalDate = detail.finalResultDate === DRAFT_FUTURE_DATE
-    ? ''
-    : detail.finalResultDate;
-
+  const finalDate =
+    normalizeDateStr(detail.finalResultDate) === DRAFT_FUTURE_DATE
+      ? ''
+      : normalizeDateStr(detail.finalResultDate);
 
   const interviewSchedule = {
     isSelected: detail.isInterviewRequired,
     scheduleList: detail.availableTimeRanges.map((r) => ({
-      date: r.date,
+      date: normalizeDateStr(r.date),
       startTime: r.startTime,
       endTime: r.endTime,
     })),
   };
 
   const paperEvaluateStandard =
-    detail.documentScaleType === "SCORE" ? "score" : "level";
+    detail.documentScaleType === 'SCORE' ? 'score' : 'level';
   const paperEvaluateItems = detail.documentEvaluationCriteria.map((c) => ({
     evaluate: c.content,
     evaluateDetail: c.description,
   }));
   const interviewEvaluateStandard =
-    detail.interviewScaleType === "SCORE" ? "score" : "level";
-  const interviewEvaluateItems = detail.interviewEvaluationCriteria.map((c) => ({
-    evaluate: c.content,
-    evaluateDetail: c.description,
-  }));
+    detail.interviewScaleType === 'SCORE' ? 'score' : 'level';
+  const interviewEvaluateItems = detail.interviewEvaluationCriteria.map(
+    (c) => ({
+      evaluate: c.content,
+      evaluateDetail: c.description,
+    })
+  );
 
   return {
     title: detail.title,

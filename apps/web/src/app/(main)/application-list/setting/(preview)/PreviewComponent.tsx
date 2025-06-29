@@ -22,6 +22,7 @@ export default function PreviewComponent() {
   const ctx = useContext<SettingContextType | null>(SettingContext);
   if (!ctx) return null;
   const form: FormValues = ctx.form;
+  console.log('프리뷰', form);
 
   const applicationSchedule = [
     {
@@ -144,7 +145,7 @@ export default function PreviewComponent() {
             </Text>
             <Text variant="sm_caption_medium" color="grayscale40">
               아래 일정 중 면접이 가능한 모든 시간대를 드래그로 등록해주세요.
-              (면접 시간: 15분 소요)
+              (면접 시간: {form.interviewDuration} 소요)
             </Text>
           </Flex>
 

@@ -26,7 +26,7 @@ type TabKey = 'form' | 'stages' | 'criteria';
 const TAB_KEYS: TabKey[] = ['form', 'stages', 'criteria'];
 
 interface SettingFormProps {
-  existentForm?: FormValues;
+  existentForm?: Boolean;
 }
 
 export function SettingForm({ existentForm }: SettingFormProps) {
@@ -42,7 +42,7 @@ export function SettingForm({ existentForm }: SettingFormProps) {
   const draftMutation = useDraftRecruitmentMutation();
   const publishMutation = usePublishRecruitmentMutation();
 
-  const initial = existentForm || ctx.form;
+  const initial = ctx.form;
   const seeded: FormValues = {
     ...initial,
     paperEvaluateItems:
@@ -81,6 +81,13 @@ export function SettingForm({ existentForm }: SettingFormProps) {
     shouldUnregister: false,
   });
 
+  useEffect(() => {
+    if (existentForm) {
+      const next = ctx.form;
+      methods.reset(next);
+    }
+  }, [ctx.form, methods]);
+
   // 2. watch 해서 필드값 가져오기
   const title = methods.watch('title') || '';
   const basicInfo = methods.watch('basicInfo')!;
@@ -110,28 +117,6 @@ export function SettingForm({ existentForm }: SettingFormProps) {
     interviewItems.length > 0 &&
     interviewItems.every((i) => i.evaluate.trim() && i.evaluateDetail.trim());
 
-  useEffect(() => {
-    console.log({
-      isTitleOk,
-      isBasicInfoOk,
-      isDetailItemsOk,
-      isDeadlineOk,
-      isDurationOk,
-      isFinalOk,
-      isPaperOk,
-      isInterviewOk,
-    });
-  }, [
-    isTitleOk,
-    isBasicInfoOk,
-    isDetailItemsOk,
-    isDeadlineOk,
-    isDurationOk,
-    isFinalOk,
-    isPaperOk,
-    isInterviewOk,
-  ]);
-
   // 4. 최종 버튼 활성 조건
   const canSubmit =
     isTitleOk &&
@@ -144,12 +129,12 @@ export function SettingForm({ existentForm }: SettingFormProps) {
     isInterviewOk;
 
   // 5. 폼 변경 시 Context 동기화
-  useEffect(() => {
+  /*useEffect(() => {
     const sub = methods.watch(() => {
       ctx.setForm(methods.getValues());
     });
     return () => sub.unsubscribe();
-  }, [methods, ctx]);
+  }, [methods, ctx]);*/
 
   // 6. 탭 & 버튼 핸들러
   const onTabChange = (tab: string) => {
@@ -165,7 +150,7 @@ export function SettingForm({ existentForm }: SettingFormProps) {
   const handleSave = useCallback(() => {
     const values = methods.getValues();
     const payload = convertFormToRequest(values, recruitmentId, organizationId);
-    console.log('저장 값:', payload);
+    // console.log('저장 값:', payload);
     draftMutation.mutate(payload, {
       onSuccess: (res) => {
         if (pathname.endsWith('/new')) {
