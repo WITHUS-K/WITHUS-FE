@@ -44,7 +44,6 @@ export interface CreateApplicationResponse {
 
 /**
  * 지원서 생성 API 호출 훅
- * - body 는 FormData(멀티파트)로 전송합니다.
  */
 export function useCreateApplication() {
   return useMutation<
@@ -61,11 +60,10 @@ export function useCreateApplication() {
   >({
     mutationFn: async ({ payload, profileImage, answerFiles = [] }) => {
       // 1) FormData 생성
-      const { accessToken } = getClientSideTokens();
       const form = new FormData();
 
-      console.log('📦 payload to be stringified:', payload);
-      console.log('📦 JSON stringified:', JSON.stringify(payload));
+      console.log('payload to be stringified:', payload);
+      console.log('JSON stringified:', JSON.stringify(payload));
 
       form.append(
         'request',
@@ -88,7 +86,7 @@ export function useCreateApplication() {
         form.append('files', file, file.name);
       }
 
-      console.log('🛠 FormData entries:');
+      console.log('FormData entries:');
       for (const [key, val] of Array.from(form.entries())) {
         console.log(key, val);
       }
@@ -98,22 +96,19 @@ export function useCreateApplication() {
         {
           method: 'POST',
           body: form,
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
         }
       );
 
       console.log('응답', res);
       if (!res.ok) {
         const text = await res.text();
-        console.error('🚨 API error status/text:', res.status, text);
+        console.error('API error status/text:', res.status, text);
         throw new Error(`지원서 생성 실패: ${res.status} ${text}`);
       }
 
       // 6) 결과 파싱
       const json = (await res.json()) as CreateApplicationResponse;
-      console.log('✅ API 응답 JSON:', json);
+      console.log('API 응답 JSON:', json);
       return json;
     },
   });
