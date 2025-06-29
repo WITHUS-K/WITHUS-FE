@@ -41,7 +41,7 @@ export default function AuthLayout({
           'refreshToken',
           'name',
           'role',
-          'profileUrl',
+          'profileImageUrl',
           'position',
           'part',
           'organizationId',
