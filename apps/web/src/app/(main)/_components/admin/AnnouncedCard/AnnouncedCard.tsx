@@ -9,7 +9,6 @@ import { Tag } from '@repo/ui/Tag';
 import { allTagColors, TagColor } from '@repo/utils';
 export interface PartCount {
   name: string;
-  color: string;
   count: number;
 }
 
