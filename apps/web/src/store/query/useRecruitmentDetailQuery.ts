@@ -1,25 +1,46 @@
-'use client';
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
-import { getRecruitmentDetailApi } from '@web/api/recruitment';
-import type { RecruitmentDetailDto } from '@web/types/recruitment';
+import {
+  queryOptions,
+  useSuspenseQuery,
+  type UseSuspenseQueryOptions,
+} from '@tanstack/react-query';
+import { GET } from '@web/api';
+import type {
+  RecruitmentDetailResponse,
+  RecruitmentDetailDto,
+} from '@web/types/recruitment';
+import { queryKeys } from '@web/store/constants/queryKeys';
+import type { Tokens } from '@web/api/types';
 
-const STALE_TIME = 1000 * 60 * 2;
-const GC_TIME = 1000 * 60 * 3;
+const STALE_TIME = 1000 * 60 * 30;
+const GC_TIME = 1000 * 60 * 60;
 
-export const recruitmentDetailKey = (id: number) =>
-  ['recruitments', id] as const;
+export interface RecruitmentDetailParams {
+  recruitmentId: number;
+  tokens?: Tokens;
+}
 
-export function useRecruitmentDetailQuery(
-  recruitmentId: number | null
-): UseQueryResult<RecruitmentDetailDto, Error> {
-  return useQuery<RecruitmentDetailDto, Error>({
-    queryKey:
-      recruitmentId != null
-        ? recruitmentDetailKey(recruitmentId)
-        : ['recruitments', 'detail', null],
-    queryFn: () => getRecruitmentDetailApi(recruitmentId!),
+export function getRecruitmentDetailQueryOptions({
+  recruitmentId,
+  tokens,
+}: RecruitmentDetailParams): UseSuspenseQueryOptions<
+  RecruitmentDetailDto,
+  Error
+> {
+  return queryOptions<RecruitmentDetailDto>({
+    queryKey: queryKeys.recruitment.detail(recruitmentId),
+    queryFn: () =>
+      GET<RecruitmentDetailResponse['result']>(
+        `api/v1/recruitments/${recruitmentId}`,
+        undefined,
+        tokens
+      ).then((res) => res.result),
+
     staleTime: STALE_TIME,
     gcTime: GC_TIME,
-    enabled: recruitmentId != null,
+    enabled: recruitmentId > 0,
   });
+}
+
+export function useRecruitmentDetailQuery(params: RecruitmentDetailParams) {
+  return useSuspenseQuery(getRecruitmentDetailQueryOptions(params));
 }

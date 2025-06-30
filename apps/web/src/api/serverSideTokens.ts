@@ -21,9 +21,5 @@ export const getServerSideTokens = async (): Promise<ServerSideContext> => {
     ? parseInt(orgIdCookie, 10) // radix는 10
     : undefined;
 
-  // 디버깅용 로그
-  console.log('[SSR] accessToken:', accessToken);
-  console.log('[SSR] organizationId:', organizationId);
-
   return { accessToken, refreshToken, organizationId };
 };

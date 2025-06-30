@@ -1,14 +1,11 @@
-// src/web/app/(main)/apply-management/add/page.tsx
 'use client';
 
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Flex } from '@repo/ui/Flex';
 import { Button } from '@repo/ui/Button';
 import { Text } from '@repo/ui/Text';
-import { parse, format, isValid } from 'date-fns';
-import { ko } from 'date-fns/locale/ko';
 import { addMinutes, format as formatDate } from 'date-fns';
 import { useRecruitmentDetailQuery } from '@web/store/query/useRecruitmentDetailQuery';
 import {
@@ -42,7 +39,11 @@ export default function AddApplicant() {
 
   // — Hooks 순서 고정 —
   const createApp = useCreateApplication();
-  const { data, isLoading, error } = useRecruitmentDetailQuery(recruitmentId);
+
+  // 이거 지금 안될 거 임... apply-management 도 ssr 변환 필요 - 다음 pr 에 할게용
+  const { data, isLoading, error } = useRecruitmentDetailQuery({
+    recruitmentId,
+  });
   console.log('공고 디테일', data);
   const { watch, setValue, handleSubmit } = useForm<ApplicantForm>({
     defaultValues: {

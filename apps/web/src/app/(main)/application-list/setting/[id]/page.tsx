@@ -1,33 +1,26 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import { useRecruitmentDetailQuery } from '@web/store/query/useRecruitmentDetailQuery';
-import type { FormValues } from '@web/types/application';
-import { SettingForm } from '@web/app/(main)/application-list/setting/_components/SettingForm/SettingForm';
-import { convertDetailToForm } from '@web/utils/convertDetailToForm';
+import { getServerSideTokens } from '@web/api/serverSideTokens';
+import { ServerFetchBoundary } from '@web/store/query/ServerFetchBoundary';
+import { getRecruitmentDetailQueryOptions } from '@web/store/query/useRecruitmentDetailQuery';
+import EditSettingClient from './EditSettingClient';
+import { notFound } from 'next/navigation';
 
-export default function EditSettingPage() {
-  const { id } = useParams();
+interface Props {
+  params: Promise<{ id: string }>;
+}
+
+export default async function Page({ params }: Props) {
+  const { id } = await params;
   const recruitmentId = Number(id);
-  const { data: detail, isLoading } = useRecruitmentDetailQuery(recruitmentId);
-
-  const [form, setForm] = useState<FormValues | null>(null);
-
-  useEffect(() => {
-    if (detail) {
-      const detailForm = convertDetailToForm(detail);
-      setForm(detailForm);
-      console.log('detailform', detailForm);
-    }
-  }, [detail]);
-
-  if (isLoading || !form) {
-    return <div>로딩 중…</div>;
+  if (!recruitmentId) {
+    return notFound();
   }
+  const tokens = await getServerSideTokens();
+
+  const options = getRecruitmentDetailQueryOptions({ recruitmentId, tokens });
 
   return (
-    <div style={{ overflow: 'hidden' }}>
-      <SettingForm existentForm={form} />
-    </div>
+    <ServerFetchBoundary fetchOptions={options}>
+      <EditSettingClient recruitmentId={recruitmentId} />
+    </ServerFetchBoundary>
   );
 }

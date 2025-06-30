@@ -1,4 +1,3 @@
-// components/StageTab/TimeChip.tsx
 'use client';
 
 import React from 'react';

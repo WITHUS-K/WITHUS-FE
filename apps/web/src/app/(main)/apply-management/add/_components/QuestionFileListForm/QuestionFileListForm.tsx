@@ -4,8 +4,8 @@ import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { QuestionInput } from '@repo/ui/InputField';
 import type { DetailItem } from '@web/types/application';
-import * as s from '../../../../application-list/setting/preview/_components/QuestionFileList/QuestionFileList.css';
-import { FileUpload } from '@web/app/(main)/application-list/setting/preview/_components/FileUpload/FileUpload';
+import * as s from '../../../../application-list/setting/(preview)/_components/QuestionFileList/QuestionFileList.css';
+import { FileUpload } from '@web/components/FileUpload/FileUpload';
 
 interface QuestionAndFileListFormProps {
   detailItems: DetailItem[];

@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { InfoField } from '@web/app/(main)/application-list/setting/preview/_components/InfoField/InfoField';
+import { InfoField } from '@web/components/InfoField/InfoField';
 import { SelectAcademicStatusDropdown } from '@repo/ui/DropDown';
 import { TextField } from '@repo/ui/InputField';
-import * as styles from '../../../../application-list/setting/preview/_components/AdditionalInfoPreview/AdditionalInfoPreview.css';
-import * as s from '../../../../application-list/setting/preview/_components/BasicInfoPreview/BasicInfoPreview.css';
+import * as styles from '../../../../application-list/setting/(preview)/_components/AdditionalInfoPreview/AdditionalInfoPreview.css';
+import * as s from '../../../../application-list/setting/(preview)/_components/BasicInfoPreview/BasicInfoPreview.css';
 
 export const statusMap = {
   ENROLLED: '재학',

@@ -31,9 +31,7 @@ export function PreviewHeader() {
           width="10rem"
           onClick={() => router.back()}
         >
-          <Text variant="md2_text_medium" color="white">
             돌아가기
-          </Text>
         </Button>
       </Flex>
     </Flex>

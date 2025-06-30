@@ -2,8 +2,8 @@ import React from 'react';
 import * as styles from './BasicInfoPreview.css';
 import { Option } from '@repo/ui/Option';
 import { IcImage } from '@repo/ui/icons/colored';
-import { DateChip } from '@web/app/(main)/application-list/setting/preview/_components/DateChip/DateChip';
-import { InfoField } from '@web/app/(main)/application-list/setting/preview/_components/InfoField/InfoField';
+import { DateChip } from '@web/components/DateChip/DateChip';
+import { InfoField } from '@web/components/InfoField/InfoField';
 
 interface BasicInfoProps {
   gender: boolean;

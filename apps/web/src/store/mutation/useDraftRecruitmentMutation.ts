@@ -3,22 +3,23 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import { draftRecruitmentApi } from '@web/api/recruitment';
 import type {
   DraftRecruitmentRequest,
   DraftRecruitmentResult,
 } from '@web/types/recruitment';
 import { queryKeys } from '@web/store/constants/queryKeys';
+import { POST } from '@web/api';
 
 export function useDraftRecruitmentMutation() {
   const qc = useQueryClient();
-
-  return useMutation<DraftRecruitmentResult, Error, DraftRecruitmentRequest>({
-    mutationFn: draftRecruitmentApi,
+  return useMutation({
+    mutationFn: (body: DraftRecruitmentRequest) =>
+      POST<DraftRecruitmentResult>(
+        'api/v1/recruitments/draft',
+        body
+      ).then(res => res.result),
     onSuccess: () => {
-      qc.invalidateQueries({
-        queryKey: queryKeys.recruitments.list(),
-      });
+      qc.invalidateQueries({ queryKey: queryKeys.recruitments.list() });
     },
   });
 }

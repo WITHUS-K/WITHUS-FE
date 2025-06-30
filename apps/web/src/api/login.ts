@@ -1,4 +1,3 @@
-// src/api/login.ts
 import { LoginRequest, LoginPayload } from '@web/types/auth';
 import { api } from './api';
 import { setCookie } from 'cookies-next';
