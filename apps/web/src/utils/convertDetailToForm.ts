@@ -9,15 +9,12 @@ import { normalizeDateStr } from './convertFormToRequest';
 const DRAFT_FUTURE_DATE = '2027-05-30';
 
 export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
-  
-  const interviewDuration: FormValues['interviewDuration'] =
-    detail.interviewDuration === 15
-      ? '15분'
-      : detail.interviewDuration === 30
-        ? '30분'
-        : detail.interviewDuration === 60
-          ? '1시간'
-          : '30분';
+  const DURATION_MAP: Record<number, FormValues['interviewDuration']> = {
+    15: '15분',
+    30: '30분',
+    60: '1시간',
+  };
+  const interviewDuration = DURATION_MAP[detail.interviewDuration] ?? '30분';
 
   const parts = detail.positions.map((p) => p.name);
   const applicationParts = {
