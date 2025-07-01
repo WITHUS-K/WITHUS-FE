@@ -44,7 +44,7 @@ export default function RightPanel() {
         <Flex direction="column" align="center" justify="center" gap="2rem">
           <IcPanalCalendar width={48} height={48} />
           <Text variant="lg_subtitle_medium" color="grayscale30">
-            우측 패널을 클릭해 일정을 추가해주세요.
+            좌측 패널을 클릭해 일정을 추가해주세요.
           </Text>
         </Flex>
       )}

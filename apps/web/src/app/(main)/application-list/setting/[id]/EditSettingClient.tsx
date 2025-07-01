@@ -25,7 +25,11 @@ export default function EditSettingClient({
 
   return (
     <div style={{ overflow: 'hidden' }}>
-      <SettingForm existentForm={true} />
+      <SettingForm
+        existentForm={true}
+        slug={detail.UrlSlug}
+        organization={detail.organizationName}
+      />
     </div>
   );
 }

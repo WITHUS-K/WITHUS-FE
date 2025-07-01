@@ -62,7 +62,7 @@ export default function StageTab({ scrollContainerRef }: StageTabProps) {
       <LeftPanel onChipClick={handleChipClick} />
 
       {!panelPos && (
-        <div className={s.right}>
+        <div style={{ maxHeight: '48.2rem', width: '100%' }}>
           <RightPanel />
         </div>
       )}

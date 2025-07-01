@@ -27,9 +27,15 @@ const TAB_KEYS: TabKey[] = ['form', 'stages', 'criteria'];
 
 interface SettingFormProps {
   existentForm?: Boolean;
+  slug?: string;
+  organization?: string;
 }
 
-export function SettingForm({ existentForm }: SettingFormProps) {
+export function SettingForm({
+  existentForm,
+  slug,
+  organization,
+}: SettingFormProps) {
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
 
   const router = useRouter();
@@ -149,6 +155,15 @@ export function SettingForm({ existentForm }: SettingFormProps) {
     router.push(`${pathname}/preview`);
   };
 
+  const handleCopyLink = useCallback(() => {
+    if (!slug || !organization) return;
+    const url = `${window.location.origin}/apply/${organization}/${slug}`;
+    navigator.clipboard
+      .writeText(url)
+      .then(() => toast.success('응답자에게 보낼 링크가 복제됐습니다.'))
+      .catch(() => toast.error('링크 복사에 실패했습니다.'));
+  }, [slug, organization, toast]);
+
   const handleSave = useCallback(() => {
     const values = methods.getValues();
     const payload = convertFormToRequest(values, recruitmentId, organizationId);
@@ -204,6 +219,8 @@ export function SettingForm({ existentForm }: SettingFormProps) {
               leftIcon={<IcLinkCopy />}
               size="40"
               width="14.6rem"
+              disabled={recruitmentId === null}
+              onClick={handleCopyLink}
             >
               응답자 링크
             </Button>
@@ -222,6 +239,7 @@ export function SettingForm({ existentForm }: SettingFormProps) {
               size="40"
               width="13.2rem"
               onClick={handleSave}
+              disabled={recruitmentId != null}
             >
               임시 저장
             </Button>
