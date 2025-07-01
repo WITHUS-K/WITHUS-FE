@@ -21,9 +21,6 @@ export const infoText = style({
 });
 
 export const itemCard = style({
-  //backgroundColor: vars.colors.grayscale5,
-  //padding: '2rem',
-  //borderRadius: '30px',
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
@@ -72,7 +69,7 @@ export const headerInfo = style({
   borderRadius: '16px',
   display: 'flex',
   alignItems: 'center',
-  //border: `1px solid ${vars.colors.grayscale20}`,
+  marginTop: '3.4rem',
   backgroundColor: vars.colors.grayscale20,
   gap: '1.6rem',
   ...fontStyles.sm_caption_semibold,

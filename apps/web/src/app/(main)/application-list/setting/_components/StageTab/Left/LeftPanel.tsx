@@ -1,6 +1,5 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import {
   useFormContext,
   Controller,
@@ -18,7 +17,11 @@ import { CommonDropdown } from '@repo/ui/CommonDropdown';
 import { Button } from '@repo/ui/Button';
 import { IcPlusCircle } from '@repo/ui/icons/mono';
 
-export default function LeftPanel() {
+interface LeftPanelProps {
+  onChipClick?: (e: React.MouseEvent<HTMLElement>, sec: string) => void;
+}
+
+export default function LeftPanel({ onChipClick }: LeftPanelProps) {
   const { watch, control, setValue } = useFormContext<FormValues>();
 
   const scheduleList = useWatch<FormValues, 'interviewSchedule.scheduleList'>({
@@ -60,8 +63,9 @@ export default function LeftPanel() {
       ? groups
       : [{ date: '', slots: [{ date: '', startTime: '', endTime: '' }] }];
 
-  const openSection = (sec: string) => () => {
+  const openSection = (sec: string) => (e: React.MouseEvent<HTMLElement>) => {
     setValue('activeSection', sec);
+    onChipClick?.(e, sec);
   };
 
   return (

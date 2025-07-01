@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useContext, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -30,6 +30,8 @@ interface SettingFormProps {
 }
 
 export function SettingForm({ existentForm }: SettingFormProps) {
+  const scrollAreaRef = useRef<HTMLDivElement | null>(null);
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -186,7 +188,13 @@ export function SettingForm({ existentForm }: SettingFormProps) {
           <Breadcrumb.Item active>지원서 상세 설정</Breadcrumb.Item>
         </Breadcrumb>
 
-        <Flex align="center" width="100%" justify="spaceBetween">
+        <Flex
+          align="center"
+          width="100%"
+          justify="spaceBetween"
+          marginTop="2.4rem"
+          marginBottom="2.4rem"
+        >
           <Text variant="xl_title_semibold" color="black">
             지원서 상세 설정
           </Text>
@@ -239,7 +247,7 @@ export function SettingForm({ existentForm }: SettingFormProps) {
         />
 
         {/* Form */}
-        <div className={styles.scrollArea}>
+        <div className={styles.scrollArea} ref={scrollAreaRef}>
           <form
             id="application-form"
             onSubmit={methods.handleSubmit(onSubmit)}
@@ -251,7 +259,9 @@ export function SettingForm({ existentForm }: SettingFormProps) {
             }}
           >
             {activeTab === 'form' && <FormTab />}
-            {activeTab === 'stages' && <StageTab />}
+            {activeTab === 'stages' && (
+              <StageTab scrollContainerRef={scrollAreaRef} />
+            )}
             {activeTab === 'criteria' && <CriteriaTab />}
           </form>
         </div>
