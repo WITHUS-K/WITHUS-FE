@@ -6,8 +6,6 @@ import type {
 import type { FormValues } from '@web/types/application';
 import { normalizeDateStr } from './convertFormToRequest';
 
-const DRAFT_FUTURE_DATE = '2027-05-30';
-
 export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
   const DURATION_MAP: Record<number, FormValues['interviewDuration']> = {
     15: '15분',
@@ -69,28 +67,18 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
     date: detail.documentResultDate,
   };*/
   const deadline =
-    detail.documentDeadline === DRAFT_FUTURE_DATE
-      ? ''
-      : normalizeDateStr(detail.documentDeadline);
+    detail.documentDeadline && detail.documentDeadline !== ''
+      ? normalizeDateStr(detail.documentDeadline)
+      : '';
 
-  // detail.documentResultDate 이 DRAFT_FUTURE_DATE 면 빈값, 선택도 false
-  const docDate =
-    normalizeDateStr(detail.documentResultDate) === DRAFT_FUTURE_DATE
-      ? ''
-      : (normalizeDateStr(detail.documentResultDate) ?? '');
-  const isDocSelected =
-    detail.isDocumentResultRequired &&
-    normalizeDateStr(detail.documentResultDate) !== DRAFT_FUTURE_DATE;
+  const rawDocDate = detail.documentResultDate ?? '';
   const documentResult = {
-    isSelected: isDocSelected,
-    date: docDate,
+    isSelected: detail.isDocumentResultRequired && rawDocDate !== '',
+    date: rawDocDate !== '' ? normalizeDateStr(rawDocDate) : '',
   };
 
-  // finalResultDate 도 마찬가지로 DRAFT_FUTURE_DATE 면 빈값
-  const finalDate =
-    normalizeDateStr(detail.finalResultDate) === DRAFT_FUTURE_DATE
-      ? ''
-      : normalizeDateStr(detail.finalResultDate);
+  const rawFinal = detail.finalResultDate ?? '';
+  const finalResultDate = rawFinal !== '' ? normalizeDateStr(rawFinal) : '';
 
   const interviewSchedule = {
     isSelected: detail.isInterviewRequired,
@@ -130,7 +118,7 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
     detailItems,
     deadline,
     documentResult,
-    finalResultDate: finalDate,
+    finalResultDate,
     interviewDuration,
     interviewSchedule,
     paperEvaluateStandard,

@@ -6,8 +6,6 @@ import type {
 } from '@web/types/recruitment';
 import { format, parseISO } from 'date-fns';
 
-const DRAFT_FUTURE_DATE = '2027-05-30';
-
 export function normalizeDateStr(s: string) {
   return s.replace(/\./g, '-');
 }
@@ -84,24 +82,26 @@ export function convertFormToRequest(
       }))
     : [];
 
-  // documentDeadline: 선택 안 했으면 2027-05-30
   const documentDeadlineStr = form.deadline
     ? format(parseISO(normalizeDateStr(form.deadline)), 'yyyy-MM-dd')
-    : DRAFT_FUTURE_DATE;
+    : '';
 
-  // documentResultDate: isSelected=false 이면 2027-05-30
   const documentResultDateStr =
     form.documentResult?.isSelected && form.documentResult.date
       ? format(
           parseISO(normalizeDateStr(form.documentResult.date)),
           'yyyy-MM-dd'
         )
-      : DRAFT_FUTURE_DATE;
+      : '';
 
-  // finalResultDate: 항상 보내야 하므로, 빈 문자열일 땐 2027-05-30
   const finalResultDateStr = form.finalResultDate
     ? format(parseISO(normalizeDateStr(form.finalResultDate)), 'yyyy-MM-dd')
-    : DRAFT_FUTURE_DATE;
+    : '';
+
+  const documentScaleType =
+    form.paperEvaluateStandard === 'score' ? 'SCORE' : 'LEVEL';
+  const interviewScaleType =
+    form.interviewEvaluateStandard === 'score' ? 'SCORE' : 'LEVEL';
 
   return {
     recruitmentId,
@@ -123,9 +123,8 @@ export function convertFormToRequest(
     needBirthDate: form.basicInfo.birthDate,
     needMajor: form.basicInfo.major,
     needAcademicStatus: form.basicInfo.academicStatus,
-    //일단 에러 안나게 score로 보내기
-    documentScaleType: 'SCORE',
-    interviewScaleType: 'SCORE',
+    documentScaleType,
+    interviewScaleType,
     documentEvaluationCriteria,
     interviewEvaluationCriteria,
     isInterviewRequired: form.interviewSchedule?.isSelected as boolean,

@@ -89,7 +89,7 @@ export function SettingForm({
     shouldUnregister: false,
   });
 
-  console.log('폼', ctx.form);
+  //console.log('폼', ctx.form);
   useEffect(() => {
     if (existentForm) {
       const next = ctx.form;
@@ -170,12 +170,12 @@ export function SettingForm({
   const handleSave = useCallback(() => {
     const values = methods.getValues();
     const payload = convertFormToRequest(values, recruitmentId, organizationId);
-    // console.log('저장 값:', payload);
+    console.log('임시 저장:', payload);
     draftMutation.mutate(payload, {
       onSuccess: (res) => {
-        if (pathname.endsWith('/new')) {
+        /*if (pathname.endsWith('/new')) {
           router.replace(`/application-list/setting/${res.recruitmentId}`);
-        }
+        }*/
         toast.success('임시 저장 되었습니다.');
       },
       onError: (err) => {
@@ -187,6 +187,7 @@ export function SettingForm({
   const onSubmit = useCallback(
     (data: FormValues) => {
       const payload = convertFormToRequest(data, recruitmentId, organizationId);
+      console.log('최종 저장:', payload);
       publishMutation.mutate(payload, {
         onSuccess: () => {
           router.push('/application-list');
