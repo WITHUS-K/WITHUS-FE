@@ -3,23 +3,23 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Flex } from '@repo/ui/Flex';
-import { AdminHomeHeader } from '@web/app/(main)/_components/admin/AdminHomeHeader/AdminHomeHeader';
+import { AdminHomeHeader } from '@web/app/(main)/dashboard/_components/admin/AdminHomeHeader/AdminHomeHeader';
 import {
   AnnounceCard,
   AnnounceCardProps,
-} from '@web/app/(main)/_components/admin/AnnouncedCard/AnnouncedCard';
+} from '@web/app/(main)/dashboard/_components/admin/AnnouncedCard/AnnouncedCard';
 import {
   DocTimeline,
   DocTimelineProps,
-} from '@web/app/(main)/_components/admin/DocTimeline/DocTimeline';
+} from '@web/app/(main)/dashboard/_components/admin/DocTimeline/DocTimeline';
 import {
   OverallProgress,
   Task,
-} from '@web/app/(main)/_components/admin/OverallProgress/OverallProgress';
+} from '@web/app/(main)/dashboard/_components/admin/OverallProgress/OverallProgress';
 import {
   PendingUsers,
   PendingUsersProps,
-} from '@web/app/(main)/_components/admin/PendingUsers/PendingUsers';
+} from '@web/app/(main)/dashboard/_components/admin/PendingUsers/PendingUsers';
 import { useCurrentRecruitmentsSummaryQuery } from '@web/store/query/useCurrentRecruitmentsSummaryQuery';
 import {
   useRecruitmentProgressQuery,

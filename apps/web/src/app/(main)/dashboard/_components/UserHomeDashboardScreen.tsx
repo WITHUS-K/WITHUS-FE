@@ -2,18 +2,18 @@
 
 import React from 'react';
 import { Flex } from '@repo/ui/Flex';
-import { TimelineEvent } from '@web/app/(main)/_components/admin/DocTimeline/DocTimeline';
+import { TimelineEvent } from '@web/app/(main)/dashboard/_components/admin/DocTimeline/DocTimeline';
 import {
   ReviewItem,
   UserDocReviewList,
-} from '@web/app/(main)/_components/user/UserDocReviewList/UserDocReviewList';
+} from '@web/app/(main)/dashboard/_components/user/UserDocReviewList/UserDocReviewList';
 import {
   InterviewSlot,
   ReviewerRole,
   UserInterviewReview,
-} from '@web/app/(main)/_components/user/UserInterviewReview/UserInterviewReview';
-import { UserAnnouncementProgress } from '@web/app/(main)/_components/user/UserAnnouncementProgress/UserAnnouncementProgress';
-import { UserHomeHeader } from '@web/app/(main)/_components/user/UserHomeHeader/UserHomeHeader';
+} from '@web/app/(main)/dashboard/_components/user/UserInterviewReview/UserInterviewReview';
+import { UserAnnouncementProgress } from '@web/app/(main)/dashboard/_components/user/UserAnnouncementProgress/UserAnnouncementProgress';
+import { UserHomeHeader } from '@web/app/(main)/dashboard/_components/user/UserHomeHeader/UserHomeHeader';
 import { useOrganizationsMeQuery } from '@web/store/query/useOrganizationsMeQuery';
 import {
   RecruitmentSummaryDto,

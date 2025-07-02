@@ -13,24 +13,26 @@ export type FetchOptions<
   'queryKey' | 'queryFn' | 'staleTime' | 'gcTime'
 >;
 
-type Props<
-  TQueryFnData = unknown,
-  TError = Error,
-  TData = TQueryFnData,
-  TQueryKey extends QueryKey = QueryKey,
-> = {
-  fetchOptions:
-    | FetchOptions<TQueryFnData, TError, TData, TQueryKey>[]
-    | FetchOptions<TQueryFnData, TError, TData, TQueryKey>;
+// type Props<
+//   TQueryFnData = unknown,
+//   TError = Error,
+//   TData = TQueryFnData,
+//   TQueryKey extends QueryKey = QueryKey,
+// > = {
+//   fetchOptions:
+//     | FetchOptions<TQueryFnData, TError, TData, TQueryKey>[]
+//     | FetchOptions<TQueryFnData, TError, TData, TQueryKey>;
+//   children: ReactNode | ReactNode[];
+// };
+
+type AnyFetchOptions = FetchOptions<any, any, any, any>;
+
+type Props = {
+  fetchOptions: AnyFetchOptions | AnyFetchOptions[];
   children: ReactNode | ReactNode[];
 };
 
-export async function ServerFetchBoundary<
-  TQueryFnData = unknown,
-  TError = Error,
-  TData = TQueryFnData,
-  TQueryKey extends QueryKey = QueryKey,
->({ fetchOptions, children }: Props<TQueryFnData, TError, TData, TQueryKey>) {
+export async function ServerFetchBoundary({ fetchOptions, children }: Props) {
   const queryClient = getQueryClient();
   const options = Array.isArray(fetchOptions) ? fetchOptions : [fetchOptions];
 
