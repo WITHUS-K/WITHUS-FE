@@ -3,7 +3,15 @@ import { Text } from '@repo/ui/Text';
 import { Option } from '@repo/ui/Option';
 import React from 'react';
 
-export function ApplicationPartsPreview({ parts }: { parts: string[] }) {
+interface Props {
+  parts: string[];
+  selectedIndex: number;
+  onChange: (idx: number) => void;
+}
+
+export function ApplicationPartsPreview({ parts, selectedIndex, onChange }: Props) {
+
+
   return (
     <Flex gap="2.4rem" direction="column">
       <Flex gap="0.4rem" direction="column">
@@ -20,14 +28,14 @@ export function ApplicationPartsPreview({ parts }: { parts: string[] }) {
         </Text>
       </Flex>
       <Flex gap="1rem">
-        {parts.map((part, i) => (
+      {parts.map((label, idx) => (
           <Option
-            width="19.6rem"
-            key={i}
+            key={label}
             type="radio"
-            label={part}
-            isSelected={false}
-            onChange={() => {}}
+            label={label}
+            isSelected={selectedIndex === idx}
+            onChange={() => onChange(idx)}
+            width="19.6rem"
           />
         ))}
       </Flex>

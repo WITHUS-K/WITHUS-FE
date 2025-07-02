@@ -14,14 +14,16 @@ export default function EditSettingClient({
   const { data: detail } = useRecruitmentDetailQuery({
     recruitmentId,
   });
-  const { setForm: setCtxForm } = useContext(SettingContext)!;
+  //console.log('디테일', detail);
+
+  const { form, setForm } = useContext(SettingContext)!;
 
   useEffect(() => {
-    if (detail) {
-      const formValues = convertDetailToForm(detail);
-      setCtxForm(formValues);
+    if (detail && form.title === '') {
+      const formValues: FormValues = convertDetailToForm(detail);
+      setForm(formValues);
     }
-  }, [detail, setCtxForm]);
+  }, [detail, form.title, setForm]);
 
   return (
     <div style={{ overflow: 'hidden' }}>

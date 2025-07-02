@@ -31,7 +31,7 @@ export const QuestionAndFileListForm = ({
 }: QuestionAndFileListFormProps) => {
   const textItems = detailItems.filter((item) => item.type === 'text');
   const fileItems = detailItems.filter((item) => item.type === 'file');
-  //console.log('파일 질문', fileItems);
+
   return (
     <div className={s.wrapper}>
       {textItems.map((item, idx) => (

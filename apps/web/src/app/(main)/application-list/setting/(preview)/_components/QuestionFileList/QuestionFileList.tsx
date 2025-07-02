@@ -36,8 +36,10 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
     });
   };
 
+  //console.log('파일 질문', fileItems);
+
   return (
-    <div className={s.wrapper}>
+    <div className={s.wrapper} style={{ pointerEvents: 'none' }}>
       {textItems.map((item, idx) => (
         <div key={idx} className={s.questionContainer}>
           <Flex gap="0.4rem" align="center" width="100%">
@@ -60,14 +62,26 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
           />
         </div>
       ))}
-      {fileItems.map((item, idx) => (
-        <div key={`f-${idx}`} style={{ marginBottom: '2rem' }}>
-          <FileUpload
-            item={item}
-            onChange={(file) => handleFileChange(idx, file)}
-          />
-        </div>
-      ))}
+      {fileItems.map((item, idx) => {
+        const countStr = item.typeInfo.info.replace(/\D/g, '');
+        const sizeStr = item.typeInfo.infoDetail.replace(/\D/g, '');
+
+        const stringItem: DetailItem = {
+          ...item,
+          typeInfo: {
+            info: countStr,
+            infoDetail: sizeStr,
+          },
+        };
+        return (
+          <div key={`f-${idx}`} style={{ marginBottom: '2rem' }}>
+            <FileUpload
+              item={stringItem}
+              onChange={(file) => handleFileChange(idx, file)}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 };

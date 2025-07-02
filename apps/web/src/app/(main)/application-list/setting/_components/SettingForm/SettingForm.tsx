@@ -89,6 +89,7 @@ export function SettingForm({
     shouldUnregister: false,
   });
 
+  console.log('폼', ctx.form);
   useEffect(() => {
     if (existentForm) {
       const next = ctx.form;
@@ -151,9 +152,11 @@ export function SettingForm({
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const handlePreview = () => {
+  const handlePreview = useCallback(() => {
+    ctx.setForm(methods.getValues());
+
     router.push(`${pathname}/preview`);
-  };
+  }, [ctx, methods, router, pathname]);
 
   const handleCopyLink = useCallback(() => {
     if (!slug || !organization) return;

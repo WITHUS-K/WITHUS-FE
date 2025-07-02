@@ -17,12 +17,24 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
   const interviewDuration = DURATION_MAP[detail.interviewDuration] ?? '30분';
 
   const parts = detail.positions.map((p) => p.name);
+
+  //'공통' 을 포함한 전체 targets
+  const fullTargets = ['공통', ...parts];
+
   const applicationParts = {
     isSelected: parts.length > 0,
     parts,
   };
 
   const detailItems = detail.applicationQuestions.map((q) => {
+    const posName =
+      (q.type === 'TEXT'
+        ? (q as TextQuestionDto).positionName
+        : (q as FileQuestionDto).positionName) || '공통';
+    // fullTargets에서 인덱스 추출, 없으면 0
+    const idx = fullTargets.indexOf(posName);
+    const responseTarget = idx >= 0 ? idx : 0;
+
     if (q.type === 'TEXT') {
       const tq = q as TextQuestionDto;
       return {
@@ -30,10 +42,10 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
         type: 'text' as const,
         description: tq.title,
         addDescription: tq.description,
-        responseTarget: parts.indexOf(tq.positionName!),
+        responseTarget,
         typeInfo: {
           info: tq.includeWhitespace ? '공백 포함' : '공백 미포함',
-          infoDetail: `${tq.textLimit}자`,
+          infoDetail: `${tq.textLimit}`,
         },
       };
     } else {
@@ -43,10 +55,10 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
         type: 'file' as const,
         description: fq.title,
         addDescription: fq.description,
-        responseTarget: parts.indexOf(fq.positionName!),
+        responseTarget,
         typeInfo: {
           info: `${fq.maxFileCount}`,
-          infoDetail: `${fq.maxFileSizeMb}MB`,
+          infoDetail: `${fq.maxFileSizeMb}`,
         },
       };
     }
