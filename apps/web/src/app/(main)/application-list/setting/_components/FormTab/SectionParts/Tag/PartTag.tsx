@@ -19,6 +19,7 @@ export function PartTag({
   return (
     <Flex
       align="center"
+      justify="spaceBetween"
       className={`${styles.tag} ${disabled ? styles.tagDisabled : ''}`}
       onClick={() => !disabled && onEdit()}
     >
