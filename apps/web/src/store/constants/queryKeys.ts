@@ -42,10 +42,15 @@ export const queryKeys = {
           size,
         ] as const,
     },
+    me: () => ['organizations', 'me'] as const,
   },
   recruitments: {
     list: (keyword?: string) => ['recruitments', keyword ?? ''] as const,
     slug: (slug: string) => ['recruitments', 'slug', slug] as const,
+    currentSummary: (organizationId: number) =>
+      ['recruitments', organizationId, 'current', 'summary'] as const,
+    myDocumentEvaluations: (recruitmentId: number) =>
+      ['recruitments', recruitmentId, 'my', 'evaluations', 'documents'] as const,
   },
   recruitment: {
     list: () => ['recruitment', 'list'] as const,
@@ -131,4 +136,12 @@ export const queryKeys = {
   user: {
     myPage: () => ['user', 'myPage'] as const,
   },
+  admin: {
+    currentRecruitmentsSummary: () =>
+      ['admin', 'recruitments', 'current', 'summary'] as const,
+    recruitmentProgress: ( recruitmentId: number, stage: 'DOCUMENT' | 'INTERVIEW') =>
+      ['admin', 'recruitments', recruitmentId, 'progress', stage] as const,
+    recruitmentPendingEvaluators: (recruitmentId: number) =>
+      ['admin', 'recruitments', recruitmentId, 'pendingEvaluators'] as const,
+  } as const,
 } as const;

@@ -2,37 +2,78 @@
 
 import React from 'react';
 import { Flex } from '@repo/ui/Flex';
-import { TimelineEvent } from '@web/app/(main)/_components/admin/DocTimeline/DocTimeline';
+import { TimelineEvent } from '@web/app/(main)/dashboard/_components/admin/DocTimeline/DocTimeline';
 import {
   ReviewItem,
   UserDocReviewList,
-} from '@web/app/(main)/_components/user/UserDocReviewList/UserDocReviewList';
+} from '@web/app/(main)/dashboard/_components/user/UserDocReviewList/UserDocReviewList';
 import {
   InterviewSlot,
   ReviewerRole,
   UserInterviewReview,
-} from '@web/app/(main)/_components/user/UserInterviewReview/UserInterviewReview';
-import { UserAnnouncementProgress } from '@web/app/(main)/_components/user/UserAnnouncementProgress/UserAnnouncementProgress';
-import { UserHomeHeader } from '@web/app/(main)/_components/user/UserHomeHeader/UserHomeHeader';
+} from '@web/app/(main)/dashboard/_components/user/UserInterviewReview/UserInterviewReview';
+import { UserAnnouncementProgress } from '@web/app/(main)/dashboard/_components/user/UserAnnouncementProgress/UserAnnouncementProgress';
+import { UserHomeHeader } from '@web/app/(main)/dashboard/_components/user/UserHomeHeader/UserHomeHeader';
+import { useOrganizationsMeQuery } from '@web/store/query/useOrganizationsMeQuery';
+import {
+  RecruitmentSummaryDto,
+  useRecruitmentsCurrentSummaryQuery,
+} from '@web/store/query/useRecruitmentsCurrentSummaryQuery';
+import {
+  MyEvaluationItemDto,
+  useMyDocumentEvaluationsQuery,
+} from '@web/store/query/useMyDocumentEvaluationsQuery';
+import { Tokens } from '@web/api/types';
 
-export const UserHomeDashboardScreen = () => {
-  const announcementTitle = '[한국대학생IT경영학회] 큐시즘 32기 학회원 모집';
-  const timelineEvents: TimelineEvent[] = [
-    { date: '2025-05-04', label: '서류 평가 마감', daysBefore: 3 },
-    { date: '2025-04-07', label: '면접 평가 시작', daysBefore: 30 },
-    { date: '2025-02-21', label: '최종 발표 시작', daysBefore: 70 },
-  ];
+interface UserHomeDashboardScreenProps {
+  tokens: Tokens;
+}
+export default function UserHomeDashboardScreen({
+  tokens,
+}: UserHomeDashboardScreenProps) {
+  const orgsQuery = useOrganizationsMeQuery(tokens);
+  const summaryQuery = useRecruitmentsCurrentSummaryQuery(
+    orgsQuery.data?.[0]?.id ?? -1,
+    tokens
+  );
 
-  const itemsBefore: ReviewItem[] = [
-    { id: '1', part: '기획', name: '장지원' },
-    { id: '2', part: '디자인', name: '김하나' },
-    { id: '3', part: '백엔드', name: '이영희' },
-  ];
-  const itemsAfter: ReviewItem[] = [
-    { id: '4', part: '기획', name: '박철수' },
-    { id: '5', part: '디자인', name: '최민준' },
-    { id: '6', part: '백엔드', name: '최수진' },
-  ];
+  const docEvalQuery = useMyDocumentEvaluationsQuery(
+    summaryQuery.data?.[0]?.recruitmentId ?? -1,
+    tokens
+  );
+
+  const orgs = orgsQuery.data;
+  if (!orgs || orgs.length === 0) return null;
+  const organization = orgs[0]!;
+
+  const summaries = summaryQuery.data;
+  if (!summaries || summaries.length === 0) return null;
+  const summary: RecruitmentSummaryDto = summaries[0]!;
+
+  const docEvals = docEvalQuery.data;
+  if (!docEvals) return null;
+
+  const timelineEvents: TimelineEvent[] = summary.dDays.map((e) => ({
+    date: e.date.replace(/\//g, '-'),
+    label: e.label,
+    daysBefore: e.daysRemaining,
+  }));
+  const announcementTitle = `[${organization.name}] ${summary.title}`;
+
+  const itemsBefore: ReviewItem[] = docEvals.pending.map(
+    (u: MyEvaluationItemDto) => ({
+      id: u.id.toString(),
+      part: u.positionName,
+      name: u.name,
+    })
+  );
+  const itemsAfter: ReviewItem[] = docEvals.done.map(
+    (u: MyEvaluationItemDto) => ({
+      id: u.id.toString(),
+      part: u.positionName,
+      name: u.name,
+    })
+  );
 
   const initialDate = new Date(2025, 4, 12);
   const slotsByRole: Record<ReviewerRole, InterviewSlot[]> = {
@@ -137,4 +178,4 @@ export const UserHomeDashboardScreen = () => {
       </Flex>
     </Flex>
   );
-};
+}

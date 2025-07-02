@@ -16,14 +16,44 @@ export interface User {
 
 export interface PendingUsersProps {
   deadline: Date;
+  remainingDays?: number;
   remainingHours: number;
+  remainingMinutes?: number;
   users: User[];
   onRemind: () => void;
 }
 
+const formatRemainingTime = (
+  days?: number,
+  hours?: number,
+  minutes?: number
+): string => {
+  const parts: string[] = [];
+
+  if (days && days > 0) {
+    parts.push(`${days}일`);
+  }
+
+  if (hours && hours > 0) {
+    parts.push(`${hours}시간`);
+  }
+
+  if (minutes && minutes > 0) {
+    parts.push(`${minutes}분`);
+  }
+
+  if (parts.length === 0) {
+    return '마감됨';
+  }
+
+  return `${parts.join(' ')} 남음`;
+};
+
 export const PendingUsers = ({
   deadline,
+  remainingDays,
   remainingHours,
+  remainingMinutes,
   users,
   onRemind,
 }: PendingUsersProps) => (
@@ -53,12 +83,12 @@ export const PendingUsers = ({
       <Text variant="xs_caption_medium" color="grayscale50">
         평가 마감 : {deadline.getFullYear()}.
         {(deadline.getMonth() + 1).toString().padStart(2, '0')}.
-        {deadline.getDate().toString().padStart(2, '0')}
+        {deadline.getDate().toString().padStart(2, '0')}{' '}
         {deadline.getHours().toString().padStart(2, '0')}:{' '}
         {deadline.getMinutes().toString().padStart(2, '0')}
       </Text>
       <Text variant="xs_caption_medium" color="error">
-        ({remainingHours}시간 남음)
+        ({formatRemainingTime(remainingDays, remainingHours, remainingMinutes)})
       </Text>
     </div>
 

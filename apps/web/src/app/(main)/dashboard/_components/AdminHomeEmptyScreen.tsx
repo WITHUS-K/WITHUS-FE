@@ -1,7 +1,7 @@
 import { Flex } from '@repo/ui/Flex';
-import { AdminHomeHeader } from '@web/app/(main)/_components/admin/AdminHomeHeader/AdminHomeHeader';
-import { NoAnnouncements } from '@web/app/(main)/_components/admin/EmptyState/NoAnnouncements';
-import { NoTasks } from '@web/app/(main)/_components/admin/EmptyState/NoTasks';
+import { AdminHomeHeader } from '@web/app/(main)/dashboard/_components/admin/AdminHomeHeader/AdminHomeHeader';
+import { NoAnnouncements } from '@web/app/(main)/dashboard/_components/admin/EmptyState/NoAnnouncements';
+import { NoTasks } from '@web/app/(main)/dashboard/_components/admin/EmptyState/NoTasks';
 import React from 'react';
 
 export const AdminHomeEmptyScreen = () => (
