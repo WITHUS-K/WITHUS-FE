@@ -12,6 +12,7 @@ export interface RecruitmentDto {
   organizationName: string;
   urlSlug: string;
   positionSummaries: PositionSummary[];
+  isTemporary: boolean;
 }
 
 export interface RecruitmentsResponse {

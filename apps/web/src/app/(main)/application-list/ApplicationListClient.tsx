@@ -101,7 +101,7 @@ export default function ApplicationListClient() {
             (deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
           );
 
-          //console.log(item);
+          //console.log('리스트', item);
 
           const handleDelete = () => {
             confirm({
@@ -126,6 +126,7 @@ export default function ApplicationListClient() {
                 position: ps.name,
                 numOfApplicant: ps.applicantCount,
               }))}
+              isTemporary={item.isTemporary}
               onModify={() => handleModify(item.recruitmentId)}
               onCopy={() => handleCopy(item.urlSlug, item.organizationName)}
               onDelete={handleDelete}
