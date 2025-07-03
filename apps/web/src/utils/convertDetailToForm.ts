@@ -3,7 +3,7 @@ import type {
   TextQuestionDto,
   FileQuestionDto,
 } from '@web/types/recruitment';
-import type { FormValues } from '@web/types/application';
+import type { EvaluationItem, FormValues } from '@web/types/application';
 import { normalizeDateStr } from './convertFormToRequest';
 
 export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
@@ -23,6 +23,18 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
     isSelected: parts.length > 0,
     parts,
   };
+
+  const sectionKeys: Array<string | null> =
+    parts.length > 0 ? [null, ...parts] : [null];
+
+  const toEvalItem = (c: {
+    content: string;
+    description: string;
+  }): EvaluationItem => ({
+    evaluate: c.content,
+    evaluateDetail: c.description,
+    positionName: null, // 실제는 section.level 에서 대입
+  });
 
   const detailItems = detail.applicationQuestions.map((q) => {
     const posName =
@@ -91,18 +103,27 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
 
   const paperEvaluateStandard =
     detail.documentScaleType === 'SCORE' ? 'score' : 'level';
-  const paperEvaluateItems = detail.documentEvaluationCriteria.map((c) => ({
-    evaluate: c.content,
-    evaluateDetail: c.description,
+  const paperEvaluateItems = sectionKeys.map((sec) => ({
+    positionName: sec,
+    items: detail.documentEvaluationCriteria
+      .filter((c) => (c.positionName ?? null) === sec)
+      .map((c) => ({
+        evaluate: c.content,
+        evaluateDetail: c.description,
+      })),
   }));
+
   const interviewEvaluateStandard =
     detail.interviewScaleType === 'SCORE' ? 'score' : 'level';
-  const interviewEvaluateItems = detail.interviewEvaluationCriteria.map(
-    (c) => ({
-      evaluate: c.content,
-      evaluateDetail: c.description,
-    })
-  );
+  const interviewEvaluateItems = sectionKeys.map((sec) => ({
+    positionName: sec,
+    items: detail.interviewEvaluationCriteria
+      .filter((c) => (c.positionName ?? null) === sec)
+      .map((c) => ({
+        evaluate: c.content,
+        evaluateDetail: c.description,
+      })),
+  }));
 
   return {
     title: detail.title,

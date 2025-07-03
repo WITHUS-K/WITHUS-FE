@@ -49,7 +49,6 @@ export const itemDetailCard = style({
 
 export const addButton = style({
   display: 'flex',
-  width: '8rem',
   gap: '0.8rem',
   borderRadius: '8px',
   backgroundColor: 'transparent',
@@ -69,7 +68,6 @@ export const headerInfo = style({
   borderRadius: '16px',
   display: 'flex',
   alignItems: 'center',
-  marginTop: '3.4rem',
   backgroundColor: vars.colors.grayscale20,
   gap: '1.6rem',
   ...fontStyles.sm_caption_semibold,

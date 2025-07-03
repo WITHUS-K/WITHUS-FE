@@ -46,22 +46,39 @@ export function SettingForm({
   const toast = useToast();
 
   const organizationId = useUserStore.getState().organizationId!;
+  //console.log('id', organizationId);
 
   const draftMutation = useDraftRecruitmentMutation();
   const publishMutation = usePublishRecruitmentMutation();
 
   const initial = ctx.form;
+
+  const customParts = initial.applicationParts?.isSelected
+    ? initial.applicationParts.parts
+    : [];
+  // 최소 하나의 '공통' 섹션이 필요하므로
+  const sections = customParts.length > 0 ? customParts : [null];
+
+  const seededPaperEvaluateItems =
+    initial.paperEvaluateItems && initial.paperEvaluateItems.length > 0
+      ? initial.paperEvaluateItems
+      : sections.map((partName) => ({
+          positionName: partName,
+          items: [{ evaluate: '', evaluateDetail: '' }],
+        }));
+
+  const seededInterviewEvaluateItems =
+    initial.interviewEvaluateItems && initial.interviewEvaluateItems.length > 0
+      ? initial.interviewEvaluateItems
+      : sections.map((partName) => ({
+          positionName: partName,
+          items: [{ evaluate: '', evaluateDetail: '' }],
+        }));
+
   const seeded: FormValues = {
     ...initial,
-    paperEvaluateItems:
-      initial.paperEvaluateItems && initial.paperEvaluateItems.length > 0
-        ? initial.paperEvaluateItems
-        : [{ evaluate: '', evaluateDetail: '' }],
-    interviewEvaluateItems:
-      initial.interviewEvaluateItems &&
-      initial.interviewEvaluateItems.length > 0
-        ? initial.interviewEvaluateItems
-        : [{ evaluate: '', evaluateDetail: '' }],
+    paperEvaluateItems: seededPaperEvaluateItems,
+    interviewEvaluateItems: seededInterviewEvaluateItems,
 
     detailItems:
       initial.detailItems && initial.detailItems.length > 0
@@ -97,6 +114,23 @@ export function SettingForm({
     }
   }, [ctx.form, methods]);
 
+  const parts = methods.watch('applicationParts.parts') ?? [];
+  useEffect(() => {
+    const sections = parts.length > 0 ? parts : [null];
+    const newPaper = sections.map((p) => ({
+      positionName: p,
+      items: [{ evaluate: '', evaluateDetail: '' }],
+    }));
+    const newInterview = sections.map((p) => ({
+      positionName: p,
+      items: [{ evaluate: '', evaluateDetail: '' }],
+    }));
+    methods.setValue('paperEvaluateItems', newPaper, { shouldValidate: false });
+    methods.setValue('interviewEvaluateItems', newInterview, {
+      shouldValidate: false,
+    });
+  }, [parts, methods]);
+
   // 2. watch 해서 필드값 가져오기
   const title = methods.watch('title') || '';
   const basicInfo = methods.watch('basicInfo')!;
@@ -121,10 +155,26 @@ export function SettingForm({
   const isFinalOk = !!finalResultDate;
   const isPaperOk =
     paperItems.length > 0 &&
-    paperItems.every((p) => p.evaluate.trim() && p.evaluateDetail.trim());
+    paperItems.every(
+      (section) =>
+        section.items.length > 0 &&
+        section.items.every(
+          (item) =>
+            item.evaluate.trim().length > 0 &&
+            item.evaluateDetail.trim().length > 0
+        )
+    );
   const isInterviewOk =
     interviewItems.length > 0 &&
-    interviewItems.every((i) => i.evaluate.trim() && i.evaluateDetail.trim());
+    interviewItems.every(
+      (section) =>
+        section.items.length > 0 &&
+        section.items.every(
+          (item) =>
+            item.evaluate.trim().length > 0 &&
+            item.evaluateDetail.trim().length > 0
+        )
+    );
 
   // 4. 최종 버튼 활성 조건
   const canSubmit =
@@ -170,7 +220,7 @@ export function SettingForm({
   const handleSave = useCallback(() => {
     const values = methods.getValues();
     const payload = convertFormToRequest(values, recruitmentId, organizationId);
-    console.log('임시 저장:', payload);
+    //console.log('임시 저장:', payload);
     draftMutation.mutate(payload, {
       onSuccess: (res) => {
         /*if (pathname.endsWith('/new')) {
@@ -187,7 +237,7 @@ export function SettingForm({
   const onSubmit = useCallback(
     (data: FormValues) => {
       const payload = convertFormToRequest(data, recruitmentId, organizationId);
-      console.log('최종 저장:', payload);
+      // console.log('최종 저장:', payload);
       publishMutation.mutate(payload, {
         onSuccess: () => {
           router.push('/application-list');
