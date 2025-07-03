@@ -14,7 +14,7 @@ const SelectAcademicStatusDropdownTriggerContent = ({
 
   return (
     <div className={academicStatusTriggerStyle}>
-      <Flex gap="1rem" align="center">
+      <Flex gap="1rem" align="center" width="100%">
         <Text
           variant="md2_text_regular"
           color={isDefault ? 'grayscale40' : 'grayscale80'}

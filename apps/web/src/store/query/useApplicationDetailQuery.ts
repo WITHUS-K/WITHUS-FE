@@ -6,6 +6,10 @@ export interface ApplicationAnswer {
   questionType: 'TEXT' | 'FILE';
   answerText: string;
   fileUrl: string;
+  textLimit: number;
+  includeWhitespace: boolean;
+  maxFileCount: number;
+  maxFileSizeMb: number;
 }
 
 /** 사용자 요약 정보 */

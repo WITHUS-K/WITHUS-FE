@@ -8,6 +8,11 @@ export const container = style({
   width: '100%',
 });
 
+export const gender = style({
+  textAlign: 'center',
+  width: '11.9rem',
+});
+
 export const header = style({
   display: 'flex',
   flexDirection: 'row',
@@ -48,7 +53,7 @@ export const fieldWrapper = style({
 export const optionWrapper = style({
   display: 'flex',
   gap: '0.8rem',
-  flex: 1,
+  flex: '0 0 auto',
   width: '100%',
 });
 

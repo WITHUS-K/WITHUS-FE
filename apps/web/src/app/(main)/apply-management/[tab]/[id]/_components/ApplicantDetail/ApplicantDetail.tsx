@@ -22,7 +22,10 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
     type: 'text',
     description: a.questionTitle,
     responseTarget: idx,
-    typeInfo: { info: '공백포함', infoDetail: '500자' }, // 기존 구조에 맞춰 필요 시 추가
+    typeInfo: {
+      info: a.includeWhitespace ? '공백포함' : '공백제외',
+      infoDetail: `${a.textLimit}자`,
+    },
   }));
 
   const fileItem: DetailItem[] = application.documentAnswers
@@ -30,10 +33,10 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
     .map((a, idx) => ({
       isEssential: true,
       type: 'file',
-      description: a.questionTitle, // questionTitle 사용
-      addDescription: a.questionDescription, // 필요시 질문 설명 사용
-      responseTarget: textItems.length + idx, // textItems 뒤 인덱스
-      typeInfo: { info: '1', infoDetail: '10' },
+      description: a.questionTitle,
+      addDescription: a.questionDescription,
+      responseTarget: textItems.length + idx,
+      typeInfo: { info: `${a.maxFileCount}`, infoDetail: `${a.maxFileSizeMb}` },
     }));
 
   const detailItems = [...textItems, ...fileItem];

@@ -57,6 +57,7 @@ export function AdditionalInfoForm({
               value: value.school ?? '',
               disabled: readOnly,
               onChange: (e) => onChange('school', e.currentTarget.value),
+              width: '100%',
             }}
           />
         )}
@@ -66,15 +67,16 @@ export function AdditionalInfoForm({
             <div className={s.fieldWrapper}>
               <InfoField
                 label="학적 상태"
-                itemClass={styles.rowItemAuto}
-                wrapperClass={styles.fieldAuto}
+                itemClass={styles.rowItemWide}
+                wrapperClass={styles.fieldGrowForSchool}
                 readOnly={readOnly}
                 inputProps={{
                   value: value.academicStatus
                     ? statusMap[value.academicStatus]
                     : '',
+                  width: '100%',
                 }}
-              ></InfoField>
+              />
             </div>
           ) : (
             <InfoField
@@ -82,6 +84,9 @@ export function AdditionalInfoForm({
               itemClass={styles.rowItemAuto}
               wrapperClass={styles.fieldAuto}
               readOnly={readOnly}
+              inputProps={{
+                width: '100%',
+              }}
             >
               <SelectAcademicStatusDropdown
                 value={value.academicStatus}

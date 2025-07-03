@@ -11,6 +11,8 @@ import { TextField } from '@repo/ui/InputField';
 import Image from 'next/image';
 import * as styles from './BasicInfoForm.css';
 import { Flex } from '@repo/ui/Flex';
+import * as styles1 from '../../../../application-list/setting/(preview)/_components/AdditionalInfoPreview/AdditionalInfoPreview.css';
+import * as s from '../../../../application-list/setting/(preview)/_components/BasicInfoPreview/BasicInfoPreview.css';
 
 interface BasicInfoFormProps {
   value: {
@@ -97,10 +99,13 @@ export function BasicInfoForm({
               label="이름"
               required
               labelWidth="7.4rem"
+              itemClass={styles1.rowItemWide}
+              wrapperClass={styles1.fieldGrowForSchool}
               disabled={readOnly}
               inputProps={{
                 placeholder: '홍길동',
                 value: value.name,
+                width: '100%',
                 onChange: (e) => onChange('name', e.currentTarget.value),
                 disabled: readOnly,
               }}
@@ -109,7 +114,7 @@ export function BasicInfoForm({
 
             {needGender &&
               (readOnly ? (
-                <div>
+                <div className={styles.gender}>
                   <TextField
                     inputProps={{
                       value: value.gender == 'male' ? '남성' : '여성',
@@ -122,21 +127,24 @@ export function BasicInfoForm({
                 <InfoField
                   label="성별"
                   labelWidth="6.3rem"
-                  wrapperClass={styles.optionWrapper}
+                  wrapperClass={styles1.fieldAuto}
+                  itemClass={styles1.rowItemAuto}
                 >
-                  {(['male', 'female'] as const).map((g) => (
-                    <Option
-                      key={g}
-                      type="radio"
-                      label={g === 'male' ? '남성' : '여성'}
-                      width="50%"
-                      isSelected={selectedGender === g}
-                      onChange={() => {
-                        setSelectedGender(g);
-                        onChange('gender', g);
-                      }}
-                    />
-                  ))}
+                  <div style={{ display: 'flex', gap: '0.8rem' }}>
+                    {(['male', 'female'] as const).map((g) => (
+                      <Option
+                        key={g}
+                        type="radio"
+                        label={g === 'male' ? '남성' : '여성'}
+                        width="14.65rem"
+                        isSelected={selectedGender === g}
+                        onChange={() => {
+                          setSelectedGender(g);
+                          onChange('gender', g);
+                        }}
+                      />
+                    ))}
+                  </div>
                 </InfoField>
               ))}
           </Flex>
@@ -146,12 +154,15 @@ export function BasicInfoForm({
               label="전화번호"
               labelWidth="7.4rem"
               required
+              itemClass={styles1.rowItemWide}
+              wrapperClass={styles1.fieldGrowForSchool}
               disabled={readOnly}
               inputProps={{
                 placeholder: '010-0000-0000',
                 value: value.phone,
                 onChange: (e) => onChange('phone', e.currentTarget.value),
                 disabled: readOnly,
+                width: '100%',
               }}
               readOnly={readOnly}
             />
@@ -173,8 +184,12 @@ export function BasicInfoForm({
                   />
                 </div>
               ) : (
-                <InfoField label="생년월일">
-                  <div style={{ position: 'relative' }}>
+                <InfoField
+                  label="생년월일"
+                  itemClass={styles1.rowItemAuto}
+                  wrapperClass={styles1.fieldAuto}
+                >
+                  <div style={{ position: 'relative', width: '30rem' }}>
                     <DateChip
                       date={value.birthDate}
                       selected={isPickerOpen}
@@ -219,6 +234,7 @@ export function BasicInfoForm({
               value: value.email,
               onChange: (e) => onChange('email', e.currentTarget.value),
               disabled: readOnly,
+              width: '100%',
             }}
             readOnly={readOnly}
           />
