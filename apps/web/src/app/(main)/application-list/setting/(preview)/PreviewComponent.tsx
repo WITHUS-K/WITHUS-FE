@@ -64,7 +64,6 @@ export default function PreviewComponent() {
   const parts = form.applicationParts?.parts ?? [];
   const [selectedPartIdx, setSelectedPartIdx] = useState<number>(0);
 
-  // 질문 필터: 공통(responseTarget===0) + 선택된 파트(responseTarget===selectedPartIdx+1)
   const filteredItems = useMemo(() => {
     const allItems = form.detailItems;
     const common = allItems.filter((item) => item.responseTarget === 0);
@@ -76,17 +75,16 @@ export default function PreviewComponent() {
 
   const interval = TIME_STEP[form.interviewDuration];
 
-  // 2) admin이 설정한 scheduleList 전체
   const allSlots = form.interviewSchedule?.scheduleList ?? [];
 
   //console.log('시간', allSlots);
-  // 3) 날짜별로 묶어서 unique dates 추출
+
   const dates = useMemo(
     () => Array.from(new Set(allSlots.map((s) => s.date))),
     [allSlots]
   );
 
-  // 4) 전체 슬롯에서 최소 시작시간 / 최대 종료시간(시(hour)만) 계산
+  // 전체 슬롯에서 최소 시작시간 / 최대 종료시간(시(hour)만) 계산
   const hours = allSlots.flatMap((s) => [
     parseInt(s.startTime.split(':')[0]!, 10),
     parseInt(s.endTime.split(':')[0]!, 10),
@@ -180,7 +178,7 @@ export default function PreviewComponent() {
                   locale: ko,
                 });
 
-                // 5) 해당 날짜 슬롯만 필터링
+                // 해당 날짜 슬롯만 필터링
                 const scheduleListForDate = allSlots.filter(
                   (s) => s.date === isoDate
                 );

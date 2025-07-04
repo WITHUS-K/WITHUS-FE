@@ -35,7 +35,6 @@ export default function StageTab({ scrollContainerRef }: StageTabProps) {
       containerRect.height / 2 +
       panelRect.height / 2;
 
-    // GSAP으로 스크롤 애니메이션
     gsap.to(scrollContainerRef.current, {
       duration: 0.6,
       ease: 'power2.out',

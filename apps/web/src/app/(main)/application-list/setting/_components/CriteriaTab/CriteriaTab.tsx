@@ -6,19 +6,34 @@ import * as styles from './CriteriaTab.css';
 import { IcInfo } from '@repo/ui/icons/mono';
 import EvaluationSection from './Section/EvaluationSection';
 import { Text } from '@repo/ui/Text';
-import { SettingContext } from '../../_context/SettingContext';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { FormValues } from '@web/types/application';
+import type { FormValues } from '@web/types/application';
 
 export default function CriteriaTab() {
   const [showHeaderInfo, setShowHeaderInfo] = useState(true);
   const { control } = useFormContext<FormValues>();
-  const parts =
+
+  const appParts =
     useWatch({
       control,
       name: 'applicationParts.parts',
-    }) ?? [];
-  const sections = parts.length > 0 ? parts : [null];
+    }) || [];
+
+  const paperSections =
+    useWatch({
+      control,
+      name: 'paperEvaluateItems' as const,
+    }) || [];
+  const interviewSections =
+    useWatch({
+      control,
+      name: 'interviewEvaluateItems' as const,
+    }) || [];
+
+  const renderIndices =
+    appParts.length > 0
+      ? paperSections.map((_, idx) => idx).filter((idx) => idx !== 0)
+      : [0];
 
   return (
     <Flex
@@ -44,31 +59,29 @@ export default function CriteriaTab() {
       )}
 
       <Flex direction="column" width="100%" gap="5rem">
-        {sections.map((partName, sectionIndex) => {
+        {renderIndices.map((idx) => {
+          const partName = paperSections[idx]!.positionName; // null 또는 파트명
           return (
-            <Flex
-              key={sectionIndex}
-              direction="column"
-              width="100%"
-              gap="1.2rem"
-            >
+            <Flex key={idx} direction="column" width="100%" gap="1.2rem">
               <Text variant="lg_subtitle_bold" color="primary50">
                 {partName ?? '공통'}
               </Text>
               <Flex direction="column" width="100%" gap="3.8rem">
+                {/* 서류 평가 */}
                 <EvaluationSection
                   label="서류평가 기준"
                   standardName="paperEvaluateStandard"
                   itemsName="paperEvaluateItems"
                   positionName={partName}
-                  sectionIndex={sectionIndex}
+                  sectionIndex={idx}
                 />
+                {/* 면접 평가 */}
                 <EvaluationSection
                   label="면접평가 기준"
                   standardName="interviewEvaluateStandard"
                   itemsName="interviewEvaluateItems"
                   positionName={partName}
-                  sectionIndex={sectionIndex}
+                  sectionIndex={idx}
                 />
               </Flex>
             </Flex>

@@ -9,16 +9,24 @@ import { POST } from '@web/api';
 export function usePublishRecruitmentMutation() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: PublishRecruitmentRequest) => {
+    mutationFn: async (body: PublishRecruitmentRequest) => {
       console.log('▶ Publish 요청 바디:', body);
-      return POST<PublishRecruitmentResult>(
+      const res = await POST<PublishRecruitmentResult>(
         'api/v1/recruitments/publish',
         body
-      ).then((res) => res.result);
+      );
+      const result = res.result;
+      console.log('◀ Publish 응답 전체:', res);
+      console.log('◀ Publish 응답 결과:', result);
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('✅ publish 성공, 최종 데이터:', data);
       qc.invalidateQueries({ queryKey: queryKeys.recruitments.list() });
       qc.invalidateQueries({ queryKey: queryKeys.recruitment.list() });
+    },
+    onError: (error) => {
+      console.error('❌ publish 실패:', error);
     },
   });
 }

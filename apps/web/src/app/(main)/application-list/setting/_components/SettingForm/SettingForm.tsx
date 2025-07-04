@@ -1,6 +1,6 @@
 'use client';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, useWatch } from 'react-hook-form';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Breadcrumb } from '@repo/ui/Breadcrumb';
@@ -21,6 +21,7 @@ import * as styles from './SettingForm.css';
 import { useUserStore } from '@web/store/state/userStore';
 import * as C from '@web/constants/application';
 import { useToast } from '@repo/ui/hooks';
+import { isEqual } from 'date-fns';
 
 type TabKey = 'form' | 'stages' | 'criteria';
 const TAB_KEYS: TabKey[] = ['form', 'stages', 'criteria'];
@@ -37,6 +38,8 @@ export function SettingForm({
   organization,
 }: SettingFormProps) {
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
+
+  const didInitCriteria = useRef(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -106,7 +109,7 @@ export function SettingForm({
     shouldUnregister: false,
   });
 
-  //console.log('폼', ctx.form);
+  console.log('폼', ctx.form);
   useEffect(() => {
     if (existentForm) {
       const next = ctx.form;
@@ -115,23 +118,28 @@ export function SettingForm({
   }, [ctx.form, methods]);
 
   const parts = methods.watch('applicationParts.parts') ?? [];
+
   useEffect(() => {
-    const sections = parts.length > 0 ? parts : [null];
-    const newPaper = sections.map((p) => ({
+    if (existentForm) return;
+
+    // Context에 저장된 값이 있으면 초기화하지 않음
+    const hasSaved = ctx.form.paperEvaluateItems?.some((section) =>
+      section.items.some((item) => item.evaluate.trim() !== '')
+    );
+    if (hasSaved) return;
+
+    const sections = parts.length > 0 ? [null, ...parts] : [null];
+    const newItems = sections.map((p) => ({
       positionName: p,
       items: [{ evaluate: '', evaluateDetail: '' }],
     }));
-    const newInterview = sections.map((p) => ({
-      positionName: p,
-      items: [{ evaluate: '', evaluateDetail: '' }],
-    }));
-    methods.setValue('paperEvaluateItems', newPaper, { shouldValidate: false });
-    methods.setValue('interviewEvaluateItems', newInterview, {
+
+    methods.setValue('paperEvaluateItems', newItems, { shouldValidate: false });
+    methods.setValue('interviewEvaluateItems', newItems, {
       shouldValidate: false,
     });
-  }, [parts, methods]);
+  }, [parts, methods, existentForm, ctx.form.paperEvaluateItems]);
 
-  // 2. watch 해서 필드값 가져오기
   const title = methods.watch('title') || '';
   const basicInfo = methods.watch('basicInfo')!;
   const detailItems = methods.watch('detailItems')!;
@@ -144,7 +152,7 @@ export function SettingForm({
   const last = pathname.split('/').pop()!;
   const recruitmentId = last === 'new' ? null : Number(last);
 
-  // 3. 개별 검증
+  // 개별 검증
   const isTitleOk = !!title.trim();
   const isBasicInfoOk = true;
   const isDetailItemsOk =
@@ -176,7 +184,7 @@ export function SettingForm({
         )
     );
 
-  // 4. 최종 버튼 활성 조건
+  // 최종 버튼 활성 조건
   const canSubmit =
     isTitleOk &&
     isBasicInfoOk &&
@@ -187,15 +195,7 @@ export function SettingForm({
     isPaperOk &&
     isInterviewOk;
 
-  // 5. 폼 변경 시 Context 동기화
-  /*useEffect(() => {
-    const sub = methods.watch(() => {
-      ctx.setForm(methods.getValues());
-    });
-    return () => sub.unsubscribe();
-  }, [methods, ctx]);*/
-
-  // 6. 탭 & 버튼 핸들러
+  // 탭 & 버튼 핸들러
   const onTabChange = (tab: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', tab);

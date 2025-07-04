@@ -15,23 +15,6 @@ export default function SectionDetailItems() {
     control,
   });
 
-  /*useEffect(() => {
-    if (fields.length === 0) {
-      append({
-        isEssential: false,
-        type: 'text',
-        description: '',
-        addDescription: '',
-        responseTarget: 0,
-        typeInfo: {
-          info: C.BLANK_OPTIONS[0],
-          infoDetail: C.CHAR_LIMITS[2],
-        },
-      });
-    }
-  }, []);
-*/
-
   return (
     <Flex direction="column" width="100%" align="flexStart" gap="1.6rem">
       <Text variant="md1_text_semibold" color="grayscale70">

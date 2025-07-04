@@ -8,14 +8,13 @@ import type { FormValues } from '@web/types/application';
 import * as styles from '../CriteriaTab.css';
 import StandardSection from './StandardSection';
 import EvaluationItemCard from './EvaluationItemCard';
-import { useEffect } from 'react';
 
 interface EvaluationSectionProps {
   label: string;
   standardName: 'paperEvaluateStandard' | 'interviewEvaluateStandard';
   itemsName: 'paperEvaluateItems' | 'interviewEvaluateItems';
   positionName: string | null;
-  sectionIndex: number; // <- 새로 추가
+  sectionIndex: number;
 }
 
 export default function EvaluationSection({
@@ -27,7 +26,7 @@ export default function EvaluationSection({
 }: EvaluationSectionProps) {
   const { control } = useFormContext<FormValues>();
 
-  // ↙️ 해당 섹션의 items 배열만 관리
+  // 해당 섹션의 items 배열만 관리
   const {
     fields: itemFields,
     append: appendItem,

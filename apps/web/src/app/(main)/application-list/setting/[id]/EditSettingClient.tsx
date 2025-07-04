@@ -14,7 +14,7 @@ export default function EditSettingClient({
   const { data: detail } = useRecruitmentDetailQuery({
     recruitmentId,
   });
-  console.log('디테일', detail);
+  //console.log('디테일', detail);
 
   const { form, setForm } = useContext(SettingContext)!;
 
