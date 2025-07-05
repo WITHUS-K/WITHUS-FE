@@ -13,7 +13,6 @@ import { SettingContext } from '@web/app/(main)/application-list/setting/_contex
 import { FormValues } from '@web/types/application';
 import FormTab from '@web/app/(main)/application-list/setting/_components/FormTab/FormTab';
 import StageTab from '@web/app/(main)/application-list/setting/_components/StageTab/StageTab';
-import CriteriaTab from '@web/app/(main)/application-list/setting/_components/CriteriaTab/CriteriaTab';
 import { useDraftRecruitmentMutation } from '@web/store/mutation/useDraftRecruitmentMutation';
 import { usePublishRecruitmentMutation } from '@web/store/mutation/usePublishRecruitmentMutation';
 import { convertFormToRequest } from '@web/utils/convertFormToRequest';
@@ -21,10 +20,11 @@ import * as styles from './SettingForm.css';
 import { useUserStore } from '@web/store/state/userStore';
 import * as C from '@web/constants/application';
 import { useToast } from '@repo/ui/hooks';
-import { isEqual } from 'date-fns';
+import CriteriaDocsTab from '../CriteriaTabs/CriteriaDocsTab/CriteriaDocsTab';
+import CriteriaInterviewTab from '../CriteriaTabs/CriteriaInterviewTab/CriteriaInterviewTab';
 
-type TabKey = 'form' | 'stages' | 'criteria';
-const TAB_KEYS: TabKey[] = ['form', 'stages', 'criteria'];
+type TabKey = 'form' | 'stages' | 'docs' | 'interview';
+const TAB_KEYS: TabKey[] = ['form', 'stages', 'docs', 'interview'];
 
 interface SettingFormProps {
   existentForm?: Boolean;
@@ -45,6 +45,10 @@ export function SettingForm({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeTab = (searchParams.get('tab') as TabKey) || 'form';
+
+  const isTemporaryParam = searchParams.get('isTemporary');
+  const isTemporary = isTemporaryParam === 'true';
+
   const ctx = useContext(SettingContext)!;
   const toast = useToast();
 
@@ -273,7 +277,7 @@ export function SettingForm({
               leftIcon={<IcLinkCopy />}
               size="40"
               width="14.6rem"
-              disabled={recruitmentId === null}
+              disabled={isTemporary}
               onClick={handleCopyLink}
             >
               응답자 링크
@@ -293,7 +297,7 @@ export function SettingForm({
               size="40"
               width="13.2rem"
               onClick={handleSave}
-              disabled={recruitmentId != null}
+              disabled={!isTemporary}
             >
               임시 저장
             </Button>
@@ -334,7 +338,8 @@ export function SettingForm({
             {activeTab === 'stages' && (
               <StageTab scrollContainerRef={scrollAreaRef} />
             )}
-            {activeTab === 'criteria' && <CriteriaTab />}
+            {activeTab === 'docs' && <CriteriaDocsTab />}
+            {activeTab === 'interview' && <CriteriaInterviewTab />}
           </form>
         </div>
       </div>

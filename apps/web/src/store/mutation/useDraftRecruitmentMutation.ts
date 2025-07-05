@@ -17,8 +17,13 @@ export function useDraftRecruitmentMutation() {
         body
       ).then((res) => res.result);
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       qc.invalidateQueries({ queryKey: queryKeys.recruitments.list() });
+
+      qc.invalidateQueries({ queryKey: queryKeys.recruitment.list() });
+      qc.invalidateQueries({
+        queryKey: queryKeys.recruitment.detail(result.recruitmentId),
+      });
     },
   });
 }

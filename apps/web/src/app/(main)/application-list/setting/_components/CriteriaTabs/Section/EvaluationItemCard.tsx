@@ -8,6 +8,7 @@ import BorderlessInput from '../../FormTab/SectionDetailItems/Item/BorderlessInp
 
 import type { FormValues } from '@web/types/application';
 import * as styles from '../CriteriaTab.css';
+import { Flex } from '@repo/ui/Flex';
 
 interface Props {
   sectionIndex: number;
@@ -32,7 +33,7 @@ export default function EvaluationItemCard({
 
   return (
     <div className={styles.itemCard}>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Flex width="100%" align="center" justify="spaceBetween">
         <Text variant="md1_text_semibold" color="grayscale70">
           평가 항목-{itemIndex + 1} <span style={{ color: 'red' }}>*</span>
         </Text>
@@ -42,10 +43,12 @@ export default function EvaluationItemCard({
             onClick={onRemove}
             style={{ background: 'none', border: 'none' }}
           >
-            ✕
+            <Text variant="md1_text_semibold" color="grayscale70">
+              삭제
+            </Text>
           </button>
         )}
-      </div>
+      </Flex>
 
       <div className={styles.itemDetailCard}>
         <Controller

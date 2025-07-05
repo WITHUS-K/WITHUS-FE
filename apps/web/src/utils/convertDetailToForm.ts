@@ -5,6 +5,11 @@ import type {
 } from '@web/types/recruitment';
 import type { EvaluationItem, FormValues } from '@web/types/application';
 import { normalizeDateStr } from './convertFormToRequest';
+import {
+  CHAR_LIMITS,
+  FILE_COUNTS,
+  FILE_SIZES,
+} from '@web/constants/application';
 
 export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
   const DURATION_MAP: Record<number, FormValues['interviewDuration']> = {
@@ -41,35 +46,51 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
       (q.type === 'TEXT'
         ? (q as TextQuestionDto).positionName
         : (q as FileQuestionDto).positionName) || '공통';
-    // fullTargets에서 인덱스 추출, 없으면 0
+
     const idx = fullTargets.indexOf(posName);
     const responseTarget = idx >= 0 ? idx : 0;
 
     if (q.type === 'TEXT') {
       const tq = q as TextQuestionDto;
+
+      const typeInfo = {
+        info: tq.includeWhitespace ? '공백 포함' : '공백 제외',
+        infoDetail: (CHAR_LIMITS.find((limit) => {
+          const limitValue = parseInt(limit.replace(/\D/g, ''));
+          return limitValue === tq.textLimit;
+        }) ?? '제한 없음') as string,
+      };
+
       return {
         isEssential: tq.required,
         type: 'text' as const,
         description: tq.title,
         addDescription: tq.description,
         responseTarget,
-        typeInfo: {
-          info: tq.includeWhitespace ? '공백 포함' : '공백 미포함',
-          infoDetail: `${tq.textLimit}`,
-        },
+        typeInfo,
       };
     } else {
       const fq = q as FileQuestionDto;
+
+      const typeInfo = {
+        info: (FILE_COUNTS.find((count) => {
+          const num = parseInt(count.replace(/\D/g, ''));
+          return num === fq.maxFileCount;
+        }) ?? FILE_COUNTS[0]) as string,
+
+        infoDetail: (FILE_SIZES.find((size) => {
+          const mb = parseInt(size.replace(/\D/g, ''));
+          return mb === fq.maxFileSizeMb;
+        }) ?? FILE_SIZES[0]) as string,
+      };
+
       return {
         isEssential: fq.required,
         type: 'file' as const,
         description: fq.title,
         addDescription: fq.description,
         responseTarget,
-        typeInfo: {
-          info: `${fq.maxFileCount}`,
-          infoDetail: `${fq.maxFileSizeMb}`,
-        },
+        typeInfo,
       };
     }
   });

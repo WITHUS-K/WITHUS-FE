@@ -10,16 +10,13 @@ import StandardSection from './StandardSection';
 import EvaluationItemCard from './EvaluationItemCard';
 
 interface EvaluationSectionProps {
-  label: string;
-  standardName: 'paperEvaluateStandard' | 'interviewEvaluateStandard';
+  //standardName: 'paperEvaluateStandard' | 'interviewEvaluateStandard';
   itemsName: 'paperEvaluateItems' | 'interviewEvaluateItems';
   positionName: string | null;
   sectionIndex: number;
 }
 
 export default function EvaluationSection({
-  label,
-  standardName,
   itemsName,
   positionName,
   sectionIndex,
@@ -38,15 +35,7 @@ export default function EvaluationSection({
 
   return (
     <div className={styles.container}>
-      <StandardSection label={label} standardName={standardName} />
-
-      <Flex
-        direction="column"
-        gap="2.4rem"
-        width="100%"
-        marginTop="2.4rem"
-        align="center"
-      >
+      <Flex direction="column" gap="2.4rem" width="100%" align="center">
         {/* positionName 숨겨주기 */}
         <Controller
           name={`${itemsName}.${sectionIndex}.positionName` as const}

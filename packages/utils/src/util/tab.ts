@@ -12,8 +12,10 @@ export const getTabLabel = (tab: string): string => {
       return '지원서 양식 설정';
     case 'stages':
       return '리크루팅 단계 구성';
-    case 'criteria':
-      return '평가 기준 설정';
+    case 'docs':
+      return '서류 평가 기준 설정';
+    case 'interview':
+      return '면접 평가 기준 설정';
 
     case 'documents':
       return '서류';

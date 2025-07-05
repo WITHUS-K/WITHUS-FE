@@ -2,14 +2,15 @@
 
 import React, { useContext, useState } from 'react';
 import { Flex } from '@repo/ui/Flex';
-import * as styles from './CriteriaTab.css';
+import * as styles from '../CriteriaTab.css';
 import { IcInfo } from '@repo/ui/icons/mono';
-import EvaluationSection from './Section/EvaluationSection';
+import EvaluationSection from '../Section/EvaluationSection';
 import { Text } from '@repo/ui/Text';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { FormValues } from '@web/types/application';
+import StandardSection from '../Section/StandardSection';
 
-export default function CriteriaTab() {
+export default function CriteriaInterviewTab() {
   const [showHeaderInfo, setShowHeaderInfo] = useState(true);
   const { control } = useFormContext<FormValues>();
 
@@ -19,11 +20,6 @@ export default function CriteriaTab() {
       name: 'applicationParts.parts',
     }) || [];
 
-  const paperSections =
-    useWatch({
-      control,
-      name: 'paperEvaluateItems' as const,
-    }) || [];
   const interviewSections =
     useWatch({
       control,
@@ -32,14 +28,14 @@ export default function CriteriaTab() {
 
   const renderIndices =
     appParts.length > 0
-      ? paperSections.map((_, idx) => idx).filter((idx) => idx !== 0)
+      ? interviewSections.map((_, idx) => idx).filter((idx) => idx !== 0)
       : [0];
 
   return (
     <Flex
       direction="column"
       width="100%"
-      gap="1.6rem"
+      gap="3.2rem"
       paddingBottom="5rem"
       paddingTop="5rem"
     >
@@ -58,27 +54,24 @@ export default function CriteriaTab() {
         </div>
       )}
 
-      <Flex direction="column" width="100%" gap="5rem">
+      <Flex direction="column" width="100%" gap="1.6rem">
+        <StandardSection
+          label="면접 평가 기준"
+          standardName="interviewEvaluateStandard"
+        />
+      </Flex>
+
+      <Flex direction="column" width="100%" gap="5rem" marginTop="3.2rem">
         {renderIndices.map((idx) => {
-          const partName = paperSections[idx]!.positionName; // null 또는 파트명
+          const partName = interviewSections[idx]!.positionName; // null 또는 파트명
           return (
             <Flex key={idx} direction="column" width="100%" gap="1.2rem">
               <Text variant="lg_subtitle_bold" color="primary50">
                 {partName ?? '공통'}
               </Text>
               <Flex direction="column" width="100%" gap="3.8rem">
-                {/* 서류 평가 */}
-                <EvaluationSection
-                  label="서류평가 기준"
-                  standardName="paperEvaluateStandard"
-                  itemsName="paperEvaluateItems"
-                  positionName={partName}
-                  sectionIndex={idx}
-                />
                 {/* 면접 평가 */}
                 <EvaluationSection
-                  label="면접평가 기준"
-                  standardName="interviewEvaluateStandard"
                   itemsName="interviewEvaluateItems"
                   positionName={partName}
                   sectionIndex={idx}

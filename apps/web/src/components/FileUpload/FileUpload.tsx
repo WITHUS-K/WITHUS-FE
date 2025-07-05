@@ -53,8 +53,6 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
   const download = useFileDownload();
 
-  //if (!file) return null;
-
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,6 +101,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         <Flex direction="column" gap="1.6rem" marginBottom="2.8rem">
           <Flex align="center" justify="spaceBetween" width="100%">
             <Text variant="md1_text_semibold" color="grayscale70">
+              {!item.isEssential ? `(선택) ` : ''}
               {item.description}
             </Text>
             <Text variant="sm_caption_medium" color="grayscale40">
