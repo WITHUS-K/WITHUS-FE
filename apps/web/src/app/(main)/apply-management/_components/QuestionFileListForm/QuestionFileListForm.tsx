@@ -4,8 +4,9 @@ import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { QuestionInput } from '@repo/ui/InputField';
 import type { DetailItem } from '@web/types/application';
-import * as s from '../../../../application-list/setting/(preview)/_components/QuestionFileList/QuestionFileList.css';
+import * as s from '../../../application-list/setting/(preview)/_components/QuestionFileList/QuestionFileList.css';
 import { FileUpload } from '@web/components/FileUpload/FileUpload';
+import { text } from 'stream/consumers';
 
 interface QuestionAndFileListFormProps {
   detailItems: DetailItem[];
@@ -32,6 +33,8 @@ export const QuestionAndFileListForm = ({
   const textItems = detailItems.filter((item) => item.type === 'text');
   const fileItems = detailItems.filter((item) => item.type === 'file');
 
+  console.log('텍스트', textItems);
+  console.log('파일', fileItems);
   return (
     <div className={s.wrapper}>
       {textItems.map((item, idx) => (
@@ -60,7 +63,8 @@ export const QuestionAndFileListForm = ({
         <div key={`f-${idx}`} style={{ marginBottom: '2rem' }}>
           <FileUpload
             item={item}
-            file={files[idx]} // ← 여기!
+            file={files[idx]}
+            readOnly
             onChange={(file) => onFileChange(idx, file)}
           />
         </div>

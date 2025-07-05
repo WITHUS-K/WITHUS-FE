@@ -84,14 +84,6 @@ export default function PreviewComponent() {
     [allSlots]
   );
 
-  // 전체 슬롯에서 최소 시작시간 / 최대 종료시간(시(hour)만) 계산
-  const hours = allSlots.flatMap((s) => [
-    parseInt(s.startTime.split(':')[0]!, 10),
-    parseInt(s.endTime.split(':')[0]!, 10),
-  ]);
-  const startHour = Math.min(...hours);
-  const endHour = Math.max(...hours);
-
   return (
     <Flex
       direction="column"
@@ -182,6 +174,14 @@ export default function PreviewComponent() {
                 const scheduleListForDate = allSlots.filter(
                   (s) => s.date === isoDate
                 );
+
+                // 해당 날짜의 시작/종료 시간 계산
+                const hours = scheduleListForDate.flatMap((s) => [
+                  parseInt(s.startTime.split(':')[0]!, 10),
+                  parseInt(s.endTime.split(':')[0]!, 10),
+                ]);
+                const startHour = Math.min(...hours);
+                const endHour = Math.max(...hours);
 
                 return (
                   <SelectableTimeTable

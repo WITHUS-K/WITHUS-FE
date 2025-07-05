@@ -7,7 +7,7 @@ import {
   AcademicStatus,
   AdditionalInfoForm,
 } from '@web/app/(main)/apply-management/add/_components/AdditionalInfoForm/AdditionalInfoForm';
-import { QuestionAndFileListForm } from '@web/app/(main)/apply-management/add/_components/QuestionFileListForm/QuestionFileListForm';
+import { QuestionAndFileListForm } from '@web/app/(main)/apply-management/_components/QuestionFileListForm/QuestionFileListForm';
 import type { DetailItem } from '@web/types/application';
 import * as styles from './ApplicantDetail.css';
 import { ApplicationDetail } from '@web/store/query/useApplicationDetailQuery';
@@ -17,16 +17,18 @@ interface ApplicantDetailProps {
 }
 
 export default function ApplicantDetail({ application }: ApplicantDetailProps) {
-  const textItems: DetailItem[] = application.documentAnswers.map((a, idx) => ({
-    isEssential: true,
-    type: 'text',
-    description: a.questionTitle,
-    responseTarget: idx,
-    typeInfo: {
-      info: a.includeWhitespace ? '공백포함' : '공백제외',
-      infoDetail: `${a.textLimit}자`,
-    },
-  }));
+  const textItems: DetailItem[] = application.documentAnswers
+    .filter((a) => a.questionType === 'TEXT')
+    .map((a, idx) => ({
+      isEssential: true,
+      type: 'text',
+      description: a.questionTitle,
+      responseTarget: idx,
+      typeInfo: {
+        info: a.includeWhitespace ? '공백포함' : '공백제외',
+        infoDetail: `${a.textLimit}자`,
+      },
+    }));
 
   const fileItem: DetailItem[] = application.documentAnswers
     .filter((a) => a.questionType === 'FILE')
@@ -41,6 +43,7 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
 
   const detailItems = [...textItems, ...fileItem];
 
+  console.log('파일', detailItems);
   const answers = application.documentAnswers.map((a) => a.answerText);
   const files = application.documentAnswers
     .filter((a) => a.questionType === 'FILE')

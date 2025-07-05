@@ -156,6 +156,8 @@ export function SettingForm({
   const last = pathname.split('/').pop()!;
   const recruitmentId = last === 'new' ? null : Number(last);
 
+  const hasParts = methods.watch('applicationParts.isSelected') === true;
+
   // 개별 검증
   const isTitleOk = !!title.trim();
   const isBasicInfoOk = true;
@@ -167,26 +169,26 @@ export function SettingForm({
   const isFinalOk = !!finalResultDate;
   const isPaperOk =
     paperItems.length > 0 &&
-    paperItems.every(
-      (section) =>
+    paperItems.every((section) => {
+      if (section.positionName === null && hasParts) {
+        return true; // 파트가 있으면 공통 무시
+      }
+      return (
         section.items.length > 0 &&
-        section.items.every(
-          (item) =>
-            item.evaluate.trim().length > 0 &&
-            item.evaluateDetail.trim().length > 0
-        )
-    );
+        section.items.every((item) => item.evaluate.trim().length > 0)
+      );
+    });
   const isInterviewOk =
     interviewItems.length > 0 &&
-    interviewItems.every(
-      (section) =>
+    interviewItems.every((section) => {
+      if (section.positionName === null && hasParts) {
+        return true; // 파트가 있으면 공통 무시
+      }
+      return (
         section.items.length > 0 &&
-        section.items.every(
-          (item) =>
-            item.evaluate.trim().length > 0 &&
-            item.evaluateDetail.trim().length > 0
-        )
-    );
+        section.items.every((item) => item.evaluate.trim().length > 0)
+      );
+    });
 
   // 최종 버튼 활성 조건
   const canSubmit =

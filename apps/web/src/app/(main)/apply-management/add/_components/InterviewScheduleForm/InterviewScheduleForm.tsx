@@ -31,6 +31,7 @@ export function InterviewScheduleForm({
     [scheduleMap]
   );
 
+  console.log('스케쥴', selectedScheduleList);
   // startHour: 가장 이른 시작 시간의 시(hour) 부분
   const startHour = useMemo(() => {
     if (allRanges.length === 0) return 0;
@@ -55,7 +56,7 @@ export function InterviewScheduleForm({
         </Text>
         <Text variant="sm_caption_medium" color="grayscale40">
           아래 일정 중 면접이 가능한 모든 시간대를 드래그로 등록해주세요. (면접
-          시간: 15분 소요)
+          시간: {duration}분 소요)
         </Text>
       </Flex>
 
@@ -71,8 +72,16 @@ export function InterviewScheduleForm({
           const selectedForDate = selectedScheduleList.filter(
             (item) => item.date === dateStr
           );
-          // (3) 가능한 그리드: scheduleMap
+
           const availableForDate = scheduleMap[dateStr] ?? [];
+
+          // 해당 날짜 기준 startHour, endHour 계산
+          const hours = availableForDate.flatMap((r) => [
+            parseInt(r.startTime.split(':')[0]!, 10),
+            parseInt(r.endTime.split(':')[0]!, 10),
+          ]);
+          const startHour = hours.length > 0 ? Math.min(...hours) : 0;
+          const endHour = hours.length > 0 ? Math.max(...hours) : 24;
 
           return (
             <SelectableTimeTable
@@ -88,7 +97,7 @@ export function InterviewScheduleForm({
                   date: dateStr,
                   startTime: r.startTime,
                   endTime: r.endTime,
-                })), //
+                })),
               }}
               onRangeSelect={(range) => {
                 let updated: InterviewScheduleItem[];

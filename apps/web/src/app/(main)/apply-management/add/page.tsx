@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Flex } from '@repo/ui/Flex';
@@ -23,7 +23,7 @@ import {
   ApplicationPartsForm,
   PartOption,
 } from './_components/ApplicationPartsForm/ApplicationPartsForm';
-import { QuestionAndFileListForm } from './_components/QuestionFileListForm/QuestionFileListForm';
+import { QuestionAndFileListForm } from '../_components/QuestionFileListForm/QuestionFileListForm';
 import { InterviewScheduleForm } from './_components/InterviewScheduleForm/InterviewScheduleForm';
 
 import * as styles from './page.css';
@@ -130,6 +130,19 @@ export default function AddApplicant() {
 
   const selectedPartLabel = watch('applicationPart')?.label;
 
+  useEffect(() => {
+    if (
+      data?.positions.length &&
+      !watch('applicationPart') // 아직 선택 안되어 있다면
+    ) {
+      const firstPart = data.positions[0];
+      setValue('applicationPart', {
+        id: firstPart!.id,
+        label: firstPart!.name,
+      });
+    }
+  }, [data?.positions, setValue, watch]);
+
   // ② detailItems 정의부를 이렇게 바꿔주세요.
   const detailItems: (DetailItem & { questionId: number })[] = useMemo(
     () =>
@@ -171,6 +184,7 @@ export default function AddApplicant() {
         }) ?? [],
     [data?.applicationQuestions, selectedPartLabel]
   );
+
   const onSubmit = useCallback(
     (vals: ApplicantForm) => {
       if (!data) return;

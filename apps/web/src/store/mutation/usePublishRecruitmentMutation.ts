@@ -24,6 +24,9 @@ export function usePublishRecruitmentMutation() {
       console.log('✅ publish 성공, 최종 데이터:', data);
       qc.invalidateQueries({ queryKey: queryKeys.recruitments.list() });
       qc.invalidateQueries({ queryKey: queryKeys.recruitment.list() });
+      qc.invalidateQueries({
+        queryKey: queryKeys.recruitment.detail(data.recruitmentId),
+      });
     },
     onError: (error) => {
       console.error('❌ publish 실패:', error);
