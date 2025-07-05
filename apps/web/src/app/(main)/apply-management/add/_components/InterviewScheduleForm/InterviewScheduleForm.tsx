@@ -51,9 +51,14 @@ export function InterviewScheduleForm({
   return (
     <div style={{ width: '100%' }}>
       <Flex gap="0.4rem" direction="column">
-        <Text variant="md1_text_semibold" color="grayscale70">
-          면접 가능 일정 투표
-        </Text>
+        <Flex gap="0.4rem">
+          <Text variant="md1_text_semibold" color="grayscale70">
+            면접 가능 일정 선택
+          </Text>
+          <Text variant="md2_text_semibold" color="error">
+            *
+          </Text>
+        </Flex>
         <Text variant="sm_caption_medium" color="grayscale40">
           아래 일정 중 면접이 가능한 모든 시간대를 드래그로 등록해주세요. (면접
           시간: {duration}분 소요)

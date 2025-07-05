@@ -4,13 +4,14 @@ import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { QuestionInput } from '@repo/ui/InputField';
 import type { DetailItem } from '@web/types/application';
-import * as s from '../../../application-list/setting/(preview)/_components/QuestionFileList/QuestionFileList.css';
+import * as s from '../../app/(main)/application-list/setting/(preview)/_components/QuestionFileList/QuestionFileList.css';
 import { FileUpload } from '@web/components/FileUpload/FileUpload';
 import { text } from 'stream/consumers';
+import { read } from 'fs';
 
 interface QuestionAndFileListFormProps {
   detailItems: DetailItem[];
-  answers: string[];
+  answers?: string[];
   files: ({
     name: string;
     size: number;
@@ -28,13 +29,14 @@ export const QuestionAndFileListForm = ({
   files,
   onAnswerChange,
   onFileChange,
-  readOnly = false,
+  readOnly,
 }: QuestionAndFileListFormProps) => {
   const textItems = detailItems.filter((item) => item.type === 'text');
   const fileItems = detailItems.filter((item) => item.type === 'file');
 
   console.log('텍스트', textItems);
   console.log('파일', fileItems);
+  console.log('readOnly', readOnly);
   return (
     <div className={s.wrapper}>
       {textItems.map((item, idx) => (
@@ -53,7 +55,7 @@ export const QuestionAndFileListForm = ({
             title={item.description}
             info={item.typeInfo.info}
             infoDetail={item.typeInfo.infoDetail}
-            value={answers[idx] as string}
+            value={item.answer!}
             onChange={(val) => !readOnly && onAnswerChange(idx, val)}
           />
         </div>
@@ -64,7 +66,7 @@ export const QuestionAndFileListForm = ({
           <FileUpload
             item={item}
             file={files[idx]}
-            readOnly
+            readOnly={readOnly}
             onChange={(file) => onFileChange(idx, file)}
           />
         </div>

@@ -1,51 +1,43 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { Flex } from '@repo/ui/Flex';
-import { Button } from '@repo/ui/Button';
-import { Text } from '@repo/ui/Text';
-import { addMinutes, format as formatDate } from 'date-fns';
-import { useRecruitmentDetailQuery } from '@web/store/query/useRecruitmentDetailQuery';
 import {
-  useCreateApplication,
   CreateApplicationRequest,
+  useCreateApplication,
 } from '@web/store/mutation/useCreateApplication';
+import { useRecruitmentBySlugQuery } from '@web/store/query/useRecruitmentBySlugQuery';
 import { ApplicantForm } from '@web/types/applicant-form';
 import { DetailItem, InterviewScheduleItem } from '@web/types/application';
 import { FileQuestionDto, TextQuestionDto } from '@web/types/recruitment';
-
-import { AddHeader } from './_components/AddHeader/AddHeader';
-import { BasicInfoForm } from './_components/BasicInfoForm/BasicInfoForm';
-import { AdditionalInfoForm } from './_components/AdditionalInfoForm/AdditionalInfoForm';
+import { safeFormatDotDate } from '@web/utils/application';
+import { addMinutes, formatDate } from 'date-fns';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Text } from '@repo/ui/Text';
+import * as styles from './page.css';
+import { Flex } from '@repo/ui/Flex';
+import { Button } from '@repo/ui/Button';
+import { BasicInfoForm } from '@web/app/(main)/apply-management/add/_components/BasicInfoForm/BasicInfoForm';
+import { AdditionalInfoForm } from '@web/app/(main)/apply-management/add/_components/AdditionalInfoForm/AdditionalInfoForm';
 import {
   ApplicationPartsForm,
   PartOption,
-} from './_components/ApplicationPartsForm/ApplicationPartsForm';
-import { QuestionAndFileListForm } from '../../../../components/QuestionFileListForm/QuestionFileListForm';
-import { InterviewScheduleForm } from './_components/InterviewScheduleForm/InterviewScheduleForm';
+} from '@web/app/(main)/apply-management/add/_components/ApplicationPartsForm/ApplicationPartsForm';
+import { QuestionAndFileListForm } from '@web/components/QuestionFileListForm/QuestionFileListForm';
+import { InterviewScheduleForm } from '@web/app/(main)/apply-management/add/_components/InterviewScheduleForm/InterviewScheduleForm';
+import { useModal } from '@repo/ui/hooks';
+import { useRouter } from 'next/navigation';
 
-import * as styles from './page.css';
-import { useQueryClient } from '@tanstack/react-query';
-import { safeFormatDotDate } from '@web/utils/application';
-import { sanitizeFileName } from '@web/utils/serializers';
+interface ApplicationClientProps {
+  slug: string;
+}
 
-export default function AddApplicant() {
+export default function ApplicationClient({ slug }: ApplicationClientProps) {
   const router = useRouter();
-  const sp = useSearchParams();
-  const recruitmentId = Number(sp.get('recruitmentId'));
-  const queryClient = useQueryClient();
-
-  // — Hooks 순서 고정 —
   const createApp = useCreateApplication();
+  const { data } = useRecruitmentBySlugQuery({ slug });
+  const { confirm } = useModal();
+  console.log('슬러그', data);
 
-  // 이거 지금 안될 거 임... apply-management 도 ssr 변환 필요 - 다음 pr 에 할게용
-  const { data, isLoading, error } = useRecruitmentDetailQuery({
-    recruitmentId,
-  });
-
-  console.log('공고 디테일', data);
   const { watch, setValue, handleSubmit } = useForm<ApplicantForm>({
     defaultValues: {
       basicInfo: {
@@ -74,10 +66,7 @@ export default function AddApplicant() {
   const currentScheduleList = watch('interviewSchedule.scheduleList') || [];
   const handleScheduleChange = useCallback(
     (date: string, itemsForDate: InterviewScheduleItem[]) => {
-      // (1) 기존에 선택된 항목 중, 해당 날짜가 아닌 것만 필터링
       const others = currentScheduleList.filter((item) => item.date !== date);
-
-      // (2) 새로 받은 itemsForDate + 기존 다른 날짜 항목 합치기
       const newList = [...others, ...itemsForDate];
 
       setValue('interviewSchedule.scheduleList', newList);
@@ -144,7 +133,6 @@ export default function AddApplicant() {
     }
   }, [data?.positions, setValue, watch]);
 
-  // ② detailItems 정의부를 이렇게 바꿔주세요.
   const detailItems: (DetailItem & { questionId: number })[] = useMemo(
     () =>
       data?.applicationQuestions
@@ -188,14 +176,50 @@ export default function AddApplicant() {
     [data?.applicationQuestions, selectedPartLabel]
   );
 
+  const basicInfo = watch('basicInfo');
+  const additionalInfo = watch('additionalInfo');
+  const basicFilled =
+    Boolean(basicInfo.name) &&
+    Boolean(basicInfo.email) &&
+    Boolean(basicInfo.phone) &&
+    basicInfo.gender != null &&
+    basicInfo.birthDate != null;
+
+  const additionalFilled =
+    Boolean(additionalInfo.school) &&
+    additionalInfo.academicStatus != null &&
+    //Boolean(additionalInfo.major) &&
+    Boolean(additionalInfo.address);
+
+  const requiredQs = detailItems.filter((d) => d.isEssential);
+
+  const questionsAnswered = requiredQs.every((item, idx) => {
+    if (item.type === 'text') {
+      // text 질문은 answer 배열에서 같은 idx가 빈 문자열이 아니어야 하고
+      return Boolean(watch('questionAnswers')[idx]?.trim());
+    } else {
+      // file 질문은 questionFiles 에 File 객체가 있어야 함
+      return watch('questionFiles')[idx] instanceof File;
+    }
+  });
+
+  const schedule = watch('interviewSchedule.scheduleList') || [];
+  const hasSchedule = schedule.length > 0;
+
+  console.log('basicFilled', basicFilled);
+  console.log('additionalFilled', additionalFilled);
+  console.log('questionsAnswered', questionsAnswered);
+  console.log('hasSchedule', hasSchedule);
+
+  const canSubmit =
+    basicFilled && additionalFilled && questionsAnswered && hasSchedule;
+
   const onSubmit = useCallback(
     (vals: ApplicantForm) => {
       if (!data) return;
 
       let textIndex = 0;
       let fileIndex = 0;
-
-      // const safeFiles: File[] = [];
 
       const answers = detailItems.map((item) => {
         if (item.type === 'text') {
@@ -207,7 +231,6 @@ export default function AddApplicant() {
           };
         } else {
           const file = vals.questionFiles[fileIndex++];
-          //const safeName = sanitizeFileName(origFile.name);
           return {
             questionId: item.questionId,
             answerText: '',
@@ -233,7 +256,6 @@ export default function AddApplicant() {
         return result;
       });
 
-      // 2) Set 으로 중복 제거
       const availableTimes = Array.from(new Set(rawTimes));
 
       const payload: CreateApplicationRequest = {
@@ -243,24 +265,10 @@ export default function AddApplicant() {
         gender: (vals.basicInfo.gender || 'MALE').toUpperCase() as
           | 'MALE'
           | 'FEMALE',
-        recruitmentId,
+        recruitmentId: data.recruitmentId,
         positionId: vals.applicationPart!.id,
         answers,
         availableTimes,
-        // 선택 항목은 조건부로만 포함
-        /* ...(vals.additionalInfo.school && {
-          university: vals.additionalInfo.school,
-        }),
-        ...(vals.additionalInfo.major && { major: vals.additionalInfo.major }),
-        ...(vals.additionalInfo.academicStatus && {
-          academicStatus: vals.additionalInfo.academicStatus,
-        }),
-        ...(vals.basicInfo.birthDate && {
-          birthDate: vals.basicInfo.birthDate.slice(0, 10),
-        }),
-        ...(vals.additionalInfo.address && {
-          address: vals.additionalInfo.address,
-        }),*/
         university: vals.additionalInfo.school ?? '',
         major: vals.additionalInfo.major ?? '',
         academicStatus: vals.additionalInfo.academicStatus ?? undefined,
@@ -280,12 +288,8 @@ export default function AddApplicant() {
         { payload, profileImage, answerFiles },
         {
           onSuccess: (res) => {
+            router.replace(`/apply/${data.organizationName}/${slug}/submitted`);
             console.log('지원서 생성 성공 res:', res);
-            queryClient.invalidateQueries({
-              queryKey: ['admin', 'applications', 'recruitment', recruitmentId],
-            });
-            // 이전 페이지로 이동
-            router.back();
           },
           onError: (err) => {
             console.error('지원서 생성 에러:', err);
@@ -293,34 +297,30 @@ export default function AddApplicant() {
         }
       );
     },
-    [createApp, data, detailItems, recruitmentId, router]
+    [createApp, data, detailItems]
   );
 
-  // — 여기는 렌더링 전 상태 처리 —
-  if (isLoading) {
-    return (
-      <Flex justify="center" align="center" height="100%">
-        <Text>로딩 중...</Text>
-      </Flex>
-    );
-  }
-  if (error || !data) {
-    return (
-      <Flex justify="center" align="center" height="100%">
-        <Text color="error">
-          데이터를 불러오지 못했습니다: {error?.message}
-        </Text>
-      </Flex>
-    );
-  }
+  const submitForm = handleSubmit(onSubmit);
 
-  // — 실제 폼 렌더링 —
+  const handleModalClick = () => {
+    confirm({
+      type: 'info',
+      title: '지원서를 제출하시겠습니까?',
+      cancelText: '취소',
+      confirmText: '제출',
+      onConfirm: () => {
+        submitForm();
+      },
+    });
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={styles.layout}>
-      <AddHeader />
+    <form className={styles.layout}>
       <div className={styles.container}>
         <Flex direction="column" width="100%" gap="5rem" align="center">
-          <Text variant="xl_title_semibold">{data.title}</Text>
+          <Text variant="xl_title_semibold">
+            [{data.organizationName}] {data.title}
+          </Text>
           <div className={styles.headerWrapper}>
             {applicationSchedule.map((s, i) => (
               <div key={i} className={styles.item}>
@@ -367,15 +367,14 @@ export default function AddApplicant() {
           readOnly={false}
           detailItems={detailItems}
           answers={watch('questionAnswers')}
-          files={watch('questionFiles').map(
-            (f) =>
-              f instanceof File
-                ? {
-                    name: f.name,
-                    size: f.size,
-                    downloadUrl: URL.createObjectURL(f),
-                  }
-                : f // 서버에서 받아온 string 형태의 fileUrl일 경우 이미 FileInfo 형태로 있다고 가정
+          files={watch('questionFiles').map((f) =>
+            f instanceof File
+              ? {
+                  name: f.name,
+                  size: f.size,
+                  downloadUrl: URL.createObjectURL(f),
+                }
+              : f
           )}
           onAnswerChange={(i, v) => setValue(`questionAnswers.${i}`, v)}
           onFileChange={(i, f) => setValue(`questionFiles.${i}`, f)}
@@ -388,12 +387,18 @@ export default function AddApplicant() {
           onScheduleChange={handleScheduleChange}
           selectedScheduleList={currentScheduleList}
         />
+      </div>
 
-        <div className={styles.saveButton}>
-          <Button type="submit" variant="main" size="40" width="10rem">
-            저장
-          </Button>
-        </div>
+      <div className={styles.saveButton}>
+        <Button
+          variant="main"
+          size="40"
+          width="10rem"
+          disabled={!canSubmit}
+          onClick={handleModalClick}
+        >
+          제출
+        </Button>
       </div>
     </form>
   );

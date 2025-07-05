@@ -25,6 +25,7 @@ export interface DetailItem {
     info: string;
     infoDetail: string;
   };
+  answer?: string;
 }
 
 export interface AnnouncementResult {
