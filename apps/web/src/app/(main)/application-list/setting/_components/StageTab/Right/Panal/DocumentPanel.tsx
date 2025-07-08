@@ -19,7 +19,7 @@ export default function DocumentPanel({
       selectedDate={selectedDate}
       onSelect={onSelect}
       icon={<IcPanalPass width={48} height={48} />}
-      helperText={`단체 메일과 문자를 통해\n최종 합격을 안내합니다.`}
+      helperText={`단체 메일과 문자를 통해\n합격발표가 가능합니다.`}
     />
   );
 }

@@ -22,7 +22,7 @@ export default function TextDetail({ index }: Props) {
         <BaseInput
           inputProps={{
             ...field,
-            placeholder: '내용을 입력해주세요.',
+            placeholder: '제목을 입력해주세요.',
           }}
           showClear={!!field.value}
           onClear={() => field.onChange('')}

@@ -44,7 +44,7 @@ export default function FileDetail({ index }: Props) {
         render={({ field }) => (
           <BorderlessInput
             {...field}
-            placeholder="추가적인 설명을 작성해주세요."
+            placeholder="(선택) 상세 설명을 입력해주세요."
           />
         )}
       />

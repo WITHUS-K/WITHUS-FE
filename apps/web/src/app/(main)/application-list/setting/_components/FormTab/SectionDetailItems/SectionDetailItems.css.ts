@@ -57,4 +57,12 @@ export const input = style({
   color: vars.colors.grayscale90,
   '::placeholder': { color: vars.colors.grayscale40 },
   ...fontStyles.md2_text_regular,
+
+  resize: 'none',
+  overflowY: 'hidden',
+  boxSizing: 'border-box',
+
+  whiteSpace: 'pre-wrap',
+  wordBreak: 'break-word',
+  padding: 0,
 });

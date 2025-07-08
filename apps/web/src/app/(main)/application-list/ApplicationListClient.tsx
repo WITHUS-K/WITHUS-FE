@@ -47,17 +47,16 @@ export default function ApplicationListClient() {
     <Flex
       direction="column"
       paddingLeft="2.4rem"
-      paddingTop="1.8rem"
+      paddingTop="2.4rem"
       paddingRight="2.4rem"
-      paddingBottom="1.8rem"
       width="100%"
     >
-      <Breadcrumb style={{ marginBottom: '2.4rem' }}>
-        <Breadcrumb.Item active>지원서 리스트</Breadcrumb.Item>
+      <Breadcrumb style={{ marginBottom: '0.4rem' }}>
+        <Breadcrumb.Item active>지원서 목록</Breadcrumb.Item>
       </Breadcrumb>
 
       <Text variant="xl_title_semibold" color="black">
-        지원서 리스트
+        지원서 목록
       </Text>
 
       <Flex

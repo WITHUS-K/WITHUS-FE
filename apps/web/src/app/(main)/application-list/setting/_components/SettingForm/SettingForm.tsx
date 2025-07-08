@@ -258,9 +258,9 @@ export function SettingForm({
       <div className={styles.container}>
         <Breadcrumb style={{ marginTop: '1.2rem' }}>
           <Breadcrumb.Item asChild>
-            <Link href="/application-list">지원서 리스트</Link>
+            <Link href="/application-list">지원서 목록</Link>
           </Breadcrumb.Item>
-          <Breadcrumb.Item active>지원서 상세 설정</Breadcrumb.Item>
+          <Breadcrumb.Item active>지원서 생성</Breadcrumb.Item>
         </Breadcrumb>
 
         <Flex
@@ -271,7 +271,7 @@ export function SettingForm({
           marginBottom="2.4rem"
         >
           <Text variant="xl_title_semibold" color="black">
-            지원서 상세 설정
+            지원서 생성
           </Text>
           <Flex gap="0.8rem">
             <Button

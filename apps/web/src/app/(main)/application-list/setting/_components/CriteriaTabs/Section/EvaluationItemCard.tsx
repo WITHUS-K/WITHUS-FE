@@ -82,7 +82,7 @@ export default function EvaluationItemCard({
               <BorderlessInput
                 {...field}
                 value={value}
-                placeholder="상세 설명을 작성해주세요."
+                placeholder="(선택) 상세 설명을 작성해주세요."
               />
             );
           }}
