@@ -15,6 +15,8 @@ interface BaseOptionProps {
   width?: string;
   /** ex: "3.5rem", "2.75rem", "4rem" */
   height?: string;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 interface CheckboxOptionProps extends BaseOptionProps {
@@ -42,7 +44,14 @@ export type OptionProps =
  * 하나의 컴포넌트로 checkbox, radio, highlight 옵션을 처리
  */
 export function Option(props: OptionProps) {
-  const { type, label, width = 'auto', height = '5.6rem' } = props;
+  const {
+    type,
+    label,
+    width = 'auto',
+    height = '5.6rem',
+    onFocus,
+    onBlur,
+  } = props;
 
   // 왼쪽 컨트롤 요소 분기
   let control: JSX.Element;
@@ -73,6 +82,8 @@ export function Option(props: OptionProps) {
       height={height}
       isSelected={selected}
       disableHover={type === 'highlight'}
+      onFocus={onFocus}
+      onBlur={onBlur}
     >
       {control}
       <Text variant="md2_text_medium" color={textColor}>

@@ -11,6 +11,8 @@ interface Props {
   selected?: boolean;
   disabled?: boolean;
   onClick?: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 export function DateChip({
@@ -19,6 +21,8 @@ export function DateChip({
   selected = false,
   disabled = false,
   onClick,
+  onFocus,
+  onBlur,
 }: Props) {
   const label = date ? format(new Date(date), 'yyyy/MM/dd') : placeholder;
   return (
@@ -27,6 +31,8 @@ export function DateChip({
       className={`${s.dateChip} ${selected ? s.dateChipSelected : ''}`}
       disabled={disabled}
       onClick={onClick}
+      onFocus={onFocus}
+      onBlur={onBlur}
     >
       <Flex align="center" gap="1.2rem">
         <IcCalender width={24} height={24} />

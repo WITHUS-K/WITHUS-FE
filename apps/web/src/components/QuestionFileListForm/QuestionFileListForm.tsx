@@ -1,23 +1,20 @@
 'use client';
-import React from 'react';
+
+import React, { useContext } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { QuestionInput } from '@repo/ui/InputField';
 import type { DetailItem } from '@web/types/application';
 import * as s from '../../app/(main)/application-list/setting/(preview)/_components/QuestionFileList/QuestionFileList.css';
 import { FileUpload } from '@web/components/FileUpload/FileUpload';
-import { text } from 'stream/consumers';
-import { read } from 'fs';
+import { FormFieldStatusContext } from '@web/app/apply/[organization]/[slug]/_context/FormFieldStatusContext';
+import { focusableWrapper } from '@web/app/apply/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
+import clsx from 'clsx';
 
 interface QuestionAndFileListFormProps {
   detailItems: DetailItem[];
   answers?: string[];
-  files: ({
-    name: string;
-    size: number;
-    downloadUrl: string;
-  } | null)[];
-
+  files: ({ name: string; size: number; downloadUrl: string } | null)[];
   onAnswerChange: (idx: number, value: string) => void;
   onFileChange: (idx: number, file: File | null) => void;
   readOnly?: boolean;
@@ -25,52 +22,92 @@ interface QuestionAndFileListFormProps {
 
 export const QuestionAndFileListForm = ({
   detailItems,
-  answers,
+  answers = [],
   files,
   onAnswerChange,
   onFileChange,
-  readOnly,
+  readOnly = false,
 }: QuestionAndFileListFormProps) => {
+  const { getStatus } = useContext(FormFieldStatusContext);
+
   const textItems = detailItems.filter((item) => item.type === 'text');
   const fileItems = detailItems.filter((item) => item.type === 'file');
 
-  console.log('텍스트', textItems);
-  console.log('파일', fileItems);
-  console.log('readOnly', readOnly);
+  // 미리 getStatus 로 상태 객체들 생성
+  const textStatuses = textItems.map((_, idx) =>
+    getStatus(`question-text-${idx}`)
+  );
+  const fileStatuses = fileItems.map((_, idx) =>
+    getStatus(`question-file-${idx}`)
+  );
+
   return (
     <div className={s.wrapper}>
-      {textItems.map((item, idx) => (
-        <div key={idx} className={s.questionContainer}>
-          <Flex gap="0.4rem" align="center" width="100%">
-            <Text variant="md1_text_semibold" color="grayscale70">
-              질문-{idx + 1}
-            </Text>
-            {item.isEssential && (
-              <Text variant="md2_text_semibold" color="error">
-                *
+      {textItems.map((item, idx) => {
+        const status = textStatuses[idx];
+        return (
+          <div
+            key={`text-${idx}`}
+            id={`question-text-${idx}`}
+            tabIndex={-1}
+            className={clsx(s.questionContainer, focusableWrapper)}
+          >
+            <Flex gap="0.4rem" align="center" width="100%">
+              <Text variant="md1_text_semibold" color="grayscale70">
+                질문-{idx + 1}
               </Text>
-            )}
-          </Flex>
-          <QuestionInput
-            title={item.description}
-            info={item.typeInfo.info}
-            infoDetail={item.typeInfo.infoDetail}
-            value={item.answer!}
-            onChange={(val) => !readOnly && onAnswerChange(idx, val)}
-          />
-        </div>
-      ))}
+              {item.isEssential && (
+                <Text variant="md2_text_semibold" color="error">
+                  *
+                </Text>
+              )}
+            </Flex>
+            <QuestionInput
+              title={item.description}
+              info={item.typeInfo.info}
+              infoDetail={item.typeInfo.infoDetail}
+              value={answers[idx] ?? ''}
+              onFocus={status!.setEditing}
+              onChange={(val) => {
+                if (!readOnly) {
+                  onAnswerChange(idx, val);
+                  status!.setEditing();
+                }
+              }}
+              onBlur={(e) => {
+                e.currentTarget.value.trim()
+                  ? status!.setCompleted()
+                  : status!.setDefault();
+              }}
+              readOnly={readOnly}
+            />
+          </div>
+        );
+      })}
 
-      {fileItems.map((item, idx) => (
-        <div key={`f-${idx}`} style={{ marginBottom: '2rem' }}>
-          <FileUpload
-            item={item}
-            file={files[idx]}
-            readOnly={readOnly}
-            onChange={(file) => onFileChange(idx, file)}
-          />
-        </div>
-      ))}
+      {fileItems.map((item, idx) => {
+        const status = fileStatuses[idx];
+        return (
+          <div
+            key={`file-${idx}`}
+            id={`question-file-${idx}`}
+            style={{ marginBottom: '2rem' }}
+            onMouseDown={status!.setEditing}
+            tabIndex={-1}
+            className={focusableWrapper}
+          >
+            <FileUpload
+              item={item}
+              file={files[idx]}
+              readOnly={readOnly}
+              onChange={(file) => {
+                onFileChange(idx, file);
+                file ? status!.setCompleted() : status!.setDefault();
+              }}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 };

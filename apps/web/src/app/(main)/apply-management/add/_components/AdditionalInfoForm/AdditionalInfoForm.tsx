@@ -1,11 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { FocusEvent } from 'react';
 import { InfoField } from '@web/components/InfoField/InfoField';
 import { SelectAcademicStatusDropdown } from '@repo/ui/DropDown';
 import { TextField } from '@repo/ui/InputField';
 import * as styles from '../../../../application-list/setting/(preview)/_components/AdditionalInfoPreview/AdditionalInfoPreview.css';
 import * as s from '../../../../application-list/setting/(preview)/_components/BasicInfoPreview/BasicInfoPreview.css';
+import { useFormFieldStatus } from '@web/app/apply/[organization]/[slug]/_context/FormFieldStatusContext';
+import { focusableWrapper } from '@web/app/apply/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
+import clsx from 'clsx';
 
 export const statusMap = {
   ENROLLED: '재학',
@@ -42,24 +45,47 @@ export function AdditionalInfoForm({
   needAddress = true,
   readOnly = false,
 }: AdditionalInfoFormProps) {
+  const schoolStatus = useFormFieldStatus('additional-school');
+  const acadStatus = useFormFieldStatus('additional-academicStatus');
+  const majorStatus = useFormFieldStatus('additional-major');
+  const addressStatus = useFormFieldStatus('additional-address');
+
+  const handleBlur =
+    (status: ReturnType<typeof useFormFieldStatus>) =>
+    (e: FocusEvent<HTMLInputElement>) =>
+      e.currentTarget.value.trim()
+        ? status.setCompleted()
+        : status.setDefault();
+
   return (
     <div className={styles.container}>
       <div className={styles.row}>
         {needSchool && (
-          <InfoField
-            label="학교"
-            itemClass={styles.rowItemWide}
-            wrapperClass={styles.fieldGrowForSchool}
-            disabled={readOnly}
-            readOnly={readOnly}
-            inputProps={{
-              placeholder: 'oo대학교',
-              value: value.school ?? '',
-              disabled: readOnly,
-              onChange: (e) => onChange('school', e.currentTarget.value),
-              width: '100%',
-            }}
-          />
+          <div
+            id="additional-school"
+            className={clsx(styles.rowItemWide, focusableWrapper)}
+            tabIndex={-1}
+          >
+            <InfoField
+              label="학교"
+              itemClass={styles.rowItemWide}
+              wrapperClass={styles.fieldGrowForSchool}
+              disabled={readOnly}
+              readOnly={readOnly}
+              inputProps={{
+                placeholder: 'oo대학교',
+                value: value.school ?? '',
+                disabled: readOnly,
+                onFocus: schoolStatus.setEditing,
+                onBlur: handleBlur(schoolStatus),
+                onChange: (e) => {
+                  onChange('school', e.currentTarget.value);
+                  schoolStatus.setEditing();
+                },
+                width: '100%',
+              }}
+            />
+          </div>
         )}
 
         {needAcademicStatus &&
@@ -79,53 +105,82 @@ export function AdditionalInfoForm({
               />
             </div>
           ) : (
-            <InfoField
-              label="학적 상태"
-              itemClass={styles.rowItemAuto}
-              wrapperClass={styles.fieldAuto}
-              readOnly={readOnly}
-              inputProps={{
-                width: '100%',
-              }}
+            <div
+              id="additional-academicStatus"
+              tabIndex={-1}
+              className={clsx(styles.rowItemAuto, focusableWrapper)}
             >
-              <SelectAcademicStatusDropdown
-                value={value.academicStatus}
-                onSelect={(v) => !readOnly && onChange('academicStatus', v)}
-              />
-            </InfoField>
+              <InfoField
+                label="학적 상태"
+                itemClass={styles.rowItemAuto}
+                wrapperClass={styles.fieldAuto}
+                readOnly={readOnly}
+                inputProps={{
+                  width: '100%',
+                }}
+              >
+                <SelectAcademicStatusDropdown
+                  value={value.academicStatus}
+                  onFocus={acadStatus.setEditing}
+                  onBlur={(e) =>
+                    e.currentTarget.textContent?.trim()
+                      ? acadStatus.setCompleted()
+                      : acadStatus.setDefault()
+                  }
+                  onSelect={(v) => {
+                    onChange('academicStatus', v);
+                    acadStatus.setCompleted();
+                  }}
+                />
+              </InfoField>
+            </div>
           ))}
       </div>
 
       {needMajor && (
-        <InfoField
-          label="전공"
-          itemClass={styles.rowItemWide}
-          wrapperClass={styles.fieldGrowForSchool}
-          disabled={readOnly}
-          readOnly={readOnly}
-          inputProps={{
-            placeholder: 'ooo학과',
-            value: value.major ?? '',
-            disabled: readOnly,
-            onChange: (e) => onChange('major', e.currentTarget.value),
-          }}
-        />
+        <div id="additional-major" tabIndex={-1} className={focusableWrapper}>
+          <InfoField
+            label="전공"
+            itemClass={styles.rowItemWide}
+            wrapperClass={styles.fieldGrowForSchool}
+            disabled={readOnly}
+            readOnly={readOnly}
+            inputProps={{
+              placeholder: 'ooo학과',
+              value: value.major ?? '',
+              disabled: readOnly,
+              onFocus: majorStatus.setEditing,
+              onBlur: handleBlur(majorStatus),
+              onChange: (e) => {
+                onChange('major', e.currentTarget.value);
+                majorStatus.setEditing();
+              },
+            }}
+          />
+        </div>
       )}
 
       {needAddress && (
-        <InfoField
-          label="주소"
-          itemClass={styles.rowItemWide}
-          wrapperClass={styles.fieldGrowForSchool}
-          disabled={readOnly}
-          readOnly={readOnly}
-          inputProps={{
-            placeholder: 'oo시 oo구 oo동',
-            value: value.address ?? '',
-            disabled: readOnly,
-            onChange: (e) => onChange('address', e.currentTarget.value),
-          }}
-        />
+        <div id="additional-address" tabIndex={-1} className={focusableWrapper}>
+          <InfoField
+            label="주소"
+            itemClass={styles.rowItemWide}
+            wrapperClass={styles.fieldGrowForSchool}
+            disabled={readOnly}
+            readOnly={readOnly}
+            inputProps={{
+              placeholder: 'oo시 oo구 oo동',
+              value: value.address ?? '',
+              disabled: readOnly,
+              onFocus: addressStatus.setEditing,
+              onBlur: handleBlur(addressStatus),
+              onChange: (e) => {
+                onChange('address', e.currentTarget.value);
+                addressStatus.setEditing();
+              },
+            }}
+          />
+        </div>
       )}
     </div>
   );

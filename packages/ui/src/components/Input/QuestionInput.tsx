@@ -2,6 +2,7 @@
 import * as styles from './Input.css';
 import Flex from '../Flex/Flex';
 import Text from '../Text/Text';
+import React, { FocusEvent } from 'react';
 
 interface QuestionInputProps {
   value: string;
@@ -10,6 +11,9 @@ interface QuestionInputProps {
   info?: string;
   infoDetail?: string;
   readOnly?: boolean;
+  onFocus?: (e: FocusEvent<HTMLTextAreaElement>) => void;
+  /** 블러 시 e.currentTarget.value.trim()으로 빈값 체크 가능 */
+  onBlur?: (e: FocusEvent<HTMLTextAreaElement>) => void;
 }
 
 export const QuestionInput = ({
@@ -19,6 +23,8 @@ export const QuestionInput = ({
   info,
   infoDetail,
   readOnly = false,
+  onFocus,
+  onBlur,
 }: QuestionInputProps) => {
   return (
     <div
@@ -41,6 +47,8 @@ export const QuestionInput = ({
         onChange={(e) => onChange(e.currentTarget.value)}
         rows={3}
         disabled={readOnly}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
     </div>
   );

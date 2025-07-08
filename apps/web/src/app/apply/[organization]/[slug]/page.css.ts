@@ -1,6 +1,25 @@
 import { vars } from '@repo/theme';
 import { style } from '@vanilla-extract/css';
 
+export const page = style({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'flex-start',
+  width: '100%',
+  paddingTop: '2.4rem',
+  paddingBottom: '6rem',
+  gap: '2rem',
+  scrollBehavior: 'smooth',
+});
+
+export const formWrapper = style({
+  flex: 1,
+  marginRight: '41rem',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+});
+
 export const container = style({
   display: 'flex',
   backgroundColor: vars.colors.white,

@@ -52,6 +52,8 @@ export { default as IcLogout } from './IcLogout';
 export { default as IcMenuBtn } from './IcMenuBtn';
 export { default as IcModalCheck } from './IcModalCheck';
 export { default as IcModalWarning } from './IcModalWarning';
+export { default as IcNaviComplete } from './IcNaviComplete';
+export { default as IcNaviEdit } from './IcNaviEdit';
 export { default as IcNotice } from './IcNotice';
 export { default as IcPanalCalendar } from './IcPanalCalendar';
 export { default as IcPanalEnd } from './IcPanalEnd';

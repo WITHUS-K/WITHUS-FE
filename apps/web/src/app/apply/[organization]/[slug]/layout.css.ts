@@ -12,7 +12,7 @@ export const layoutStyle = style({
   alignItems: 'center',
 
   // 세로 스크롤 허용
-  overflowY: 'auto',
+  //overflowY: 'auto',
   // IE/Edge 스크롤바 숨김
   msOverflowStyle: 'none',
   // Firefox 스크롤바 숨김
