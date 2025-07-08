@@ -45,6 +45,11 @@ export const QuestionAndFileListForm = ({
     <div className={s.wrapper}>
       {textItems.map((item, idx) => {
         const status = textStatuses[idx];
+        const maxLength =
+          item.typeInfo.info === '제한 없음'
+            ? Infinity
+            : Number(item.typeInfo.info.replace('자', ''));
+        const includeWhitespace = item.typeInfo.infoDetail === '공백 포함';
         return (
           <div
             key={`text-${idx}`}
@@ -67,6 +72,8 @@ export const QuestionAndFileListForm = ({
               info={item.typeInfo.info}
               infoDetail={item.typeInfo.infoDetail}
               value={answers[idx] ?? ''}
+              maxLength={maxLength}
+              includeWhitespace={includeWhitespace}
               onFocus={status!.setEditing}
               onChange={(val) => {
                 if (!readOnly) {

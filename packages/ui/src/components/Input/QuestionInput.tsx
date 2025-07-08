@@ -2,7 +2,7 @@
 import * as styles from './Input.css';
 import Flex from '../Flex/Flex';
 import Text from '../Text/Text';
-import React, { FocusEvent } from 'react';
+import React, { FocusEvent, useEffect, useRef } from 'react';
 
 interface QuestionInputProps {
   value: string;
@@ -12,8 +12,9 @@ interface QuestionInputProps {
   infoDetail?: string;
   readOnly?: boolean;
   onFocus?: (e: FocusEvent<HTMLTextAreaElement>) => void;
-  /** 블러 시 e.currentTarget.value.trim()으로 빈값 체크 가능 */
   onBlur?: (e: FocusEvent<HTMLTextAreaElement>) => void;
+  maxLength: number;
+  includeWhitespace: boolean;
 }
 
 export const QuestionInput = ({
@@ -25,7 +26,44 @@ export const QuestionInput = ({
   readOnly = false,
   onFocus,
   onBlur,
+  maxLength,
+  includeWhitespace,
 }: QuestionInputProps) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // 높이 자동 조정
+  useEffect(() => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
+  }, [value]);
+
+  // 입력된 문자열을 조건에 따라 자르는 유틸
+  const enforceLimit = (text: string) => {
+    if (maxLength === Infinity) return text;
+    if (includeWhitespace) {
+      return text.slice(0, maxLength);
+    } else {
+      let count = 0;
+      let result = '';
+      for (const ch of text) {
+        if (ch !== ' ') {
+          count += 1;
+        }
+        if (count > maxLength) break;
+        result += ch;
+      }
+      return result;
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const raw = e.currentTarget.value;
+    const truncated = enforceLimit(raw);
+    onChange(truncated);
+  };
+
   return (
     <div
       className={styles.commentInputWrapper}
@@ -44,8 +82,8 @@ export const QuestionInput = ({
         className={styles.commentInput}
         placeholder={'답변을 입력해주세요'}
         value={value}
-        onChange={(e) => onChange(e.currentTarget.value)}
-        rows={3}
+        onChange={handleChange}
+        rows={5}
         disabled={readOnly}
         onFocus={onFocus}
         onBlur={onBlur}
