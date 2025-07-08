@@ -98,7 +98,6 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
     [currentScheduleList, setValue]
   );
 
-  // — data 없을 때는 빈 배열로 안전 처리 —
   const scheduleList =
     data?.availableTimeRanges.map((r) => ({
       date: r.date,
@@ -260,23 +259,36 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
       let textIndex = 0;
       let fileIndex = 0;
 
-      const answers = detailItems.map((item) => {
+      const answers = detailItems.reduce<
+        { questionId: number; answerText: string; fileName: string }[]
+      >((acc, item) => {
         if (item.type === 'text') {
-          const answer = vals.questionAnswers[textIndex++] ?? '';
-          return {
+          const answer = vals.questionAnswers[textIndex++]?.trim() ?? '';
+
+          // 필수가 아니고 빈 문자열이면 스킵
+          if (!item.isEssential && !answer) return acc;
+
+          acc.push({
             questionId: item.questionId,
             answerText: answer,
-            fileName: null,
-          };
+            fileName: '',
+          });
         } else {
           const file = vals.questionFiles[fileIndex++];
-          return {
+          const fileName = file instanceof File ? file.name : '';
+
+          // 필수가 아니고 파일이 없으면 스킵
+          if (!item.isEssential && !fileName) return acc;
+
+          acc.push({
             questionId: item.questionId,
             answerText: '',
-            fileName: file instanceof File ? file.name : '',
-          };
+            fileName,
+          });
         }
-      });
+
+        return acc;
+      }, []);
 
       const rawTimes = vals.interviewSchedule.scheduleList.flatMap((slot) => {
         const date = slot.date.replace(/\./g, '-');
@@ -485,6 +497,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
                 onImageChange={(f) => setValue('basicInfo.profileImage', f)}
                 needGender={data.needGender}
                 needBirthDate={data.needBirthDate}
+                needImage={data.needImage}
               />
               <AdditionalInfoForm
                 value={watch('additionalInfo')}

@@ -3,7 +3,11 @@
 import React, { useState, useEffect, FocusEvent } from 'react';
 import { parseISO } from 'date-fns';
 import { DatePicker } from '@repo/ui/DatePicker';
-import { IcImage } from '@repo/ui/icons/colored';
+import {
+  IcImage,
+  IcProfilePreview,
+  IcProfilePreviewHover,
+} from '@repo/ui/icons/colored';
 import { Option } from '@repo/ui/Option';
 import { InfoField } from '@web/components/InfoField/InfoField';
 import { DateChip } from '@web/components/DateChip/DateChip';
@@ -30,6 +34,7 @@ interface BasicInfoFormProps {
   onImageChange: (file: File | null) => void;
   needGender?: boolean;
   needBirthDate?: boolean;
+  needImage?: boolean;
   readOnly?: boolean;
 }
 
@@ -38,12 +43,13 @@ export function BasicInfoForm({
   file,
   onChange,
   onImageChange,
+  needImage,
   needGender = true,
   needBirthDate = true,
   readOnly = false,
 }: BasicInfoFormProps) {
   const [previewUrl, setPreviewUrl] = useState<string>();
-
+  const [isIconHover, setIconHover] = useState(false);
   const nameStatus = useFormFieldStatus('basic-name');
   const genderStatus = useFormFieldStatus('basic-gender');
   const phoneStatus = useFormFieldStatus('basic-phone');
@@ -90,25 +96,44 @@ export function BasicInfoForm({
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div className={styles.imageContainer}>
-          {previewUrl ? (
-            <Image
-              alt="프로필 이미지"
-              src={previewUrl}
-              className={styles.imagePreview}
-              fill
+        {needImage && (
+          <div
+            className={
+              previewUrl
+                ? styles.imageContainer.filled
+                : styles.imageContainer.empty
+            }
+            onMouseEnter={() => setIconHover(true)}
+            onMouseLeave={() => setIconHover(false)}
+          >
+            {previewUrl ? (
+              <Image
+                alt="프로필 이미지"
+                src={previewUrl}
+                className={styles.imagePreview}
+                fill
+              />
+            ) : isIconHover ? (
+              <IcProfilePreviewHover width={36} height={36} />
+            ) : (
+              <IcProfilePreview width={36} height={36} />
+            )}
+
+            {previewUrl && (
+              <div className={styles.reuploadOverlay}>파일 다시 업로드</div>
+            )}
+
+            <input
+              type="file"
+              className={styles.imageInput}
+              accept="image/*"
+              onChange={(e) =>
+                onImageChange(e.currentTarget.files?.[0] ?? null)
+              }
+              disabled={readOnly}
             />
-          ) : (
-            <IcImage width={36} height={36} />
-          )}
-          <input
-            type="file"
-            className={styles.imageInput}
-            accept="image/*"
-            onChange={(e) => onImageChange(e.currentTarget.files?.[0] ?? null)}
-            disabled={readOnly}
-          />
-        </div>
+          </div>
+        )}
 
         <div className={styles.contentColumn}>
           <Flex gap="1.6rem" width="100%">

@@ -149,6 +149,7 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
   return {
     title: detail.title,
     basicInfo: {
+      profile: detail.needImage,
       birthDate: detail.needBirthDate,
       gender: detail.needGender,
       address: detail.needAddress,

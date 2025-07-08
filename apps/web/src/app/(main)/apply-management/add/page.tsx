@@ -343,6 +343,7 @@ export default function AddApplicant() {
             onImageChange={(f) => setValue('basicInfo.profileImage', f)}
             needGender={data.needGender}
             needBirthDate={data.needBirthDate}
+            needImage={data.needImage}
           />
           <AdditionalInfoForm
             value={watch('additionalInfo')}

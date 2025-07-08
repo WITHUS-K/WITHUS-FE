@@ -120,6 +120,7 @@ export default function PreviewComponent() {
         {/* 기본 정보 */}
         <Flex direction="column" width="100%" gap="4rem">
           <BasicInfoPreview
+            profile={form.basicInfo.profile}
             gender={form.basicInfo.gender}
             birthDate={form.basicInfo.birthDate}
           />

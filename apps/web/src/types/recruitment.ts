@@ -79,6 +79,7 @@ export interface RecruitmentDetailDto {
   title: string;
   content: string;
   fileUrl: string;
+  needImage: boolean;
   needGender: boolean;
   needAddress: boolean;
   needSchool: boolean;
@@ -186,6 +187,7 @@ export interface PublishRecruitmentRequest {
   finalResultDate: string;
   interviewDuration: number;
   organizationId: number;
+  needImage: boolean;
   needGender: boolean;
   needAddress: boolean;
   needSchool: boolean;
@@ -238,6 +240,7 @@ export interface DraftRecruitmentRequest {
   finalResultDate: string;
   interviewDuration: number;
   organizationId: number;
+  needImage: boolean;
   needGender: boolean;
   needAddress: boolean;
   needSchool: boolean;

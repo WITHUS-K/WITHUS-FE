@@ -1,4 +1,5 @@
 export interface BasicInfo {
+  profile: boolean;
   birthDate: boolean; // 생년월일
   gender: boolean; // 성별
   address: boolean; // 주소

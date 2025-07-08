@@ -73,12 +73,13 @@ export function FormNavigator({ items, scrollContainerRef }: Props) {
     >
       <div className={css.scrollArea}>
         <div className={css.contentWrapper}>
-          <Flex align="center" justify="spaceBetween" width="100%">
-            <Text
-              variant="xl_title_bold"
-              color="grayscale80"
-              style={{ marginBottom: '2rem' }}
-            >
+          <Flex
+            align="center"
+            justify="spaceBetween"
+            width="100%"
+            marginBottom="2rem"
+          >
+            <Text variant="xl_title_bold" color="grayscale80">
               전체 {items.length}개 항목
             </Text>
             <Chip

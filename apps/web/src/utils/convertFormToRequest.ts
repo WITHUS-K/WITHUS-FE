@@ -140,6 +140,7 @@ export function convertFormToRequest(
 
     interviewDuration,
     organizationId,
+    needImage: form.basicInfo.profile,
     needGender: form.basicInfo.gender,
     needAddress: form.basicInfo.address,
     needSchool: form.basicInfo.school,
