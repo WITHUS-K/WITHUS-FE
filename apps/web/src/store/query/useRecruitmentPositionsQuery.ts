@@ -1,4 +1,8 @@
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import {
+  queryOptions,
+  useSuspenseQuery,
+  type UseSuspenseQueryOptions,
+} from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
 import { queryKeys } from '../constants';
 
@@ -12,19 +16,28 @@ export interface Position {
   color: string; // 서버에서 보내주는 이름(red, orange, ...)
 }
 
-export function useRecruitmentPositionsQuery(
+const STALE_TIME = 1000 * 60 * 2;       // 1분
+const GC_TIME    = 1000 * 60 * 3;  // 1시간
+
+export function getRecruitmentPositionsQueryOptions(
   recruitmentId: number
-): UseQueryResult<Position[], Error> {
-  return useQuery<Position[], Error>({
+): UseSuspenseQueryOptions<Position[], Error> {
+  return queryOptions<Position[]>({
     queryKey: queryKeys.positions.byRecruitment(recruitmentId),
-    queryFn: async () => {
-      const res = await GET<Position[]>(
+    queryFn: () =>
+      GET<Position[]>(
         `api/v1/positions/recruitment/${recruitmentId}`
-      );
-      console.log('파트', res.result);
-      return res.result;
-    },
-    staleTime: 1000 * 60,
+      ).then((res) => res.result),
+    staleTime: STALE_TIME,
+    gcTime: GC_TIME,
     enabled: recruitmentId > 0,
   });
+}
+
+export function useRecruitmentPositionsQuery(
+  recruitmentId: number
+) {
+  return useSuspenseQuery(
+    getRecruitmentPositionsQueryOptions(recruitmentId)
+  );
 }

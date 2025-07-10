@@ -1,4 +1,9 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  queryOptions,
+  useSuspenseQuery,
+  type UseSuspenseQueryOptions,
+} from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
 import type { ApiResponse } from '@web/api/types';
 import { queryKeys } from '../constants';
@@ -48,18 +53,22 @@ export interface UseApplicationsQueryOptions {
   size?: number;
 }
 
+const APPS_STALE_TIME = 1000 * 60 * 3; // 3분
+
 /**
- * 사용자용 지원서 목록 조회
+ * 사용자용 지원서 목록 조회 옵션 생성기
  */
-export function useApplicationsQuery({
+export function getApplicationsQueryOptions({
   recruitmentId,
   evaluationStatus = 'ALL',
   keyword = '',
   page = 0,
   size = 9,
-}: UseApplicationsQueryOptions) {
-  return useQuery<ApplicationsResult, Error>({
-    // 1) 객체 형태로 queryKey, queryFn, 옵션을 한 번에 전달
+}: UseApplicationsQueryOptions): UseSuspenseQueryOptions<
+  ApplicationsResult,
+  Error
+> {
+  return queryOptions<ApplicationsResult, Error>({
     queryKey: queryKeys.applications.userList(
       recruitmentId,
       evaluationStatus,
@@ -67,24 +76,23 @@ export function useApplicationsQuery({
       page,
       size
     ),
-    queryFn: async () => {
-      const params = {
-        evaluationStatus,
-        keyword,
-        page: String(page + 1), // API는 1-based page
-        size: String(size),
-      };
-      console.log('서류 리스트', params);
-      const res = await GET<ApplicationsResponse['result']>(
+    queryFn: () =>
+      GET<ApplicationsResponse['result']>(
         `api/v1/applications/recruitment/${recruitmentId}`,
-        params
-      );
-      console.log('서류 리스트', res);
-      return res.result;
-    },
-
+        {
+          evaluationStatus,
+          keyword,
+          page: String(page + 1),
+          size: String(size),
+        }
+      ).then((res) => res.result),
+    staleTime: APPS_STALE_TIME,
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     enabled: recruitmentId > 0,
   });
+}
+
+export function useApplicationsQuery(params: UseApplicationsQueryOptions) {
+  return useSuspenseQuery(getApplicationsQueryOptions(params));
 }

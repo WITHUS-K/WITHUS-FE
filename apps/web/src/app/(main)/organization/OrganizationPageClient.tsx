@@ -35,16 +35,16 @@ export default function OrganizationPageClient({
   const qc = useQueryClient();
 
   // 멤버 리스트
-  const { data: paged, isFetching } = useOrganizationMembersQuery(
+  const { data: paged, isFetching } = useOrganizationMembersQuery({
     organizationId,
     page,
-    PAGE_SIZE
-  );
+    size: PAGE_SIZE,
+  });
   const members = paged?.content ?? [];
   const totalCount = paged?.totalElements ?? 0;
 
   // 역할 리스트
-  const { data: rolesData } = useOrganizationRolesQuery(organizationId);
+  const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
   const allRoles = rolesData.roles.map((r) => ({
     label: r.roleName,
     color: r.color,

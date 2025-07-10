@@ -76,11 +76,10 @@ export const ChargeModalContent = forwardRef<ChargeModalContentRef, Props>(
     const organizationId = useUserStore.getState().organizationId!;
 
     console.log('조직id', organizationId);
-    const { data: candidates = [] } = useOrganizationUsersQuery(
+    const { data: candidates = [] } = useOrganizationUsersQuery({
       organizationId,
-      1,
-      searchKeyword
-    );
+      keyword: searchKeyword,
+    });
 
     console.log('모달 - 배정', assigned);
     console.log('모달 - 리스트', candidates);

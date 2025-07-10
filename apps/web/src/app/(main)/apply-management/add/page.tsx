@@ -29,7 +29,6 @@ import { InterviewScheduleForm } from './_components/InterviewScheduleForm/Inter
 import * as styles from './page.css';
 import { useQueryClient } from '@tanstack/react-query';
 import { safeFormatDotDate } from '@web/utils/application';
-import { sanitizeFileName } from '@web/utils/serializers';
 
 export default function AddApplicant() {
   const router = useRouter();

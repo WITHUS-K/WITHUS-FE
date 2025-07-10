@@ -1,10 +1,6 @@
-import {
-  useMutation,
-  useQueryClient,
-  type UseMutationResult,
-} from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { POST } from '@web/api/fetch';
-import { CreateRoleRequest, CreateRoleDto } from '@web/types/organization';
+import type { CreateRoleRequest, CreateRoleDto } from '@web/types/organization';
 import { queryKeys } from '../constants';
 import type { PaletteColor } from '@repo/utils';
 import { hexToName } from '@web/utils/color';
@@ -14,13 +10,11 @@ type Variables = { label: string; color: PaletteColor };
 /**
  * 조직 역할 생성
  */
-export function useAddOrganizationRoleMutation(
-  organizationId: number
-): UseMutationResult<CreateRoleDto, Error, Variables, unknown> {
+export function useAddOrganizationRoleMutation(organizationId: number) {
   const qc = useQueryClient();
 
-  return useMutation<CreateRoleDto, Error, Variables, unknown>({
-    mutationFn: async ({ label, color }) => {
+  return useMutation({
+    mutationFn: async ({ label, color }: Variables) => {
       const payload: CreateRoleRequest = {
         name: label,
         color: hexToName[color]!,
@@ -29,7 +23,6 @@ export function useAddOrganizationRoleMutation(
         `api/v1/organizations/${organizationId}/roles`,
         payload
       );
-      //console.log('역할 생성', response);
       return response.result;
     },
     onSuccess: () => {

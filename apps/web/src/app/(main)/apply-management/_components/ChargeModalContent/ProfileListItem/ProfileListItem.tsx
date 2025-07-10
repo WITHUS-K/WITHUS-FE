@@ -4,7 +4,7 @@ import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Button } from '@repo/ui/Button';
 import * as styles from '../ChargeModalContent.css';
-import { mapServerColorToTagHex } from '@web/utils/color';
+import { getProfileBackground, getProfileTextColor } from '@web/utils/color';
 
 export interface Person {
   userId: number;
@@ -27,7 +27,9 @@ export default function ProfileListItem({
   onAdd,
 }: ProfileListItemProps) {
   const color = person.profileColor;
-  const bg = mapServerColorToTagHex(color);
+  const textColor = getProfileTextColor(color);
+  const bg = getProfileBackground(color);
+
   return (
     <Flex
       align="center"
@@ -36,7 +38,10 @@ export default function ProfileListItem({
       className={styles.profileItemContainer}
     >
       <Flex align="center" gap="0.8rem">
-        <div className={styles.bubble} style={{ backgroundColor: bg }}>
+        <div
+          className={styles.bubble}
+          style={{ backgroundColor: bg, color: textColor }}
+        >
           {person.name.charAt(1)}
         </div>
         <Text variant="md1_text_regular">{person.name}</Text>

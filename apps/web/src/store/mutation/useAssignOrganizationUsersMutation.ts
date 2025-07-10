@@ -1,8 +1,4 @@
-import {
-  useMutation,
-  useQueryClient,
-  type UseMutationResult,
-} from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PUT } from '@web/api/fetch';
 import type {
   AssignUsersRequest,
@@ -18,34 +14,30 @@ type Variables = {
 /**
  * 특정 역할에 사용자 일괄 추가/제외
  */
-export function useAssignOrganizationUsersMutation(
-  organizationId: number
-): UseMutationResult<AssignUsersResult[], Error, Variables, unknown> {
+export function useAssignOrganizationUsersMutation(organizationId: number) {
   const qc = useQueryClient();
 
-  return useMutation<AssignUsersResult[], Error, Variables, unknown>({
-    mutationFn: async ({ roleId, userIds }) => {
+  return useMutation({
+    mutationFn: async ({ roleId, userIds }: Variables) => {
       const payload: AssignUsersRequest = { userIds };
-
       const res = await PUT<AssignUsersResult[]>(
         `api/v1/organizations/${organizationId}/roles/${roleId}/assign-users`,
         payload
       );
-      //console.log('멤버 할당/제외 요청 완료', res);
       return res.result;
     },
     onSuccess: (_data, { roleId }) => {
-      //console.log('멤버 할당/제외 성공:', roleId);
+      // 사용자가 속한 역할별 리스트 무효화
       qc.invalidateQueries({
         queryKey: queryKeys.organization.users.search(organizationId, roleId),
       });
-
+      // 전체 역할 목록도 갱신
       qc.invalidateQueries({
         queryKey: queryKeys.organization.roles.list(organizationId),
       });
     },
-    onError: (error, vars) => {
-      //console.error('멤버 할당/제외 실패:', vars, error);
+    onError: (error: unknown, vars: Variables) => {
+      console.error('할당/제외 실패:', vars, error);
     },
   });
 }

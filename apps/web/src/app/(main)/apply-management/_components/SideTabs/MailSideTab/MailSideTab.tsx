@@ -29,7 +29,6 @@ import { Descendant, Transforms, createEditor } from 'slate';
 import {
   RichTextEditor,
   insertVariable,
-  serialize,
   toggleMark,
   withVariables,
 } from '../RichTextEditor/RichTextEditor';

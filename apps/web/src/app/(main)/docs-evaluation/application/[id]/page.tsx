@@ -1,7 +1,6 @@
 'use client';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { documentEvaluationDummyDataForUser } from '@web/constants/document-evaluation';
 import ApplicantDetail from '@web/app/(main)/apply-management/[tab]/[id]/_components/ApplicantDetail/ApplicantDetail';
 
 import { Flex } from '@repo/ui/Flex';
@@ -16,8 +15,6 @@ import {
   Evaluation,
   useApplicationDetailQuery,
 } from '@web/store/query/useApplicationDetailQuery';
-import { applicationButton } from '@web/app/(main)/interview-management/_components/ApplicantHeader/ApplicantHeader.css';
-import { useRecruitmentDetailQuery } from '@web/store/query/useRecruitmentDetailQuery';
 import { useBulkEvaluationsMutation } from '@web/store/mutation/useBulkEvaluations';
 import { useUserStore } from '@web/store/state/userStore';
 import { useToggleAcquaintanceMutation } from '@web/store/mutation/useToggleAcquaintanceMutation';

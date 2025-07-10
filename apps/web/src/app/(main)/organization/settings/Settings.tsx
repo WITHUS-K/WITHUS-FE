@@ -29,6 +29,7 @@ export default function Settings({ organizationId }: Props) {
   const { data: rolesData } = useSuspenseQuery(
     getOrganizationRolesQueryOptions({ organizationId })
   );
+
   const filteredRoles = useMemo(
     () =>
       rolesData.roles.filter((r) =>
@@ -47,10 +48,10 @@ export default function Settings({ organizationId }: Props) {
     selectedRoleIdx != null ? filteredRoles[selectedRoleIdx]!.roleName : '';
 
   // 서버에서 users
-  const { data: users } = useOrganizationUsersQuery(
+  const { data: users } = useOrganizationUsersQuery({
     organizationId,
-    selectedRoleId
-  );
+    roleId: selectedRoleId,
+  });
 
   // roleId 가 바뀔 때만 초기화
   const [localUsers, setLocalUsers] = useState<UserResult[]>([]);

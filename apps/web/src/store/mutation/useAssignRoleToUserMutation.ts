@@ -1,13 +1,8 @@
-import {
-  useMutation,
-  useQueryClient,
-  type UseMutationResult,
-} from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { POST } from '@web/api/fetch';
 import type {
   AssignRoleRequest,
   AssignRoleResponse,
-  AssignUsersResult,
 } from '@web/types/organization';
 import { queryKeys } from '../constants';
 
@@ -15,15 +10,15 @@ export function useAssignRoleToUserMutation(
   organizationId: number,
   currentPage: number,
   pageSize: number
-): UseMutationResult<AssignUsersResult[], Error, AssignRoleRequest, unknown> {
+) {
   const qc = useQueryClient();
-  return useMutation<AssignUsersResult[], Error, AssignRoleRequest>({
-    mutationFn: async (payload) => {
+
+  return useMutation({
+    mutationFn: async (payload: AssignRoleRequest) => {
       const res = await POST<AssignRoleResponse['result']>(
         `api/v1/organizations/${organizationId}/assign-role`,
         payload
       );
-      //console.log('역할 부여', res);
       return res.result;
     },
     onSuccess: () => {

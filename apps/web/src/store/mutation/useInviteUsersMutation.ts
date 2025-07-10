@@ -1,11 +1,5 @@
-// src/store/mutation/useInviteUsersMutation.ts
-import {
-  useMutation,
-  useQueryClient,
-  type UseMutationResult,
-} from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { POST } from '@web/api/fetch';
-import { queryKeys } from '../constants';
 
 export interface InviteUsersRequest {
   userIds: number[];
@@ -15,23 +9,23 @@ export interface InviteUsersRequest {
  * 조직 사용자 초대 Mutation
  * organizationId: path param
  */
-export function useInviteUsersMutation(
-  organizationId: number
-): UseMutationResult<void, Error, InviteUsersRequest> {
+export function useInviteUsersMutation(organizationId: number) {
   const qc = useQueryClient();
-  return useMutation<void, Error, InviteUsersRequest>({
-    mutationFn: async (body) => {
-      await POST(`api/v1/organizations/${organizationId}/users/invite`, body);
+
+  return useMutation({
+    mutationFn: async (body: InviteUsersRequest) => {
+      await POST(
+        `api/v1/organizations/${organizationId}/users/invite`,
+        body
+      );
     },
     onSuccess: () => {
-      // "members.list" 키를 무효화해서 사용자 목록을 다시 가져오게 합니다.
-      qc.invalidateQueries({
-        queryKey: queryKeys.organization.members.list(
-          organizationId,
-          /* page */ 1,
-          /* size */ 20
-        ),
-      });
+      // "members.list" 키를 무효화
+      // 일단 지움... 초대 메일 보내고 바로 추가 되는게 아니어서...
+      /*qc.invalidateQueries({
+        queryKey: [ 'organization', organizationId, 'members', 'list' ],
+        exact: false,      
+      });*/
     },
   });
 }

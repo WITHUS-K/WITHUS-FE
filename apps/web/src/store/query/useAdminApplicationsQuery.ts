@@ -1,4 +1,9 @@
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  queryOptions,
+  useSuspenseQuery,
+  type UseSuspenseQueryOptions,
+} from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
 import { queryKeys } from '../constants';
 
@@ -95,15 +100,23 @@ interface UseAdminApplicationsQueryOptions {
  * 관리자용 공고별 지원서 목록 조회
  * GET /api/v1/admin/applications/recruitment/{recruitmentId}
  */
-export function useAdminApplicationsQuery({
+
+const ADMIN_APPS_STALE_TIME = 1000 * 60 * 5; // 5분
+const ADMIN_APPS_GC_TIME = 1000 * 60 * 60; // 1시간
+
+export function getAdminApplicationsQueryOptions({
   recruitmentId,
   stage = 'DOCUMENT',
   sortBy = 'NAME',
   direction = 'ASC',
   page = 0,
   size = 7,
-}: UseAdminApplicationsQueryOptions) {
-  return useQuery<AdminApplicationsResult, Error>({
+}: UseAdminApplicationsQueryOptions): UseSuspenseQueryOptions<
+  AdminApplicationsResult,
+  Error
+> {
+  const pageParam = page + 1;
+  return queryOptions<AdminApplicationsResult>({
     queryKey: queryKeys.applications.list(
       recruitmentId,
       stage,
@@ -112,9 +125,8 @@ export function useAdminApplicationsQuery({
       page,
       size
     ),
-    queryFn: async () => {
-      const pageParam = page + 1;
-      const res = await GET<AdminApplicationsResult>(
+    queryFn: () =>
+      GET<AdminApplicationsResult>(
         `api/v1/admin/applications/recruitment/${recruitmentId}`,
         {
           stage,
@@ -123,11 +135,16 @@ export function useAdminApplicationsQuery({
           page: String(pageParam),
           size: String(size),
         }
-      );
-      console.log('관리자 지원서 조회', res.result);
-      return res.result;
-    },
+      ).then((res) => res.result),
+    staleTime: ADMIN_APPS_STALE_TIME,
+    gcTime: ADMIN_APPS_GC_TIME,
     placeholderData: keepPreviousData,
     enabled: recruitmentId > 0,
   });
+}
+
+export function useAdminApplicationsQuery(
+  params: UseAdminApplicationsQueryOptions
+) {
+  return useSuspenseQuery(getAdminApplicationsQueryOptions(params));
 }

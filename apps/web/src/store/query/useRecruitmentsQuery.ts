@@ -1,61 +1,44 @@
 import {
+  queryOptions,
   useSuspenseQuery,
-  UseSuspenseQueryResult,
   type UseSuspenseQueryOptions,
 } from '@tanstack/react-query';
-import { GET } from '@web/api/fetch';
-import { queryKeys } from '../constants';
-import type { ApiResponse, Tokens } from '@web/api/types';
+import { GET } from '@web/api';
+import { queryKeys } from '@web/store/constants/queryKeys';
+import type { Tokens } from '@web/api/types';
 
-// — 요청/응답 타입 —
-
-// GET /api/v1/recruitments/my-organizations
 export interface RecruitmentSummary {
   recruitmentId: number;
   title: string;
 }
 
-// — QueryOptions & Hook —
-type RecruitmentListQueryKey = ReturnType<typeof queryKeys.recruitment.list>;
-type RecruitmentListOptions = UseSuspenseQueryOptions<
-  RecruitmentSummary[], // TQueryFnData
-  Error, // TError
-  RecruitmentSummary[], // TData
-  RecruitmentListQueryKey // TQueryKey
->;
+const STALE_TIME = 1000 * 60 * 2;
+const GC_TIME = 1000 * 60 * 3;
 
-export function getRecruitmentsListOptions(
-  tokens?: Tokens
-): RecruitmentListOptions {
-  return {
-    queryKey: queryKeys.recruitment.list(),
-    queryFn: async () => {
-      const res = await GET<RecruitmentSummary[]>(
-        'api/v1/recruitments/my-organizations',
-        undefined,
-        tokens
-      );
-      console.log(res);
-      return res.result;
-    },
-    staleTime: 1000 * 60 * 5,
-  };
+export interface RecruitmentListParams {
+  tokens?: Tokens;
 }
 
-export function useRecruitmentsQuery(
-  tokens?: Tokens
-): UseSuspenseQueryResult<RecruitmentSummary[], Error> {
-  return useSuspenseQuery<RecruitmentSummary[], Error>({
+// 내가 속한 조직의 모든 공고
+export function getRecruitmentsListQueryOptions({
+  tokens,
+}: RecruitmentListParams): UseSuspenseQueryOptions<
+  RecruitmentSummary[],
+  Error
+> {
+  return queryOptions<RecruitmentSummary[]>({
     queryKey: queryKeys.recruitment.list(),
-    queryFn: async () => {
-      const res = await GET<RecruitmentSummary[]>(
+    queryFn: () =>
+      GET<RecruitmentSummary[]>(
         'api/v1/recruitments/my-organizations',
         undefined,
         tokens
-      );
-      console.log(res);
-      return res.result;
-    },
-    staleTime: 1000 * 60 * 5,
+      ).then((res) => res.result),
+    staleTime: STALE_TIME,
+    gcTime: GC_TIME,
   });
+}
+
+export function useRecruitmentsQuery(params: RecruitmentListParams = {}) {
+  return useSuspenseQuery(getRecruitmentsListQueryOptions(params));
 }
