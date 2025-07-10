@@ -13,8 +13,8 @@ interface QuestionInputProps {
   readOnly?: boolean;
   onFocus?: (e: FocusEvent<HTMLTextAreaElement>) => void;
   onBlur?: (e: FocusEvent<HTMLTextAreaElement>) => void;
-  maxLength: number;
-  includeWhitespace: boolean;
+  maxLength?: number;
+  includeWhitespace?: boolean;
 }
 
 export const QuestionInput = ({
@@ -51,7 +51,7 @@ export const QuestionInput = ({
         if (ch !== ' ') {
           count += 1;
         }
-        if (count > maxLength) break;
+        if (count > maxLength!) break;
         result += ch;
       }
       return result;
