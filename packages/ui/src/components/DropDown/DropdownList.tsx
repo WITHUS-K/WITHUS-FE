@@ -36,7 +36,6 @@ export default function DropdownList({
 
   if (!isOpen) return null;
 
-  // body 기준 절대좌표
   const mergedStyle: CSSProperties = {
     position: 'absolute',
     top: pos.top,

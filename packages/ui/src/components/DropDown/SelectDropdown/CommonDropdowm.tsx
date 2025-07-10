@@ -44,7 +44,7 @@ export default function CommonDropdown<T extends string>({
         />
       </Dropdown.Trigger>
 
-      <Dropdown.List width={listWidth}>
+      <Dropdown.NormalList width={listWidth}>
         {options.map((opt) => (
           <Dropdown.Item
             key={opt}
@@ -56,7 +56,7 @@ export default function CommonDropdown<T extends string>({
             {opt}
           </Dropdown.Item>
         ))}
-      </Dropdown.List>
+      </Dropdown.NormalList>
     </Dropdown>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Flex } from '@repo/ui/Flex';
@@ -23,7 +23,7 @@ import {
   ApplicationPartsForm,
   PartOption,
 } from './_components/ApplicationPartsForm/ApplicationPartsForm';
-import { QuestionAndFileListForm } from './_components/QuestionFileListForm/QuestionFileListForm';
+import { QuestionAndFileListForm } from '../../../../components/QuestionFileListForm/QuestionFileListForm';
 import { InterviewScheduleForm } from './_components/InterviewScheduleForm/InterviewScheduleForm';
 
 import * as styles from './page.css';
@@ -44,6 +44,7 @@ export default function AddApplicant() {
   const { data, isLoading, error } = useRecruitmentDetailQuery({
     recruitmentId,
   });
+
   console.log('공고 디테일', data);
   const { watch, setValue, handleSubmit } = useForm<ApplicantForm>({
     defaultValues: {
@@ -130,6 +131,19 @@ export default function AddApplicant() {
 
   const selectedPartLabel = watch('applicationPart')?.label;
 
+  useEffect(() => {
+    if (
+      data?.positions.length &&
+      !watch('applicationPart') // 아직 선택 안되어 있다면
+    ) {
+      const firstPart = data.positions[0];
+      setValue('applicationPart', {
+        id: firstPart!.id,
+        label: firstPart!.name,
+      });
+    }
+  }, [data?.positions, setValue, watch]);
+
   // ② detailItems 정의부를 이렇게 바꿔주세요.
   const detailItems: (DetailItem & { questionId: number })[] = useMemo(
     () =>
@@ -143,6 +157,8 @@ export default function AddApplicant() {
           console.log(q);
           if (q.type === 'TEXT') {
             const tq = q as TextQuestionDto;
+            const infoText =
+              tq.textLimit === 0 ? '제한 없음' : `${tq.textLimit}자`;
             return {
               questionId: tq.questionId,
               isEssential: tq.required,
@@ -150,7 +166,7 @@ export default function AddApplicant() {
               description: tq.title,
               addDescription: tq.description,
               typeInfo: {
-                info: `${tq.textLimit}자`,
+                info: infoText,
                 infoDetail: tq.includeWhitespace ? '공백 포함' : '공백 제외',
               },
             };
@@ -171,6 +187,7 @@ export default function AddApplicant() {
         }) ?? [],
     [data?.applicationQuestions, selectedPartLabel]
   );
+
   const onSubmit = useCallback(
     (vals: ApplicantForm) => {
       if (!data) return;
@@ -326,6 +343,7 @@ export default function AddApplicant() {
             onImageChange={(f) => setValue('basicInfo.profileImage', f)}
             needGender={data.needGender}
             needBirthDate={data.needBirthDate}
+            needImage={data.needImage}
           />
           <AdditionalInfoForm
             value={watch('additionalInfo')}
@@ -347,6 +365,7 @@ export default function AddApplicant() {
         />
 
         <QuestionAndFileListForm
+          readOnly={false}
           detailItems={detailItems}
           answers={watch('questionAnswers')}
           files={watch('questionFiles').map(

@@ -3,10 +3,13 @@ import type {
   TextQuestionDto,
   FileQuestionDto,
 } from '@web/types/recruitment';
-import type { FormValues } from '@web/types/application';
+import type { EvaluationItem, FormValues } from '@web/types/application';
 import { normalizeDateStr } from './convertFormToRequest';
-
-const DRAFT_FUTURE_DATE = '2027-05-30';
+import {
+  CHAR_LIMITS,
+  FILE_COUNTS,
+  FILE_SIZES,
+} from '@web/constants/application';
 
 export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
   const DURATION_MAP: Record<number, FormValues['interviewDuration']> = {
@@ -17,37 +20,77 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
   const interviewDuration = DURATION_MAP[detail.interviewDuration] ?? '30분';
 
   const parts = detail.positions.map((p) => p.name);
+
+  //'공통' 을 포함한 전체 targets
+  const fullTargets = ['공통', ...parts];
+
   const applicationParts = {
     isSelected: parts.length > 0,
     parts,
   };
 
+  const sectionKeys: Array<string | null> =
+    parts.length > 0 ? [null, ...parts] : [null];
+
+  const toEvalItem = (c: {
+    content: string;
+    description: string;
+  }): EvaluationItem => ({
+    evaluate: c.content,
+    evaluateDetail: c.description,
+    positionName: null, // 실제는 section.level 에서 대입
+  });
+
   const detailItems = detail.applicationQuestions.map((q) => {
+    const posName =
+      (q.type === 'TEXT'
+        ? (q as TextQuestionDto).positionName
+        : (q as FileQuestionDto).positionName) || '공통';
+
+    const idx = fullTargets.indexOf(posName);
+    const responseTarget = idx >= 0 ? idx : 0;
+
     if (q.type === 'TEXT') {
       const tq = q as TextQuestionDto;
+
+      const typeInfo = {
+        info: tq.includeWhitespace ? '공백 포함' : '공백 제외',
+        infoDetail: (CHAR_LIMITS.find((limit) => {
+          const limitValue = parseInt(limit.replace(/\D/g, ''));
+          return limitValue === tq.textLimit;
+        }) ?? '제한 없음') as string,
+      };
+
       return {
         isEssential: tq.required,
         type: 'text' as const,
         description: tq.title,
         addDescription: tq.description,
-        responseTarget: parts.indexOf(tq.positionName!),
-        typeInfo: {
-          info: tq.includeWhitespace ? '공백 포함' : '공백 미포함',
-          infoDetail: `${tq.textLimit}자`,
-        },
+        responseTarget,
+        typeInfo,
       };
     } else {
       const fq = q as FileQuestionDto;
+
+      const typeInfo = {
+        info: (FILE_COUNTS.find((count) => {
+          const num = parseInt(count.replace(/\D/g, ''));
+          return num === fq.maxFileCount;
+        }) ?? FILE_COUNTS[0]) as string,
+
+        infoDetail: (FILE_SIZES.find((size) => {
+          const mb = parseInt(size.replace(/\D/g, ''));
+          return mb === fq.maxFileSizeMb;
+        }) ?? FILE_SIZES[0]) as string,
+      };
+
       return {
         isEssential: fq.required,
         type: 'file' as const,
         description: fq.title,
         addDescription: fq.description,
-        responseTarget: parts.indexOf(fq.positionName!),
-        typeInfo: {
-          info: `${fq.maxFileCount}`,
-          infoDetail: `${fq.maxFileSizeMb}MB`,
-        },
+        responseTarget,
+        typeInfo,
       };
     }
   });
@@ -57,28 +100,18 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
     date: detail.documentResultDate,
   };*/
   const deadline =
-    detail.documentDeadline === DRAFT_FUTURE_DATE
-      ? ''
-      : normalizeDateStr(detail.documentDeadline);
+    detail.documentDeadline && detail.documentDeadline !== ''
+      ? normalizeDateStr(detail.documentDeadline)
+      : '';
 
-  // detail.documentResultDate 이 DRAFT_FUTURE_DATE 면 빈값, 선택도 false
-  const docDate =
-    normalizeDateStr(detail.documentResultDate) === DRAFT_FUTURE_DATE
-      ? ''
-      : (normalizeDateStr(detail.documentResultDate) ?? '');
-  const isDocSelected =
-    detail.isDocumentResultRequired &&
-    normalizeDateStr(detail.documentResultDate) !== DRAFT_FUTURE_DATE;
+  const rawDocDate = detail.documentResultDate ?? '';
   const documentResult = {
-    isSelected: isDocSelected,
-    date: docDate,
+    isSelected: detail.isDocumentResultRequired && rawDocDate !== '',
+    date: rawDocDate !== '' ? normalizeDateStr(rawDocDate) : '',
   };
 
-  // finalResultDate 도 마찬가지로 DRAFT_FUTURE_DATE 면 빈값
-  const finalDate =
-    normalizeDateStr(detail.finalResultDate) === DRAFT_FUTURE_DATE
-      ? ''
-      : normalizeDateStr(detail.finalResultDate);
+  const rawFinal = detail.finalResultDate ?? '';
+  const finalResultDate = rawFinal !== '' ? normalizeDateStr(rawFinal) : '';
 
   const interviewSchedule = {
     isSelected: detail.isInterviewRequired,
@@ -91,22 +124,32 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
 
   const paperEvaluateStandard =
     detail.documentScaleType === 'SCORE' ? 'score' : 'level';
-  const paperEvaluateItems = detail.documentEvaluationCriteria.map((c) => ({
-    evaluate: c.content,
-    evaluateDetail: c.description,
+  const paperEvaluateItems = sectionKeys.map((sec) => ({
+    positionName: sec,
+    items: detail.documentEvaluationCriteria
+      .filter((c) => (c.positionName ?? null) === sec)
+      .map((c) => ({
+        evaluate: c.content,
+        evaluateDetail: c.description,
+      })),
   }));
+
   const interviewEvaluateStandard =
     detail.interviewScaleType === 'SCORE' ? 'score' : 'level';
-  const interviewEvaluateItems = detail.interviewEvaluationCriteria.map(
-    (c) => ({
-      evaluate: c.content,
-      evaluateDetail: c.description,
-    })
-  );
+  const interviewEvaluateItems = sectionKeys.map((sec) => ({
+    positionName: sec,
+    items: detail.interviewEvaluationCriteria
+      .filter((c) => (c.positionName ?? null) === sec)
+      .map((c) => ({
+        evaluate: c.content,
+        evaluateDetail: c.description,
+      })),
+  }));
 
   return {
     title: detail.title,
     basicInfo: {
+      profile: detail.needImage,
       birthDate: detail.needBirthDate,
       gender: detail.needGender,
       address: detail.needAddress,
@@ -118,7 +161,7 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
     detailItems,
     deadline,
     documentResult,
-    finalResultDate: finalDate,
+    finalResultDate,
     interviewDuration,
     interviewSchedule,
     paperEvaluateStandard,

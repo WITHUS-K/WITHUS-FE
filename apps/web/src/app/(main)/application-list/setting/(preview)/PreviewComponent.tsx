@@ -6,7 +6,7 @@ import {
   SettingContextType,
 } from '@web/app/(main)/application-list/setting/_context/SettingContext';
 import { FormValues, InterviewSchedule } from '@web/types/application';
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import * as styles from './PreviewComponent.css';
 import { PreviewHeader } from '@web/app/(main)/application-list/setting/(preview)/_components/PreivewHeader/PreivewHeader';
 import { BasicInfoPreview } from '@web/app/(main)/application-list/setting/(preview)/_components/BasicInfoPreview/BasicInfoPreview';
@@ -60,25 +60,29 @@ export default function PreviewComponent() {
     )
   );
 
+  // 실제 파트 옵션 (공통 제외)
+  const parts = form.applicationParts?.parts ?? [];
+  const [selectedPartIdx, setSelectedPartIdx] = useState<number>(0);
+
+  const filteredItems = useMemo(() => {
+    const allItems = form.detailItems;
+    const common = allItems.filter((item) => item.responseTarget === 0);
+    const partItems = allItems.filter(
+      (item) => item.responseTarget === selectedPartIdx + 1
+    );
+    return [...common, ...partItems];
+  }, [form.detailItems, selectedPartIdx]);
+
   const interval = TIME_STEP[form.interviewDuration];
 
-  // 2) admin이 설정한 scheduleList 전체
   const allSlots = form.interviewSchedule?.scheduleList ?? [];
 
-  console.log('시간', allSlots);
-  // 3) 날짜별로 묶어서 unique dates 추출
+  //console.log('시간', allSlots);
+
   const dates = useMemo(
     () => Array.from(new Set(allSlots.map((s) => s.date))),
     [allSlots]
   );
-
-  // 4) 전체 슬롯에서 최소 시작시간 / 최대 종료시간(시(hour)만) 계산
-  const hours = allSlots.flatMap((s) => [
-    parseInt(s.startTime.split(':')[0]!, 10),
-    parseInt(s.endTime.split(':')[0]!, 10),
-  ]);
-  const startHour = Math.min(...hours);
-  const endHour = Math.max(...hours);
 
   return (
     <Flex
@@ -116,6 +120,7 @@ export default function PreviewComponent() {
         {/* 기본 정보 */}
         <Flex direction="column" width="100%" gap="4rem">
           <BasicInfoPreview
+            profile={form.basicInfo.profile}
             gender={form.basicInfo.gender}
             birthDate={form.basicInfo.birthDate}
           />
@@ -131,59 +136,73 @@ export default function PreviewComponent() {
 
         {/* 지원 파트 */}
         {form.applicationParts?.isSelected && (
-          <ApplicationPartsPreview parts={form.applicationParts?.parts} />
+          <ApplicationPartsPreview
+            parts={parts}
+            selectedIndex={selectedPartIdx}
+            onChange={setSelectedPartIdx}
+          />
         )}
 
         {/* 질문 리스트 및 첨부 파일 */}
-        <QuestionAndFileList detailItems={form.detailItems} />
+        <QuestionAndFileList detailItems={filteredItems} />
 
         {/* 면접 시간대 */}
-        <div style={{ width: '100%' }}>
-          <Flex gap="0.4rem" direction="column">
-            <Text variant="md1_text_semibold" color="grayscale70">
-              면접 가능 일정 투표
-            </Text>
-            <Text variant="sm_caption_medium" color="grayscale40">
-              아래 일정 중 면접이 가능한 모든 시간대를 드래그로 등록해주세요.
-              (면접 시간: {form.interviewDuration} 소요)
-            </Text>
-          </Flex>
+        {form.interviewSchedule?.scheduleList.length! > 0 && (
+          <div style={{ width: '100%' }}>
+            <Flex gap="0.4rem" direction="column">
+              <Text variant="md1_text_semibold" color="grayscale70">
+                면접 가능 일정 투표
+              </Text>
+              <Text variant="sm_caption_medium" color="grayscale40">
+                아래 일정 중 면접이 가능한 모든 시간대를 드래그로 등록해주세요.
+                (면접 시간: {form.interviewDuration} 소요)
+              </Text>
+            </Flex>
 
-          <Flex
-            gap="6.4rem"
-            justify="center"
-            width="100%"
-            style={{ marginTop: '1.6rem' }}
-          >
-            {dates.map((isoDate) => {
-              const dt = parseISO(isoDate);
-              const label = format(dt, 'yyyy년 MM월 dd일 (EEE)', {
-                locale: ko,
-              });
+            <Flex
+              gap="6.4rem"
+              justify="center"
+              width="100%"
+              style={{ marginTop: '1.6rem' }}
+            >
+              {dates.map((isoDate) => {
+                const dt = parseISO(isoDate);
+                const label = format(dt, 'yyyy년 MM월 dd일 (EEE)', {
+                  locale: ko,
+                });
 
-              // 5) 해당 날짜 슬롯만 필터링
-              const scheduleListForDate = allSlots.filter(
-                (s) => s.date === isoDate
-              );
+                // 해당 날짜 슬롯만 필터링
+                const scheduleListForDate = allSlots.filter(
+                  (s) => s.date === isoDate
+                );
 
-              return (
-                <SelectableTimeTable
-                  key={isoDate}
-                  title={label}
-                  startHour={startHour}
-                  endHour={endHour}
-                  interval={interval}
-                  width="40rem"
-                  selectable={false}
-                  interviewSchedule={{
-                    isSelected: form.interviewSchedule?.isSelected ?? false,
-                    scheduleList: scheduleListForDate,
-                  }}
-                />
-              );
-            })}
-          </Flex>
-        </div>
+                // 해당 날짜의 시작/종료 시간 계산
+                const hours = scheduleListForDate.flatMap((s) => [
+                  parseInt(s.startTime.split(':')[0]!, 10),
+                  parseInt(s.endTime.split(':')[0]!, 10),
+                ]);
+                const startHour = Math.min(...hours);
+                const endHour = Math.max(...hours);
+
+                return (
+                  <SelectableTimeTable
+                    key={isoDate}
+                    title={label}
+                    startHour={startHour}
+                    endHour={endHour}
+                    interval={interval}
+                    width="40rem"
+                    selectable={false}
+                    interviewSchedule={{
+                      isSelected: form.interviewSchedule?.isSelected ?? false,
+                      scheduleList: scheduleListForDate,
+                    }}
+                  />
+                );
+              })}
+            </Flex>
+          </div>
+        )}
       </div>
     </Flex>
   );

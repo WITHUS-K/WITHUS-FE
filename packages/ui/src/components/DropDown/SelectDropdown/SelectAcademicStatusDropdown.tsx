@@ -45,7 +45,7 @@ export default function SelectAcademicStatusDropdown({
         />
       </Dropdown.Trigger>
 
-      <Dropdown.List width="16rem">
+      <Dropdown.NormalList width="16rem">
         {status.map((label) => (
           <Dropdown.Item
             key={label}
@@ -55,7 +55,7 @@ export default function SelectAcademicStatusDropdown({
             {label}
           </Dropdown.Item>
         ))}
-      </Dropdown.List>
+      </Dropdown.NormalList>
     </Dropdown>
   );
 }

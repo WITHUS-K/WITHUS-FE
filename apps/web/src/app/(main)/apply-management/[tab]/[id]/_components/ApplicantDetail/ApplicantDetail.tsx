@@ -7,7 +7,7 @@ import {
   AcademicStatus,
   AdditionalInfoForm,
 } from '@web/app/(main)/apply-management/add/_components/AdditionalInfoForm/AdditionalInfoForm';
-import { QuestionAndFileListForm } from '@web/app/(main)/apply-management/add/_components/QuestionFileListForm/QuestionFileListForm';
+import { QuestionAndFileListForm } from '@web/components/QuestionFileListForm/QuestionFileListForm';
 import type { DetailItem } from '@web/types/application';
 import * as styles from './ApplicantDetail.css';
 import { ApplicationDetail } from '@web/store/query/useApplicationDetailQuery';
@@ -17,28 +17,35 @@ interface ApplicantDetailProps {
 }
 
 export default function ApplicantDetail({ application }: ApplicantDetailProps) {
-  const textItems: DetailItem[] = application.documentAnswers.map((a, idx) => ({
-    isEssential: true,
-    type: 'text',
-    description: a.questionTitle,
-    responseTarget: idx,
-    typeInfo: { info: '공백포함', infoDetail: '500자' }, // 기존 구조에 맞춰 필요 시 추가
-  }));
+  const textItems: DetailItem[] = application.documentAnswers
+    .filter((a) => a.questionType === 'TEXT')
+    .map((a, idx) => ({
+      isEssential: true,
+      type: 'text',
+      description: a.questionTitle,
+      responseTarget: idx,
+      typeInfo: {
+        info: a.includeWhitespace ? '공백포함' : '공백제외',
+        infoDetail: `${a.textLimit}자`,
+      },
+      answer: a.answerText,
+    }));
 
   const fileItem: DetailItem[] = application.documentAnswers
     .filter((a) => a.questionType === 'FILE')
     .map((a, idx) => ({
       isEssential: true,
       type: 'file',
-      description: a.questionTitle, // questionTitle 사용
-      addDescription: a.questionDescription, // 필요시 질문 설명 사용
-      responseTarget: textItems.length + idx, // textItems 뒤 인덱스
-      typeInfo: { info: '1', infoDetail: '10' },
+      description: a.questionTitle,
+      addDescription: a.questionDescription,
+      responseTarget: textItems.length + idx,
+      typeInfo: { info: `${a.maxFileCount}`, infoDetail: `${a.maxFileSizeMb}` },
+      answer: a.answerText,
     }));
 
   const detailItems = [...textItems, ...fileItem];
 
-  const answers = application.documentAnswers.map((a) => a.answerText);
+  //const answers = application.documentAnswers.map((a) => a.answerText);
   const files = application.documentAnswers
     .filter((a) => a.questionType === 'FILE')
     .map((a) =>
@@ -120,7 +127,6 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
 
         <QuestionAndFileListForm
           detailItems={detailItems}
-          answers={answers}
           files={files}
           onAnswerChange={() => {}}
           onFileChange={() => {}}

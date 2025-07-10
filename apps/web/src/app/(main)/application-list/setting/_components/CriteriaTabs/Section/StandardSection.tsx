@@ -48,7 +48,7 @@ export default function StandardSection({ label, standardName }: Props) {
       : '만족, 보통, 불만족, 세 가지 선택지로 평가할 수 있는 항목입니다.';
 
   return (
-    <Flex direction="column" gap="1.6rem" align="flexStart">
+    <Flex direction="column" gap="1.6rem" align="flexStart" width="100%">
       <Text variant="md1_text_semibold" color="grayscale70">
         {label} <span style={{ color: 'red' }}>*</span>
       </Text>
@@ -57,6 +57,7 @@ export default function StandardSection({ label, standardName }: Props) {
         direction="column"
         gap="1.6rem"
         align="flexStart"
+        width="100%"
         className={styles.standardSection}
       >
         <Flex align="center" gap="1.2rem">

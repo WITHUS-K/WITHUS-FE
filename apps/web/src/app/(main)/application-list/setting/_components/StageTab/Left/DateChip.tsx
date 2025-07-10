@@ -14,7 +14,7 @@ interface Props {
   placeholder?: string;
   selected?: boolean;
   disabled?: boolean;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 export function DateChip({

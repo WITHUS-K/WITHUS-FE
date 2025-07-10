@@ -7,6 +7,7 @@ import { SettingContext } from './_context/SettingContext';
 const initialForm: FormValues = {
   title: '',
   basicInfo: {
+    profile: false,
     birthDate: false,
     gender: false,
     address: false,

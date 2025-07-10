@@ -1,9 +1,7 @@
 // src/web/store/mutation/useCreateApplication.ts
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
-import { getClientSideTokens } from '@web/utils/getClientSideTokens';
-import { sanitizeFileName } from '@web/utils/serializers';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // ——— 요청 DTO 타입 ———
 export interface CreateApplicationRequest {
@@ -46,6 +44,8 @@ export interface CreateApplicationResponse {
  * 지원서 생성 API 호출 훅
  */
 export function useCreateApplication() {
+  const queryClient = useQueryClient();
+
   return useMutation<
     CreateApplicationResponse,
     Error,
@@ -110,6 +110,17 @@ export function useCreateApplication() {
       const json = (await res.json()) as CreateApplicationResponse;
       console.log('API 응답 JSON:', json);
       return json;
+    },
+
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          'admin',
+          'applications',
+          'recruitment',
+          variables.payload.recruitmentId,
+        ],
+      });
     },
   });
 }

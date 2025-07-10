@@ -148,6 +148,7 @@ export const commentInput = style({
   whiteSpace: 'pre-wrap',
   wordBreak: 'break-word',
   overflowWrap: 'break-word',
+  resize: 'none',
   color: vars.colors.grayscale90,
   selectors: {
     '&::placeholder': {

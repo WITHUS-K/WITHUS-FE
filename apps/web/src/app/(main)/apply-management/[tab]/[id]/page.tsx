@@ -17,6 +17,7 @@ export default function Page() {
 
   const { data, isLoading, isError } = useApplicationDetailQuery(applicationId);
 
+  console.log('관리자 지원서', data);
   if (isError || !data) {
     return <div>지원서 정보를 불러올 수 없습니다.</div>;
   }

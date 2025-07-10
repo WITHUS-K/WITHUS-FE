@@ -1,11 +1,13 @@
-// components/StageTab/stageTab.css.ts
-import { style, styleVariants } from '@vanilla-extract/css';
+import { style } from '@vanilla-extract/css';
 import { vars, fontStyles } from '@repo/theme';
 
 export const container = style({
   display: 'flex',
   gap: '2.4rem',
   width: '100%',
+  position: 'relative',
+  marginTop: '4rem',
+  paddingBottom: '5rem',
 });
 
 // ── LEFT PANEL ─────────────────────────────────────────────────────────────────

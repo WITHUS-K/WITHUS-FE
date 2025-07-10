@@ -1,14 +1,15 @@
 'use client';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import {
   SelectableTimeTable,
   TimeRange,
 } from '@web/components/TimeTable/SelectableTimeTable';
-import { parseISO, format } from 'date-fns';
 import type { InterviewScheduleItem } from '@web/types/application';
 import { safeFormatDotDate } from '@web/utils/application';
+import { useFormFieldStatus } from '@web/app/apply/[organization]/[slug]/_context/FormFieldStatusContext';
+import { focusableWrapper } from '@web/app/apply/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
 
 interface InterviewScheduleFormProps {
   dates: string[];
@@ -25,37 +26,22 @@ export function InterviewScheduleForm({
   selectedScheduleList,
   onScheduleChange,
 }: InterviewScheduleFormProps) {
-  // allRanges: 모든 날짜의 모든 TimeRange
-  const allRanges = useMemo(
-    () => Object.values(scheduleMap).flat(),
-    [scheduleMap]
-  );
-
-  // startHour: 가장 이른 시작 시간의 시(hour) 부분
-  const startHour = useMemo(() => {
-    if (allRanges.length === 0) return 0;
-    return Math.min(
-      ...allRanges.map((r) => parseInt(r.startTime.split(':')[0]!, 10))
-    );
-  }, [allRanges]);
-
-  // endHour: 가장 늦은 종료 시간의 시(hour) 부분
-  const endHour = useMemo(() => {
-    if (allRanges.length === 0) return 24;
-    return Math.max(
-      ...allRanges.map((r) => parseInt(r.endTime.split(':')[0]!, 10))
-    );
-  }, [allRanges]);
+  const scheduleStatus = useFormFieldStatus('interview-schedule');
 
   return (
-    <div style={{ width: '100%' }}>
+    <div id="interview-schedule" tabIndex={-1} className={focusableWrapper}>
       <Flex gap="0.4rem" direction="column">
-        <Text variant="md1_text_semibold" color="grayscale70">
-          면접 가능 일정 투표
-        </Text>
+        <Flex gap="0.4rem">
+          <Text variant="md1_text_semibold" color="grayscale70">
+            면접 가능 일정 선택
+          </Text>
+          <Text variant="md2_text_semibold" color="error">
+            *
+          </Text>
+        </Flex>
         <Text variant="sm_caption_medium" color="grayscale40">
-          아래 일정 중 면접이 가능한 모든 시간대를 드래그로 등록해주세요. (면접
-          시간: 15분 소요)
+          아래 일정 중 면접이 가능한 모든 시간대를 드래그/클릭하여 등록해주세요.
+          (면접 시간: {duration}분 소요)
         </Text>
       </Flex>
 
@@ -66,60 +52,44 @@ export function InterviewScheduleForm({
         style={{ marginTop: '1.6rem' }}
       >
         {dates.map((dateStr) => {
-          const label = safeFormatDotDate(dateStr, 'yyyy년 MM월 dd일 (EEE)');
+          const available = scheduleMap[dateStr] ?? [];
+          const startHour = available.length
+            ? Math.min(...available.map((r) => parseInt(r.startTime, 10)))
+            : 0;
+          const endHour = available.length
+            ? Math.max(...available.map((r) => parseInt(r.endTime, 10)))
+            : 24;
+          const title = safeFormatDotDate(dateStr, 'yyyy년 MM월 dd일 (EEE)');
 
-          const selectedForDate = selectedScheduleList.filter(
-            (item) => item.date === dateStr
-          );
-          // (3) 가능한 그리드: scheduleMap
-          const availableForDate = scheduleMap[dateStr] ?? [];
+          const handleChange = (trs: TimeRange[]) => {
+            const items: InterviewScheduleItem[] = trs.map((r) => ({
+              date: dateStr,
+              startTime: r.startTime,
+              endTime: r.endTime,
+            }));
+            onScheduleChange(dateStr, items);
+            items.length
+              ? scheduleStatus.setCompleted()
+              : scheduleStatus.setDefault();
+          };
 
           return (
             <SelectableTimeTable
               key={dateStr}
-              title={label}
+              title={title}
               startHour={startHour}
               endHour={endHour}
               interval={duration}
               width="40rem"
               interviewSchedule={{
                 isSelected: true,
-                scheduleList: availableForDate.map((r) => ({
+                scheduleList: available.map((r) => ({
                   date: dateStr,
                   startTime: r.startTime,
                   endTime: r.endTime,
-                })), //
+                })),
               }}
-              onRangeSelect={(range) => {
-                let updated: InterviewScheduleItem[];
-                if (range) {
-                  const exists = selectedForDate.some(
-                    (r) =>
-                      r.startTime === range.startTime &&
-                      r.endTime === range.endTime
-                  );
-                  const nextSet = exists
-                    ? selectedForDate.filter(
-                        (r) =>
-                          !(
-                            r.startTime === range.startTime &&
-                            r.endTime === range.endTime
-                          )
-                      )
-                    : [
-                        ...selectedForDate,
-                        {
-                          date: dateStr,
-                          startTime: range.startTime,
-                          endTime: range.endTime,
-                        },
-                      ];
-                  updated = nextSet;
-                } else {
-                  updated = [];
-                }
-                onScheduleChange(dateStr, updated);
-              }}
+              onSelectionChange={handleChange}
             />
           );
         })}

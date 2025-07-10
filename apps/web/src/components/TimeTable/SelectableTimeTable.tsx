@@ -1,14 +1,11 @@
 'use client';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import clsx from 'clsx';
 import { TimeTable, TimeTableProps } from './TimeTable';
-import {
-  useSelectableRange,
-  Range as RowRange,
-} from '../../hooks/useRangeSelection';
+import { useSelectableRanges, Range } from '../../hooks/useRangeSelection';
 import { rangeToTimeRange, parseToMin } from '@web/utils/time';
 import * as styles from './TimeTable.css';
-import { InterviewSchedule } from '@web/types/application';
+import type { InterviewSchedule } from '@web/types/application';
 
 export interface TimeRange {
   startTime: string;
@@ -17,17 +14,15 @@ export interface TimeRange {
 
 export interface SelectableTimeTableProps
   extends Omit<TimeTableProps, 'renderCell'> {
-  onRangeSelect?: (range: TimeRange | null) => void;
+  onSelectionChange?: (ranges: TimeRange[]) => void;
   renderCell?: (row: number) => React.ReactNode;
   interviewSchedule?: InterviewSchedule;
-
-  /** 선택(클릭·드래그) 가능 여부. false 면 그냥 보여주기만 함 */
   selectable?: boolean;
 }
 
 export function SelectableTimeTable({
   selectable = true,
-  onRangeSelect,
+  onSelectionChange,
   renderCell,
   interval,
   startHour,
@@ -36,59 +31,40 @@ export function SelectableTimeTable({
   ...ttProps
 }: SelectableTimeTableProps) {
   const cellRenderer = renderCell ?? (() => null);
-
-  // 선택 가능 모드일 때만 useSelectableRange
-  const { range, handlers } = selectable
-    ? useSelectableRange((rowRange) => {
-        if (!rowRange) return onRangeSelect?.(null);
-        onRangeSelect?.(rangeToTimeRange(rowRange, startHour, interval));
-      })
-    : {
-        range: null,
-        handlers: {
-          onMouseDown: () => {},
-          onMouseEnter: () => {},
-          onClick: () => {},
-        },
-      };
-
-  // 불가능한 row 인덱스 계산
   const disabledRows = useMemo(() => {
-    if (!interviewSchedule)
-      return new Array((endHour - startHour) * (60 / interval)).fill(false);
-
-    const totalRows = (endHour - startHour) * (60 / interval);
-    return Array.from({ length: totalRows }, (_, row) => {
+    const total = (endHour - startHour) * (60 / interval);
+    if (!interviewSchedule) return Array(total).fill(false);
+    return Array.from({ length: total }, (_, row) => {
       const cellStart = startHour * 60 + row * interval;
       const cellEnd = cellStart + interval;
-
-      const ok = interviewSchedule.scheduleList.some((slot) => {
+      return !interviewSchedule.scheduleList.some((slot) => {
         const s = parseToMin(slot.startTime);
         const e = parseToMin(slot.endTime);
         return cellStart >= s && cellEnd <= e;
       });
-      return !ok;
     });
   }, [interviewSchedule, startHour, endHour, interval]);
 
-  const handleMouseDown = useCallback(
-    (row: number) => {
-      if (selectable && !disabledRows[row]) {
-        handlers.onMouseDown(row);
-      }
-    },
-    [selectable, disabledRows, handlers]
+  const { ranges, current, handlers } = useSelectableRanges(
+    disabledRows,
+    (newRanges: Range[]) => {
+      const trs = newRanges.map((r) =>
+        rangeToTimeRange(r, startHour, interval)
+      );
+      onSelectionChange?.(trs);
+    }
   );
 
-  const selectedRows = useMemo(
-    () =>
-      selectable
-        ? disabledRows.map((_, row) =>
-            Boolean(range && row >= range.start && row <= range.end)
-          )
-        : disabledRows.map(() => false),
-    [selectable, disabledRows, range]
-  );
+  const selectedRows = useMemo(() => {
+    const sel = Array(disabledRows.length).fill(false);
+    ranges.forEach((r) => {
+      for (let i = r.start; i <= r.end; i++) sel[i] = true;
+    });
+    if (current) {
+      for (let i = current.start; i <= current.end; i++) sel[i] = true;
+    }
+    return sel;
+  }, [ranges, current, disabledRows.length]);
 
   return (
     <TimeTable
@@ -96,21 +72,18 @@ export function SelectableTimeTable({
       interval={interval}
       startHour={startHour}
       endHour={endHour}
-      hideRowBorder={selectedRows.map((sel, i) => sel || disabledRows[i])}
+      hideRowBorder={selectedRows.map((s, i) => s || disabledRows[i])}
       renderCell={(row) => {
         const inRange = selectedRows[row];
         const isDisabled = disabledRows[row];
         const boundaryMinute = (startHour * 60 + (row + 1) * interval) % 60;
         const isDotted = boundaryMinute !== 0;
 
-        // view 모드(selectable=false) 면, inRange 절대 안 붙음
         const wrapperClass = clsx(
           styles.cellWrapper,
-          // 선택 모드 & 선택된 row
           selectable &&
             inRange &&
             (isDotted ? styles.selectedDotted : styles.selectedSolid),
-          // 불가능한 시간(둘 다 모드 공통)
           isDisabled &&
             (isDotted ? styles.unavailableDotted : styles.unavailableSolid)
         );
@@ -119,18 +92,9 @@ export function SelectableTimeTable({
           <div
             key={row}
             className={wrapperClass}
-            // selectable=true 일 때만 이벤트 연결
-            onMouseDown={() => handleMouseDown(row)}
-            onMouseEnter={
-              !isDisabled && selectable
-                ? () => handlers.onMouseEnter(row)
-                : undefined
-            }
-            onClick={
-              !isDisabled && selectable
-                ? () => handlers.onClick(row)
-                : undefined
-            }
+            onMouseDown={() => selectable && handlers.onMouseDown(row)}
+            onMouseEnter={() => selectable && handlers.onMouseEnter(row)}
+            onClick={() => selectable && handlers.onClick(row)}
           >
             {cellRenderer(row)}
           </div>

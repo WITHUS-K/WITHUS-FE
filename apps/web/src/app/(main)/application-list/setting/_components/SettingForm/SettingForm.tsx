@@ -1,6 +1,6 @@
 'use client';
-import React, { useCallback, useContext, useEffect } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import { useForm, FormProvider, useWatch } from 'react-hook-form';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Breadcrumb } from '@repo/ui/Breadcrumb';
@@ -13,7 +13,6 @@ import { SettingContext } from '@web/app/(main)/application-list/setting/_contex
 import { FormValues } from '@web/types/application';
 import FormTab from '@web/app/(main)/application-list/setting/_components/FormTab/FormTab';
 import StageTab from '@web/app/(main)/application-list/setting/_components/StageTab/StageTab';
-import CriteriaTab from '@web/app/(main)/application-list/setting/_components/CriteriaTab/CriteriaTab';
 import { useDraftRecruitmentMutation } from '@web/store/mutation/useDraftRecruitmentMutation';
 import { usePublishRecruitmentMutation } from '@web/store/mutation/usePublishRecruitmentMutation';
 import { convertFormToRequest } from '@web/utils/convertFormToRequest';
@@ -21,39 +20,72 @@ import * as styles from './SettingForm.css';
 import { useUserStore } from '@web/store/state/userStore';
 import * as C from '@web/constants/application';
 import { useToast } from '@repo/ui/hooks';
+import CriteriaDocsTab from '../CriteriaTabs/CriteriaDocsTab/CriteriaDocsTab';
+import CriteriaInterviewTab from '../CriteriaTabs/CriteriaInterviewTab/CriteriaInterviewTab';
 
-type TabKey = 'form' | 'stages' | 'criteria';
-const TAB_KEYS: TabKey[] = ['form', 'stages', 'criteria'];
+type TabKey = 'form' | 'stages' | 'docs' | 'interview';
+const TAB_KEYS: TabKey[] = ['form', 'stages', 'docs', 'interview'];
 
 interface SettingFormProps {
   existentForm?: Boolean;
+  slug?: string;
+  organization?: string;
 }
 
-export function SettingForm({ existentForm }: SettingFormProps) {
+export function SettingForm({
+  existentForm,
+  slug,
+  organization,
+}: SettingFormProps) {
+  const scrollAreaRef = useRef<HTMLDivElement | null>(null);
+
+  const didInitCriteria = useRef(false);
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeTab = (searchParams.get('tab') as TabKey) || 'form';
+
+  const isTemporaryParam = searchParams.get('isTemporary');
+  const isTemporary = isTemporaryParam === 'true';
+
   const ctx = useContext(SettingContext)!;
   const toast = useToast();
 
   const organizationId = useUserStore.getState().organizationId!;
+  //console.log('id', organizationId);
 
   const draftMutation = useDraftRecruitmentMutation();
   const publishMutation = usePublishRecruitmentMutation();
 
   const initial = ctx.form;
+
+  const customParts = initial.applicationParts?.isSelected
+    ? initial.applicationParts.parts
+    : [];
+  // 최소 하나의 '공통' 섹션이 필요하므로
+  const sections = customParts.length > 0 ? customParts : [null];
+
+  const seededPaperEvaluateItems =
+    initial.paperEvaluateItems && initial.paperEvaluateItems.length > 0
+      ? initial.paperEvaluateItems
+      : sections.map((partName) => ({
+          positionName: partName,
+          items: [{ evaluate: '', evaluateDetail: '' }],
+        }));
+
+  const seededInterviewEvaluateItems =
+    initial.interviewEvaluateItems && initial.interviewEvaluateItems.length > 0
+      ? initial.interviewEvaluateItems
+      : sections.map((partName) => ({
+          positionName: partName,
+          items: [{ evaluate: '', evaluateDetail: '' }],
+        }));
+
   const seeded: FormValues = {
     ...initial,
-    paperEvaluateItems:
-      initial.paperEvaluateItems && initial.paperEvaluateItems.length > 0
-        ? initial.paperEvaluateItems
-        : [{ evaluate: '', evaluateDetail: '' }],
-    interviewEvaluateItems:
-      initial.interviewEvaluateItems &&
-      initial.interviewEvaluateItems.length > 0
-        ? initial.interviewEvaluateItems
-        : [{ evaluate: '', evaluateDetail: '' }],
+    paperEvaluateItems: seededPaperEvaluateItems,
+    interviewEvaluateItems: seededInterviewEvaluateItems,
 
     detailItems:
       initial.detailItems && initial.detailItems.length > 0
@@ -81,6 +113,7 @@ export function SettingForm({ existentForm }: SettingFormProps) {
     shouldUnregister: false,
   });
 
+  console.log('폼', ctx.form);
   useEffect(() => {
     if (existentForm) {
       const next = ctx.form;
@@ -88,7 +121,29 @@ export function SettingForm({ existentForm }: SettingFormProps) {
     }
   }, [ctx.form, methods]);
 
-  // 2. watch 해서 필드값 가져오기
+  const parts = methods.watch('applicationParts.parts') ?? [];
+
+  useEffect(() => {
+    if (existentForm) return;
+
+    // Context에 저장된 값이 있으면 초기화하지 않음
+    const hasSaved = ctx.form.paperEvaluateItems?.some((section) =>
+      section.items.some((item) => item.evaluate.trim() !== '')
+    );
+    if (hasSaved) return;
+
+    const sections = parts.length > 0 ? [null, ...parts] : [null];
+    const newItems = sections.map((p) => ({
+      positionName: p,
+      items: [{ evaluate: '', evaluateDetail: '' }],
+    }));
+
+    methods.setValue('paperEvaluateItems', newItems, { shouldValidate: false });
+    methods.setValue('interviewEvaluateItems', newItems, {
+      shouldValidate: false,
+    });
+  }, [parts, methods, existentForm, ctx.form.paperEvaluateItems]);
+
   const title = methods.watch('title') || '';
   const basicInfo = methods.watch('basicInfo')!;
   const detailItems = methods.watch('detailItems')!;
@@ -101,7 +156,9 @@ export function SettingForm({ existentForm }: SettingFormProps) {
   const last = pathname.split('/').pop()!;
   const recruitmentId = last === 'new' ? null : Number(last);
 
-  // 3. 개별 검증
+  const hasParts = methods.watch('applicationParts.isSelected') === true;
+
+  // 개별 검증
   const isTitleOk = !!title.trim();
   const isBasicInfoOk = true;
   const isDetailItemsOk =
@@ -112,12 +169,28 @@ export function SettingForm({ existentForm }: SettingFormProps) {
   const isFinalOk = !!finalResultDate;
   const isPaperOk =
     paperItems.length > 0 &&
-    paperItems.every((p) => p.evaluate.trim() && p.evaluateDetail.trim());
+    paperItems.every((section) => {
+      if (section.positionName === null && hasParts) {
+        return true; // 파트가 있으면 공통 무시
+      }
+      return (
+        section.items.length > 0 &&
+        section.items.every((item) => item.evaluate.trim().length > 0)
+      );
+    });
   const isInterviewOk =
     interviewItems.length > 0 &&
-    interviewItems.every((i) => i.evaluate.trim() && i.evaluateDetail.trim());
+    interviewItems.every((section) => {
+      if (section.positionName === null && hasParts) {
+        return true; // 파트가 있으면 공통 무시
+      }
+      return (
+        section.items.length > 0 &&
+        section.items.every((item) => item.evaluate.trim().length > 0)
+      );
+    });
 
-  // 4. 최종 버튼 활성 조건
+  // 최종 버튼 활성 조건
   const canSubmit =
     isTitleOk &&
     isBasicInfoOk &&
@@ -128,34 +201,37 @@ export function SettingForm({ existentForm }: SettingFormProps) {
     isPaperOk &&
     isInterviewOk;
 
-  // 5. 폼 변경 시 Context 동기화
-  /*useEffect(() => {
-    const sub = methods.watch(() => {
-      ctx.setForm(methods.getValues());
-    });
-    return () => sub.unsubscribe();
-  }, [methods, ctx]);*/
-
-  // 6. 탭 & 버튼 핸들러
+  // 탭 & 버튼 핸들러
   const onTabChange = (tab: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', tab);
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const handlePreview = () => {
+  const handlePreview = useCallback(() => {
+    ctx.setForm(methods.getValues());
+
     router.push(`${pathname}/preview`);
-  };
+  }, [ctx, methods, router, pathname]);
+
+  const handleCopyLink = useCallback(() => {
+    if (!slug || !organization) return;
+    const url = `${window.location.origin}/apply/${organization}/${slug}`;
+    navigator.clipboard
+      .writeText(url)
+      .then(() => toast.success('응답자에게 보낼 링크가 복제됐습니다.'))
+      .catch(() => toast.error('링크 복사에 실패했습니다.'));
+  }, [slug, organization, toast]);
 
   const handleSave = useCallback(() => {
     const values = methods.getValues();
     const payload = convertFormToRequest(values, recruitmentId, organizationId);
-    // console.log('저장 값:', payload);
+    //console.log('임시 저장:', payload);
     draftMutation.mutate(payload, {
       onSuccess: (res) => {
-        if (pathname.endsWith('/new')) {
+        /*if (pathname.endsWith('/new')) {
           router.replace(`/application-list/setting/${res.recruitmentId}`);
-        }
+        }*/
         toast.success('임시 저장 되었습니다.');
       },
       onError: (err) => {
@@ -167,6 +243,7 @@ export function SettingForm({ existentForm }: SettingFormProps) {
   const onSubmit = useCallback(
     (data: FormValues) => {
       const payload = convertFormToRequest(data, recruitmentId, organizationId);
+      // console.log('최종 저장:', payload);
       publishMutation.mutate(payload, {
         onSuccess: () => {
           router.push('/application-list');
@@ -181,14 +258,20 @@ export function SettingForm({ existentForm }: SettingFormProps) {
       <div className={styles.container}>
         <Breadcrumb style={{ marginTop: '1.2rem' }}>
           <Breadcrumb.Item asChild>
-            <Link href="/application-list">지원서 리스트</Link>
+            <Link href="/application-list">지원서 목록</Link>
           </Breadcrumb.Item>
-          <Breadcrumb.Item active>지원서 상세 설정</Breadcrumb.Item>
+          <Breadcrumb.Item active>지원서 생성</Breadcrumb.Item>
         </Breadcrumb>
 
-        <Flex align="center" width="100%" justify="spaceBetween">
+        <Flex
+          align="center"
+          width="100%"
+          justify="spaceBetween"
+          marginTop="2.4rem"
+          marginBottom="2.4rem"
+        >
           <Text variant="xl_title_semibold" color="black">
-            지원서 상세 설정
+            지원서 생성
           </Text>
           <Flex gap="0.8rem">
             <Button
@@ -196,6 +279,8 @@ export function SettingForm({ existentForm }: SettingFormProps) {
               leftIcon={<IcLinkCopy />}
               size="40"
               width="14.6rem"
+              disabled={isTemporary}
+              onClick={handleCopyLink}
             >
               응답자 링크
             </Button>
@@ -214,6 +299,7 @@ export function SettingForm({ existentForm }: SettingFormProps) {
               size="40"
               width="13.2rem"
               onClick={handleSave}
+              disabled={!isTemporary}
             >
               임시 저장
             </Button>
@@ -239,7 +325,7 @@ export function SettingForm({ existentForm }: SettingFormProps) {
         />
 
         {/* Form */}
-        <div className={styles.scrollArea}>
+        <div className={styles.scrollArea} ref={scrollAreaRef}>
           <form
             id="application-form"
             onSubmit={methods.handleSubmit(onSubmit)}
@@ -251,8 +337,11 @@ export function SettingForm({ existentForm }: SettingFormProps) {
             }}
           >
             {activeTab === 'form' && <FormTab />}
-            {activeTab === 'stages' && <StageTab />}
-            {activeTab === 'criteria' && <CriteriaTab />}
+            {activeTab === 'stages' && (
+              <StageTab scrollContainerRef={scrollAreaRef} />
+            )}
+            {activeTab === 'docs' && <CriteriaDocsTab />}
+            {activeTab === 'interview' && <CriteriaInterviewTab />}
           </form>
         </div>
       </div>

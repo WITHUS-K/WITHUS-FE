@@ -28,6 +28,13 @@ export const rowItemAuto = style({
   flex: '0 0 auto',
 });
 
+export const rowItemAuto1 = style({
+  display: 'flex',
+  alignItems: 'center',
+  //gap: '1.6rem',
+  flex: '0 0 auto',
+});
+
 export const fieldGrowForSchool = style({
   flex: '1 1 0',
   minWidth: 0,
@@ -41,4 +48,3 @@ export const fieldGrow = style({
   flex: '1 0 0',
   width: '100%',
 });
-

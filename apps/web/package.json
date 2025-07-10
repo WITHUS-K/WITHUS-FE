@@ -41,6 +41,8 @@
     "date-fns": "^4.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.5",
+    "framer-motion": "^12.20.5",
+    "gsap": "^3.13.0",
     "overlay-kit": "^1.7.0",
     "slate": "^0.114.0",
     "slate-history": "^0.113.1",

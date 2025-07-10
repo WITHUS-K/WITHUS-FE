@@ -49,6 +49,11 @@ export default function DetailItemCard({ index, onRemove }: Props) {
 
   return (
     <div className={styles.itemWrapper}>
+      {/* 응답 대상 + 드롭다운 컨트롤 */}
+      <div className={styles.controlsContainer}>
+        <ResponseTargets index={index} />
+        <TypeControls index={index} type={type} />
+      </div>
       {/* 헤더 + input */}
       <div className={styles.headerInputContainer}>
         <Flex align="center" justify="spaceBetween" width="100%">
@@ -76,7 +81,9 @@ export default function DetailItemCard({ index, onRemove }: Props) {
           </Flex>
           <Flex align="center" gap="1.6rem">
             <button type="button" onClick={onRemove}>
-              <IcTrash width={32} height={32} />
+              <Text variant="md1_text_semibold" color="grayscale40">
+                삭제
+              </Text>
             </button>
 
             <Flex align="center" gap="0.8rem" height="3.2rem">
@@ -102,12 +109,6 @@ export default function DetailItemCard({ index, onRemove }: Props) {
         ) : (
           <FileDetail index={index} />
         )}
-      </div>
-
-      {/* 응답 대상 + 드롭다운 컨트롤 */}
-      <div className={styles.controlsContainer}>
-        <ResponseTargets index={index} />
-        <TypeControls index={index} type={type} />
       </div>
     </div>
   );

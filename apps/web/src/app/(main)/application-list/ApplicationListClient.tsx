@@ -9,6 +9,7 @@ import { RecruitmentCard } from './_components/RecruitmentCard/RecruitmentCard';
 import { useDeleteRecruitmentMutation } from '@web/store/mutation/useDeleteRecruitmentMutation';
 import { useRecruitmentsListQuery } from '@web/store/query/useRecruitmentsListQuery';
 import { useModal, useToast } from '@repo/ui/hooks';
+import { RecruitmentDto } from '@web/types/recruitment';
 
 export default function ApplicationListClient() {
   const router = useRouter();
@@ -21,14 +22,17 @@ export default function ApplicationListClient() {
     isFetching,
     refetch,
   } = useRecruitmentsListQuery(search);
+  //console.log('리스트', recruitments);
 
   const deleteMutation = useDeleteRecruitmentMutation();
 
   const onSearchChange = (e: ChangeEvent<HTMLInputElement>) =>
     setSearch(e.target.value);
 
-  const handleModify = (recruitmentId: number) => {
-    router.push(`/application-list/setting/${recruitmentId}`);
+  const handleModify = (item: RecruitmentDto) => {
+    router.push(
+      `/application-list/setting/${item.recruitmentId}?isTemporary=${item.isTemporary}`
+    );
   };
 
   const handleCopy = (slug: string, organization: string) => {
@@ -43,17 +47,16 @@ export default function ApplicationListClient() {
     <Flex
       direction="column"
       paddingLeft="2.4rem"
-      paddingTop="1.8rem"
+      paddingTop="2.4rem"
       paddingRight="2.4rem"
-      paddingBottom="1.8rem"
       width="100%"
     >
-      <Breadcrumb style={{ marginBottom: '2.4rem' }}>
-        <Breadcrumb.Item active>지원서 리스트</Breadcrumb.Item>
+      <Breadcrumb style={{ marginBottom: '0.4rem' }}>
+        <Breadcrumb.Item active>지원서 목록</Breadcrumb.Item>
       </Breadcrumb>
 
       <Text variant="xl_title_semibold" color="black">
-        지원서 리스트
+        지원서 목록
       </Text>
 
       <Flex
@@ -95,13 +98,20 @@ export default function ApplicationListClient() {
 
       <Flex direction="column" gap="1.2rem" marginTop="1.2rem" width="100%">
         {recruitments?.map((item) => {
-          const deadline = new Date(item.documentDeadline.replace(/\./g, '-'));
           const today = new Date();
-          const diffDays = Math.ceil(
-            (deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-          );
 
-          //console.log(item);
+          let diffDays: number | null = null;
+
+          if (item.documentDeadline) {
+            const deadline = new Date(
+              item.documentDeadline.replace(/\./g, '-')
+            );
+            diffDays = Math.ceil(
+              (deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+            );
+          }
+
+          //console.log('리스트', item);
 
           const handleDelete = () => {
             confirm({
@@ -121,12 +131,13 @@ export default function ApplicationListClient() {
               recruitTitle={item.title}
               dueDate={item.documentDeadline}
               recruitLink={`${window.location.origin}/apply/${item.organizationName}/${item.urlSlug}`}
-              count={diffDays}
+              count={diffDays ?? 0}
               currentApplicantList={item.positionSummaries.map((ps) => ({
                 position: ps.name,
                 numOfApplicant: ps.applicantCount,
               }))}
-              onModify={() => handleModify(item.recruitmentId)}
+              isTemporary={item.isTemporary}
+              onModify={() => handleModify(item)}
               onCopy={() => handleCopy(item.urlSlug, item.organizationName)}
               onDelete={handleDelete}
             />

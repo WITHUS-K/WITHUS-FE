@@ -23,12 +23,14 @@ export interface RecruitmentCardProps {
   recruitLink: string;
   /** 포지션별 지원자 정보 리스트 */
   currentApplicantList: Applicant[];
+  isTemporary: boolean;
   onModify?: () => void;
   onCopy?: () => void;
   onDelete?: () => void;
 }
 
 export const RecruitmentCard = ({
+  isTemporary,
   count,
   recruitTitle,
   dueDate,
@@ -38,20 +40,30 @@ export const RecruitmentCard = ({
   onCopy,
   onDelete,
 }: RecruitmentCardProps) => {
+  //console.log("임시저장", isTemporary)
   return (
     <div className={styles.cardWrapper}>
       {/* 왼쪽 */}
       <Flex direction="column" marginBottom="0.6rem">
         <Flex gap="0.8rem" align="center">
-          {count > 0 ? (
+          {isTemporary ? (
+            <Chip bg="primary50" color="white">
+              작성중
+            </Chip>
+          ) : count > 0 ? (
             <Chip bg="primary50" color="white">
               D-{count}
+            </Chip>
+          ) : count === 0 ? (
+            <Chip bg="primary50" color="white">
+              D-DAY
             </Chip>
           ) : (
             <Chip bg="grayscale30" color="white">
               마감
             </Chip>
           )}
+
           <Text variant="md1_text_semibold" color="grayscale90">
             {recruitTitle}
           </Text>

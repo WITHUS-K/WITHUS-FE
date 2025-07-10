@@ -1,8 +1,5 @@
 'use client';
-import {
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type {
   DraftRecruitmentRequest,
   DraftRecruitmentResult,
@@ -13,13 +10,20 @@ import { POST } from '@web/api';
 export function useDraftRecruitmentMutation() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: DraftRecruitmentRequest) =>
-      POST<DraftRecruitmentResult>(
+    mutationFn: (body: DraftRecruitmentRequest) => {
+      console.log('▶ Draft 요청 바디:', body);
+      return POST<DraftRecruitmentResult>(
         'api/v1/recruitments/draft',
         body
-      ).then(res => res.result),
-    onSuccess: () => {
+      ).then((res) => res.result);
+    },
+    onSuccess: (result) => {
       qc.invalidateQueries({ queryKey: queryKeys.recruitments.list() });
+
+      qc.invalidateQueries({ queryKey: queryKeys.recruitment.list() });
+      qc.invalidateQueries({
+        queryKey: queryKeys.recruitment.detail(result.recruitmentId),
+      });
     },
   });
 }

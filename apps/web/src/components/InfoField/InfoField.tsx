@@ -68,6 +68,8 @@ export function InfoField({
             inputProps={{
               placeholder,
               disabled,
+              onFocus: inputProps?.onFocus,
+              onBlur: inputProps?.onBlur,
               ...inputProps,
             }}
             //width="100%"

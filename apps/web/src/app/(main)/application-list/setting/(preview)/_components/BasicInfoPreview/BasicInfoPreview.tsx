@@ -6,18 +6,25 @@ import { DateChip } from '@web/components/DateChip/DateChip';
 import { InfoField } from '@web/components/InfoField/InfoField';
 
 interface BasicInfoProps {
+  profile: boolean;
   gender: boolean;
   birthDate: boolean;
 }
 
-export function BasicInfoPreview({ gender, birthDate }: BasicInfoProps) {
+export function BasicInfoPreview({
+  gender,
+  birthDate,
+  profile,
+}: BasicInfoProps) {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div className={styles.imageContainer}>
-          <IcImage width={36} height={36} className={styles.imageIcon} />
-          <input type="file" disabled className={styles.imageInput} />
-        </div>
+        {profile && (
+          <div className={styles.imageContainer}>
+            <IcImage width={36} height={36} className={styles.imageIcon} />
+            <input type="file" disabled className={styles.imageInput} />
+          </div>
+        )}
 
         <div className={styles.contentColumn}>
           <div className={styles.row}>

@@ -7,6 +7,7 @@ import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 
 const LABELS = [
+  { key: 'profile', label: '사진' },
   { key: 'birthDate', label: '생년월일' },
   { key: 'gender', label: '성별' },
   { key: 'address', label: '주소' },
@@ -15,12 +16,7 @@ const LABELS = [
   { key: 'academicStatus', label: '학적 상태' },
 ] as const;
 
-const REQUIRED = [
-  '이름 (필수)',
-  '전화번호 (필수)',
-  '이메일 (필수)',
-  '사진 (필수)',
-] as const;
+const REQUIRED = ['이름 (필수)', '전화번호 (필수)', '이메일 (필수)'] as const;
 
 export default function SectionBasicInfo() {
   const { control } = useFormContext();
@@ -31,7 +27,7 @@ export default function SectionBasicInfo() {
         기본 정보 <span style={{ color: 'red' }}>*</span>
       </Text>
       <Text variant="sm_caption_medium" color="grayscale40">
-        아래 4가지 항목은 필수 항목입니다. 지원자들에게 추가로 제출받을 항목을
+        아래 3가지 항목은 필수 항목입니다. 지원자들에게 추가로 제출받을 항목을
         선택해주세요.
       </Text>
 

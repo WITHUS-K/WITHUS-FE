@@ -1,4 +1,3 @@
-// app/(main)/interview-evaluation/schedule/page.tsx
 'use client';
 
 import React, { useState, useCallback } from 'react';
@@ -53,18 +52,19 @@ export default function SchedulePage() {
   }, [availableTimeRanges]);
 
   // 3) 선택된 시간 범위 상태
-  const [selectedRange, setSelectedRange] = useState<TimeRange | null>(null);
+  const [selectedRanges, setSelectedRanges] = useState<TimeRange[]>([]);
   const registerMutation = useRegisterAvailabilitiesMutation(
     current.interviewId
   );
 
-  const handleRangeSelect = useCallback((range: TimeRange | null) => {
-    setSelectedRange(range);
+  // 콜백도 배열 받기
+  const handleSelectionChange = useCallback((ranges: TimeRange[]) => {
+    setSelectedRanges(ranges);
   }, []);
 
   // 4) 저장: confirm 모달 안에서 mutate 호출
   const handleSave = () => {
-    if (!selectedRange) return;
+    if (selectedRanges.length === 0) return;
 
     confirm({
       type: 'info',
@@ -74,17 +74,17 @@ export default function SchedulePage() {
       onConfirm: () => {
         const slots: string[] = [];
 
-        // 모든 날짜 순회
-        for (const range of availableTimeRanges) {
-          const dateIso = range.date.replace(/\./g, '-'); // "2025.05.20" -> "2025-05-20"
-          const start = new Date(`${dateIso}T${selectedRange.startTime}:00`);
-          const end = new Date(`${dateIso}T${selectedRange.endTime}:00`);
-          const durationMs = interviewDuration * 60 * 1000;
+        const date = dates[0];
+        const dateIso = date!.replace(/\./g, '-');
 
+        for (const { startTime, endTime } of selectedRanges) {
+          const start = new Date(`${dateIso}T${startTime}:00`);
+          const end = new Date(`${dateIso}T${endTime}:00`);
+          const step = interviewDuration * 60 * 1000;
           let cursor = start.getTime();
           while (cursor < end.getTime()) {
             slots.push(format(new Date(cursor), "yyyy-MM-dd'T'HH:mm:ss"));
-            cursor += durationMs;
+            cursor += step;
           }
         }
 
@@ -117,7 +117,7 @@ export default function SchedulePage() {
       <Flex gap="6.4rem" width="100%" justify="center">
         {dates.slice(0, 1).map((date) => {
           const slots = scheduleMap[date];
-          // label 예시: "2025-06-07 (일)"
+
           const label = format(
             parseISO(date.replace(/\./g, '-')),
             'yyyy-MM-dd (EEE)',
@@ -141,18 +141,15 @@ export default function SchedulePage() {
               interval={interviewDuration}
               selectable
               width="40rem"
-              // 여기에 allowedRanges 또는 비슷한 이름으로
-              // API에 따라 달라질 수 있지만,
-              // 컴포넌트가 지원한다면 꼭 전달해주세요.
               interviewSchedule={{
                 isSelected: true,
                 scheduleList: slots!.map((slot) => ({
-                  date, // the ISO date string for this table
+                  date,
                   startTime: slot.startTime,
                   endTime: slot.endTime,
                 })),
               }}
-              onRangeSelect={handleRangeSelect}
+              onSelectionChange={handleSelectionChange}
             />
           );
         })}
@@ -161,7 +158,7 @@ export default function SchedulePage() {
       <Button
         variant="main"
         size="48"
-        disabled={!selectedRange}
+        disabled={!selectedRanges.length}
         onClick={handleSave}
         width="24rem"
       >

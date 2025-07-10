@@ -1,4 +1,5 @@
 export interface BasicInfo {
+  profile: boolean;
   birthDate: boolean; // 생년월일
   gender: boolean; // 성별
   address: boolean; // 주소
@@ -25,6 +26,7 @@ export interface DetailItem {
     info: string;
     infoDetail: string;
   };
+  answer?: string;
 }
 
 export interface AnnouncementResult {
@@ -50,6 +52,12 @@ export interface EvaluationItem {
   // 평가 항목
   evaluate: string; // 평가 내용
   evaluateDetail: string; // 평가 상세 설명
+  positionName?: string | null;
+}
+
+export interface EvaluationSectionValues {
+  positionName: string | null;
+  items: { evaluate: string; evaluateDetail: string }[];
 }
 
 export interface ApplicationFormProps {
@@ -68,9 +76,9 @@ export interface ApplicationFormProps {
 
   // tab3
   paperEvaluateStandard: 'score' | 'level';
-  paperEvaluateItems: EvaluationItem[];
+  paperEvaluateItems: EvaluationSectionValues[];
   interviewEvaluateStandard: 'score' | 'level';
-  interviewEvaluateItems: EvaluationItem[];
+  interviewEvaluateItems: EvaluationSectionValues[];
 
   activeSection?: string;
 }

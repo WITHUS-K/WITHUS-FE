@@ -1,3 +1,4 @@
+'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
 
 export interface Range {
@@ -5,101 +6,157 @@ export interface Range {
   end: number;
 }
 
-export function useSelectableRange(
-  onRangeSelect: (range: Range | null) => void
+export function useSelectableRanges(
+  disabledRows: boolean[],
+  onChange: (ranges: Range[]) => void
 ) {
-  const [range, setRange] = useState<Range | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [ranges, setRanges] = useState<Range[]>([]);
   const origin = useRef<number | null>(null);
-  const prevRangeRef = useRef<Range | null>(null);
+  const prevRangesRef = useRef<Range[]>([]);
+  const isRemovingRef = useRef<boolean>(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [current, setCurrent] = useState<Range | null>(null);
+  const lastClick = useRef<number | null>(null);
 
   useEffect(() => {
     const handleMouseUp = () => {
-      if (isDragging) {
-        if (
-          range &&
-          prevRangeRef.current &&
-          range.start === prevRangeRef.current.start &&
-          range.end === prevRangeRef.current.end
-        ) {
-          setRange(null);
-          onRangeSelect(null);
-        } else {
-          onRangeSelect(range);
+      if (isDragging && origin.current !== null && current) {
+        const base = prevRangesRef.current;
+        const { start, end } = current;
+
+        const segments: Range[] = [];
+        let segStart: number | null = null;
+        for (let i = start; i <= end; i++) {
+          if (!disabledRows[i]) {
+            if (segStart === null) segStart = i;
+          } else if (segStart !== null) {
+            segments.push({ start: segStart, end: i - 1 });
+            segStart = null;
+          }
         }
+        if (segStart !== null) segments.push({ start: segStart, end });
+
+        let updated = [...base];
+        if (isRemovingRef.current) {
+          segments.forEach((seg) => {
+            updated = updated.filter(
+              (r) => !(r.start === seg.start && r.end === seg.end)
+            );
+          });
+        } else {
+          segments.forEach((seg) => {
+            const exists = updated.some(
+              (r) => r.start === seg.start && r.end === seg.end
+            );
+            if (!exists) updated.push(seg);
+          });
+        }
+
+        setRanges(updated);
+        onChange(updated);
       }
 
+      // 상태 초기화
       origin.current = null;
-      prevRangeRef.current = null;
+      prevRangesRef.current = [];
+      isRemovingRef.current = false;
       setIsDragging(false);
+      setCurrent(null);
+      lastClick.current = null;
     };
+
     window.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, range, onRangeSelect]);
+    return () => window.removeEventListener('mouseup', handleMouseUp);
+  }, [isDragging, current, disabledRows, onChange]);
 
   const onMouseDown = useCallback(
     (row: number) => {
-      prevRangeRef.current = range;
+      if (disabledRows[row]) return;
       origin.current = row;
+      prevRangesRef.current = ranges;
+      // 시작 셀이 이미 선택된 상태면 삭제 모드
+      isRemovingRef.current = ranges.some(
+        (r) => row >= r.start && row <= r.end
+      );
       setIsDragging(false);
+      setCurrent({ start: row, end: row });
     },
-    [range]
+    [disabledRows, ranges]
   );
 
   const onMouseEnter = useCallback((row: number) => {
     if (origin.current !== null) {
       setIsDragging(true);
-      const start = Math.min(origin.current, row);
-      const end = Math.max(origin.current, row);
-      setRange({ start, end });
+      setCurrent({
+        start: Math.min(origin.current, row),
+        end: Math.max(origin.current, row),
+      });
     }
   }, []);
 
   const onClick = useCallback(
     (row: number) => {
-      if (isDragging) return;
-      // 클릭만 했을 때 range 가 null 이면 새로 생성
-      if (!range) {
-        const r = { start: row, end: row };
-        setRange(r);
-        onRangeSelect(r);
-        return;
+      if (disabledRows[row]) return;
+
+      // 드래그 아님
+      if (!isDragging) {
+        // 두 번 클릭으로 range 토글
+        if (lastClick.current !== null && lastClick.current !== row) {
+          const s = Math.min(lastClick.current, row);
+          const e = Math.max(lastClick.current, row);
+          // s~e 구간을 disabledRows 제외하고 contiguous segments로 분할
+          const segments: Range[] = [];
+          let segStart: number | null = null;
+          for (let i = s; i <= e; i++) {
+            if (!disabledRows[i]) {
+              if (segStart === null) segStart = i;
+            } else if (segStart !== null) {
+              segments.push({ start: segStart, end: i - 1 });
+              segStart = null;
+            }
+          }
+          if (segStart !== null) segments.push({ start: segStart, end: e });
+
+          let updated = [...ranges];
+          segments.forEach((seg) => {
+            const idx = updated.findIndex(
+              (r) => r.start === seg.start && r.end === seg.end
+            );
+            if (idx >= 0) {
+              // 이미 있으면 삭제
+              updated.splice(idx, 1);
+            } else {
+              // 없으면 추가
+              updated.push(seg);
+            }
+          });
+
+          setRanges(updated);
+          onChange(updated);
+          lastClick.current = null;
+        }
+        // 단일 클릭 토글
+        else {
+          const seg = { start: row, end: row };
+          const idx = ranges.findIndex((r) => r.start === row && r.end === row);
+          let updated = [...ranges];
+          if (idx >= 0) {
+            updated.splice(idx, 1);
+          } else {
+            updated.push(seg);
+          }
+          setRanges(updated);
+          onChange(updated);
+          lastClick.current = row;
+        }
       }
-      const { start, end } = range;
-      // 토글/축소/확장/해제 로직 (이전과 동일)
-      if (row === start && start === end) {
-        setRange(null);
-        onRangeSelect(null);
-        return;
-      }
-      if (row === start) {
-        const r2 = start === end ? null : { start: start + 1, end };
-        setRange(r2);
-        onRangeSelect(r2);
-        return;
-      }
-      if (row === end) {
-        const r2 = start === end ? null : { start, end: end - 1 };
-        setRange(r2);
-        onRangeSelect(r2);
-        return;
-      }
-      if (row > start && row < end) {
-        setRange(null);
-        onRangeSelect(null);
-        return;
-      }
-      const newRange = { start: Math.min(start, row), end: Math.max(end, row) };
-      setRange(newRange);
-      onRangeSelect(newRange);
     },
-    [isDragging, range, onRangeSelect]
+    [disabledRows, isDragging, ranges, onChange]
   );
 
   return {
-    range,
+    ranges,
+    current,
     handlers: { onMouseDown, onMouseEnter, onClick },
   };
 }

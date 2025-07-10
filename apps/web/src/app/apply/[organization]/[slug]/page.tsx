@@ -1,25 +1,22 @@
-import * as styles from './page.css';
-import { Text } from '@repo/ui/Text';
+// app/apply/[organization]/[slug]/page.tsx
+import { ServerFetchBoundary } from '@web/store/query/ServerFetchBoundary';
+import { getRecruitmentBySlugQueryOptions } from '@web/store/query/useRecruitmentBySlugQuery';
+import ApplicationClient from './ApplicationClient';
 
-type RespondPageProps = {
+interface PageProps {
   params: Promise<{
     organization: string;
     slug: string;
   }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-};
+}
 
-export default async function RespondPage({
-  params,
-  searchParams,
-}: RespondPageProps) {
-  const { organization, slug } = await params;
-  const actualSearchParams = await searchParams;
+export default async function Page({ params }: PageProps) {
+  const { slug, organization } = await params; // ⬅️ await here
+  const fetchOptions = getRecruitmentBySlugQueryOptions({ slug });
 
   return (
-    <div className={styles.wrapper}>
-      <Text>{decodeURIComponent(organization)}</Text>
-      <Text>{slug}</Text>
-    </div>
+    <ServerFetchBoundary fetchOptions={fetchOptions}>
+      <ApplicationClient slug={slug} />
+    </ServerFetchBoundary>
   );
 }
