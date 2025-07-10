@@ -10,19 +10,6 @@ export type PaletteColor =
   | '#C4C6D4'
   | '#A9ABC0';
 
-// export type TagColor =
-//   | '#FF2A3A'
-//   | '#EE6B00'
-//   | '#E2A500'
-//   | '#009857'
-//   | '#0084BC'
-//   | '#2C60FF'
-//   | '#813DFF'
-//   | '#F25DEB'
-//   | '#7F82A1'
-//   | '#5A5C72'
-//   | '#EAEFFF';
-
 export const tagColorMap = {
   '#FF2A3A': { background: '#FFE6E9', circle: '#FF6974' },
   '#EE6B00': { background: '#FFEEDE', circle: '#FF995A' },
@@ -59,6 +46,7 @@ export const tagHexToName = {
   '#7F82A1': 'gray',
   '#5A5C72': 'darkgray',
 } as const;
+
 export type TagHex = keyof typeof tagHexToName; // '#FF2A3A' | …
 export type TagColorName = (typeof tagHexToName)[TagHex]; // 'red' | …
 export const nameToTagHex: Record<TagColorName, TagHex> = Object.fromEntries(
@@ -71,3 +59,58 @@ export const nameToTagHex: Record<TagColorName, TagHex> = Object.fromEntries(
 export function mapServerColorToTagHex(name: string): TagHex {
   return nameToTagHex[name as TagColorName] ?? '#7F82A1';
 }
+
+export const tagHexToProfile = {
+  '#FF3E51': 'red',
+  '#FF8500': 'orange',
+  '#FFCD00': 'yellow',
+  '#32CA89': 'green',
+  '#32B6EE': 'bluesky',
+  '#4A84FF': 'blue',
+  '#B36FFF': 'purple',
+  '#FF68FF': 'pink',
+  '#7F82A1': 'gray',
+  '#747693': 'darkgray',
+} as const;
+
+export type ProfileHex = keyof typeof tagHexToProfile; // '#FF2A3A' | …
+export type ProfileColorName = (typeof tagHexToProfile)[ProfileHex]; // 'red' | …
+
+export const nameToProfileHex: Record<ProfileColorName, ProfileHex> =
+  Object.fromEntries(
+    (Object.entries(tagHexToProfile) as [ProfileHex, ProfileColorName][]).map(
+      ([hex, name]) => [name, hex]
+    )
+  ) as Record<ProfileColorName, ProfileHex>;
+
+export function mapServerColorToProfileHex(name: string): ProfileHex {
+  return nameToProfileHex[name as ProfileColorName] ?? '#7F82A1';
+}
+
+// 배경색만 가져오는 함수
+export function getProfileBackground(colorName: string): string {
+  const hex = mapServerColorToProfileHex(colorName);
+  return (
+    profileBackgroundMap[hex]?.background ??
+    profileBackgroundMap['#7F82A1'].background
+  );
+}
+
+// 글자색(텍스트 컬러)을 헥스로 바로 가져오는 함수
+export function getProfileTextColor(colorName: string): string {
+  return mapServerColorToProfileHex(colorName);
+}
+
+export const profileBackgroundMap: Record<ProfileHex, { background: string }> =
+  {
+    '#FF3E51': { background: '#FFD5DA' },
+    '#FF8500': { background: '#FFE1C6' },
+    '#FFCD00': { background: '#FFEFB4' },
+    '#32CA89': { background: '#ADF3BE' },
+    '#32B6EE': { background: '#A6E3F8' },
+    '#4A84FF': { background: '#9ACEFF' },
+    '#B36FFF': { background: '#E1C7FF' },
+    '#FF68FF': { background: '#FFC9FF' },
+    '#7F82A1': { background: '#C4C6D4' },
+    '#747693': { background: '#A9ABC0' },
+  };

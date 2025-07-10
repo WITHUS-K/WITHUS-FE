@@ -28,7 +28,6 @@ export const bubble = style({
   width: '2.4rem',
   height: '2.4rem',
   borderRadius: '50%',
-  color: vars.colors.white,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

@@ -4,7 +4,6 @@ import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Button } from '@repo/ui/Button';
 import * as styles from '../ChargeModalContent.css';
-import { TAG_COLORS } from '../ProfileChip/ProfileChip';
 import { mapServerColorToTagHex } from '@web/utils/color';
 
 export interface Person {
