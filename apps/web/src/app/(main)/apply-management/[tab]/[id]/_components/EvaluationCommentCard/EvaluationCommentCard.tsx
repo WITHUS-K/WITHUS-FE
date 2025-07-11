@@ -33,24 +33,32 @@ export const EvaluationCommentCard = ({
         </Text>
       </div>
 
-      <Flex direction="column" gap="2rem" align="center">
-        {commentList.map((c, idx) => (
-          <Memo
-            key={idx}
-            author={c.evaluator}
-            comment={c.comment}
-            isEditing={false}
-            avatarUrl={c.profileUrl}
-            serverColor={c.profileColor}
-            admin={true}
-            draft=""
-            onEditStart={() => {}}
-            onDraftChange={() => {}}
-            onSubmit={() => {}}
-            onDelete={() => {}}
-          />
-        ))}
-      </Flex>
+      <div className={styles.scroll}>
+        <Flex
+          direction="column"
+          gap="2rem"
+          align="center"
+          paddingLeft="3.2rem"
+          paddingRight="3.2rem"
+        >
+          {commentList.map((c, idx) => (
+            <Memo
+              key={idx}
+              author={c.evaluator}
+              comment={c.comment}
+              isEditing={false}
+              avatarUrl={c.profileUrl}
+              serverColor={c.profileColor}
+              admin={true}
+              draft=""
+              onEditStart={() => {}}
+              onDraftChange={() => {}}
+              onSubmit={() => {}}
+              onDelete={() => {}}
+            />
+          ))}
+        </Flex>
+      </div>
     </div>
   );
 };

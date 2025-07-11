@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PATCH } from '@web/api/fetch';
+import { useRouter } from 'next/navigation';
 
 export type AdminApplicationStage =
   | 'DOCUMENT'
@@ -32,6 +33,7 @@ export function useUpdateApplicationsStatus(
   stage: AdminApplicationStage
 ) {
   const qc = useQueryClient();
+  const router = useRouter();
   const listPrefix = [
     'admin',
     'applications',
@@ -39,6 +41,14 @@ export function useUpdateApplicationsStatus(
     recruitmentId,
     'list',
     stage,
+  ] as const;
+
+  const allAppsPrefix = [
+    'admin',
+    'applications',
+    'recruitment',
+    recruitmentId,
+    'list',
   ] as const;
 
   return useMutation<
@@ -59,6 +69,7 @@ export function useUpdateApplicationsStatus(
     },
 
     onSuccess: () => {
+      qc.invalidateQueries({ queryKey: allAppsPrefix });
       qc.invalidateQueries({ queryKey: listPrefix });
     },
     onError(error, variables, context) {

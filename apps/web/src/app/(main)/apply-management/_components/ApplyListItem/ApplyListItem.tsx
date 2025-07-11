@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Member } from '@web/types/organization';
 import { CheckBox } from '@repo/ui/CheckBox';
 import { Tag } from '@repo/ui/Tag';
@@ -93,6 +93,10 @@ export default function ApplyListItem({
       status: simple,
     });
   };
+
+  useEffect(() => {
+    setStatus(member.status as Status);
+  }, [member.status]);
 
   const tabKey =
     activeTab === 'documents' || activeTab === 'interviews'

@@ -2,6 +2,7 @@ export { default as IcAdminActive } from './IcAdminActive';
 export { default as IcAdminDefault } from './IcAdminDefault';
 export { default as IcAdminHover } from './IcAdminHover';
 export { default as IcApplicationFileUpload } from './IcApplicationFileUpload';
+export { default as IcApplyEmpty } from './IcApplyEmpty';
 export { default as IcArrowDropdown } from './IcArrowDropdown';
 export { default as IcAuthLogo } from './IcAuthLogo';
 export { default as IcBaseInputDelete } from './IcBaseInputDelete';

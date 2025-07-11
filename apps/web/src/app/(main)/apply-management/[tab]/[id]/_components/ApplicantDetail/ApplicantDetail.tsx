@@ -83,7 +83,7 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
       width="100%"
     >
       <div className={styles.container}>
-        <Flex direction="column" width="100%" gap="5rem">
+        <Flex direction="column" width="100%" gap="3.2rem">
           <div className={styles.title}>{application.title}</div>
           <div className={styles.headerWrapper}>
             {applicationSchedule.map((s, i) => (

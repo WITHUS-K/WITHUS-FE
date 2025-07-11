@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Evaluator } from '../../EvalBubbles/EvalBubbles';
 import { MemberWithEval } from '../../ApplyListItem/ApplyListItem';
 import { HeaderMeta } from '../../ApplyListHeader/ApplyListHeader';
@@ -18,6 +18,7 @@ import { MailSideTab } from '../../SideTabs/MailSideTab/MailSideTab';
 import { SmsSideTab } from '../../SideTabs/SmsSideTab/SmsSideTab';
 import {
   AdminApplicationStage,
+  useAdminApplicationsClientQuery,
   useAdminApplicationsQuery,
 } from '@web/store/query/useAdminApplicationsQuery';
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
@@ -28,7 +29,7 @@ const DOC_HEADER: HeaderMeta[] = [
   { key: 'checkbox', label: '', width: '4.7rem' },
   { key: 'id', label: '순번', width: '5rem' },
   { key: 'name', label: '이름', width: '8.9rem', sortable: true },
-  { key: 'fieldTags', label: '지원 분야', width: '16.8rem' },
+  { key: 'fieldTags', label: '지원 분야', width: '16.8rem', sortable: true },
   {
     key: 'evalStatus',
     label: '서류 평가 현황',
@@ -59,13 +60,22 @@ export default function DocumentTab({
   const side = searchParams.get('sideTab');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
+  const pageQuery = Number(searchParams.get('page'));
+  const initialPage = !isNaN(pageQuery) && pageQuery > 0 ? pageQuery - 1 : 0;
 
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(initialPage);
+
+  useEffect(() => {
+    if (page !== initialPage) {
+      setPage(initialPage);
+    }
+  }, [initialPage, page]);
+
   const size = 7;
   const [sortKey, setSortKey] = useState<keyof typeof sortByMap>('name');
   const [direction, setDirection] = useState<'ASC' | 'DESC'>('ASC');
 
-  const { data, isLoading } = useAdminApplicationsQuery({
+  const { data, isLoading } = useAdminApplicationsClientQuery({
     recruitmentId,
     stage: stageMap[activeTab],
     sortBy: sortByMap[sortKey] as any,
@@ -97,7 +107,9 @@ export default function DocumentTab({
               ? '서류 합격'
               : item.status === 'DOX_FAIL'
                 ? '서류 불합격'
-                : '선택',
+                : item.status.startsWith('INTERVIEW')
+                  ? '서류 합격'
+                  : '선택',
         smsSent: item.isSmsSent,
         mailSent: item.isMailSent,
         evaluators: item.documentEvaluators.map((e) => ({
@@ -132,6 +144,14 @@ export default function DocumentTab({
     setSelectedIds([]); // 체크박스 리셋
   };
 
+  const onPageChange = (newPageOneBased: number) => {
+    const nextPageZeroBased = newPageOneBased - 1;
+    setPage(nextPageZeroBased);
+    const qp = new URLSearchParams(Array.from(searchParams.entries()));
+    qp.set('page', String(newPageOneBased));
+    router.push(`${pathname}?${qp.toString()}`);
+  };
+
   return (
     <Flex direction="column" width="100%" height="100%" gap="1.2rem">
       <ActionToolbar
@@ -157,7 +177,7 @@ export default function DocumentTab({
         currentPage={page + 1}
         totalItems={data?.pagination.totalElements ?? 0}
         pageSize={size}
-        onPageChange={(p) => setPage(p - 1)}
+        onPageChange={onPageChange}
         onToggleAll={(c) => setSelectedIds(c ? rows.map((m) => m.id) : [])}
         onToggleOne={(id, checked) =>
           setSelectedIds((prev) =>

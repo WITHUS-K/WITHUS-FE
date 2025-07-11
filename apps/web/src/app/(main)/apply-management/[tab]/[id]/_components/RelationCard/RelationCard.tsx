@@ -22,9 +22,9 @@ export const RelationCard = ({ relations }: RelationCardProps) => {
       </div>
 
       {relations.map((r, i) => (
-        <div className={styles.listContainer}>
-          <Flex gap="0.8rem" key={i}>
-            <AvatarChip key={r} label={r} index={i} />
+        <div className={styles.listContainer} key={`${r}-${i}`}>
+          <Flex gap="0.8rem">
+            <AvatarChip label={r} index={i} />
             <Text variant="md2_text_medium" color="grayscale90">
               {r}
             </Text>

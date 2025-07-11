@@ -42,7 +42,7 @@ export function BasicInfoForm({
   file,
   onChange,
   onImageChange,
-  needImage,
+  needImage = true,
   needGender = true,
   needBirthDate = true,
   readOnly = false,
@@ -76,7 +76,8 @@ export function BasicInfoForm({
     }
     // URL 문자열인 경우 직접 사용
     if (typeof file === 'string') {
-      setPreviewUrl(file);
+      const encoded = encodeURI(file);
+      setPreviewUrl(encoded);
       return;
     }
     // 파일 없을 때
@@ -95,48 +96,67 @@ export function BasicInfoForm({
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        {needImage && (
-          <div
-            className={
-              previewUrl
-                ? styles.imageContainer.filled
-                : styles.imageContainer.empty
-            }
-            onMouseEnter={() => setIconHover(true)}
-            onMouseLeave={() => setIconHover(false)}
-          >
-            {previewUrl ? (
-              <Image
-                alt="프로필 이미지"
-                src={previewUrl}
-                className={styles.imagePreview}
-                fill
-              />
-            ) : isIconHover ? (
-              <IcProfilePreviewHover width={36} height={36} />
-            ) : (
-              <IcProfilePreview width={36} height={36} />
-            )}
-
-            {previewUrl && (
-              <div className={styles.reuploadOverlay}>파일 다시 업로드</div>
-            )}
-
-            <input
-              type="file"
-              className={styles.imageInput}
-              accept="image/*"
-              onChange={(e) =>
-                onImageChange(e.currentTarget.files?.[0] ?? null)
+        {(needImage || readOnly) &&
+          (readOnly ? (
+            // 읽기전용 모드: previewUrl 이 있을 때만 이미지 태그만 보여줌
+            previewUrl ? (
+              <div className={styles.imageBase}>
+                <Image
+                  alt="프로필 이미지"
+                  src={previewUrl}
+                  unoptimized
+                  className={styles.image}
+                  fill
+                />
+              </div>
+            ) : null
+          ) : (
+            // 쓰기 모드: 기존 업로드 UI
+            <div
+              className={
+                previewUrl
+                  ? styles.imageContainer.filled
+                  : styles.imageContainer.empty
               }
-              disabled={readOnly}
-            />
-          </div>
-        )}
+              onMouseEnter={() => setIconHover(true)}
+              onMouseLeave={() => setIconHover(false)}
+            >
+              {previewUrl ? (
+                <Image
+                  alt="프로필 이미지"
+                  src={previewUrl}
+                  unoptimized
+                  className={styles.imagePreview}
+                  fill
+                />
+              ) : isIconHover ? (
+                <IcProfilePreviewHover width={36} height={36} />
+              ) : (
+                <IcProfilePreview width={36} height={36} />
+              )}
 
+              {previewUrl && (
+                <div className={styles.reuploadOverlay}>파일 다시 업로드</div>
+              )}
+
+              <input
+                type="file"
+                className={styles.imageInput}
+                accept="image/*"
+                onChange={(e) =>
+                  onImageChange(e.currentTarget.files?.[0] ?? null)
+                }
+              />
+            </div>
+          ))}
         <div className={styles.contentColumn}>
           <Flex gap="1.6rem" width="100%">
-            <div id="basic-name" tabIndex={-1} className={focusableWrapper}>
+            <div
+              id="basic-name"
+              tabIndex={-1}
+              className={focusableWrapper}
+              style={{ width: '100%', flex: 1 }}
+            >
               <InfoField
                 label="이름"
                 required
@@ -162,7 +182,10 @@ export function BasicInfoForm({
 
             {needGender &&
               (readOnly ? (
-                <div className={styles.gender}>
+                <div
+                  className={styles1.fieldGrowForSchool}
+                  style={{ maxWidth: '11rem' }}
+                >
                   <TextField
                     inputProps={{
                       value: value.gender == 'male' ? '남성' : '여성',
@@ -207,7 +230,12 @@ export function BasicInfoForm({
           </Flex>
 
           <Flex gap="1.6rem" width="100%">
-            <div id="basic-phone" tabIndex={-1} className={focusableWrapper}>
+            <div
+              id="basic-phone"
+              tabIndex={-1}
+              className={focusableWrapper}
+              style={{ width: '100%', flex: 1 }}
+            >
               <InfoField
                 label="전화번호"
                 labelWidth="7.4rem"

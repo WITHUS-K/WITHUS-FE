@@ -5,13 +5,14 @@ import { getApplicationDetailQueryOptions } from '@web/store/query/useApplicatio
 import ApplicationDetailClient from './ApplicationDetailClient';
 
 interface PageProps {
-  params: { tab: string; id: string };
+  params: Promise<{ tab: string; id: string }>;
 }
 
 export default async function Page({ params }: PageProps) {
-  const applicationId = Number(params.id);
-  const tokens = await getServerSideTokens();
+  const { tab, id } = await params;
+  const applicationId = Number(id);
 
+  const tokens = await getServerSideTokens();
   const fetchOptions = getApplicationDetailQueryOptions({
     applicationId,
     tokens,
@@ -19,7 +20,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <ServerFetchBoundary fetchOptions={fetchOptions}>
-      <ApplicationDetailClient tab={params.tab} applicationId={applicationId} />
+      <ApplicationDetailClient tab={tab} applicationId={applicationId} />
     </ServerFetchBoundary>
   );
 }

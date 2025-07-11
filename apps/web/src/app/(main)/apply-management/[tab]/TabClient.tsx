@@ -17,14 +17,43 @@ export const stageMap: Record<string, AdminApplicationStage> = {
 };
 
 // sortKey → API sortBy 맵핑
-export const sortByMap: Record<string, string> = {
-  name: 'NAME',
-  fieldTags: 'POSITION_NAME',
-  evalStatus: 'DOCUMENT_EVALUATION_STATUS',
-  score: 'DOCUMENT_SCORE',
-  status: 'STATUS',
-  smsSent: 'IS_SMS_SENT',
-  mailSent: 'IS_MAIL_SENT',
+export const sortByMap: Record<string, Record<string, string>> = {
+  documents: {
+    name: 'NAME',
+    fieldTags: 'POSITION_NAME',
+    evalStatus: 'DOCUMENT_EVALUATION_STATUS',
+    score: 'DOCUMENT_SCORE',
+    status: 'STATUS',
+    smsSent: 'IS_SMS_SENT',
+    mailSent: 'IS_MAIL_SENT',
+  },
+  interviews: {
+    name: 'NAME',
+    fieldTags: 'POSITION_NAME',
+    evalStatus: 'INTERVIEW_EVALUATION_STATUS',
+    score: 'INTERVIEW_SCORE',
+    status: 'STATUS',
+    smsSent: 'IS_SMS_SENT',
+    mailSent: 'IS_MAIL_SENT',
+  },
+  final: {
+    name: 'NAME',
+    fieldTags: 'POSITION_NAME',
+    documentScore: 'DOCUMENT_SCORE',
+    InterviewScore: 'INTERVIEW_SCORE',
+    status: 'STATUS',
+    smsSent: 'IS_SMS_SENT',
+    mailSent: 'IS_MAIL_SENT',
+  },
+  rejected: {
+    name: 'NAME',
+    fieldTags: 'POSITION_NAME',
+    documentScore: 'DOCUMENT_SCORE',
+    InterviewScore: 'INTERVIEW_SCORE',
+    status: 'STATUS',
+    smsSent: 'IS_SMS_SENT',
+    mailSent: 'IS_MAIL_SENT',
+  },
 };
 
 export default function TabClient() {

@@ -1,6 +1,9 @@
 import {
   keepPreviousData,
   queryOptions,
+  useQuery,
+  UseQueryOptions,
+  UseQueryResult,
   useSuspenseQuery,
   type UseSuspenseQueryOptions,
 } from '@tanstack/react-query';
@@ -103,7 +106,7 @@ interface UseAdminApplicationsQueryOptions {
  * GET /api/v1/admin/applications/recruitment/{recruitmentId}
  */
 
-const ADMIN_APPS_STALE_TIME = 1000 * 60 * 5; // 5분
+/*const ADMIN_APPS_STALE_TIME = 1000 * 60 * 5; // 5분
 const ADMIN_APPS_GC_TIME = 1000 * 60 * 60; // 1시간
 
 export function getAdminApplicationsQueryOptions({
@@ -139,7 +142,10 @@ export function getAdminApplicationsQueryOptions({
           size: String(size),
         },
         tokens
-      ).then((res) => res.result),
+      ).then((res) => {
+        console.log('getAdminApplications result:', res.result);
+        return res.result;
+      }),
     staleTime: ADMIN_APPS_STALE_TIME,
     gcTime: ADMIN_APPS_GC_TIME,
     placeholderData: keepPreviousData,
@@ -151,4 +157,80 @@ export function useAdminApplicationsQuery(
   params: UseAdminApplicationsQueryOptions
 ) {
   return useSuspenseQuery(getAdminApplicationsQueryOptions(params));
+}
+*/
+
+const ADMIN_APPS_STALE_TIME = 1000 * 60 * 1;
+const ADMIN_APPS_CACHE_TIME = 1000 * 60 * 2;
+
+/**
+ * 공통 옵션 헬퍼: UseQueryOptions 로 선언
+ */
+export function getAdminApplicationsQueryOptions(
+  params: UseAdminApplicationsQueryOptions
+) {
+  const {
+    recruitmentId,
+    stage = 'DOCUMENT',
+    sortBy = 'NAME',
+    direction = 'ASC',
+    page = 0,
+    size = 7,
+    tokens,
+  } = params;
+
+  const pageParam = page + 1;
+
+  return {
+    queryKey: queryKeys.applications.list(
+      recruitmentId,
+      stage,
+      sortBy,
+      direction,
+      page,
+      size
+    ),
+    queryFn: async () => {
+      const res = await GET<AdminApplicationsResult>(
+        `api/v1/admin/applications/recruitment/${recruitmentId}`,
+        {
+          stage,
+          sortBy,
+          direction,
+          page: String(pageParam),
+          size: String(size),
+        },
+        tokens
+      );
+      console.log('AdminApplicationsResult:', res.result);
+      return res.result;
+    },
+    staleTime: ADMIN_APPS_STALE_TIME,
+    cacheTime: ADMIN_APPS_CACHE_TIME,
+    enabled: recruitmentId > 0,
+    keepPreviousData: true,
+  };
+}
+
+/**
+ * Suspense 기반 스켈레톤 페칭 훅
+ */
+export function useAdminApplicationsQuery(
+  params: UseAdminApplicationsQueryOptions
+) {
+  // UseQueryOptions 타입으로 받은 옵션을 그대로 useSuspenseQuery에 넘깁니다.
+  return useSuspenseQuery<AdminApplicationsResult, Error>(
+    getAdminApplicationsQueryOptions(params)
+  );
+}
+
+/**
+ * 클라이언트(useQuery)용 훅도 동일하게 재사용
+ */
+export function useAdminApplicationsClientQuery(
+  params: UseAdminApplicationsQueryOptions
+): UseQueryResult<AdminApplicationsResult, Error> {
+  return useQuery<AdminApplicationsResult, Error>(
+    getAdminApplicationsQueryOptions(params)
+  );
 }

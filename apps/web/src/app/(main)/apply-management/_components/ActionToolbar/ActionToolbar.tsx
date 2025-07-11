@@ -17,8 +17,6 @@ export interface ActionToolbarProps {
   onAdd?: () => void;
   onSms: () => void;
   onMail: () => void;
-  onFail?: () => void;
-  onPass?: () => void;
   /** true일 때, 문자·메일 버튼만 렌더링합니다 */
   communicationOnly?: boolean;
 }
@@ -29,8 +27,6 @@ export default function ActionToolbar({
   onAdd,
   onSms,
   onMail,
-  onFail,
-  onPass,
   communicationOnly = false,
 }: ActionToolbarProps) {
   return (
