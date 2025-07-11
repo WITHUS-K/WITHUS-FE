@@ -43,7 +43,7 @@ export function useUpdateEvaluators(
       console.log('담당자', res);
       return res.result;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       qc.invalidateQueries({ queryKey: listPrefix });
     },
   });

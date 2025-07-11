@@ -70,11 +70,6 @@ export default function InterviewTab({
     size,
   });
 
-  const templates: Template[] = [
-    { id: 't1', title: '템플릿 1', body: '안녕하세요, 지원자님…' },
-    { id: 't2', title: '템플릿 2', body: '감사합니다.' },
-  ];
-
   const rows = useMemo(() => {
     if (!data) return [];
     return data.data.map((item, idx) => {
@@ -102,6 +97,8 @@ export default function InterviewTab({
         smsSent: item.isSmsSent,
         mailSent: item.isMailSent,
         evaluators: item.interviewEvaluators.map((e) => ({
+          userId: e.userId,
+          profileImageUrl: e.profileImageUrl,
           name: e.name,
           profileColor: e.profileColor,
         })),

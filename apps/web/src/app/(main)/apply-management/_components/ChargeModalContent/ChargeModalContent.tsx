@@ -16,6 +16,7 @@ import { useAdminApplicationsQuery } from '@web/store/query/useAdminApplications
 import { useOrganizationUsersQuery } from '@web/store/query/useOrganizationUsersQuery';
 import { useUserStore } from '@web/store/state/userStore';
 import { useUpdateEvaluators } from '@web/store/mutation/useUpdateEvaluators';
+import { useEvaluatorStore } from '@web/store/state/evaluatorStore';
 
 export interface ChargeModalContentRef {
   handleConfirm: () => void;
@@ -39,24 +40,8 @@ export const ChargeModalContent = forwardRef<ChargeModalContentRef, Props>(
     const recruitmentId = Number(searchParams.get('recruitmentId'));
     const evaluationType = stageMap[tab!] as 'DOCUMENT' | 'INTERVIEW';
 
-    const { data } = useAdminApplicationsQuery({
-      recruitmentId,
-      stage: evaluationType,
-      sortBy: 'NAME',
-      direction: 'ASC',
-      page: 0,
-      size: 100,
-    });
-
-    const application = data?.data.find((app) => app.id === applicationId);
-    const [assigned, setAssigned] = useState<
-      {
-        userId: number;
-        name: string;
-        profileImageUrl?: string;
-        profileColor: string;
-      }[]
-    >([]);
+    const assigned = useEvaluatorStore((s) => s.selectedEvaluators);
+    const setAssigned = useEvaluatorStore((s) => s.setSelectedEvaluators);
 
     useEffect(() => {
       if (inputKeyword.trim() === '') {
@@ -64,15 +49,6 @@ export const ChargeModalContent = forwardRef<ChargeModalContentRef, Props>(
       }
     }, [inputKeyword]);
 
-    useEffect(() => {
-      if (application) {
-        const initial =
-          evaluationType === 'DOCUMENT'
-            ? application.documentEvaluators
-            : application.interviewEvaluators;
-        setAssigned(initial ?? []);
-      }
-    }, [application, evaluationType]);
     const organizationId = useUserStore.getState().organizationId!;
 
     console.log('조직id', organizationId);

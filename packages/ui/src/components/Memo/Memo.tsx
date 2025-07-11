@@ -11,6 +11,7 @@ import { ActionMenu } from './ActionMenu/ActionMenu';
 interface MemoProps {
   avatarUrl?: string;
   author: string;
+  serverColor?: string;
   date?: string;
   comment: string;
   isEditing: boolean;
@@ -19,6 +20,7 @@ interface MemoProps {
   onDraftChange: (newValue: string) => void;
   onSubmit: () => void;
   onDelete: () => void;
+  admin?: boolean;
 }
 
 export const Memo = ({
@@ -32,6 +34,8 @@ export const Memo = ({
   onDraftChange,
   onSubmit,
   onDelete,
+  serverColor,
+  admin = false,
 }: MemoProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -51,7 +55,7 @@ export const Memo = ({
           {avatarUrl ? (
             <Profile src={avatarUrl} alt={author} />
           ) : (
-            <AvatarChip label={author} />
+            <AvatarChip label={author} serverColor={serverColor} />
           )}
           <Text variant="md2_text_medium" color="grayscale90">
             {author}
@@ -61,7 +65,7 @@ export const Memo = ({
           <Text variant="xs_caption_regular" color="grayscale50">
             {date}
           </Text>
-          <ActionMenu onEdit={onEditStart} onDelete={onDelete} />
+          {!admin && <ActionMenu onEdit={onEditStart} onDelete={onDelete} />}
         </Flex>
       </div>
 

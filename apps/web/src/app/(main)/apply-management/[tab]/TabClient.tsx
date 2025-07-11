@@ -5,8 +5,8 @@ import { useParams, useSearchParams } from 'next/navigation';
 import DocumentTab from '../_components/Tab/DocumentTab/DocumentTab';
 import FinalTab from '../_components/Tab/FinalTab/FinalTab';
 import RejectedTab from '../_components/Tab/RejectedTab/RejectedTab';
-import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import InterviewTab from '../_components/Tab/InterViewTab/InterviewTab';
+import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { AdminApplicationStage } from '@web/store/query/useAdminApplicationsQuery';
 
 export const stageMap: Record<string, AdminApplicationStage> = {
@@ -30,11 +30,25 @@ export const sortByMap: Record<string, string> = {
 export default function TabClient() {
   const params = useParams();
   const search = useSearchParams();
-  const tab = Array.isArray(params.tab) ? params.tab[0] : params.tab!;
-  const recruitmentId = Number(search.get('recruitmentId'));
 
-  // 공통: 파트 목록 + 컬러 매핑
+  // 탭 path-param으로 가져오기
+  const tab = Array.isArray(params.tab) ? params.tab[0] : params.tab!;
+
+  // recruitmentId를 query-param에서 읽기
+  const recIdStr = search.get('recruitmentId');
+  if (!recIdStr) {
+    // 아직 recruitmentId가 없으면 아무것도 렌더하지 않음
+    return null;
+  }
+
+  const recruitmentId = Number(recIdStr);
+  if (isNaN(recruitmentId)) {
+    return <div>잘못된 모집 ID입니다: {recIdStr}</div>;
+  }
+
+  // 이제 안전하게 positions 쿼리 호출
   const { data: positions = [] } = useRecruitmentPositionsQuery(recruitmentId);
+
   const posColorMap = useMemo(
     () => Object.fromEntries(positions.map((p) => [p.name, p.color])),
     [positions]

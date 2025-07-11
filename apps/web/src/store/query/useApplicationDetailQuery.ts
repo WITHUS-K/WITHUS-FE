@@ -110,25 +110,30 @@ import {
 } from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
 import { queryKeys } from '../constants';
+import { Tokens } from '@web/api/types';
 
 export interface ApplicationDetailParams {
   applicationId: number;
+  tokens?: Tokens;
 }
 
 export function getApplicationDetailQueryOptions({
   applicationId,
+  tokens,
 }: ApplicationDetailParams): UseSuspenseQueryOptions<ApplicationDetail, Error> {
   return queryOptions<ApplicationDetail>({
     queryKey: queryKeys.applications.detail(applicationId),
     queryFn: () =>
-      GET<ApplicationDetail>(`api/v1/applications/${applicationId}`).then(
-        (res) => res.result
-      ),
-    staleTime: 1000 * 60 * 3, // 3분
+      GET<ApplicationDetail>(
+        `api/v1/applications/${applicationId}`,
+        undefined,
+        tokens
+      ).then((res) => res.result),
+    staleTime: 1000 * 60 * 3,
     enabled: applicationId > 0,
   });
 }
 
-export function useApplicationDetailQuery(applicationId: number) {
-  return useSuspenseQuery(getApplicationDetailQueryOptions({ applicationId }));
+export function useApplicationDetailQuery(params: ApplicationDetailParams) {
+  return useSuspenseQuery(getApplicationDetailQueryOptions(params));
 }

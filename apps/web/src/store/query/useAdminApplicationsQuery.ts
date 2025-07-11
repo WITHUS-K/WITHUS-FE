@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
 import { queryKeys } from '../constants';
+import { Tokens } from '@web/api/types';
 
 // API 파라미터 타입
 export type AdminApplicationStage =
@@ -94,6 +95,7 @@ interface UseAdminApplicationsQueryOptions {
   direction?: AdminApplicationDirection;
   page?: number;
   size?: number;
+  tokens?: Tokens;
 }
 
 /**
@@ -111,6 +113,7 @@ export function getAdminApplicationsQueryOptions({
   direction = 'ASC',
   page = 0,
   size = 7,
+  tokens,
 }: UseAdminApplicationsQueryOptions): UseSuspenseQueryOptions<
   AdminApplicationsResult,
   Error
@@ -134,7 +137,8 @@ export function getAdminApplicationsQueryOptions({
           direction,
           page: String(pageParam),
           size: String(size),
-        }
+        },
+        tokens
       ).then((res) => res.result),
     staleTime: ADMIN_APPS_STALE_TIME,
     gcTime: ADMIN_APPS_GC_TIME,

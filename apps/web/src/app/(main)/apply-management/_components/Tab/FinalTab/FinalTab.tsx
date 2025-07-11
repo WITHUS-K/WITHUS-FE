@@ -94,6 +94,8 @@ export default function FinalTab({
         smsSent: item.isSmsSent,
         mailSent: item.isMailSent,
         evaluators: item.documentEvaluators.map((e) => ({
+          userId: e.userId,
+          profileImageUrl: e.profileImageUrl,
           name: e.name,
           profileColor: e.profileColor,
         })),

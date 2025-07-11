@@ -19,6 +19,15 @@ export interface RecruitmentListParams {
   tokens?: Tokens;
 }
 
+export async function fetchRecruitments(tokens: Tokens) {
+  const { result } = await GET<{ result: RecruitmentSummary[] }>(
+    'api/v1/recruitments/my-organizations',
+    undefined,
+    tokens
+  );
+  return result;
+}
+
 // 내가 속한 조직의 모든 공고
 export function getRecruitmentsListQueryOptions({
   tokens,

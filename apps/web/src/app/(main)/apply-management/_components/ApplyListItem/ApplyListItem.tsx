@@ -19,9 +19,12 @@ import {
   useUpdateApplicationsStatus,
 } from '@web/store/mutation/useUpdateApplicationsStatus';
 import { stageMap } from '../../[tab]/TabClient';
+import { useEvaluatorStore } from '@web/store/state/evaluatorStore';
 
 export interface Evaluator {
+  userId: number;
   name: string;
+  profileImageUrl?: string;
   profileColor: string;
 }
 
@@ -96,8 +99,13 @@ export default function ApplyListItem({
       ? activeTab
       : 'documents';
 
+  const setSelectedEvaluators = useEvaluatorStore(
+    (s) => s.setSelectedEvaluators
+  );
+
   // charge 모달 페이지로 이동
   const openChargeModal = () => {
+    setSelectedEvaluators(member.evaluators);
     router.push(
       `/apply-management/${activeTab}/charge?recruitmentId=${recruitmentId}&applicationId=${member.applicationId}`
     );

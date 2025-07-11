@@ -9,6 +9,8 @@ import * as styles from './EvaluationCommentCard.css';
 export interface Comment {
   evaluator: string;
   comment: string;
+  profileUrl?: string;
+  profileColor?: string;
 }
 
 interface EvaluationCommentCardProps {
@@ -38,6 +40,9 @@ export const EvaluationCommentCard = ({
             author={c.evaluator}
             comment={c.comment}
             isEditing={false}
+            avatarUrl={c.profileUrl}
+            serverColor={c.profileColor}
+            admin={true}
             draft=""
             onEditStart={() => {}}
             onDraftChange={() => {}}

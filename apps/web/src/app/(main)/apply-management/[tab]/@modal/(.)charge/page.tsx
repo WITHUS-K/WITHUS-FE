@@ -7,12 +7,20 @@ import {
   ChargeModalContentRef,
 } from '@web/app/(main)/apply-management/_components/ChargeModalContent/ChargeModalContent';
 import { useRef } from 'react';
+import { useEvaluatorStore } from '@web/store/state/evaluatorStore';
 
 export default function ChargeModal() {
   const router = useRouter();
-  const close = () => router.back();
 
+  const clearSelectedEvaluators = useEvaluatorStore(
+    (s) => s.clearSelectedEvaluators
+  );
   const contentRef = useRef<ChargeModalContentRef>(null);
+
+  const close = () => {
+    clearSelectedEvaluators();
+    router.back();
+  };
 
   return (
     <Modal.Overlay open onClose={close}>
