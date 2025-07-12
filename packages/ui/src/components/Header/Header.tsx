@@ -1,3 +1,4 @@
+'use client';
 import * as styles from './Header.css';
 import { HeaderLeft } from './HeaderLeft';
 import { HeaderRight } from './HeaderRight';
