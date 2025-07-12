@@ -3,12 +3,13 @@ import {
   startOfMonth,
   endOfMonth,
   addDays,
-  format,
-  setMonth,
   startOfDay,
+  isAfter,
 } from 'date-fns';
 import * as styles from './DatePicker.css';
 import { MonthSelect } from './MonthSelect';
+import { YearSelect } from './YearSelect';
+import { MonthOnlySelect } from './MonthOnlySelect';
 import { IcArrowLeft, IcArrowRight } from '../../icons/src/mono';
 import {
   generateCalendarData,
@@ -21,27 +22,24 @@ import clsx from 'clsx';
 interface DatePickerProps {
   selectedDate: Date;
   onSelect: (date: Date) => void;
+  variant?: 'default' | 'birth';
 }
 
-export const DatePicker = ({ selectedDate, onSelect }: DatePickerProps) => {
+export const DatePicker = ({
+  selectedDate,
+  onSelect,
+  variant = 'default',
+}: DatePickerProps) => {
   const today = startOfDay(new Date());
   const [hasUserSelected, setHasUserSelected] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState<Date>(
+    startOfMonth(selectedDate)
+  );
 
   const handleSelectDate = (date: Date) => {
     setHasUserSelected(true);
     onSelect(date);
   };
-  const [currentMonth, setCurrentMonth] = useState<Date>(
-    startOfMonth(selectedDate)
-  );
-
-  const monthOptions = Array.from({ length: 12 }, (_, i) => {
-    const date = setMonth(currentMonth, i);
-    return {
-      value: date,
-      label: format(date, 'yyyy년 M월'),
-    };
-  });
 
   const { days, monthEnd } = useMemo(
     () => generateCalendarData(currentMonth),
@@ -59,10 +57,23 @@ export const DatePicker = ({ selectedDate, onSelect }: DatePickerProps) => {
           <IcArrowLeft width={17} height={17} />
         </button>
 
-        <MonthSelect
-          currentMonth={currentMonth}
-          onMonthChange={(date) => setCurrentMonth(date)}
-        />
+        {variant === 'birth' ? (
+          <>
+            <YearSelect
+              currentMonth={currentMonth}
+              onYearChange={(m) => setCurrentMonth(m)}
+            />
+            <MonthOnlySelect
+              currentMonth={currentMonth}
+              onMonthChange={(m) => setCurrentMonth(m)}
+            />
+          </>
+        ) : (
+          <MonthSelect
+            currentMonth={currentMonth}
+            onMonthChange={(date) => setCurrentMonth(date)}
+          />
+        )}
 
         <button
           type="button"
@@ -89,8 +100,13 @@ export const DatePicker = ({ selectedDate, onSelect }: DatePickerProps) => {
 
         {days.map((d) => {
           const afterMonth = isAfterMonth(d, monthEnd);
-          const disabled = isDateDisabled(d, currentMonth, today);
-          const variant = getDayVariant({
+          const outsideMonth = d.getMonth() !== currentMonth.getMonth();
+          const disabled =
+            variant === 'birth'
+              ? outsideMonth || isAfter(d, today)
+              : isDateDisabled(d, currentMonth, today);
+
+          const originalVariant = getDayVariant({
             date: d,
             monthEnd,
             currentMonth,
@@ -98,10 +114,21 @@ export const DatePicker = ({ selectedDate, onSelect }: DatePickerProps) => {
             selectedDate,
             hasUserSelected,
           });
+
+          const dayVariant =
+            variant === 'birth' &&
+            originalVariant === 'disabled' &&
+            !outsideMonth &&
+            !isAfter(d, today)
+              ? d.getDay() === 0
+                ? 'sunday'
+                : 'normal'
+              : originalVariant;
+
           return (
             <div
               key={d.toISOString()}
-              className={clsx(styles.dayCell, styles.dayVariants[variant])}
+              className={clsx(styles.dayCell, styles.dayVariants[dayVariant])}
               onClick={() => !disabled && handleSelectDate(d)}
             >
               {!afterMonth ? d.getDate() : null}

@@ -41,3 +41,18 @@ export const Preselected: Story = {
     return <DatePicker {...args} selectedDate={date} onSelect={handleSelect} />;
   },
 };
+
+export const BirthDatePicker: Story = {
+  args: {
+    selectedDate: new Date(),
+    variant: 'birth',
+  },
+  render: (args) => {
+    const [date, setDate] = useState<Date>(args.selectedDate);
+    const handleSelect = (d: Date) => {
+      action('onSelect')(d);
+      setDate(d);
+    };
+    return <DatePicker {...args} selectedDate={date} onSelect={handleSelect} />;
+  },
+};
