@@ -16,8 +16,9 @@ import InviteModal from './@modal/(.)invite/page';
 import { Flex } from '@repo/ui/Flex';
 import { Breadcrumb } from '@repo/ui/Breadcrumb';
 import * as styles from './page.css';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 3;
 
 interface Props {
   organizationId: number;
@@ -28,13 +29,20 @@ export default function OrganizationPageClient({
   organizationId,
   showInvite,
 }: Props) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [search, setSearch] = useState('');
-  const [page, setPage] = useState(1);
+  //const [page, setPage] = useState(0);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const { confirm } = useModal();
   const qc = useQueryClient();
 
+  const pageParam = Number(searchParams.get('page') ?? '1');
+  const page = pageParam >= 1 ? pageParam : 1;
+
   // 멤버 리스트
+  //const apiPage = page + 1;
   const { data: paged, isFetching } = useOrganizationMembersQuery({
     organizationId,
     page,
@@ -170,8 +178,9 @@ export default function OrganizationPageClient({
             gender: m.gender,
             dob: m.birthDate,
             phone: m.phoneNumber,
-            joined: m.createdAt.replace('.', '/'),
+            joined: m.createdAt,
           }))}
+          page={page}
           selectedIds={selectedIds}
           onToggleAll={handleToggleAll}
           onToggleOne={handleToggleOne}
@@ -185,12 +194,12 @@ export default function OrganizationPageClient({
         />
         <div className={styles.paginationStyle}>
           <Pagination
-            currentPage={page + 1}
+            currentPage={page}
             totalItems={totalCount}
             itemCountPerPage={PAGE_SIZE}
             pageCount={5}
             onPageChange={(p) => {
-              setPage(p - 1);
+              router.push(`?page=${p}`);
               setSelectedIds([]);
             }}
           />

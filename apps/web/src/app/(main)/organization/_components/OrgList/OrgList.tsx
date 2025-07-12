@@ -6,6 +6,8 @@ import { OrgListHeader } from './OrgListHeader';
 import OrgListItem from '../OrgListItem/OrgListItem';
 import { Member, OrgRole, Role } from '@web/types/organization';
 
+const PAGE_SIZE = 3;
+
 interface Props {
   data: Member[];
   selectedIds: string[];
@@ -15,6 +17,7 @@ interface Props {
   // 💥 onAddRole 에도 OrgRole 타입을 맞춰 줍니다
   onAddRole: (memberId: string, role: OrgRole) => void;
   search: string;
+  page: number;
 }
 
 export default function OrgList({
@@ -25,6 +28,7 @@ export default function OrgList({
   availableRoles,
   onAddRole,
   search,
+  page,
 }: Props) {
   const allChecked =
     data.length > 0 && data.every((m) => selectedIds.includes(m.id));
@@ -35,7 +39,7 @@ export default function OrgList({
       <OrgListHeader allChecked={allChecked} onToggleAll={onToggleAll} />
 
       <div className={styles.listContainer}>
-        {data.map((m) => (
+        {data.map((m, idx) => (
           <OrgListItem
             key={m.id}
             member={m}
@@ -44,6 +48,7 @@ export default function OrgList({
             availableRoles={availableRoles}
             onAddRole={(role) => onAddRole(m.id, role)}
             search={search}
+            index={(page - 1) * PAGE_SIZE + idx}
           />
         ))}
       </div>

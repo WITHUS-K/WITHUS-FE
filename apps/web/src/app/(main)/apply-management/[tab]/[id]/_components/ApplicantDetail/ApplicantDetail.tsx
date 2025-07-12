@@ -46,6 +46,7 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
 
   const detailItems = [...textItems, ...fileItem];
 
+  console.log('지원서', application);
   //const answers = application.documentAnswers.map((a) => a.answerText);
   const files = application.documentAnswers
     .filter((a) => a.questionType === 'FILE')
@@ -74,6 +75,8 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
       date: application.finalResultDate,
     },
   ];
+
+  console.log('지원자 상세', application);
 
   return (
     <Flex

@@ -71,7 +71,11 @@ export const QuestionAndFileListForm = ({
               title={item.description}
               info={item.typeInfo.info}
               infoDetail={item.typeInfo.infoDetail}
-              value={answers[idx] ?? ''}
+              value={
+                readOnly
+                  ? (detailItems[idx]?.answer ?? '')
+                  : (answers[idx] ?? '')
+              }
               maxLength={maxLength}
               includeWhitespace={includeWhitespace}
               onFocus={status!.setEditing}

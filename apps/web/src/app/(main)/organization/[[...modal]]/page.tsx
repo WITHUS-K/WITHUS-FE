@@ -27,7 +27,7 @@ export default async function Page({
   const membersFetchOptions = getOrganizationMembersQueryOptions({
     organizationId,
     page: 1,
-    size: 20,
+    size: 3,
     tokens,
   });
 

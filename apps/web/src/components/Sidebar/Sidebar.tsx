@@ -38,7 +38,7 @@ const Sidebar = ({
   const pathname = usePathname();
   const [activeItem, setActiveItem] = useState<string>('');
 
-  console.log('넘겨진 조직', organizations);
+  //console.log('넘겨진 조직', organizations);
   const onSelectOrg = (orgId: number) => {
     console.log('흠', orgId);
     setCookie('organizationId', String(orgId), { path: '/' });

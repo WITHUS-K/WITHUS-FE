@@ -14,3 +14,18 @@ export const item = style({
 export const selected = style({
   backgroundColor: vars.colors.primary5,
 });
+
+export const tagContainer = style({
+  display: 'flex',
+  flexWrap: 'nowrap',
+  maxWidth: '40rem',
+  overflowX: 'auto',
+  gap: '0.8rem',
+  scrollbarWidth: 'none', // Firefox: 스크롤바 숨기기
+
+  selectors: {
+    '&::-webkit-scrollbar': {
+      display: 'none', // ✅ Chrome/Safari: 스크롤바 숨기기
+    },
+  },
+});

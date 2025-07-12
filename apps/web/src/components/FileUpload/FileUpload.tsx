@@ -29,11 +29,20 @@ function formatMB(bytes: number, decimals = 2) {
 }
 
 function getOriginalFileName(fileUrl: string): string {
+  const [path] = fileUrl.split('?');
   const lastSegment = decodeURIComponent(
-    fileUrl.substring(fileUrl.lastIndexOf('/') + 1)
+    path!.substring(path!.lastIndexOf('/') + 1)
   );
-  const idx = lastSegment.lastIndexOf('_');
-  return idx !== -1 ? lastSegment.substring(idx + 1) : lastSegment;
+
+  // ✅ 모든 UUID_원본파일명 패턴을 찾고, 마지막 그룹1 값만 사용
+  const allMatches = [
+    ...lastSegment.matchAll(
+      /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}_(.+?)(?=[0-9a-fA-F]{8}-|$)/g
+    ),
+  ];
+
+  const lastMatch = allMatches.at(-1);
+  return lastMatch ? lastMatch[1]! : lastSegment;
 }
 
 export const FileUpload: React.FC<FileUploadProps> = ({
@@ -90,6 +99,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     });
   };
 
+  console.log('파일', file?.downloadUrl);
   const wrappedFile: FileInfo | undefined = file
     ? {
         name: getOriginalFileName(file.downloadUrl),

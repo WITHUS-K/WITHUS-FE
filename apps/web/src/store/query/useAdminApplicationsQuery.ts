@@ -101,65 +101,6 @@ interface UseAdminApplicationsQueryOptions {
   tokens?: Tokens;
 }
 
-/**
- * 관리자용 공고별 지원서 목록 조회
- * GET /api/v1/admin/applications/recruitment/{recruitmentId}
- */
-
-/*const ADMIN_APPS_STALE_TIME = 1000 * 60 * 5; // 5분
-const ADMIN_APPS_GC_TIME = 1000 * 60 * 60; // 1시간
-
-export function getAdminApplicationsQueryOptions({
-  recruitmentId,
-  stage = 'DOCUMENT',
-  sortBy = 'NAME',
-  direction = 'ASC',
-  page = 0,
-  size = 7,
-  tokens,
-}: UseAdminApplicationsQueryOptions): UseSuspenseQueryOptions<
-  AdminApplicationsResult,
-  Error
-> {
-  const pageParam = page + 1;
-  return queryOptions<AdminApplicationsResult>({
-    queryKey: queryKeys.applications.list(
-      recruitmentId,
-      stage,
-      sortBy,
-      direction,
-      page,
-      size
-    ),
-    queryFn: () =>
-      GET<AdminApplicationsResult>(
-        `api/v1/admin/applications/recruitment/${recruitmentId}`,
-        {
-          stage,
-          sortBy,
-          direction,
-          page: String(pageParam),
-          size: String(size),
-        },
-        tokens
-      ).then((res) => {
-        console.log('getAdminApplications result:', res.result);
-        return res.result;
-      }),
-    staleTime: ADMIN_APPS_STALE_TIME,
-    gcTime: ADMIN_APPS_GC_TIME,
-    placeholderData: keepPreviousData,
-    enabled: recruitmentId > 0,
-  });
-}
-
-export function useAdminApplicationsQuery(
-  params: UseAdminApplicationsQueryOptions
-) {
-  return useSuspenseQuery(getAdminApplicationsQueryOptions(params));
-}
-*/
-
 const ADMIN_APPS_STALE_TIME = 1000 * 60 * 1;
 const ADMIN_APPS_CACHE_TIME = 1000 * 60 * 2;
 
@@ -234,3 +175,62 @@ export function useAdminApplicationsClientQuery(
     getAdminApplicationsQueryOptions(params)
   );
 }
+
+/**
+ * 관리자용 공고별 지원서 목록 조회
+ * GET /api/v1/admin/applications/recruitment/{recruitmentId}
+ */
+
+/*const ADMIN_APPS_STALE_TIME = 1000 * 60 * 5; // 5분
+const ADMIN_APPS_GC_TIME = 1000 * 60 * 60; // 1시간
+
+export function getAdminApplicationsQueryOptions({
+  recruitmentId,
+  stage = 'DOCUMENT',
+  sortBy = 'NAME',
+  direction = 'ASC',
+  page = 0,
+  size = 7,
+  tokens,
+}: UseAdminApplicationsQueryOptions): UseSuspenseQueryOptions<
+  AdminApplicationsResult,
+  Error
+> {
+  const pageParam = page + 1;
+  return queryOptions<AdminApplicationsResult>({
+    queryKey: queryKeys.applications.list(
+      recruitmentId,
+      stage,
+      sortBy,
+      direction,
+      page,
+      size
+    ),
+    queryFn: () =>
+      GET<AdminApplicationsResult>(
+        `api/v1/admin/applications/recruitment/${recruitmentId}`,
+        {
+          stage,
+          sortBy,
+          direction,
+          page: String(pageParam),
+          size: String(size),
+        },
+        tokens
+      ).then((res) => {
+        console.log('getAdminApplications result:', res.result);
+        return res.result;
+      }),
+    staleTime: ADMIN_APPS_STALE_TIME,
+    gcTime: ADMIN_APPS_GC_TIME,
+    placeholderData: keepPreviousData,
+    enabled: recruitmentId > 0,
+  });
+}
+
+export function useAdminApplicationsQuery(
+  params: UseAdminApplicationsQueryOptions
+) {
+  return useSuspenseQuery(getAdminApplicationsQueryOptions(params));
+}
+*/
