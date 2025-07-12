@@ -11,6 +11,7 @@ import { QuestionAndFileListForm } from '@web/components/QuestionFileListForm/Qu
 import type { DetailItem } from '@web/types/application';
 import * as styles from './ApplicantDetail.css';
 import { ApplicationDetail } from '@web/store/query/useApplicationDetailQuery';
+import { Divider } from '@repo/ui';
 
 interface ApplicantDetailProps {
   application: ApplicationDetail;
@@ -52,7 +53,7 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
       a.fileUrl
         ? {
             name: decodeURIComponent(a.fileUrl.split('/').pop() ?? '파일.pdf'),
-            size: 10,
+            size: a.maxFileSizeMb,
             downloadUrl: a.fileUrl,
           }
         : null
@@ -97,6 +98,24 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
               </div>
             ))}
           </div>
+        </Flex>
+
+        <Flex direction="column" width="100%" gap="2.4rem" align="flexStart">
+          <Flex align="center" gap="1.2rem">
+            <Text variant="md2_text_medium" color="grayscale40">
+              지원분야
+            </Text>
+            <Divider
+              direction="column"
+              length="2.4rem"
+              borderColor="grayscale40"
+            />
+            <Text variant="md2_text_semibold" color="primary50">
+              {application.appliedPosition}
+            </Text>
+          </Flex>
+
+          <Divider direction="row" length="100%" borderColor="grayscale10" />
         </Flex>
 
         <Flex direction="column" gap="4rem" width="100%">

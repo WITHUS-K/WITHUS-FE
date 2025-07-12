@@ -6,6 +6,7 @@ import {
 import { GET } from '@web/api';
 import { queryKeys } from '@web/store/constants/queryKeys';
 import type { Tokens } from '@web/api/types';
+import { getServerSideTokens } from '@web/api/serverSideTokens';
 
 export interface RecruitmentSummary {
   recruitmentId: number;
@@ -19,13 +20,22 @@ export interface RecruitmentListParams {
   tokens?: Tokens;
 }
 
-export async function fetchRecruitments(tokens: Tokens) {
-  const { result } = await GET<{ result: RecruitmentSummary[] }>(
+export async function fetchRecruitments(
+  tokens: Tokens
+): Promise<RecruitmentSummary[]> {
+  const res: { result: RecruitmentSummary[] } = await GET(
     'api/v1/recruitments/my-organizations',
     undefined,
     tokens
   );
-  return result;
+  return res.result;
+}
+
+export async function fetchFirstRecruitmentId(
+  tokens: Awaited<ReturnType<typeof getServerSideTokens>>
+) {
+  const recruitments = await fetchRecruitments(tokens);
+  return recruitments?.[0]?.recruitmentId ?? null;
 }
 
 // 내가 속한 조직의 모든 공고

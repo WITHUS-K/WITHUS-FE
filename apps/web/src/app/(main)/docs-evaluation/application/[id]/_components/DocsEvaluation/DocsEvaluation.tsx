@@ -31,6 +31,8 @@ export const DocsEvaluation = ({
 }: DocsEvaluationProps) => {
   const total = scores.reduce((sum, v) => sum + v, 0);
   const maxTotal = scores.length * 10;
+  const averageScore =
+    scores.length > 0 ? (total / scores.length).toFixed(1) : '0';
 
   return (
     <Flex direction="column" gap="3.2rem" width="100%">
@@ -111,7 +113,7 @@ export const DocsEvaluation = ({
             </Flex>
             <div className={styles.tagStyle}>
               <Text variant="xs_caption_medium" color="grayscale50">
-                평균 점수: {average}점
+                평균 점수: {averageScore}점
               </Text>
             </div>
           </Flex>
