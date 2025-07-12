@@ -1,7 +1,9 @@
 import {
   queryOptions,
   useSuspenseQuery,
+  useQuery,
   type UseSuspenseQueryOptions,
+  type UseQueryOptions,
 } from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
 import type { Tokens } from '@web/api/types';
@@ -51,4 +53,12 @@ export function getOrganizationUsersQueryOptions({
 
 export function useOrganizationUsersQuery(params: GetOrganizationUsersParams) {
   return useSuspenseQuery(getOrganizationUsersQueryOptions(params));
+}
+
+// ✅ 클라이언트용: suspense 없이 깜빡임 없이 사용 가능
+export function useOrganizationUsersClientQuery(
+  params: GetOrganizationUsersParams
+) {
+  const options = getOrganizationUsersQueryOptions(params);
+  return useQuery({ ...options });
 }

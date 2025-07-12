@@ -11,12 +11,13 @@ import { Profile } from '@repo/ui/Profile';
 import { Text } from '@repo/ui/Text';
 import { Flex } from '@repo/ui/Flex';
 import { vars } from '@repo/theme';
+import { IcPlusRole } from '@repo/ui/icons/mono';
 interface Props {
   member: Member;
   isSelected: boolean;
   onToggle: (checked: boolean) => void;
   availableRoles: OrgRole[];
-  onAddRole: (role: OrgRole) => void;
+  onPartClick: (memberId: number) => void;
   search: string;
   index: number;
 }
@@ -26,7 +27,7 @@ export default function OrgListItem({
   isSelected,
   onToggle,
   availableRoles,
-  onAddRole,
+  onPartClick,
   search,
   index,
 }: Props) {
@@ -84,10 +85,14 @@ export default function OrgListItem({
       </Flex>
 
       <Flex align="center" gap="0.8rem" width="31rem" marginRight="4.4rem">
-        <RolesDropdown
-          availableRoles={availableRoles}
-          onSelect={(r) => onAddRole(r)}
-        />
+        <button
+          type="button"
+          onClick={() => onPartClick(Number(member.id))}
+          className={styles.buttonBase}
+        >
+          <IcPlusRole width={11} height={11} />
+        </button>
+
         <div className={styles.tagContainer}>
           {member.roles.map((r) => (
             <Tag key={r.label} color={r.color} withCircle>

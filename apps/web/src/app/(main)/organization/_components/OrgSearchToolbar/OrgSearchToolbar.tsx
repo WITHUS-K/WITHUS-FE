@@ -70,11 +70,11 @@ export default function OrgSearchToolbar({
         <Button
           variant="sub"
           size="40"
-          width="13.2rem"
+          width="16.3rem"
           leftIcon={<IcButtonSetting />}
           onClick={goSettings}
         >
-          세부 설정
+          파트 세부 설정
         </Button>
         <Button
           variant="main"

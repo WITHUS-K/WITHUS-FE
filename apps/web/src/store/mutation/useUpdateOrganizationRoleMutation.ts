@@ -12,7 +12,7 @@ interface UpdateRoleRequest {
 type Variables = {
   roleId: number;
   label: string;
-  color: PaletteColor;
+  color: string;
 };
 
 /**
@@ -25,7 +25,7 @@ export function useUpdateOrganizationRoleMutation(organizationId: number) {
     mutationFn: async ({ roleId, label, color }: Variables) => {
       const payload: UpdateRoleRequest = {
         name: label,
-        color: hexToName[color]!,
+        color: color,
       };
       await PATCH(
         `api/v1/organizations/${organizationId}/roles/${roleId}`,
@@ -37,6 +37,14 @@ export function useUpdateOrganizationRoleMutation(organizationId: number) {
         queryKey: queryKeys.organization.roles.list(organizationId),
       });
     },
-    onError: (error: unknown, variables: Variables) => {},
+    onError: (error: unknown, variables: Variables) => {
+      console.error('🚨 역할 업데이트 실패');
+      console.error('입력 값:', variables);
+      if (error instanceof Error) {
+        console.error('에러 메시지:', error.message);
+      } else {
+        console.error('에러 객체:', error);
+      }
+    },
   });
 }
