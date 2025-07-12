@@ -29,7 +29,6 @@ export default function DetailClient() {
     isLoading,
     isError,
   } = useApplicationDetailQuery({ applicationId });
-  const name = useUserStore.getState().name;
   const myUserId = useUserStore.getState().userId;
   console.log('사용자', application);
   const [isRelation, setIsRelation] = useState(false);
@@ -62,7 +61,18 @@ export default function DetailClient() {
   const mutation = useBulkEvaluationsMutation(applicationId);
 
   const average = application?.documentAverageScore;
-  const criteriaList = application?.documentEvaluationCriterias ?? [];
+
+  const allCriteria = application?.documentEvaluationCriterias ?? [];
+
+  // 2) 지원자의 appliedPosition
+  const appliedPosition = application?.appliedPosition; // 예: "1", "2" 등
+
+  // 3) 공통(null) 또는 지원자의 포지션과 일치하는 것만 필터
+  const criteriaList = allCriteria.filter(
+    (c) => c.positionName === null || c.positionName === appliedPosition
+  );
+
+  // 4) Evaluation 리스트 생성
   const evaluationList: Evaluation[] = criteriaList.map((c) => ({
     id: c.id,
     score: c.score ?? 5,
@@ -113,8 +123,12 @@ export default function DetailClient() {
 
   // 6) DocsEvaluation에 넘길 평가 리스트 포맷
   // DocsEvaluation에 넘길 데이터
+
+  const evaluationType =
+    application?.documentScaleTypeKey === '점수제 평가' ? 'score' : 'level';
+
   const documentEvaluationData: EvaluationData = {
-    evaluationType: 'score',
+    evaluationType,
     evaluationList,
   };
 

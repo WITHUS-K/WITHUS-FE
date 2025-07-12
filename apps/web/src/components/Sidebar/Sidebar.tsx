@@ -121,25 +121,27 @@ const Sidebar = ({
         ))}
       </SidebarList>
 
-      <Flex direction="column" gap="1.2rem" width="100%">
-        <Divider direction="row" length="100%" borderColor="grayscale10" />
-        <Text variant="sm_caption_medium" color="grayscale50">
-          소속
-        </Text>
-        <div className={sidebarOrgs}>
-          {organizations.map((org) => (
-            <Option
-              key={org.id}
-              type="radio"
-              label={org.name}
-              isSelected={org.id === currentOrganizationId}
-              onChange={() => onSelectOrg(org.id)}
-              width="100%"
-              height="3.7rem"
-            />
-          ))}
-        </div>
-      </Flex>
+      {role === 'USER' && (
+        <Flex direction="column" gap="1.2rem" width="100%">
+          <Divider direction="row" length="100%" borderColor="grayscale10" />
+          <Text variant="sm_caption_medium" color="grayscale50">
+            소속
+          </Text>
+          <div className={sidebarOrgs}>
+            {organizations.map((org) => (
+              <Option
+                key={org.id}
+                type="radio"
+                label={org.name}
+                isSelected={org.id === currentOrganizationId}
+                onChange={() => onSelectOrg(org.id)}
+                width="100%"
+                height="3.7rem"
+              />
+            ))}
+          </div>
+        </Flex>
+      )}
     </nav>
   );
 };

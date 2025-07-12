@@ -35,6 +35,7 @@ export interface DocumentEvaluationCriteria {
   description: string;
   type: 'DOCUMENT' | 'INTERVIEW';
   score: number | null;
+  positionName: string;
 }
 
 /** 평가 내역 DTO */

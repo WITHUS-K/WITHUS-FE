@@ -12,19 +12,23 @@ export interface Organization {
   name: string;
 }
 
+export async function fetchMyOrganizations(
+  tokens?: Tokens
+): Promise<Organization[]> {
+  const res = await GET<Organization[]>(
+    'api/v1/organizations/me',
+    undefined,
+    tokens
+  );
+  return res.result;
+}
+
 export function getMyOrganizationsQueryOptions(
   tokens?: Tokens
-): UseSuspenseQueryOptions<Organization[], Error, Organization[]> {
-  return queryOptions<Organization[], Error, Organization[]>({
+): UseSuspenseQueryOptions<Organization[], Error> {
+  return queryOptions<Organization[]>({
     queryKey: queryKeys.organization.me(),
-    queryFn: async () => {
-      const res = await GET<Organization[]>(
-        'api/v1/organizations/me',
-        undefined,
-        tokens
-      );
-      return res.result;
-    },
+    queryFn: () => fetchMyOrganizations(tokens),
     staleTime: 1000 * 60 * 5,
   });
 }
