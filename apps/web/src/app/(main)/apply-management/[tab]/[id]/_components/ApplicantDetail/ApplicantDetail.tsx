@@ -78,9 +78,9 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
   return (
     <Flex
       direction="column"
-      paddingLeft="1.9rem"
-      paddingRight="1.9rem"
-      paddingBottom="2.4rem"
+      //paddingLeft="1.9rem"
+      //paddingRight="1.9rem"
+      //paddingBottom="2.4rem"
       width="100%"
     >
       <div className={styles.container}>

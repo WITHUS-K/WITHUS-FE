@@ -14,3 +14,8 @@ export const paginationStyle = style({
   backgroundColor: vars.colors.white,
   borderTop: `1px solid ${vars.colors.grayscale10}`,
 });
+
+export const scrollContainer = style({
+  height: 'calc(100vh - 4.4rem)',
+  overflowY: 'auto',
+});

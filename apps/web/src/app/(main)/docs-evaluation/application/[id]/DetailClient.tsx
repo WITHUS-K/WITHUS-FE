@@ -129,7 +129,6 @@ export default function DetailClient() {
 
       <Flex gap="2rem">
         <ApplicantDetail application={application} />
-
         <div className={styles.rightSection}>
           <EvaluationAddCommentCard comments={myComments!} />
         </div>

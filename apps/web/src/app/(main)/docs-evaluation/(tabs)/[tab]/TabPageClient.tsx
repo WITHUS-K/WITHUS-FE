@@ -67,38 +67,35 @@ export default function TabPageClient() {
 
   return (
     <>
-      <Flex
-        wrap="wrap"
-        gap="2rem"
-        justify="flexStart"
-        style={{ minHeight: '36rem' }}
-      >
-        {apps.map((app) => {
-          // 서버에서 가져온 포지션 이름으로 컬러 찾기
-          const pos = positions.find((p) => p.name === app.positionName);
-          const color = mapServerColorToTagHex(pos!.color);
-          return (
-            <ItemCard
-              key={app.id}
-              item={{
-                id: app.id,
-                name: app.name,
-                positionName: app.positionName,
-                tagColor: color,
-                // 과거 mock의 BEFORE/COMPLETED 구분
-                evaluationStatus:
-                  app.documentEvaluated === false ? 'BEFORE' : 'COMPLETED',
-                pass:
-                  app.status === 'DOX_PASS' || app.status === 'INTERVIEW_PASS',
-                evaluationScore: app.myScoreTotal ?? 0,
-                interviewDate: app.interviewSchedule?.split('T')[0] ?? '',
-                interviewTime:
-                  app.interviewSchedule?.split('T')[1]?.slice(0, 5) ?? '',
-              }}
-            />
-          );
-        })}
-      </Flex>
+      <div className={styles.scrollContainer}>
+        <Flex wrap="wrap" gap="2rem">
+          {apps.map((app) => {
+            const pos = positions.find((p) => p.name === app.positionName);
+            const color = mapServerColorToTagHex(pos!.color);
+            return (
+              <ItemCard
+                key={app.id}
+                item={{
+                  id: app.id,
+                  name: app.name,
+                  positionName: app.positionName,
+                  tagColor: color,
+
+                  evaluationStatus:
+                    app.documentEvaluated === false ? 'BEFORE' : 'COMPLETED',
+                  pass:
+                    app.status === 'DOX_PASS' ||
+                    app.status === 'INTERVIEW_PASS',
+                  evaluationScore: app.myScoreTotal ?? 0,
+                  interviewDate: app.interviewSchedule?.split('T')[0] ?? '',
+                  interviewTime:
+                    app.interviewSchedule?.split('T')[1]?.slice(0, 5) ?? '',
+                }}
+              />
+            );
+          })}
+        </Flex>
+      </div>
 
       <div className={styles.paginationStyle}>
         <Pagination
