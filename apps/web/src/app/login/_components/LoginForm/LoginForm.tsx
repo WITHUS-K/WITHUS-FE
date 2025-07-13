@@ -17,7 +17,8 @@ export default function LoginForm() {
     mode: 'onTouched',
     defaultValues: { email: '', password: '' },
   });
-  const { mutate: login } = useLoginMutation();
+
+  const { mutate: login, isPending } = useLoginMutation();
 
   const onSubmit = async (data: LoginRequest) => {
     console.log('📝 onSubmit 호출됨', data);
@@ -60,7 +61,12 @@ export default function LoginForm() {
           }}
           render={({ field }) => (
             <TextField
-              inputProps={{ ...field, placeholder: '이메일', type: 'text' }}
+              inputProps={{
+                ...field,
+                placeholder: '이메일',
+                type: 'text',
+                disabled: isPending,
+              }}
               errorMessage={errors.email?.message}
               size="auth"
             />
@@ -83,6 +89,7 @@ export default function LoginForm() {
                 ...field,
                 placeholder: '비밀번호',
                 type: 'password',
+                disabled: isPending,
               }}
               errorMessage={errors.password?.message}
               size="auth"
@@ -96,6 +103,8 @@ export default function LoginForm() {
           disabled={!isValid}
           style={{ marginTop: '1.2rem' }}
           size="64"
+          isLoading={isPending}
+          loadingText="로그인 중..."
         >
           로그인하기
         </Button>

@@ -155,6 +155,10 @@
     "./StatusDropdown": {
       "types": "./dist/components/DropDown/index.d.ts",
       "import": "./dist/components/DropDown/index.js"
+    },
+    "./Spinner": {
+      "types": "./dist/components/Spinner/index.d.ts",
+      "import": "./dist/components/Spinner/index.js"
     }
   },
   "main": "./dist/index.js",
