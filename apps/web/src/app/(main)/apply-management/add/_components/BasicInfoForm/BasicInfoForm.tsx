@@ -54,6 +54,7 @@ export function BasicInfoForm({
   const phoneStatus = useFormFieldStatus('basic-phone');
   const birthDateStatus = useFormFieldStatus('basic-birthDate');
   const emailStatus = useFormFieldStatus('basic-email');
+  const imageStatus = useFormFieldStatus('additional-image');
 
   const handleBlurFactory =
     (status: ReturnType<typeof useFormFieldStatus>) =>
@@ -96,59 +97,69 @@ export function BasicInfoForm({
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        {(needImage || readOnly) &&
-          (readOnly ? (
-            // 읽기전용 모드: previewUrl 이 있을 때만 이미지 태그만 보여줌
-            previewUrl ? (
-              <div className={styles.imageBase}>
-                <Image
-                  alt="프로필 이미지"
-                  src={previewUrl}
-                  unoptimized
-                  className={styles.image}
-                  fill
+        <div id="additional-image" tabIndex={-1} className={focusableWrapper}>
+          {(needImage || readOnly) &&
+            (readOnly ? (
+              // 읽기전용 모드: previewUrl 이 있을 때만 이미지 태그만 보여줌
+              previewUrl ? (
+                <div className={styles.imageBase}>
+                  <Image
+                    alt="프로필 이미지"
+                    src={previewUrl}
+                    unoptimized
+                    className={styles.image}
+                    fill
+                  />
+                </div>
+              ) : null
+            ) : (
+              // 쓰기 모드: 기존 업로드 UI
+              <div
+                className={
+                  previewUrl
+                    ? styles.imageContainer.filled
+                    : styles.imageContainer.empty
+                }
+                onMouseEnter={() => setIconHover(true)}
+                onMouseLeave={() => setIconHover(false)}
+              >
+                {previewUrl ? (
+                  <Image
+                    alt="프로필 이미지"
+                    src={previewUrl}
+                    unoptimized
+                    className={styles.imagePreview}
+                    fill
+                  />
+                ) : isIconHover ? (
+                  <IcProfilePreviewHover width={36} height={36} />
+                ) : (
+                  <IcProfilePreview width={36} height={36} />
+                )}
+
+                {previewUrl && (
+                  <div className={styles.reuploadOverlay}>파일 다시 업로드</div>
+                )}
+
+                <input
+                  type="file"
+                  className={styles.imageInput}
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.currentTarget.files?.[0] ?? null;
+                    onImageChange(file);
+
+                    if (file) {
+                      imageStatus.setCompleted();
+                    } else {
+                      imageStatus.setDefault();
+                    }
+                  }}
                 />
               </div>
-            ) : null
-          ) : (
-            // 쓰기 모드: 기존 업로드 UI
-            <div
-              className={
-                previewUrl
-                  ? styles.imageContainer.filled
-                  : styles.imageContainer.empty
-              }
-              onMouseEnter={() => setIconHover(true)}
-              onMouseLeave={() => setIconHover(false)}
-            >
-              {previewUrl ? (
-                <Image
-                  alt="프로필 이미지"
-                  src={previewUrl}
-                  unoptimized
-                  className={styles.imagePreview}
-                  fill
-                />
-              ) : isIconHover ? (
-                <IcProfilePreviewHover width={36} height={36} />
-              ) : (
-                <IcProfilePreview width={36} height={36} />
-              )}
+            ))}
+        </div>
 
-              {previewUrl && (
-                <div className={styles.reuploadOverlay}>파일 다시 업로드</div>
-              )}
-
-              <input
-                type="file"
-                className={styles.imageInput}
-                accept="image/*"
-                onChange={(e) =>
-                  onImageChange(e.currentTarget.files?.[0] ?? null)
-                }
-              />
-            </div>
-          ))}
         <div className={styles.contentColumn}>
           <Flex gap="1.6rem" width="100%">
             <div

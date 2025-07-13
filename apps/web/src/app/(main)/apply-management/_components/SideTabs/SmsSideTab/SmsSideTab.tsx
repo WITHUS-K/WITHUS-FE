@@ -31,6 +31,7 @@ import {
 } from '../RichTextEditor/RichTextEditor'; // 경로 조정
 import { deserializeHtml } from '@web/utils/deserializeHtml';
 import { serializeHtml } from '@web/utils/serializers';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 interface SmsSideTabProps {
   applicationIds: number[];
@@ -43,6 +44,8 @@ export function SmsSideTab({
   recipients,
   onClose,
 }: SmsSideTabProps) {
+  const { organizationId } = getClientSideTokens();
+
   // 1) 기존 템플릿 리스트 불러오기
   const { data: tplSummaries = [] } = useTemplatesQuery('SMS');
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -109,6 +112,7 @@ export function SmsSideTab({
         name: newTitle,
         body: serialize(editorValue),
         medium: 'SMS',
+        organizationId: organizationId,
       },
       {
         onSuccess: (newTpl: TemplateDetail) => {

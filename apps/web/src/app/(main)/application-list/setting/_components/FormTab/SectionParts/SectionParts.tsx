@@ -95,7 +95,13 @@ export default function SectionParts() {
         )}
 
         {/* 항상 마지막에 추가 버튼 유지 */}
-        <AddButton onClick={() => setIsAdding(true)} disabled={!enabled} />
+        <AddButton
+          onClick={() => {
+            setIsAdding(true);
+            //setEditingIndex(null); // 추가할 땐 편집 아님
+          }}
+          disabled={!enabled}
+        />
       </Flex>
     </Flex>
   );

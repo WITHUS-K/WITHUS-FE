@@ -76,6 +76,7 @@ export { default as IcScore } from './IcScore';
 export { default as IcSearch } from './IcSearch';
 export { default as IcStepperMinus } from './IcStepperMinus';
 export { default as IcStepperPlus } from './IcStepperPlus';
+export { default as IcSubmit } from './IcSubmit';
 export { default as IcTagDelete } from './IcTagDelete';
 export { default as IcTimetableExpand } from './IcTimetableExpand';
 export { default as IcTimetablePlus } from './IcTimetablePlus';

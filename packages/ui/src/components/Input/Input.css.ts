@@ -145,7 +145,7 @@ export const commentInput = style({
   all: 'unset',
   width: '100%',
   height: 'auto',
-  whiteSpace: 'pre-wrap',
+  whiteSpace: 'pre-line',
   wordBreak: 'break-word',
   overflowWrap: 'break-word',
   resize: 'none',

@@ -7,21 +7,22 @@ import { getRecruitmentPositionsQueryOptions } from '@web/store/query/useRecruit
 import TabClientWrapper from './TabClientWrapper';
 
 interface PageProps {
-  params: {
-    tab: string[];
+  params: Promise<{
+    tab: string;
     modal?: string[];
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     recruitmentId?: string;
-  };
+  }>;
 }
 
 export default async function Page({ params, searchParams }: PageProps) {
-  const recIdStr = (await searchParams).recruitmentId;
+  const { tab, modal } = await params;
+  const { recruitmentId: recIdStr } = await searchParams;
   const recId = recIdStr ? Number(recIdStr) : NaN;
 
   if (!recIdStr || isNaN(recId)) {
-    return <TabClientWrapper modal={params.modal} />;
+    return <TabClientWrapper modal={modal} />;
   }
 
   const tokens = await getServerSideTokens();
@@ -43,7 +44,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     <ServerFetchBoundary fetchOptions={recsOptions}>
       <ServerFetchBoundary fetchOptions={countsOptions}>
         <ServerFetchBoundary fetchOptions={positionsOptions}>
-          <TabClientWrapper modal={params.modal} />
+          <TabClientWrapper modal={modal} />
         </ServerFetchBoundary>
       </ServerFetchBoundary>
     </ServerFetchBoundary>

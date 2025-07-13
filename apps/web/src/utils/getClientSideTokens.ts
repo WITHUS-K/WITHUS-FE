@@ -7,5 +7,6 @@ export const getClientSideTokens = () => {
   return {
     accessToken: (getCookie('accessToken') as string) || '',
     refreshToken: (getCookie('refreshToken') as string) || '',
+    organizationId: Number(getCookie('organizationId')) || 0,
   };
 };

@@ -36,6 +36,8 @@ import { withHistory } from 'slate-history';
 import { withReact } from 'slate-react';
 import { serializeHtml } from '@web/utils/serializers';
 import { deserializeHtml } from '@web/utils/deserializeHtml';
+import { getCookie } from 'cookies-next';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 interface MailSideTabProps {
   applicationIds: number[];
@@ -48,6 +50,8 @@ export function MailSideTab({
   recipients,
   onClose,
 }: MailSideTabProps) {
+  const { organizationId } = getClientSideTokens();
+
   // — 템플릿 목록 가져오기
   const { data: tplSummaries = [] } = useTemplatesQuery('MAIL');
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -116,7 +120,13 @@ export function MailSideTab({
   const handleSaveTemplate = () => {
     const html = serializeHtml(editorValue);
     createTpl.mutate(
-      { name: newTitle, subject, body: html, medium: 'MAIL' },
+      {
+        name: newTitle,
+        subject,
+        body: html,
+        medium: 'MAIL',
+        organizationId: organizationId,
+      },
       {
         onSuccess: (newTpl: TemplateDetail) => {
           const added: Template = {

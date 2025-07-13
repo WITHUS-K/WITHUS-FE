@@ -7,6 +7,7 @@ export interface CreateTemplateRequest {
   name: string;
   subject?: string;
   body: string;
+  organizationId: number;
   medium: 'SMS' | 'MAIL';
 }
 

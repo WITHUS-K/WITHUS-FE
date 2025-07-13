@@ -1,3 +1,4 @@
+// QuestionAndFileListForm.tsx
 'use client';
 
 import React, { useContext } from 'react';
@@ -10,13 +11,16 @@ import { FileUpload } from '@web/components/FileUpload/FileUpload';
 import { FormFieldStatusContext } from '@web/app/apply/[organization]/[slug]/_context/FormFieldStatusContext';
 import { focusableWrapper } from '@web/app/apply/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
 import clsx from 'clsx';
+import { FileInfo } from '@repo/ui';
+
+export type AnswerFile = File | FileInfo;
 
 interface QuestionAndFileListFormProps {
   detailItems: DetailItem[];
   answers?: string[];
-  files: ({ name: string; size: number; downloadUrl: string } | null)[];
+  files: AnswerFile[][];
   onAnswerChange: (idx: number, value: string) => void;
-  onFileChange: (idx: number, file: File | null) => void;
+  onFileChange: (idx: number, files: AnswerFile[]) => void;
   readOnly?: boolean;
 }
 
@@ -33,7 +37,6 @@ export const QuestionAndFileListForm = ({
   const textItems = detailItems.filter((item) => item.type === 'text');
   const fileItems = detailItems.filter((item) => item.type === 'file');
 
-  // 미리 getStatus 로 상태 객체들 생성
   const textStatuses = textItems.map((_, idx) =>
     getStatus(`question-text-${idx}`)
   );
@@ -44,7 +47,7 @@ export const QuestionAndFileListForm = ({
   return (
     <div className={s.wrapper}>
       {textItems.map((item, idx) => {
-        const status = textStatuses[idx];
+        const status = textStatuses[idx]!;
         const maxLength =
           item.typeInfo.info === '제한 없음'
             ? Infinity
@@ -70,6 +73,7 @@ export const QuestionAndFileListForm = ({
             <QuestionInput
               title={item.description}
               info={item.typeInfo.info}
+              description={item.addDescription}
               infoDetail={item.typeInfo.infoDetail}
               value={
                 readOnly
@@ -78,17 +82,17 @@ export const QuestionAndFileListForm = ({
               }
               maxLength={maxLength}
               includeWhitespace={includeWhitespace}
-              onFocus={status!.setEditing}
+              onFocus={status.setEditing}
               onChange={(val) => {
                 if (!readOnly) {
                   onAnswerChange(idx, val);
-                  status!.setEditing();
+                  status.setEditing();
                 }
               }}
               onBlur={(e) => {
                 e.currentTarget.value.trim()
-                  ? status!.setCompleted()
-                  : status!.setDefault();
+                  ? status.setCompleted()
+                  : status.setDefault();
               }}
               readOnly={readOnly}
             />
@@ -97,23 +101,23 @@ export const QuestionAndFileListForm = ({
       })}
 
       {fileItems.map((item, idx) => {
-        const status = fileStatuses[idx];
+        const status = fileStatuses[idx]!;
         return (
           <div
             key={`file-${idx}`}
             id={`question-file-${idx}`}
             style={{ marginBottom: '2rem' }}
-            onMouseDown={status!.setEditing}
+            onMouseDown={status.setEditing}
             tabIndex={-1}
             className={focusableWrapper}
           >
             <FileUpload
               item={item}
-              file={files[idx]}
+              files={files[idx] || []} // ← 배열로 전달
               readOnly={readOnly}
-              onChange={(file) => {
-                onFileChange(idx, file);
-                file ? status!.setCompleted() : status!.setDefault();
+              onChange={(newFiles) => {
+                onFileChange(idx, newFiles); // ← 배열로 콜백
+                newFiles.length ? status.setCompleted() : status.setDefault();
               }}
             />
           </div>

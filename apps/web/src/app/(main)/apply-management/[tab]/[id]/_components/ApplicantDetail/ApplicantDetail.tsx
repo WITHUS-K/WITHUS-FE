@@ -7,7 +7,10 @@ import {
   AcademicStatus,
   AdditionalInfoForm,
 } from '@web/app/(main)/apply-management/add/_components/AdditionalInfoForm/AdditionalInfoForm';
-import { QuestionAndFileListForm } from '@web/components/QuestionFileListForm/QuestionFileListForm';
+import {
+  AnswerFile,
+  QuestionAndFileListForm,
+} from '@web/components/QuestionFileListForm/QuestionFileListForm';
 import type { DetailItem } from '@web/types/application';
 import * as styles from './ApplicantDetail.css';
 import { ApplicationDetail } from '@web/store/query/useApplicationDetailQuery';
@@ -32,33 +35,61 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
       answer: a.answerText,
     }));
 
-  const fileItem: DetailItem[] = application.documentAnswers
-    .filter((a) => a.questionType === 'FILE')
-    .map((a, idx) => ({
-      isEssential: true,
-      type: 'file',
-      description: a.questionTitle,
-      addDescription: a.questionDescription,
-      responseTarget: textItems.length + idx,
-      typeInfo: { info: `${a.maxFileCount}`, infoDetail: `${a.maxFileSizeMb}` },
-      answer: a.answerText,
-    }));
+  const fileAnswers = application.documentAnswers.filter(
+    (a) => a.questionType === 'FILE'
+  );
 
-  const detailItems = [...textItems, ...fileItem];
+  const fileByQuestion: Record<number, typeof fileAnswers> = fileAnswers.reduce(
+    (acc, ans) => {
+      (acc[ans.questionId] ??= []).push(ans);
+      return acc;
+    },
+    {} as Record<number, typeof fileAnswers>
+  );
+
+  // 2) 질문 하나당 DetailItem 하나 생성
+  const fileItems: DetailItem[] = Object.values(fileByQuestion).map(
+    (answersForThisQuestion) => {
+      const first = answersForThisQuestion[0];
+      return {
+        isEssential: true,
+        type: 'file',
+        description: first!.questionTitle,
+        addDescription: first!.questionDescription,
+        // responseTarget는 QuestionAndFileListForm에서만 쓰므로, readOnly에선 무시해도 됩니다.
+        typeInfo: {
+          info: `${first!.maxFileCount}`,
+          infoDetail: `${first!.maxFileSizeMb}`,
+        },
+        // readOnly 모드에서만 쓰이는 answer 필드
+        answer: '',
+      };
+    }
+  );
+
+  const detailItems = [...textItems, ...fileItems];
 
   console.log('지원서', application);
   //const answers = application.documentAnswers.map((a) => a.answerText);
-  const files = application.documentAnswers
+  const files1d = application.documentAnswers
     .filter((a) => a.questionType === 'FILE')
     .map((a) =>
       a.fileUrl
         ? {
-            name: decodeURIComponent(a.fileUrl.split('/').pop() ?? '파일.pdf'),
+            name: decodeURIComponent(a.fileUrl.split('/').pop()!),
             size: a.maxFileSizeMb,
             downloadUrl: a.fileUrl,
           }
         : null
     );
+
+  const files2d: AnswerFile[][] = Object.values(fileByQuestion).map((group) =>
+    group.map((a) => ({
+      name: decodeURIComponent(a.fileUrl.split('/').pop()!),
+      size: a.maxFileSizeMb,
+      downloadUrl: a.fileUrl,
+    }))
+  );
 
   const applicationSchedule = [
     { label: '지원 마감', date: application.documentDeadline },
@@ -126,14 +157,19 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
             value={{
               name: application.name,
               phone: application.phoneNumber,
-              birthDate: application.birthDate,
-              gender: application.gender?.toLowerCase() as 'male' | 'female',
+              birthDate: application.birthDate ?? '',
+              gender: application.gender?.toLowerCase() as
+                | 'male'
+                | 'female'
+                | undefined,
               email: application.email,
             }}
             file={application.imageUrl}
             onChange={() => {}}
             onImageChange={() => {}}
             readOnly
+            needGender={!!application.gender}
+            needBirthDate={!!application.birthDate}
           />
           <AdditionalInfoForm
             value={{
@@ -144,12 +180,16 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
             }}
             onChange={() => {}}
             readOnly
+            needSchool={!!application.university}
+            needAcademicStatus={!!application.academicStatus}
+            needMajor={!!application.major}
+            needAddress={!!application.address}
           />
         </Flex>
 
         <QuestionAndFileListForm
           detailItems={detailItems}
-          files={files}
+          files={files2d}
           onAnswerChange={() => {}}
           onFileChange={() => {}}
           readOnly={true}

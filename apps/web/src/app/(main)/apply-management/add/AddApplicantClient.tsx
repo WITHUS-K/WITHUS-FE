@@ -29,7 +29,10 @@ import { InterviewScheduleForm } from './_components/InterviewScheduleForm/Inter
 import * as styles from './page.css';
 import { useQueryClient } from '@tanstack/react-query';
 import { safeFormatDotDate } from '@web/utils/application';
-import { QuestionAndFileListForm } from '@web/components/QuestionFileListForm/QuestionFileListForm';
+import {
+  AnswerFile,
+  QuestionAndFileListForm,
+} from '@web/components/QuestionFileListForm/QuestionFileListForm';
 
 interface Props {
   recruitmentId: number;
@@ -54,13 +57,13 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
         phone: '',
         birthDate: undefined,
         email: '',
-        profileImage: null,
       },
       additionalInfo: {
         school: '',
         academicStatus: undefined,
         major: '',
         address: '',
+        profileImage: null,
       },
       applicationPart: undefined,
       questionAnswers: [],
@@ -253,8 +256,11 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
         address: vals.additionalInfo.address ?? '',
       };
 
-      const profileImage = vals.basicInfo.profileImage ?? undefined;
-      const answerFiles = vals.questionFiles.filter(
+      const profileImage = vals.additionalInfo.profileImage ?? undefined;
+      const flatFiles: AnswerFile[] = vals.questionFiles.flat();
+
+      // 2) AnswerFile 중에서 실제 File 인스턴스만 골라낸 뒤
+      const answerFiles: File[] = flatFiles.filter(
         (f): f is File => f instanceof File
       );
 
@@ -299,9 +305,9 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
         <Flex direction="column" width="100%" gap="4rem">
           <BasicInfoForm
             value={watch('basicInfo')}
-            file={watch('basicInfo.profileImage')}
+            file={watch('additionalInfo.profileImage')}
             onChange={(f, v) => setValue(`basicInfo.${f}`, v)}
-            onImageChange={(f) => setValue('basicInfo.profileImage', f)}
+            onImageChange={(f) => setValue('additionalInfo.profileImage', f)}
             needGender={data.needGender}
             needBirthDate={data.needBirthDate}
             needImage={data.needImage}
@@ -329,21 +335,13 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
           readOnly={false}
           detailItems={detailItems}
           answers={watch('questionAnswers')}
-          files={watch('questionFiles').map(
-            (f) =>
-              f instanceof File
-                ? {
-                    name: f.name,
-                    size: f.size,
-                    downloadUrl: URL.createObjectURL(f),
-                  }
-                : f // 서버에서 받아온 string 형태의 fileUrl일 경우 이미 FileInfo 형태로 있다고 가정
-          )}
+          files={watch('questionFiles')}
           onAnswerChange={(i, v) => setValue(`questionAnswers.${i}`, v)}
           onFileChange={(i, f) => setValue(`questionFiles.${i}`, f)}
         />
 
         <InterviewScheduleForm
+          isRequired={data.isInterviewRequired}
           dates={dates}
           scheduleMap={scheduleMap}
           duration={data.interviewDuration}

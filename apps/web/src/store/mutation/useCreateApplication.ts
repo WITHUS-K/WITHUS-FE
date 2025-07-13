@@ -15,7 +15,7 @@ export interface CreateApplicationRequest {
   birthDate?: string; // ISO 문자열(예: "2000-01-01")
   address?: string;
   recruitmentId: number;
-  positionId: number;
+  positionId?: number | null;
   /** 질문별 답변 */
   answers: Array<{
     questionId: number;

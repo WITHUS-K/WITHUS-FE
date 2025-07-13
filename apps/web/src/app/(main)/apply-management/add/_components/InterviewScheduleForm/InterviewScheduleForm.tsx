@@ -17,6 +17,7 @@ interface InterviewScheduleFormProps {
   duration: number;
   selectedScheduleList: InterviewScheduleItem[];
   onScheduleChange: (date: string, items: InterviewScheduleItem[]) => void;
+  isRequired: boolean;
 }
 
 export function InterviewScheduleForm({
@@ -24,8 +25,11 @@ export function InterviewScheduleForm({
   scheduleMap,
   duration,
   selectedScheduleList,
+  isRequired,
   onScheduleChange,
 }: InterviewScheduleFormProps) {
+  if (!isRequired) return null;
+
   const scheduleStatus = useFormFieldStatus('interview-schedule');
 
   return (

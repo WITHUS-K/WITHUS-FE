@@ -34,6 +34,7 @@ export function PartInput({
             onCancel();
           }
         }}
+        onBlur={() => onConfirm(val.trim())}
         placeholder="파트를 입력해주세요."
       />
     </div>
