@@ -117,11 +117,15 @@ export function SettingForm({
   });
 
   console.log('폼', ctx.form);
-  useEffect(() => {
+  /*useEffect(() => {
     if (existentForm) {
       const next = ctx.form;
       methods.reset(next);
     }
+  }, [ctx.form, methods]);*/
+
+  useEffect(() => {
+    methods.reset(ctx.form);
   }, [ctx.form, methods]);
 
   const parts = methods.watch('applicationParts.parts') ?? [];
