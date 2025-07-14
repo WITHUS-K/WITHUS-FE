@@ -9,8 +9,12 @@ export const wrapper = style({
   userSelect: 'none',
   position: 'relative',
   overflow: 'scroll',
-  boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.10)',
 });
+
+export const shadow = style({
+  boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.10)',
+
+})
 
 export const header = style({
   display: 'flex',
