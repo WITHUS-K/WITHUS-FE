@@ -21,6 +21,7 @@ import { queryKeys } from '@web/store/constants';
 import { queryClient } from '@web/store/query/QueryClientProvider';
 import { GET } from '@web/api';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+import { useUserStore } from '@web/store/state/userStore';
 
 export default function Filters() {
   const qc = useQueryClient();
@@ -30,6 +31,7 @@ export default function Filters() {
   const pathname = usePathname();
   const tokens = getClientSideTokens();
   const { accessToken, refreshToken } = tokens;
+  const organizationId = useUserStore.getState().organizationId!;
 
   // URL 파라미터 파싱
   const urlRid = Number(searchParams.get('recruitmentId') ?? NaN) || undefined;
@@ -41,7 +43,8 @@ export default function Filters() {
 
   // 데이터 로드
   const { data: recruitments = [] } = useRecruitmentsQuery();
-  const { data: orgInterviews = [] } = useOrganizationInterviewsQuery();
+  const { data: orgInterviews = [] } =
+    useOrganizationInterviewsQuery(organizationId);
   const { data: positions = [] } = useRecruitmentPositionsQuery(urlRid ?? 0);
   const { data: config } = useInterviewConfigQuery(iv ?? 0);
 

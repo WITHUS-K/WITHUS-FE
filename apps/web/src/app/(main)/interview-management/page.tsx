@@ -6,9 +6,14 @@ import InterviewManagementPageClient from './InterviewManagementPageClient';
 import { getRecruitmentsListQueryOptions } from '@web/store/query/useRecruitmentsQuery';
 
 export default async function Page() {
-  const tokens = await getServerSideTokens();
+  const { accessToken, refreshToken, organizationId } =
+    await getServerSideTokens();
 
-  const interviewsOptions = getOrgInterviewsOptions(tokens);
+  const tokens = { accessToken, refreshToken };
+  const interviewsOptions = getOrgInterviewsOptions(
+    organizationId as number,
+    tokens
+  );
   const recruitmentsOptions = getRecruitmentsListQueryOptions({ tokens });
 
   return (
