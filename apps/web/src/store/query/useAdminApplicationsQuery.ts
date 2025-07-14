@@ -40,7 +40,9 @@ export interface AdminApplicationSummary {
     | 'DOX_PASS'
     | 'DOX_FAIL'
     | 'INTERVIEW_PASS'
-    | 'INTERVIEW_FAIL';
+    | 'INTERVIEW_FAIL'
+    | 'INTERVIEW_PENDING'
+    | 'DOX_PENDING';
   documentAssignedCount: number;
   documentEvaluatedCount: number;
   documentAverageScore: string;

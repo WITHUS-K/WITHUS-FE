@@ -97,7 +97,7 @@ export default function InterviewTab({
         evalStatus: `${item.interviewEvaluatedCount}/${item.interviewAssignedCount}`,
         interviewScore: Number(item.interviewAverageScore),
         status:
-          item.status === 'PENDING'
+          item.status === 'INTERVIEW_PENDING'
             ? '보류'
             : item.status === 'INTERVIEW_PASS'
               ? '면접 합격'

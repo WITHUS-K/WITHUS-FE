@@ -55,6 +55,20 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+    if (isMobile) {
+      confirm({
+        type: 'warning',
+        title: `해당페이지는\nPC에서만 접근 가능합니다.`,
+        confirmText: '확인',
+      });
+    }
+  }, [confirm]);
+
   const { watch, setValue, handleSubmit, getValues } = useForm<ApplicantForm>({
     defaultValues: {
       basicInfo: {

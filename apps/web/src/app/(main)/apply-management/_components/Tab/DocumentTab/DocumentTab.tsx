@@ -102,13 +102,15 @@ export default function DocumentTab({
         documentScore: Number(item.documentAverageScore),
         status:
           item.status === 'PENDING'
-            ? '보류'
+            ? '선택'
             : item.status === 'DOX_PASS'
               ? '서류 합격'
               : item.status === 'DOX_FAIL'
                 ? '서류 불합격'
-                : item.status.startsWith('INTERVIEW')
-                  ? '서류 합격'
+                : //: item.status.startsWith('INTERVIEW')
+                  //? '서류 합격'
+                  item.status == 'DOX_PENDING'
+                  ? '보류'
                   : '선택',
         smsSent: item.isSmsSent,
         mailSent: item.isMailSent,

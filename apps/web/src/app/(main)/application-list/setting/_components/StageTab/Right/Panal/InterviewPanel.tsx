@@ -14,7 +14,11 @@ import { FormValues, InterviewScheduleItem } from '@web/types/application';
 import { TIME_STEP } from '@web/utils/application';
 import * as styles from '../../StageTab.css';
 
-export default function InterviewPanel() {
+interface InterviewPanelProps {
+  /** 서류 발표일 기준 이전 날짜는 선택 불가 */
+  minDate?: Date;
+}
+export default function InterviewPanel({ minDate }: InterviewPanelProps) {
   const { control, setValue } = useFormContext<FormValues>();
 
   const {
@@ -179,7 +183,11 @@ export default function InterviewPanel() {
 
       {/* 본문: 달력 + 시간 입력 영역 */}
       <Flex gap="3.2rem" width="100%" height="100%">
-        <DatePicker selectedDate={selDate} onSelect={setSelDate} />
+        <DatePicker
+          selectedDate={selDate}
+          onSelect={setSelDate}
+          minDate={minDate}
+        />
 
         <Flex direction="column" width="100%">
           <div className={styles.timescroll}>

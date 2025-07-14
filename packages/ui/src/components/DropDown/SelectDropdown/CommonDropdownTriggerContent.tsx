@@ -11,12 +11,14 @@ interface TriggerContentProps {
   selected: string;
   width?: string;
   height?: string;
+  disabled?: boolean;
 }
 
 export default function CommonDropdownTriggerContent({
   selected,
   width,
   height,
+  disabled = false,
 }: TriggerContentProps) {
   const { isOpen } = useDropdownContext();
 
@@ -26,7 +28,12 @@ export default function CommonDropdownTriggerContent({
         styles.triggerBase,
         isOpen ? styles.triggerOpen : styles.triggerClosed
       )}
-      style={{ width, height }}
+      style={{
+        width,
+        height,
+        opacity: disabled ? 0.5 : 1,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+      }}
     >
       <Text
         variant="md2_text_medium"

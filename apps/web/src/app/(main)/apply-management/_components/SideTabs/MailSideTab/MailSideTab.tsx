@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IcSendBtn } from '@repo/ui/icons/mono';
 import {
   IcBold,
@@ -64,6 +64,8 @@ export function MailSideTab({
       }))
     );
   }, [tplSummaries]);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // — 로컬 받는사람 복사본
   const [localRecipients, setLocalRecipients] = useState<string[]>(recipients);
@@ -235,10 +237,12 @@ export function MailSideTab({
               size="32"
               width="8.5rem"
               leftIcon={<IcFilePlus />}
+              onClick={() => fileInputRef.current?.click()}
             >
               업로드
             </Button>
             <input
+              ref={fileInputRef}
               id="mail-file-upload"
               type="file"
               style={{ display: 'none' }}
