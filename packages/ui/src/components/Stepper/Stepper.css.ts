@@ -37,6 +37,8 @@ export const value = style({
   marginInline: '0.2rem',
   backgroundColor: vars.colors.white,
   ...fontStyles.md2_text_medium,
-  outline: 'none',
-  border: 'none',
+  border: 'none',             
+  outline: 'none',             
+  boxShadow: 'none',           
+  appearance: 'none',  
 });

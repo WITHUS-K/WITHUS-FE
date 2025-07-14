@@ -28,7 +28,8 @@ export interface OrgInterviewInfo {
 
 // — QueryOptions & Hook —
 export function getOrgInterviewsOptions(
-  tokens?: Tokens
+  organizationId: number,
+  tokens?: Tokens,
 ): FetchQueryOptions<
   OrgInterviewInfo[],
   Error,
@@ -39,7 +40,7 @@ export function getOrgInterviewsOptions(
     queryKey: queryKeys.interview.orgList(),
     queryFn: async () => {
       const res = await GET<OrgInterviewInfo[]>(
-        'api/v1/interviews/my-organization-interviews',
+        `api/v1/interviews/organizations/${organizationId}`,
         undefined,
         tokens
       );
@@ -51,13 +52,14 @@ export function getOrgInterviewsOptions(
 }
 
 export function useOrganizationInterviewsQuery(
+  organizationId: number,
   tokens?: Tokens
 ): UseSuspenseQueryResult<OrgInterviewInfo[], Error> {
   return useSuspenseQuery<OrgInterviewInfo[], Error>({
     queryKey: queryKeys.interview.orgList(),
     queryFn: async () => {
       const res = await GET<OrgInterviewInfo[]>(
-        'api/v1/interviews/my-organization-interviews',
+        `api/v1/interviews/organizations/${organizationId}`,
         undefined,
         tokens
       );

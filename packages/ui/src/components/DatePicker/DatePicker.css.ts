@@ -8,8 +8,13 @@ export const wrapper = style({
   padding: '2.7rem',
   userSelect: 'none',
   position: 'relative',
-  boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.10)',
+  overflow: 'scroll',
 });
+
+export const shadow = style({
+  boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.10)',
+
+})
 
 export const header = style({
   display: 'flex',
@@ -18,6 +23,7 @@ export const header = style({
   width: '29.4rem',
   height: '4.5rem',
   margin: '0 auto',
+  zIndex: 1,
 });
 
 export const navLeftButton = style({
@@ -206,7 +212,6 @@ export const dayVariants = styleVariants({
   sunday: { color: colors.error },
 });
 
-// 추가: 연도/월 선택 섹션 스타일
 export const dropdownSection = style({
   display: 'flex',
   flexDirection: 'column',
@@ -218,4 +223,106 @@ export const sectionTitle = style({
   ...fontStyles.md1_text_semibold,
   color: colors.grayscale60,
   marginBottom: '0.8rem',
+});
+
+export const yearSelect = style({
+  all: 'unset',
+  appearance: 'none',
+  padding: '0.4rem 0.8rem',
+  borderRadius: 8,
+  cursor: 'pointer',
+  ...fontStyles.lg_subtitle_semibold,
+  color: colors.grayscale90,
+  fontSize: '1rem',
+  selectors: {
+    '&:hover': {
+      backgroundColor: colors.grayscale5,
+    },
+  },
+});
+
+export const monthOnlySelect = style({
+  all: 'unset',
+  appearance: 'none',
+  padding: '0.4rem 0.8rem',
+  borderRadius: 8,
+  cursor: 'pointer',
+  ...fontStyles.lg_subtitle_semibold,
+  color: colors.grayscale90,
+  fontSize: '1rem',
+  selectors: {
+    '&:hover': {
+      backgroundColor: colors.grayscale5,
+    },
+  },
+});
+
+export const birthDropdownFull = style({
+  position: 'absolute',
+  top: 0,           
+  left: 0,
+  width: '100%',     
+  height: '100%',
+  backgroundColor: colors.white,
+  borderRadius: '12px',
+  boxShadow: '0px 20px 40px rgba(0, 0, 0, 0.1)',
+  zIndex: 20,
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '2.7rem',
+  overflow: 'hidden',        
+});
+
+export const birthDropdownHeader = style({
+  flex: '0 0 auto',
+  ...fontStyles.xl_title_bold,
+  color: colors.grayscale90,
+  textAlign: 'center',
+  marginBottom: '1.6rem',
+});
+
+export const birthDropdownBody = style({
+  flex: '1 1 auto',
+  overflowY: 'auto',
+  width: '30.2rem',
+  height: '20.4rem',
+});
+
+export const birthGrid = style({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, 1fr)',
+  columnGap: '1.6rem',
+  rowGap: '0.8rem',
+});
+
+export const birthCell = style({
+  ...fontStyles.md1_text_medium,
+  color: colors.grayscale50,
+  textAlign: 'center',
+  padding: '0.8rem 0',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  transition: 'background-color 0.2s',
+  selectors: {
+    '&:hover': {
+      backgroundColor: colors.grayscale5,
+    },
+  },
+});
+
+export const yearCellVariants = styleVariants({
+  selected: {
+    ...fontStyles.md1_text_semibold,
+    backgroundColor: colors.primary5,
+    color: colors.primary50,
+  },
+  unselected: {},
+});
+
+export const dropdownFooter = style({
+  flex: '0 0 auto',
+  display: 'flex',
+  justifyContent: 'space-between',
+  marginTop: '4.8rem',
+  gap: '0.8rem'
 });

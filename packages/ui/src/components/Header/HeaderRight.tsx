@@ -32,17 +32,19 @@ export const HeaderRight = ({
             {username}
           </Text>
         </div>
-        {role === 'ADMIN' && !!position && !!part && (
-          <div className={styles.badgeWrapper}>
-            <Text variant="xs_caption_medium" color="grayscale50">
-              {position}
-            </Text>
-            <div className={styles.divider} />
-            <Text variant="xs_caption_medium" color="grayscale50">
-              {part}
-            </Text>
-          </div>
-        )}
+        <div className={styles.badgeWrapper}>
+          <Text variant="xs_caption_medium" color="grayscale50">
+            {position}
+          </Text>
+          {!!part && (
+            <>
+              <div className={styles.divider} />
+              <Text variant="xs_caption_medium" color="grayscale50">
+                {part}
+              </Text>
+            </>
+          )}
+        </div>
       </div>
       <button className={styles.buttonWrapper} onClick={onLogout}>
         <Text variant="md2_text_medium" color="grayscale60">

@@ -311,12 +311,13 @@ export function BasicInfoForm({
                           style={{
                             position: 'absolute',
                             top: '100%',
-                            left: 0,
+                            right: '-2.5rem',
                             zIndex: 10,
                             marginTop: '0.4rem',
                           }}
                         >
                           <DatePicker
+                            variant="birth"
                             selectedDate={
                               value.birthDate
                                 ? parseISO(value.birthDate)

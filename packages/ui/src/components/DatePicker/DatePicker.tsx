@@ -1,15 +1,15 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import {
   startOfMonth,
   endOfMonth,
   addDays,
-  format,
-  setMonth,
   startOfDay,
-  isBefore,
+  isAfter,
 } from 'date-fns';
 import * as styles from './DatePicker.css';
 import { MonthSelect } from './MonthSelect';
+import { YearSelect } from './YearSelect';
+import { MonthOnlySelect } from './MonthOnlySelect';
 import { IcArrowLeft, IcArrowRight } from '../../icons/src/mono';
 import {
   generateCalendarData,
@@ -22,37 +22,24 @@ import clsx from 'clsx';
 interface DatePickerProps {
   selectedDate: Date;
   onSelect: (date: Date) => void;
-  minDate?: Date;
+  variant?: 'default' | 'birth';
 }
 
 export const DatePicker = ({
   selectedDate,
   onSelect,
-  minDate,
+  variant = 'default',
 }: DatePickerProps) => {
   const today = startOfDay(new Date());
   const [hasUserSelected, setHasUserSelected] = useState(false);
-
-  useEffect(() => {
-    setCurrentMonth(startOfMonth(selectedDate));
-    setHasUserSelected(true);
-  }, [selectedDate]);
+  const [currentMonth, setCurrentMonth] = useState<Date>(
+    startOfMonth(selectedDate)
+  );
 
   const handleSelectDate = (date: Date) => {
     setHasUserSelected(true);
     onSelect(date);
   };
-  const [currentMonth, setCurrentMonth] = useState<Date>(
-    startOfMonth(selectedDate)
-  );
-
-  const monthOptions = Array.from({ length: 12 }, (_, i) => {
-    const date = setMonth(currentMonth, i);
-    return {
-      value: date,
-      label: format(date, 'yyyy년 M월'),
-    };
-  });
 
   const { days, monthEnd } = useMemo(
     () => generateCalendarData(currentMonth),
@@ -60,7 +47,12 @@ export const DatePicker = ({
   );
 
   return (
-    <div className={styles.wrapper}>
+    <div
+      className={clsx(
+        styles.wrapper,
+        variant === 'birth' ? styles.shadow : null
+      )}
+    >
       <div className={styles.header}>
         <button
           type="button"
@@ -70,10 +62,23 @@ export const DatePicker = ({
           <IcArrowLeft width={17} height={17} />
         </button>
 
-        <MonthSelect
-          currentMonth={currentMonth}
-          onMonthChange={(date) => setCurrentMonth(date)}
-        />
+        {variant === 'birth' ? (
+          <>
+            <YearSelect
+              currentMonth={currentMonth}
+              onYearChange={(m) => setCurrentMonth(m)}
+            />
+            <MonthOnlySelect
+              currentMonth={currentMonth}
+              onMonthChange={(m) => setCurrentMonth(m)}
+            />
+          </>
+        ) : (
+          <MonthSelect
+            currentMonth={currentMonth}
+            onMonthChange={(date) => setCurrentMonth(date)}
+          />
+        )}
 
         <button
           type="button"
@@ -100,10 +105,13 @@ export const DatePicker = ({
 
         {days.map((d) => {
           const afterMonth = isAfterMonth(d, monthEnd);
-          const beforeMin = minDate && isBefore(d, startOfDay(minDate));
-          // 기존 disabled 로직에 minDate 체크 추가
-          const disabled = isDateDisabled(d, currentMonth, today) || beforeMin;
-          const rawVariant = getDayVariant({
+          const outsideMonth = d.getMonth() !== currentMonth.getMonth();
+          const disabled =
+            variant === 'birth'
+              ? outsideMonth || isAfter(d, today)
+              : isDateDisabled(d, currentMonth, today);
+
+          const originalVariant = getDayVariant({
             date: d,
             monthEnd,
             currentMonth,
@@ -111,11 +119,21 @@ export const DatePicker = ({
             selectedDate,
             hasUserSelected,
           });
-          const variant = disabled ? 'disabled' : rawVariant;
+
+          const dayVariant =
+            variant === 'birth' &&
+            originalVariant === 'disabled' &&
+            !outsideMonth &&
+            !isAfter(d, today)
+              ? d.getDay() === 0
+                ? 'sunday'
+                : 'normal'
+              : originalVariant;
+
           return (
             <div
               key={d.toISOString()}
-              className={clsx(styles.dayCell, styles.dayVariants[variant])}
+              className={clsx(styles.dayCell, styles.dayVariants[dayVariant])}
               onClick={() => !disabled && handleSelectDate(d)}
             >
               {!afterMonth ? d.getDate() : null}

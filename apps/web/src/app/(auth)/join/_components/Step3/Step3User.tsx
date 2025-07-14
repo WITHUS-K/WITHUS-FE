@@ -30,6 +30,7 @@ interface FormValues {
   name: string;
   birth: string;
   gender: 'female' | 'male';
+  club: string;
   emailLocal: string;
   emailDomain: string;
   password: string;
@@ -46,6 +47,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
     control,
     handleSubmit,
     watch,
+    setError,
     formState: { errors, isValid },
   } = useForm<FormValues>({
     mode: 'onBlur',
@@ -53,6 +55,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
       name: '',
       birth: '',
       gender: undefined,
+      club: '',
       emailLocal: '',
       emailDomain: '',
       password: '',
@@ -85,7 +88,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
 
   const { mutate: joinUser } = useUserJoinMutation();
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     const payload: UserJoinRequest = {
       name: data.name,
       birthDate: data.birth,
@@ -95,7 +98,27 @@ export default function Step3User({ onBack }: Step3UserProps) {
       password: data.password,
       phoneNumber: data.phone.replace(/-/g, ''),
     };
-    joinUser(payload);
+    joinUser(payload, {
+      onError: async (error) => {
+        const errData = (await error.response.json()) as { code: string };
+        if (errData.code === 'ORGANIZATION404') {
+          setError('club', {
+            type: 'manual',
+            message: '존재하지 않는 조직입니다.',
+          });
+        } else if (errData.code === 'USER400') {
+          setError('name', {
+            type: 'manual',
+            message: '이미 회원가입된 유저입니다.',
+          });
+        } else if (errData.code === 'COMMON401') {
+          setError('authCode', {
+            type: 'manual',
+            message: '인증에 실패했습니다.',
+          });
+        }
+      },
+    });
   };
 
   return (
@@ -178,22 +201,36 @@ export default function Step3User({ onBack }: Step3UserProps) {
         </Flex>
 
         {/* 동아리명 (읽기 전용) */}
-        <Flex direction="column" gap="0.8rem" width="100%">
-          <Text variant="md1_text_semibold" color="grayscale80">
-            동아리명
-          </Text>
-          <InputField
-            placeholder="동아리명을 검색해주세요."
-            value={club?.name ?? ''}
-            onChange={(e) => {
-              /* readOnly 필드라 특별한 로직 없으니 빈 함수로 둡니다 */
-            }}
-            readOnly
-            onClick={() => router.push('/join/3/club-search?type=user')}
-            icon={<IcInputSearch width={24} height={24} />}
-            size="club"
-          />
-        </Flex>
+        <Controller
+          control={control}
+          name="club"
+          render={({ field }) => (
+            <Flex direction="column" gap="0.8rem" width="100%">
+              <Text variant="md1_text_semibold" color="grayscale80">
+                동아리명
+              </Text>
+              <InputField
+                placeholder="동아리명을 검색해주세요."
+                value={club?.name ?? ''}
+                onChange={(e) => {
+                  /* readOnly 필드라 특별한 로직 없으니 빈 함수로 둡니다 */
+                }}
+                readOnly
+                onClick={() => router.push('/join/3/club-search?type=user')}
+                icon={<IcInputSearch width={24} height={24} />}
+                size="club"
+              />
+              {errors.club && (
+                <Flex gap="0.8rem" align="center">
+                  <IcInputError width={24} height={24} />
+                  <Text variant="sm_caption_regular" color="error">
+                    {errors.club.message}
+                  </Text>
+                </Flex>
+              )}
+            </Flex>
+          )}
+        />
 
         {/* 이메일 */}
         <Flex direction="column" gap="1.2rem">
