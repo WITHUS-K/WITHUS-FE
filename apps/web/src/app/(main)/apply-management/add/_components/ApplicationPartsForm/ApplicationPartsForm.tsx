@@ -21,6 +21,8 @@ export function ApplicationPartsForm({
   selectedPartId,
   onChange,
 }: ApplicationPartsFormProps) {
+  if (parts.length === 0) return null;
+
   const partStatus = useFormFieldStatus('part-select');
 
   return (

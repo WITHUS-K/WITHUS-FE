@@ -8,7 +8,8 @@ export const card = style({
   cursor: 'pointer',
   display: 'flex',
   flexDirection: 'column',
-  width: '37.1rem',
+  width: '100%',
+  flex: '0 1 calc((100% - 2rem * 2) / 3)',
 });
 
 export const divider = style({

@@ -12,4 +12,5 @@ export const pagination = style({
   height: '4.4rem',
   backgroundColor: vars.colors.white,
   borderTop: `1px solid ${vars.colors.grayscale10}`,
+  zIndex: 11,
 });

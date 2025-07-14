@@ -28,7 +28,10 @@ import {
   ApplicationPartsForm,
   PartOption,
 } from '@web/app/(main)/apply-management/add/_components/ApplicationPartsForm/ApplicationPartsForm';
-import { QuestionAndFileListForm } from '@web/components/QuestionFileListForm/QuestionFileListForm';
+import {
+  AnswerFile,
+  QuestionAndFileListForm,
+} from '@web/components/QuestionFileListForm/QuestionFileListForm';
 import { InterviewScheduleForm } from '@web/app/(main)/apply-management/add/_components/InterviewScheduleForm/InterviewScheduleForm';
 import { useModal } from '@repo/ui/hooks';
 import { useRouter } from 'next/navigation';
@@ -52,6 +55,20 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+    if (isMobile) {
+      confirm({
+        type: 'warning',
+        title: `해당페이지는\nPC에서만 접근 가능합니다.`,
+        confirmText: '확인',
+      });
+    }
+  }, [confirm]);
+
   const { watch, setValue, handleSubmit, getValues } = useForm<ApplicantForm>({
     defaultValues: {
       basicInfo: {
@@ -60,17 +77,17 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         phone: '',
         birthDate: undefined,
         email: '',
-        profileImage: null,
       },
       additionalInfo: {
         school: '',
         academicStatus: undefined,
         major: '',
         address: '',
+        profileImage: null,
       },
       applicationPart: undefined,
       questionAnswers: [],
-      questionFiles: [],
+      questionFiles: [] as AnswerFile[][],
       interviewSchedule: {
         scheduleList: [],
       },
@@ -198,11 +215,12 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
     ];
     setValue('questionAnswers', newAnswers);
 
-    const curFiles = getValues('questionFiles') as (File | null)[];
-    const newFiles = [
+    const curFiles = getValues('questionFiles') as File[][];
+    const newFiles: File[][] = [
       ...curFiles.slice(0, commonFileCount),
-      ...Array(partFileCount - commonFileCount).fill(null),
+      ...Array(partFileCount - commonFileCount).fill([]),
     ];
+
     setValue('questionFiles', newFiles);
   }, [
     selectedPartLabel,
@@ -214,40 +232,62 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
     setValue,
   ]);
 
+  const needImage = data.needImage;
+  const needGender = data?.needGender;
+  const needBirthDate = data?.needBirthDate;
+  const needSchool = data?.needSchool;
+  const needAcademicStatus = data?.needAcademicStatus;
+  const needMajor = data?.needMajor;
+  const needAddress = data?.needAddress;
+  const needInterview = data.isInterviewRequired;
+
   const basicInfo = watch('basicInfo');
   const additionalInfo = watch('additionalInfo');
+
   const basicFilled =
     Boolean(basicInfo.name) &&
     Boolean(basicInfo.email) &&
-    Boolean(basicInfo.phone) &&
-    basicInfo.gender != null &&
-    basicInfo.birthDate != null;
+    Boolean(basicInfo.phone);
 
   const additionalFilled =
-    Boolean(additionalInfo.school) &&
-    additionalInfo.academicStatus != null &&
-    //Boolean(additionalInfo.major) &&
-    Boolean(additionalInfo.address);
+    (!needImage || Boolean(additionalInfo.profileImage)) &&
+    (!needSchool || Boolean(additionalInfo.school)) &&
+    (!needAcademicStatus || additionalInfo.academicStatus != null) &&
+    (!needMajor || Boolean(additionalInfo.major)) &&
+    (!needAddress || Boolean(additionalInfo.address)) &&
+    (!needGender || basicInfo.gender != null) &&
+    (!needBirthDate || basicInfo.birthDate != null);
 
-  const requiredQs = detailItems.filter((d) => d.isEssential);
+  const textItems = detailItems.filter((d) => d.type === 'text');
+  const fileItems = detailItems.filter((d) => d.type === 'file');
 
-  const questionsAnswered = requiredQs.every((item, idx) => {
-    if (item.type === 'text') {
-      // text 질문은 answer 배열에서 같은 idx가 빈 문자열이 아니어야 하고
-      return Boolean(watch('questionAnswers')[idx]?.trim());
-    } else {
-      // file 질문은 questionFiles 에 File 객체가 있어야 함
-      return watch('questionFiles')[idx] instanceof File;
-    }
-  });
+  // 필수(required) 질문만 골라서
+  const requiredTextItems = textItems.filter((d) => d.isEssential);
+  const requiredFileItems = fileItems.filter((d) => d.isEssential);
+
+  // 리액트훅폼에서 watch 해온 값
+  const textAnswers = watch('questionAnswers'); // string[]
+  const fileAnswers = watch('questionFiles'); // File[][]
+
+  // 1) 텍스트 질문이 모두 채워졌는지
+  const textAnswered = requiredTextItems.every((_, idx) =>
+    Boolean(textAnswers[idx]?.trim())
+  );
+
+  // 2) 파일 질문이 모두 1개 이상 업로드되었는지
+  const fileAnswered = requiredFileItems.every(
+    (_, idx) => Array.isArray(fileAnswers[idx]) && fileAnswers[idx]!.length > 0
+  );
+
+  const questionsAnswered = textAnswered && fileAnswered;
 
   const schedule = watch('interviewSchedule.scheduleList') || [];
-  const hasSchedule = schedule.length > 0;
+  const hasSchedule = !needInterview || schedule.length > 0;
 
-  /*console.log('basicFilled', basicFilled);
+  console.log('basicFilled', basicFilled);
   console.log('additionalFilled', additionalFilled);
   console.log('questionsAnswered', questionsAnswered);
-  console.log('hasSchedule', hasSchedule);*/
+  console.log('hasSchedule', hasSchedule);
 
   const canSubmit =
     basicFilled && additionalFilled && questionsAnswered && hasSchedule;
@@ -274,16 +314,13 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
             fileName: '',
           });
         } else {
-          const file = vals.questionFiles[fileIndex++];
-          const fileName = file instanceof File ? file.name : '';
-
-          // 필수가 아니고 파일이 없으면 스킵
-          if (!item.isEssential && !fileName) return acc;
-
-          acc.push({
-            questionId: item.questionId,
-            answerText: '',
-            fileName,
+          const filesForQuestion = vals.questionFiles[fileIndex++] || [];
+          filesForQuestion.forEach((f) => {
+            acc.push({
+              questionId: item.questionId,
+              answerText: '',
+              fileName: f.name,
+            });
           });
         }
 
@@ -317,7 +354,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
           | 'MALE'
           | 'FEMALE',
         recruitmentId: data.recruitmentId,
-        positionId: vals.applicationPart!.id,
+        positionId: vals.applicationPart?.id ?? null,
         answers,
         availableTimes,
         university: vals.additionalInfo.school ?? '',
@@ -329,17 +366,18 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         address: vals.additionalInfo.address ?? '',
       };
 
-      const profileImage = vals.basicInfo.profileImage ?? undefined;
-      const answerFiles = vals.questionFiles.filter(
-        (f): f is File => f instanceof File
-      );
-
+      const profileImage = vals.additionalInfo.profileImage ?? undefined;
+      const answerFiles: File[] = vals.questionFiles
+        .flat()
+        .filter((f): f is File => f instanceof File);
       console.log(payload);
       createApp.mutate(
         { payload, profileImage, answerFiles },
         {
           onSuccess: (res) => {
-            router.replace(`/apply/${data.organizationName}/${slug}/submitted`);
+            router.push(
+              `/apply/${data.organizationName}/${slug}/submitted?title=${encodeURIComponent(data.title)}`
+            );
             console.log('지원서 생성 성공 res:', res);
           },
           onError: (err) => {
@@ -350,13 +388,6 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
     },
     [createApp, data, detailItems]
   );
-
-  const needGender = data?.needGender;
-  const needBirthDate = data?.needBirthDate;
-  const needSchool = data?.needSchool;
-  const needAcademicStatus = data?.needAcademicStatus;
-  const needMajor = data?.needMajor;
-  const needAddress = data?.needAddress;
 
   const navItems: NavItem[] = useMemo(() => {
     const items: NavItem[] = [];
@@ -371,6 +402,8 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
     items.push({ id: 'basic-email', label: '이메일', required: true });
 
     // 2) 추가정보
+    if (needImage)
+      items.push({ id: 'additional-image', label: '사진', required: true });
     if (needSchool)
       items.push({ id: 'additional-school', label: '학교', required: true });
     if (needAcademicStatus)
@@ -391,8 +424,9 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
       isDivider: true,
     });
 
-    // 3) 지원 파트
-    items.push({ id: 'part-select', label: '지원 파트', required: true });
+    if (data.positions.length > 0)
+      // 3) 지원 파트
+      items.push({ id: 'part-select', label: '지원 파트', required: true });
 
     // 4) 질문
     detailItems
@@ -428,12 +462,13 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         });
       });
 
-    // 5) 면접 일정
-    items.push({
-      id: 'interview-schedule',
-      label: '면접 가능 일정 선택',
-      required: true,
-    });
+    if (needInterview)
+      // 5) 면접 일정
+      items.push({
+        id: 'interview-schedule',
+        label: '면접 가능 일정 선택',
+        required: true,
+      });
 
     return items;
   }, [
@@ -478,7 +513,11 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
               <div className={styles.headerWrapper}>
                 {applicationSchedule.map((s, i) => (
                   <div key={i} className={styles.item}>
-                    <Text variant="md1_text_semibold" color="grayscale70">
+                    <Text
+                      variant="md1_text_semibold"
+                      color="grayscale70"
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
                       {s.label}
                     </Text>
                     <Text variant="md2_text_medium" color="grayscale50">
@@ -492,9 +531,11 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
             <Flex direction="column" width="100%" gap="4rem">
               <BasicInfoForm
                 value={watch('basicInfo')}
-                file={watch('basicInfo.profileImage')}
+                file={watch('additionalInfo.profileImage')}
                 onChange={(f, v) => setValue(`basicInfo.${f}`, v)}
-                onImageChange={(f) => setValue('basicInfo.profileImage', f)}
+                onImageChange={(f) =>
+                  setValue('additionalInfo.profileImage', f)
+                }
                 needGender={data.needGender}
                 needBirthDate={data.needBirthDate}
                 needImage={data.needImage}
@@ -522,20 +563,13 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
               readOnly={false}
               detailItems={detailItems}
               answers={watch('questionAnswers')}
-              files={watch('questionFiles').map((f) =>
-                f instanceof File
-                  ? {
-                      name: f.name,
-                      size: f.size,
-                      downloadUrl: URL.createObjectURL(f),
-                    }
-                  : f
-              )}
+              files={watch('questionFiles')}
               onAnswerChange={(i, v) => setValue(`questionAnswers.${i}`, v)}
               onFileChange={(i, f) => setValue(`questionFiles.${i}`, f)}
             />
 
             <InterviewScheduleForm
+              isRequired={data.isInterviewRequired}
               dates={dates}
               scheduleMap={scheduleMap}
               duration={data.interviewDuration}

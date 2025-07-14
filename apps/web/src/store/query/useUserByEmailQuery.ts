@@ -1,11 +1,8 @@
 import { GET } from '@web/api/fetch';
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { EmailUser, EmailUserResponse } from '@web/types/organization';
 
-export function useUserByEmailQuery(
-  email: string,
-  enabled: boolean
-): UseQueryResult<EmailUser, Error> {
+export function useUserByEmailQuery(email: string, enabled: boolean) {
   return useQuery<EmailUser, Error>({
     queryKey: ['userByEmail', email],
     queryFn: async () => {

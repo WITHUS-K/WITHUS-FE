@@ -38,4 +38,5 @@ export const value = style({
   backgroundColor: vars.colors.white,
   ...fontStyles.md2_text_medium,
   outline: 'none',
+  border: 'none',
 });

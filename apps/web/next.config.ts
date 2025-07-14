@@ -11,14 +11,14 @@ const nextConfig: NextConfig = {
   images: {
     domains: ['kr.object.ncloudstorage.com'],
     // 필요 시 다음 설정으로 세부 경로 제어가 가능합니다.
-    // remotePatterns: [
-    //   {
-    //     protocol: 'https',
-    //     hostname: 'kr.object.ncloudstorage.com',
-    //     port: '',
-    //     pathname: '/withus-file/**',
-    //   },
-    // ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'kr.object.ncloudstorage.com',
+        port: '',
+        pathname: '/withus-file/**',
+      },
+    ],
   },
 };
 

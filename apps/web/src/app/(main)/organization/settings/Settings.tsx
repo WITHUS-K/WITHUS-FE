@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import SettingsHeader from '../_components/SettingsHeader/SettingsHeader';
 import RolePalettePanel from '../_components/RolePalettePanel/RolePalettePanel';
@@ -9,7 +9,10 @@ import type { RoleSelectWithCount, UserResult } from '@web/types/organization';
 import type { PaletteColor } from '@repo/utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getOrganizationRolesQueryOptions } from '@web/store/query/useOrganizationRolesQuery';
-import { useOrganizationUsersQuery } from '@web/store/query/useOrganizationUsersQuery';
+import {
+  useOrganizationUsersClientQuery,
+  useOrganizationUsersQuery,
+} from '@web/store/query/useOrganizationUsersQuery';
 import { useAddOrganizationRoleMutation } from '@web/store/mutation/useAddOrganizationRoleMutation';
 import { useUpdateOrganizationRoleMutation } from '@web/store/mutation/useUpdateOrganizationRoleMutation';
 import { useAssignOrganizationUsersMutation } from '@web/store/mutation/useAssignOrganizationUsersMutation';
@@ -29,6 +32,7 @@ export default function Settings({ organizationId }: Props) {
   const { data: rolesData } = useSuspenseQuery(
     getOrganizationRolesQueryOptions({ organizationId })
   );
+
   const filteredRoles = useMemo(
     () =>
       rolesData.roles.filter((r) =>
@@ -47,10 +51,10 @@ export default function Settings({ organizationId }: Props) {
     selectedRoleIdx != null ? filteredRoles[selectedRoleIdx]!.roleName : '';
 
   // 서버에서 users
-  const { data: users } = useOrganizationUsersQuery(
+  const { data: users } = useOrganizationUsersClientQuery({
     organizationId,
-    selectedRoleId
-  );
+    roleId: selectedRoleId,
+  });
 
   // roleId 가 바뀔 때만 초기화
   const [localUsers, setLocalUsers] = useState<UserResult[]>([]);
@@ -103,27 +107,29 @@ export default function Settings({ organizationId }: Props) {
   };
 
   return (
-    <Flex direction="column" width="100%" height="100%">
-      <SettingsHeader onSave={handleSave} />
-      <Flex align="center" gap="1.9rem" width="100%" marginTop="1.8rem">
-        <RolePalettePanel
-          roles={roleSelect}
-          search={roleSearch}
-          selectedIdx={selectedRoleIdx}
-          onSearchChange={setRoleSearch}
-          onSelectRole={setSelectedRoleIdx}
-          onAddRole={addRole}
-          onUpdateRole={(i, label, color) =>
-            updateRole({ roleId: filteredRoles[i]!.id, label, color })
-          }
-        />
-        <MemberAssignmentPanel
-          addedMembers={addedMembers}
-          availableMembers={availableMembers}
-          onAdd={handleAdd}
-          onRemove={handleRemove}
-        />
+    <Suspense fallback={null}>
+      <Flex direction="column" width="100%" height="100%">
+        <SettingsHeader onSave={handleSave} />
+        <Flex align="center" gap="1.9rem" width="100%" marginTop="1.8rem">
+          <RolePalettePanel
+            roles={roleSelect}
+            search={roleSearch}
+            selectedIdx={selectedRoleIdx}
+            onSearchChange={setRoleSearch}
+            onSelectRole={setSelectedRoleIdx}
+            onAddRole={addRole}
+            onUpdateRole={(i, label, color) =>
+              updateRole({ roleId: filteredRoles[i]!.id, label, color })
+            }
+          />
+          <MemberAssignmentPanel
+            addedMembers={addedMembers}
+            availableMembers={availableMembers}
+            onAdd={handleAdd}
+            onRemove={handleRemove}
+          />
+        </Flex>
       </Flex>
-    </Flex>
+    </Suspense>
   );
 }

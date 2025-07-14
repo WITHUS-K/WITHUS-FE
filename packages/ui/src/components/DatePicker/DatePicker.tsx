@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   startOfMonth,
   endOfMonth,
   addDays,
   startOfDay,
   isAfter,
+  isBefore,
 } from 'date-fns';
 import * as styles from './DatePicker.css';
 import { MonthSelect } from './MonthSelect';
@@ -23,18 +24,25 @@ interface DatePickerProps {
   selectedDate: Date;
   onSelect: (date: Date) => void;
   variant?: 'default' | 'birth';
+  minDate?: Date;
 }
 
 export const DatePicker = ({
   selectedDate,
   onSelect,
   variant = 'default',
+  minDate,
 }: DatePickerProps) => {
   const today = startOfDay(new Date());
   const [hasUserSelected, setHasUserSelected] = useState(false);
   const [currentMonth, setCurrentMonth] = useState<Date>(
     startOfMonth(selectedDate)
   );
+
+  useEffect(() => {
+    setCurrentMonth(startOfMonth(selectedDate));
+    setHasUserSelected(true);
+  }, [selectedDate]);
 
   const handleSelectDate = (date: Date) => {
     setHasUserSelected(true);
@@ -107,6 +115,10 @@ export const DatePicker = ({
               : isDateDisabled(d, currentMonth, today);
 
           const originalVariant = getDayVariant({
+          const beforeMin = minDate && isBefore(d, startOfDay(minDate));
+          // 기존 disabled 로직에 minDate 체크 추가
+          const disabled = isDateDisabled(d, currentMonth, today) || beforeMin;
+          const rawVariant = getDayVariant({
             date: d,
             monthEnd,
             currentMonth,
@@ -125,6 +137,7 @@ export const DatePicker = ({
                 : 'normal'
               : originalVariant;
 
+          const variant = disabled ? 'disabled' : rawVariant;
           return (
             <div
               key={d.toISOString()}

@@ -19,6 +19,7 @@ export interface CommonDropdownProps<T extends string>
   itemHeight?: string;
   /** 아이템 텍스트 크기 */
   itemSize?: DropdownItemProps['size'];
+  disabled?: boolean;
 }
 
 export default function CommonDropdown<T extends string>({
@@ -31,32 +32,44 @@ export default function CommonDropdown<T extends string>({
   itemSize = 'small',
   placeholder,
   style,
+  disabled = false,
   ...rest
 }: CommonDropdownProps<T>) {
   const selected = value ?? placeholder ?? options[0]!;
   return (
     <Dropdown {...rest} style={style}>
-      <Dropdown.Trigger>
-        <CommonDropdownTriggerContent
-          selected={selected}
-          width={listWidth}
-          height={triggerHeight}
-        />
-      </Dropdown.Trigger>
+      <div
+        style={{
+          width: listWidth,
+          height: triggerHeight,
+          pointerEvents: disabled ? 'none' : undefined,
+        }}
+      >
+        <Dropdown.Trigger>
+          <CommonDropdownTriggerContent
+            selected={selected}
+            width={listWidth}
+            height={triggerHeight}
+            disabled={disabled}
+          />
+        </Dropdown.Trigger>
+      </div>
 
-      <Dropdown.NormalList width={listWidth}>
-        {options.map((opt) => (
-          <Dropdown.Item
-            key={opt}
-            isSelected={opt === value}
-            onSelect={() => onSelect(opt)}
-            size={itemSize}
-            height={itemHeight}
-          >
-            {opt}
-          </Dropdown.Item>
-        ))}
-      </Dropdown.NormalList>
+      {!disabled && (
+        <Dropdown.NormalList width={listWidth}>
+          {options.map((opt) => (
+            <Dropdown.Item
+              key={opt}
+              isSelected={opt === value}
+              onSelect={() => onSelect(opt)}
+              size={itemSize}
+              height={itemHeight}
+            >
+              {opt}
+            </Dropdown.Item>
+          ))}
+        </Dropdown.NormalList>
+      )}
     </Dropdown>
   );
 }

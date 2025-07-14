@@ -6,7 +6,7 @@ import { IcSave } from '@repo/ui/icons/colored';
 
 export default function SettingsHeader({ onSave }: { onSave: () => void }) {
   return (
-    <Flex direction="column" width="100%" gap="1.8rem">
+    <Flex direction="column" width="100%" gap="0.4rem">
       <Breadcrumb>
         <Breadcrumb.Item>조직 관리</Breadcrumb.Item>
         <Breadcrumb.Item active>역할 세부 설정</Breadcrumb.Item>
@@ -14,7 +14,7 @@ export default function SettingsHeader({ onSave }: { onSave: () => void }) {
 
       <Flex align="center" justify="spaceBetween" width="100%">
         <Text variant="xl_title_semibold" color="black">
-          세부 설정
+          파트 세부 설정
         </Text>
         <Button
           variant="main"

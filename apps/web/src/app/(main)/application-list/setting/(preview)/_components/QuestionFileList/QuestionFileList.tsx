@@ -6,6 +6,7 @@ import { Text } from '@repo/ui/Text';
 import { QuestionInput } from '@repo/ui/InputField';
 import { FileUpload } from '../../../../../../../components/FileUpload/FileUpload';
 import * as s from './QuestionFileList.css';
+import { AnswerFile } from '@web/components/QuestionFileListForm/QuestionFileListForm';
 
 interface Props {
   detailItems: DetailItem[];
@@ -24,18 +25,17 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
   };
 
   const fileItems = detailItems.filter((item) => item.type === 'file');
-  const [files, setFiles] = useState<(File | null)[]>(
-    fileItems.map(() => null)
+  const [files, setFiles] = useState<AnswerFile[][]>(
+    fileItems.map(() => []) // 초기엔 질문별 빈 배열
   );
 
-  const handleFileChange = (idx: number, file: File | null) => {
+  const handleFileChange = (idx: number, newFiles: AnswerFile[]) => {
     setFiles((prev) => {
       const copy = [...prev];
-      copy[idx] = file;
+      copy[idx] = newFiles; // 질문 idx 에 newFiles 배열 전체를 저장
       return copy;
     });
   };
-
   //console.log('파일 질문', fileItems);
 
   return (
@@ -59,6 +59,7 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
             infoDetail={item.typeInfo.infoDetail}
             value={answers[idx] as string}
             onChange={(val) => handleAnswerChange(idx, val)}
+            description={item.addDescription}
           />
         </div>
       ))}
@@ -77,7 +78,8 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
           <div key={`f-${idx}`} style={{ marginBottom: '2rem' }}>
             <FileUpload
               item={stringItem}
-              onChange={(file) => handleFileChange(idx, file)}
+              files={files[idx]!}
+              onChange={(newFiles) => handleFileChange(idx, newFiles)}
             />
           </div>
         );

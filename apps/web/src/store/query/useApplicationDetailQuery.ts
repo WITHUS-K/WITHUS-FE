@@ -35,6 +35,7 @@ export interface DocumentEvaluationCriteria {
   description: string;
   type: 'DOCUMENT' | 'INTERVIEW';
   score: number | null;
+  positionName: string;
 }
 
 /** 평가 내역 DTO */
@@ -103,21 +104,37 @@ export interface ApplicationDetail {
   finalResultDate: string;
 }
 
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import {
+  queryOptions,
+  useSuspenseQuery,
+  type UseSuspenseQueryOptions,
+} from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
 import { queryKeys } from '../constants';
+import { Tokens } from '@web/api/types';
 
-export function useApplicationDetailQuery(applicationId: number) {
-  return useQuery<ApplicationDetail, Error>({
+export interface ApplicationDetailParams {
+  applicationId: number;
+  tokens?: Tokens;
+}
+
+export function getApplicationDetailQueryOptions({
+  applicationId,
+  tokens,
+}: ApplicationDetailParams): UseSuspenseQueryOptions<ApplicationDetail, Error> {
+  return queryOptions<ApplicationDetail>({
     queryKey: queryKeys.applications.detail(applicationId),
-    queryFn: async () => {
-      const res = await GET<ApplicationDetail>(
-        `api/v1/applications/${applicationId}`
-      );
-      console.log('✅ [useApplicationDetailQuery] 응답:', res);
-      return res.result;
-    },
+    queryFn: () =>
+      GET<ApplicationDetail>(
+        `api/v1/applications/${applicationId}`,
+        undefined,
+        tokens
+      ).then((res) => res.result),
     staleTime: 1000 * 60 * 3,
     enabled: applicationId > 0,
   });
+}
+
+export function useApplicationDetailQuery(params: ApplicationDetailParams) {
+  return useSuspenseQuery(getApplicationDetailQueryOptions(params));
 }

@@ -1,22 +1,52 @@
-'use client';
-
 import React from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
-import TabClient from '../TabClient';
-import ChargeModal from '../@modal/(.)charge/page';
-import AssignManagerModal from '../@modal/(.)assign-manager/page';
+import { getServerSideTokens } from '@web/api/serverSideTokens';
+import { ServerFetchBoundary } from '@web/store/query/ServerFetchBoundary';
+import { getRecruitmentsListQueryOptions } from '@web/store/query/useRecruitmentsQuery';
+import { getAdminApplicationsQueryOptions } from '@web/store/query/useAdminApplicationsQuery';
+import { getRecruitmentPositionsQueryOptions } from '@web/store/query/useRecruitmentPositionsQuery';
+import TabClientWrapper from './TabClientWrapper';
 
-export default function TabPage() {
-  const params = useParams();
-  const search = useSearchParams();
-  const modal = params.modal as string[] | undefined;
-  const show = modal?.[0] === 'charge';
-  const showAssign = modal?.[0] === 'assign-manager';
+interface PageProps {
+  params: Promise<{
+    tab: string;
+    modal?: string[];
+  }>;
+  searchParams: Promise<{
+    recruitmentId?: string;
+  }>;
+}
+
+export default async function Page({ params, searchParams }: PageProps) {
+  const { tab, modal } = await params;
+  const { recruitmentId: recIdStr } = await searchParams;
+  const recId = recIdStr ? Number(recIdStr) : NaN;
+
+  if (!recIdStr || isNaN(recId)) {
+    return <TabClientWrapper modal={modal} />;
+  }
+
+  const tokens = await getServerSideTokens();
+
+  const recsOptions = getRecruitmentsListQueryOptions({ tokens });
+  const countsOptions = getAdminApplicationsQueryOptions({
+    recruitmentId: recId,
+    stage: 'DOCUMENT',
+    page: 0,
+    size: 1,
+    tokens,
+  });
+  const positionsOptions = getRecruitmentPositionsQueryOptions({
+    recruitmentId: recId,
+    tokens,
+  });
+
   return (
-    <>
-      <TabClient />
-      {show && <ChargeModal />}
-      {showAssign && <AssignManagerModal />}
-    </>
+    <ServerFetchBoundary fetchOptions={recsOptions}>
+      <ServerFetchBoundary fetchOptions={countsOptions}>
+        <ServerFetchBoundary fetchOptions={positionsOptions}>
+          <TabClientWrapper modal={modal} />
+        </ServerFetchBoundary>
+      </ServerFetchBoundary>
+    </ServerFetchBoundary>
   );
 }

@@ -1,3 +1,4 @@
+import { AnswerFile } from '@web/components/QuestionFileListForm/QuestionFileListForm';
 import type { InterviewScheduleItem } from '@web/types/application';
 
 export type PartOption = {
@@ -12,17 +13,17 @@ export type ApplicantForm = {
     phone: string;
     birthDate?: string;
     email: string;
-    profileImage: File | null;
   };
   additionalInfo: {
     school: string;
     academicStatus?: 'ENROLLED' | 'GRADUATED' | 'LEAVE_OF_ABSENCE' | 'DEFERRED';
     major: string;
     address: string;
+    profileImage: File | null;
   };
   applicationPart?: PartOption;
   questionAnswers: string[];
-  questionFiles: (File | null)[];
+  questionFiles: AnswerFile[][];
   interviewSchedule: {
     scheduleList: InterviewScheduleItem[];
   };

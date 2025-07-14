@@ -3,20 +3,7 @@
 import React from 'react';
 import { Callout } from '@repo/ui/Callout';
 import * as styles from './EvalBubbles.css';
-import { TagColor, mapServerColorToTagHex } from '@repo/utils';
-import { getTagColors, mapServerColorToProfileHex } from '@web/utils/color';
-
-const TAG_COLORS: TagColor[] = [
-  '#FF2A3A',
-  '#EE6B00',
-  '#E2A500',
-  '#009857',
-  '#0084BC',
-  '#2C60FF',
-  '#813DFF',
-  '#F25DEB',
-  '#7F82A1',
-];
+import { getProfileBackground, getProfileTextColor } from '@web/utils/color';
 
 export interface Evaluator {
   name: string;
@@ -57,7 +44,8 @@ export default function EvalBubbles({
               <div
                 className={styles.bubble}
                 style={{
-                  backgroundColor: mapServerColorToProfileHex(ev.profileColor),
+                  backgroundColor: getProfileBackground(ev.profileColor),
+                  color: getProfileTextColor(ev.profileColor),
                   width: size,
                   height: size,
                   left,
@@ -81,7 +69,8 @@ export default function EvalBubbles({
             <div
               className={styles.bubble}
               style={{
-                backgroundColor: '#5A5C72',
+                color: '#747693',
+                backgroundColor: '#A9ABC0',
                 width: size,
                 height: size,
                 left: visible.length * overlap,

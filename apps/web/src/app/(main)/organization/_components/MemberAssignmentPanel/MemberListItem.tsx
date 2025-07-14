@@ -33,7 +33,7 @@ export default function MemberListItem({
         <CheckBox size={2} isChecked={isSelected} onChange={onToggle} />
       </div>
       <Profile src={user.imageUrl ?? null} alt={user.name} size={24} />
-      <Text variant="sm_caption_regular" color="grayscale90">
+      <Text variant="sm_caption_medium" color="grayscale90">
         {nameParts.map((part, idx) =>
           search && part.toLowerCase() === search.toLowerCase() ? (
             <span key={idx} className={styles.highlight}>

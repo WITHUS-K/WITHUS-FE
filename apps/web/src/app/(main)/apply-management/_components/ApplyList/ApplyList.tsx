@@ -10,9 +10,10 @@ import ApplyListItem, {
   Evaluator,
   MemberWithEval,
 } from '../ApplyListItem/ApplyListItem';
-
+import { Text } from '@repo/ui/Text';
 import * as styles from './ApplyList.css';
 import ApplyListItemFinal from '../ApplyListItem/ApplyListItemFinal';
+import { IcApplyEmpty } from '@repo/ui/icons/colored';
 
 interface Props {
   data: MemberWithEval[];
@@ -64,27 +65,37 @@ export function ApplyList({
         onSortChange={onSortChange}
       />
 
-      <div className={styles.listContainer}>
-        {data.map((m) =>
-          useFinalItem ? (
-            <ApplyListItemFinal
-              key={m.id}
-              member={m}
-              isSelected={selectedIds.includes(m.id)}
-              onToggle={(c) => onToggleOne(m.id, c)}
-            />
-          ) : (
-            <ApplyListItem
-              key={m.id}
-              member={m}
-              isSelected={selectedIds.includes(m.id)}
-              onToggle={(c) => onToggleOne(m.id, c)}
-              availableEvals={availableEvals}
-              onAddEval={(ev) => onAddEval(m.id, ev)}
-            />
-          )
-        )}
-      </div>
+      {data.length === 0 ? (
+        // ─── 빈 상태일 때 보여줌 ───
+        <div className={styles.emptyContainer}>
+          <IcApplyEmpty width={48} height={48} />
+          <Text variant="lg_subtitle_semibold" color="grayscale30">
+            아직 접수된 지원자가 없습니다.
+          </Text>
+        </div>
+      ) : (
+        <div className={styles.listContainer}>
+          {data.map((m) =>
+            useFinalItem ? (
+              <ApplyListItemFinal
+                key={m.id}
+                member={m}
+                isSelected={selectedIds.includes(m.id)}
+                onToggle={(c) => onToggleOne(m.id, c)}
+              />
+            ) : (
+              <ApplyListItem
+                key={m.id}
+                member={m}
+                isSelected={selectedIds.includes(m.id)}
+                onToggle={(c) => onToggleOne(m.id, c)}
+                availableEvals={availableEvals}
+                onAddEval={(ev) => onAddEval(m.id, ev)}
+              />
+            )
+          )}
+        </div>
+      )}
     </div>
   );
 }

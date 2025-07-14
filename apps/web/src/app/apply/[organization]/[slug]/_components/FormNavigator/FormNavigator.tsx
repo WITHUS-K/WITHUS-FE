@@ -37,12 +37,12 @@ export function FormNavigator({ items, scrollContainerRef }: Props) {
   const { fieldStatuses, getStatus } = useContext(FormFieldStatusContext);
 
   // 모든 항목이 completed 상태인지 체크
-  const isAllCompleted = items
-    .filter((item) => !item.isDivider)
-    .every((item) => {
-      const fs = fieldStatuses[item.id] ?? getStatus(item.id);
-      return fs.status === 'completed';
-    });
+  const filteredItems = items.filter((item) => !item.isDivider); // divider 제외
+
+  const isAllCompleted = filteredItems.every((item) => {
+    const fs = fieldStatuses[item.id] ?? getStatus(item.id);
+    return fs.status === 'completed';
+  });
 
   const handleClick = (id: string) => {
     setSelectedId((prev) => (prev === id ? null : id));
@@ -79,10 +79,16 @@ export function FormNavigator({ items, scrollContainerRef }: Props) {
             width="100%"
             marginBottom="2rem"
           >
-            <Text variant="xl_title_bold" color="grayscale80">
-              전체 {items.length}개 항목
+            <Text
+              variant="xl_title_bold"
+              color="grayscale80"
+              style={{ whiteSpace: 'nowrap' }}
+            >
+              전체 {filteredItems.length}개 항목
             </Text>
+            <div className={css.space} />
             <Chip
+              style={{ whiteSpace: 'nowrap' }}
               bg={isAllCompleted ? 'primary5' : 'grayscale5'}
               color={isAllCompleted ? 'primary50' : 'grayscale70'}
             >
@@ -109,8 +115,8 @@ export function FormNavigator({ items, scrollContainerRef }: Props) {
                 className={`${css.item} ${isActive ? css.active : ''}`}
                 onClick={() => handleClick(item.id)}
               >
-                <span className={css.label}>
-                  {item.label}
+                <span className={css.labelWrapper}>
+                  <span className={css.label}>{item.label}</span>
                   {item.required && <span className={css.required}> *</span>}
                 </span>
                 <span>

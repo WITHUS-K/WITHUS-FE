@@ -11,12 +11,18 @@ import {
   RecruitmentSummary,
   useRecruitmentsQuery,
 } from '@web/store/query/useRecruitmentsQuery';
+import { getCookie } from 'cookies-next';
+import { useMyRecruitmentsQuery } from '@web/store/query/useMyRecruitmentsQuery';
 
 export default function FilterBar() {
   const router = useRouter();
   const sp = useSearchParams();
+  const orgIdRaw = getCookie('organizationId');
+  const organizationId = orgIdRaw ? Number(orgIdRaw) : /* 기본값 처리 */ 0;
 
-  const { data: recs = [] } = useRecruitmentsQuery();
+  const { data: recs = [] } = useMyRecruitmentsQuery({
+    organizationId,
+  });
 
   const paramIdRaw = sp.get('recruitmentId');
   const paramId = paramIdRaw ? Number(paramIdRaw) : undefined;

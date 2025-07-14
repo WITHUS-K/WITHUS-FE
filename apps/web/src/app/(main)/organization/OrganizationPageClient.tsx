@@ -16,50 +16,56 @@ import InviteModal from './@modal/(.)invite/page';
 import { Flex } from '@repo/ui/Flex';
 import { Breadcrumb } from '@repo/ui/Breadcrumb';
 import * as styles from './page.css';
+import { useRouter, useSearchParams } from 'next/navigation';
+import PartModal from './@modal/(.)part/page';
+import { usePartModalStore } from '@web/store/state/partModalStore';
 
 const PAGE_SIZE = 20;
 
 interface Props {
   organizationId: number;
   showInvite: boolean;
+  showPart: boolean;
 }
 
 export default function OrganizationPageClient({
   organizationId,
   showInvite,
+  showPart,
 }: Props) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const setUserRoleInfo = usePartModalStore((s) => s.setUserRoleInfo);
   const [search, setSearch] = useState('');
-  const [page, setPage] = useState(1);
+  //const [page, setPage] = useState(0);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const { confirm } = useModal();
   const qc = useQueryClient();
 
+  const pageParam = Number(searchParams.get('page') ?? '1');
+  const page = pageParam >= 1 ? pageParam : 1;
+
   // 멤버 리스트
-  const { data: paged, isFetching } = useOrganizationMembersQuery(
+  //const apiPage = page + 1;
+  const { data: paged, isFetching } = useOrganizationMembersQuery({
     organizationId,
     page,
-    PAGE_SIZE
-  );
+    size: PAGE_SIZE,
+  });
   const members = paged?.content ?? [];
   const totalCount = paged?.totalElements ?? 0;
 
   // 역할 리스트
-  const { data: rolesData } = useOrganizationRolesQuery(organizationId);
-  const allRoles = rolesData.roles.map((r) => ({
-    label: r.roleName,
-    color: r.color,
-    id: r.id,
-  }));
+  const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
+  const allRoles =
+    rolesData?.roles.map((r) => ({
+      roleName: r.roleName,
+      color: r.color,
+      id: r.id,
+    })) ?? [];
 
   // 삭제
   const deleteMutation = useDeleteOrganizationUsersMutation(
-    organizationId,
-    page,
-    PAGE_SIZE
-  );
-
-  // 단일 역할 부여
-  const assignRoleMutation = useAssignRoleToUserMutation(
     organizationId,
     page,
     PAGE_SIZE
@@ -96,11 +102,6 @@ export default function OrganizationPageClient({
     });
   };
 
-  // 역할 부여
-  const handleAddRole = (memberId: string, role: { id: number }) => {
-    assignRoleMutation.mutate({ userId: Number(memberId), roleIds: [role.id] });
-  };
-
   // 필터링 + 페이징
   const filtered = useMemo(
     () =>
@@ -110,13 +111,30 @@ export default function OrganizationPageClient({
     [members, search]
   );
 
+  const handlePartClick = (memberId: number) => {
+    const member = members.find((m) => m.userId === memberId);
+    if (!member) return;
+
+    setUserRoleInfo(
+      member.userId,
+      member.roles.map((r) => ({
+        id: r.id,
+        roleName: r.roleName,
+        color: r.color,
+      }))
+    );
+
+    router.push('/organization/part');
+  };
+
   return (
     <>
       {showInvite && <InviteModal />}
+      {showPart && <PartModal />}
       <Flex direction="column">
         <Flex
           direction="column"
-          gap="1.8rem"
+          gap="0.4rem"
           marginBottom="1.8rem"
           width="100%"
         >
@@ -170,8 +188,9 @@ export default function OrganizationPageClient({
             gender: m.gender,
             dob: m.birthDate,
             phone: m.phoneNumber,
-            joined: m.createdAt.replace('.', '/'),
+            joined: m.createdAt,
           }))}
+          page={page}
           selectedIds={selectedIds}
           onToggleAll={handleToggleAll}
           onToggleOne={handleToggleOne}
@@ -180,17 +199,17 @@ export default function OrganizationPageClient({
             label: r.roleName,
             color: mapServerColorToTagHex(r.color),
           }))}
-          onAddRole={handleAddRole}
           search={search}
+          onPartClick={handlePartClick}
         />
         <div className={styles.paginationStyle}>
           <Pagination
-            currentPage={page + 1}
+            currentPage={page}
             totalItems={totalCount}
             itemCountPerPage={PAGE_SIZE}
             pageCount={5}
             onPageChange={(p) => {
-              setPage(p - 1);
+              router.push(`?page=${p}`);
               setSelectedIds([]);
             }}
           />

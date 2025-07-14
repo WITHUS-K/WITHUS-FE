@@ -3,12 +3,16 @@ import { fontStyles, vars } from '@repo/theme';
 
 export const sidebarContainer = style({
   width: '240px',
-  height: '100vh',
+  height: '100%',
   backgroundColor: vars.colors.white,
   display: 'flex',
   flexDirection: 'column',
   borderRight: `1px solid ${vars.colors.grayscale10}`,
-  padding: '2.4rem',
+  paddingLeft: '2.4rem',
+  paddingRight: '2.4rem',
+  paddingTop: '2.4rem',
+  justifyContent: 'space-between',
+  paddingBottom: '2.4rem',
 });
 
 export const sidebarList = style({
@@ -16,8 +20,7 @@ export const sidebarList = style({
   flexDirection: 'column',
   listStyle: 'none',
   gap: '0.8rem',
-  margin: 0,
-  padding: 0,
+  flex: 1,
 });
 
 export const sidebarItemWrapper = style({
@@ -58,4 +61,14 @@ export const sidebarIcon = style({
 export const sidebarLabel = style({
   whiteSpace: 'nowrap',
   paddingTop: '0.2rem',
+});
+
+export const sidebarOrgs = style({
+  display: 'flex',
+  flexDirection: 'column',
+  backgroundColor: vars.colors.grayscale5,
+  borderRadius: '16px',
+  padding: '1.2rem',
+  gap: '0.8rem',
+  width: '100%',
 });

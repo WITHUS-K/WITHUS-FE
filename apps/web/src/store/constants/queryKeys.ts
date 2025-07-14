@@ -1,5 +1,7 @@
 export const queryKeys = {
   organization: {
+    me: () => ['organization', 'me'] as const,
+
     roles: {
       list: (organizationId: number, keyword?: string) =>
         keyword
@@ -46,6 +48,8 @@ export const queryKeys = {
   recruitments: {
     list: (keyword?: string) => ['recruitments', keyword ?? ''] as const,
     slug: (slug: string) => ['recruitments', 'slug', slug] as const,
+    listByOrganization: (organizationId: number) =>
+      ['recruitments', 'organization', organizationId] as const,
   },
   recruitment: {
     list: () => ['recruitment', 'list'] as const,

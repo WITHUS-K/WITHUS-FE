@@ -15,6 +15,7 @@ interface QuestionInputProps {
   onBlur?: (e: FocusEvent<HTMLTextAreaElement>) => void;
   maxLength?: number;
   includeWhitespace?: boolean;
+  description?: string;
 }
 
 export const QuestionInput = ({
@@ -28,6 +29,7 @@ export const QuestionInput = ({
   onBlur,
   maxLength,
   includeWhitespace,
+  description,
 }: QuestionInputProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -69,11 +71,24 @@ export const QuestionInput = ({
       className={styles.commentInputWrapper}
       data-read-only={readOnly ? 'true' : 'false'}
     >
-      <Flex justify="spaceBetween" align="center" width="100%">
-        <Text variant="md1_text_semibold" color="grayscale70">
-          {title}
-        </Text>
-        <Text variant="sm_caption_medium" color="grayscale40">
+      <Flex justify="spaceBetween" align="center" width="100%" gap="2rem">
+        <Flex width="100%" align="flexStart" direction="column" gap="1rem">
+          <Text variant="md1_text_semibold" color="grayscale70">
+            {title}
+          </Text>
+          <Text
+            variant="md2_text_regular"
+            color="grayscale60"
+            style={{ whiteSpace: 'pre-line' }}
+          >
+            {description}
+          </Text>
+        </Flex>
+        <Text
+          variant="sm_caption_medium"
+          color="grayscale40"
+          style={{ whiteSpace: 'nowrap' }}
+        >
           ({info} {infoDetail})
         </Text>
       </Flex>

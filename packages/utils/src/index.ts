@@ -16,4 +16,8 @@ export { tagColorMap } from './util/tag';
 export { getTagColors } from './util/tag';
 export { allTagColors } from './util/tag';
 export type { PaletteColor } from './util/tag';
-export { mapServerColorToTagHex } from './util/tag';
+export {
+  mapServerColorToTagHex,
+  getProfileBackground,
+  getProfileTextColor,
+} from './util/tag';

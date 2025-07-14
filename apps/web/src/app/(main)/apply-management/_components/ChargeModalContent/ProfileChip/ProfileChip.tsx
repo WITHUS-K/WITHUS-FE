@@ -4,25 +4,8 @@ import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { IcDelete } from '@repo/ui/icons/colored';
 import * as styles from '../ChargeModalContent.css';
-import { Evaluator } from '../../EvalBubbles/EvalBubbles';
-import { TagColor } from '@repo/utils';
-import {
-  mapServerColorToProfileHex,
-  mapServerColorToTagHex,
-} from '@web/utils/color';
 import { Person } from '../ProfileListItem/ProfileListItem';
-
-export const TAG_COLORS: TagColor[] = [
-  '#FF2A3A',
-  '#EE6B00',
-  '#E2A500',
-  '#009857',
-  '#0084BC',
-  '#2C60FF',
-  '#813DFF',
-  '#F25DEB',
-  '#7F82A1',
-];
+import { getProfileBackground, getProfileTextColor } from '@web/utils/color';
 
 interface ProfileChipProps {
   person: Person;
@@ -36,10 +19,15 @@ export default function ProfileChip({
   onRemove,
 }: ProfileChipProps) {
   const color = person.profileColor;
-  const bg = mapServerColorToProfileHex(color);
+  const textColor = getProfileTextColor(color);
+  const bg = getProfileBackground(color);
+
   return (
     <Flex align="center" gap="0.8rem" className={styles.profileContainer}>
-      <div className={styles.bubble} style={{ backgroundColor: bg }}>
+      <div
+        className={styles.bubble}
+        style={{ backgroundColor: bg, color: textColor }}
+      >
         {person.name.charAt(1)}
       </div>
       <Text

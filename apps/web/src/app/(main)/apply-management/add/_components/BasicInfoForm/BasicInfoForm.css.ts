@@ -11,7 +11,7 @@ export const container = style({
 
 export const gender = style({
   textAlign: 'center',
-  width: '11.9rem',
+  minWidth: '10rem',
 });
 
 export const header = style({
@@ -130,4 +130,21 @@ export const imagePreview = style({
       filter: 'blur(2px)',
     },
   },
+});
+
+export const image = style({
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+  borderRadius: '12px',
+});
+
+export const imageBase = style({
+  position: 'relative',
+  width: '15.6rem',
+  height: '20.8rem',
+  flexShrink: 0,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
 });

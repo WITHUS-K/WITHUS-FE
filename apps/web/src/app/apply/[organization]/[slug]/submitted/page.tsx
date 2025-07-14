@@ -1,7 +1,21 @@
+'use client';
+
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
+import { IcSubmit } from '@repo/ui/icons/colored';
+import { Button } from '@repo/ui/Button';
+import { Divider } from '@repo/ui';
+import { useParams, useSearchParams } from 'next/navigation';
 
 export default function SubmittedPage() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+
+  const rawOrganization =
+    typeof params.organization === 'string' ? params.organization : '';
+  const organization = decodeURIComponent(rawOrganization);
+  const title = searchParams.get('title');
+
   return (
     <Flex
       direction="column"
@@ -9,13 +23,30 @@ export default function SubmittedPage() {
       width="100%"
       align="center"
       justify="center"
+      gap="8rem"
     >
-      <Text variant="xl_title_semibold">
-        지원서가 성공적으로 제출되었습니다!
-      </Text>
-      <Text variant="md1_text_regular" color="grayscale70">
-        추가 문의 사항이 있다면 지원팀에 연락해주세요.
-      </Text>
+      <Flex direction="column" align="flexStart">
+        <Text variant="xl_title_bold" color="grayscale90">
+          [{organization}]
+        </Text>
+        <Text variant="xl_title_bold" color="grayscale90">
+          {title}
+        </Text>
+        <div style={{ marginTop: '2.8rem' }}>
+          <Divider direction="row" length="43.4rem" borderColor="grayscale10" />
+        </div>
+      </Flex>
+
+      <Flex direction="column" align="center" justify="center" gap="3.2rem">
+        <IcSubmit width={136.8} height={148} />
+        <Text variant="xl_title_semibold" color="grayscale80">
+          지원서 접수가 완료되었습니다.
+        </Text>
+      </Flex>
+
+      <Button variant="main" width="43.4rem">
+        확인
+      </Button>
     </Flex>
   );
 }

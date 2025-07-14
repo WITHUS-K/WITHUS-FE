@@ -12,7 +12,6 @@ export const wrapper = style({
 export const bubble = style({
   position: 'absolute',
   borderRadius: '50%',
-  color: vars.colors.white,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

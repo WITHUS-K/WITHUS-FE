@@ -29,6 +29,8 @@ export const containerStyle = style({
   // header(60px)를 제외한 영역 전체를 차지
   //flex: 1,
   paddingTop: '2.4rem',
+  paddingLeft: '9rem',
+  paddingRight: '2.4rem',
   height: 'calc(100vh - 60px)',
 });
 

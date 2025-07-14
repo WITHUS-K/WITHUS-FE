@@ -1,7 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
+import {
+  queryOptions,
+  useSuspenseQuery,
+  type UseSuspenseQueryOptions,
+} from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
 import { HTTPError } from 'ky';
 import { queryKeys } from '../constants';
+import { Tokens } from '@web/api/types';
 
 export interface AssignmentItem {
   positionName: string;
@@ -16,31 +21,57 @@ export interface LatestDistribution {
   assignments: AssignmentItem[];
 }
 
+const LATEST_DIST_STALE_TIME = 1000 * 60;
+const LATEST_DIST_GC_TIME = 1000 * 60 * 5;
+
+export type GetLatestDistributionParams = {
+  recruitmentId: number;
+  tokens?: Tokens;
+};
+
 /**
- * GET latest distribution; 404 returns null
+ * 최신 분배 정보를 가져올 쿼리 옵션
+ * 404 에러는 null 로 처리
  */
-export function useLatestDistributionQuery(recruitmentId: number) {
-  return useQuery<LatestDistribution | null, Error>({
+/**
+ * 최신 분배 정보를 가져올 쿼리 옵션
+ * 404 에러는 null 로 처리
+ */
+export function getLatestDistributionQueryOptions({
+  recruitmentId,
+  tokens,
+}: GetLatestDistributionParams): UseSuspenseQueryOptions<
+  LatestDistribution | null,
+  Error
+> {
+  return queryOptions<LatestDistribution | null, Error>({
     queryKey: queryKeys.distribution.latest(recruitmentId),
     queryFn: async () => {
       try {
-        const res = await GET<{
-          id: number;
-          recruitmentId: number;
-          assignments: AssignmentItem[];
-        }>(
-          `api/v1/admin/applications/distribute-evaluators/latest/${recruitmentId}`
+        const res = await GET<LatestDistribution>(
+          `api/v1/admin/applications/distribute-evaluators/latest/${recruitmentId}`,
+          undefined,
+          tokens
         );
-        console.log(res);
         return res.result;
-      } catch (err) {
-        if (err instanceof HTTPError && err.response.status === 404) {
+      } catch (err: any) {
+        // response.status가 404면 null 리턴
+        if (err?.response?.status === 404) {
           return null;
         }
-        throw err as Error;
+        // 그 외 에러는 다시 던져서 React Query가 처리하게
+        throw null;
       }
     },
+    staleTime: LATEST_DIST_STALE_TIME,
+    gcTime: LATEST_DIST_GC_TIME,
     retry: false,
     enabled: recruitmentId > 0,
   });
+}
+
+export function useLatestDistributionQuery(
+  params: GetLatestDistributionParams
+) {
+  return useSuspenseQuery(getLatestDistributionQueryOptions(params));
 }

@@ -15,6 +15,7 @@ interface Props {
   onSelect: (d: Date) => void;
   icon: React.ReactNode;
   helperText: string;
+  minDate?: Date;
 }
 
 export default function CommonSectionPanel({
@@ -23,6 +24,7 @@ export default function CommonSectionPanel({
   onSelect,
   icon,
   helperText,
+  minDate,
 }: Props) {
   // 로컬 상태로 실제 DatePicker가 조작할 날짜를 관리
   const [localDate, setLocalDate] = useState<Date | undefined>(selectedDate);
@@ -42,6 +44,7 @@ export default function CommonSectionPanel({
         <DatePicker
           selectedDate={localDate ?? new Date()}
           onSelect={(d) => setLocalDate(d)}
+          minDate={minDate}
         />
       </Flex>
 

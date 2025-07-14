@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Evaluator } from '../../EvalBubbles/EvalBubbles';
 import { MemberWithEval } from '../../ApplyListItem/ApplyListItem';
 import { HeaderMeta } from '../../ApplyListHeader/ApplyListHeader';
@@ -24,7 +24,7 @@ const INT_HEADER: HeaderMeta[] = [
   { key: 'checkbox', label: '', width: '4.7rem' },
   { key: 'id', label: '순번', width: '5rem' },
   { key: 'name', label: '이름', width: '8.9rem', sortable: true },
-  { key: 'fieldTags', label: '지원 분야', width: '16.8rem' },
+  { key: 'fieldTags', label: '지원 분야', width: '16.8rem', sortable: true },
   {
     key: 'evalStatus',
     label: '면접 평가 현황',
@@ -56,7 +56,17 @@ export default function InterviewTab({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
 
-  const [page, setPage] = useState(0);
+  const pageQuery = Number(searchParams.get('page'));
+  const initialPage = !isNaN(pageQuery) && pageQuery > 0 ? pageQuery - 1 : 0;
+
+  const [page, setPage] = useState(initialPage);
+
+  useEffect(() => {
+    if (page !== initialPage) {
+      setPage(initialPage);
+    }
+  }, [initialPage, page]);
+
   const size = 7;
   const [sortKey, setSortKey] = useState<keyof typeof sortByMap>('name');
   const [direction, setDirection] = useState<'ASC' | 'DESC'>('ASC');
@@ -69,11 +79,6 @@ export default function InterviewTab({
     page: page,
     size,
   });
-
-  const templates: Template[] = [
-    { id: 't1', title: '템플릿 1', body: '안녕하세요, 지원자님…' },
-    { id: 't2', title: '템플릿 2', body: '감사합니다.' },
-  ];
 
   const rows = useMemo(() => {
     if (!data) return [];
@@ -92,7 +97,7 @@ export default function InterviewTab({
         evalStatus: `${item.interviewEvaluatedCount}/${item.interviewAssignedCount}`,
         interviewScore: Number(item.interviewAverageScore),
         status:
-          item.status === 'PENDING'
+          item.status === 'INTERVIEW_PENDING'
             ? '보류'
             : item.status === 'INTERVIEW_PASS'
               ? '면접 합격'
@@ -102,6 +107,8 @@ export default function InterviewTab({
         smsSent: item.isSmsSent,
         mailSent: item.isMailSent,
         evaluators: item.interviewEvaluators.map((e) => ({
+          userId: e.userId,
+          profileImageUrl: e.profileImageUrl,
           name: e.name,
           profileColor: e.profileColor,
         })),
@@ -131,6 +138,14 @@ export default function InterviewTab({
     setSelectedIds([]); // 체크박스 리셋
   };
 
+  const onPageChange = (newPageOneBased: number) => {
+    const nextPageZeroBased = newPageOneBased - 1;
+    setPage(nextPageZeroBased);
+    const qp = new URLSearchParams(Array.from(searchParams.entries()));
+    qp.set('page', String(newPageOneBased));
+    router.push(`${pathname}?${qp.toString()}`);
+  };
+
   return (
     <Flex direction="column" width="100%" height="100%" gap="1.2rem">
       <ActionToolbar
@@ -156,7 +171,7 @@ export default function InterviewTab({
         currentPage={page + 1}
         totalItems={data?.pagination.totalElements ?? 0}
         pageSize={size}
-        onPageChange={(p) => setPage(p - 1)}
+        onPageChange={onPageChange}
         onToggleAll={(c) => setSelectedIds(c ? rows.map((m) => m.id) : [])}
         onToggleOne={(id, checked) =>
           setSelectedIds((prev) =>

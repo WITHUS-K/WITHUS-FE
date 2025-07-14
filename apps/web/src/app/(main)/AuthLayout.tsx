@@ -7,6 +7,10 @@ import { useUserStore } from '@web/store/state/userStore';
 import { useModal } from '@repo/ui/hooks';
 import { deleteCookie } from 'cookies-next';
 import { useRouter } from 'next/navigation';
+import {
+  Organization,
+  useMyOrganizationsQuery,
+} from '@web/store/query/useMyOrganizationsQuery';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -15,6 +19,8 @@ interface AuthLayoutProps {
   profileUrl: string;
   position: string;
   part: string;
+  currentOrganizationId: number | null;
+  organizations: Organization[];
 }
 
 export default function AuthLayout({
@@ -24,10 +30,14 @@ export default function AuthLayout({
   profileUrl,
   position,
   part,
+  currentOrganizationId,
+  organizations,
 }: AuthLayoutProps) {
   const router = useRouter();
   const clearUser = useUserStore((state) => state.clearUser);
   const { confirm } = useModal();
+
+  console.log('조직', organizations);
 
   const handleLogout = () => {
     confirm({
@@ -69,7 +79,11 @@ export default function AuthLayout({
           onLogout={handleLogout}
         />
         <div className={styles.containerStyle}>
-          <Sidebar role={role} />
+          <Sidebar
+            role={role}
+            currentOrganizationId={currentOrganizationId}
+            organizations={organizations}
+          />
           <main className={styles.contentStyle}>{children}</main>
         </div>
       </div>
