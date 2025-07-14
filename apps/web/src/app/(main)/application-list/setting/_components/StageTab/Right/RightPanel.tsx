@@ -51,6 +51,7 @@ export default function RightPanel() {
 
       {active === 'deadline' && (
         <DeadlinePanel
+          key={deadlineDate?.toISOString()}
           selectedDate={deadlineDate!}
           onSelect={mkOnSelect('deadline')}
         />
@@ -58,17 +59,20 @@ export default function RightPanel() {
 
       {active === 'document' && (
         <DocumentPanel
+          key={docDate?.toISOString()}
           selectedDate={docDate!}
           onSelect={mkOnSelect('documentResult.date')}
+          minDate={deadlineDate}
         />
       )}
 
       {typeof active === 'string' && active.startsWith('interview') && (
-        <InterviewPanel key={active} />
+        <InterviewPanel key={active} minDate={docDate} />
       )}
 
       {active === 'final' && (
         <FinalPanel
+          key={finalDate?.toISOString()}
           selectedDate={finalDate!}
           onSelect={mkOnSelect('finalResultDate')}
         />

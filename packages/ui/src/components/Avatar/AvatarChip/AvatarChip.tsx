@@ -1,6 +1,7 @@
 import * as styles from './AvatarChip.css';
 import { Text } from '../../Text';
-import { mapServerColorToTagHex } from '@repo/utils';
+import { getProfileBackground, getProfileTextColor, mapServerColorToTagHex } from '@repo/utils';
+
 
 export type AvatarChipProps = {
   label: string;
@@ -17,10 +18,11 @@ export const AvatarChip = ({
   zIndex = 0,
 }: AvatarChipProps) => {
   //const idx = Math.min(Math.max(0, index), styles.colorList.length - 1);
-  const bg = mapServerColorToTagHex(serverColor!);
+  const textColor = getProfileTextColor(serverColor!)
+  const bg = getProfileBackground(serverColor!)
   return (
     <div className={styles.circleWrapper} style={{ zIndex }}>
-      <div className={styles.circle} style={{ backgroundColor: bg }}>
+      <div className={styles.circle} style={{ backgroundColor: bg , color: textColor}}>
         <Text variant="sm_caption_medium" color="white">
           {label.charAt(1)}
         </Text>

@@ -1,117 +1,73 @@
-'use client';
-
-import { useState, useMemo } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { Flex } from '@repo/ui/Flex';
-import { ITEMS, Item } from '@web/constants/document';
-import ItemCard from '../../_components/ItemCard/ItemCard';
-import { Pagination } from '@repo/ui/Pagination';
-import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
-import { useApplicationsQuery } from '@web/store/query/useApplicationsQuery';
-import { mapServerColorToTagHex } from '@web/utils/color';
+import React from 'react';
+import { ServerFetchBoundary } from '@web/store/query/ServerFetchBoundary';
+import { getApplicationsQueryOptions } from '@web/store/query/useApplicationsQuery';
+import { getRecruitmentPositionsQueryOptions } from '@web/store/query/useRecruitmentPositionsQuery';
+import { getServerSideTokens } from '@web/api/serverSideTokens';
+import { fetchFirstRecruitmentId } from '@web/store/query/useRecruitmentsQuery';
+import TabPageClient from './TabPageClient';
 
 const PER_PAGE = 9;
 
-export default function TabPage() {
-  const router = useRouter();
-  const sp = useSearchParams();
+interface PageProps {
+  params: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
-  const { tab } = useParams() as { tab?: 'all' | 'BEFORE' | 'COMPLETED' };
-  const activeTab = tab ?? 'all';
+export default async function Page({ params, searchParams }: PageProps) {
+  // await로 풀기
+  const { tab: tabRaw } = await params;
+  const {
+    recruitmentId: recIdStr,
+    keyword: keywordRaw,
+    page: pageRaw,
+  } = await searchParams;
 
-  const recruitmentId = Number(sp.get('recruitmentId'));
-  const keyword = sp.get('keyword') ?? '';
-  const page = sp.get('page') ? Number(sp.get('page')) : 1;
+  // 탭, 키워드, 페이지 처리
+  const activeTab = Array.isArray(tabRaw) ? tabRaw[0] : (tabRaw ?? 'all');
+  const keyword = typeof keywordRaw === 'string' ? keywordRaw : '';
+  const pageNum = typeof pageRaw === 'string' ? Number(pageRaw) : 1;
 
-  // 포지션(태그) 컬러 매칭용 조회
-  const { data: positions = [] } = useRecruitmentPositionsQuery(recruitmentId);
+  // 토큰 가져오기
+  const tokens = await getServerSideTokens();
 
-  // 탭 → API evaluationStatus 매핑
-  const evaluationStatus = (() => {
-    switch (activeTab) {
-      case 'all':
-        return 'ALL';
-      case 'BEFORE':
-        return 'NOT_EVALUATED';
-      case 'COMPLETED':
-        return 'EVALUATED';
-      default:
-        return 'ALL';
+  // recruitmentId 결정
+  let recruitmentId: number | null =
+    typeof recIdStr === 'string' ? Number(recIdStr) : NaN;
+  if (!recruitmentId || isNaN(recruitmentId)) {
+    recruitmentId = await fetchFirstRecruitmentId(tokens);
+    if (!recruitmentId) {
+      return <div>공고 정보를 불러올 수 없습니다.</div>;
     }
-  })() as 'ALL' | 'EVALUATED' | 'NOT_EVALUATED';
+  }
 
-  // 지원서 목록 조회
-  const { data: appsResult, isLoading } = useApplicationsQuery({
+  // 평가 상태 매핑
+  const evaluationStatus =
+    activeTab === 'BEFORE'
+      ? 'NOT_EVALUATED'
+      : activeTab === 'COMPLETED'
+        ? 'EVALUATED'
+        : 'ALL';
+
+  // React Query 옵션 생성
+  const appsOptions = getApplicationsQueryOptions({
     recruitmentId,
     evaluationStatus,
     keyword,
-    page: page - 1,
+    page: pageNum - 1,
     size: PER_PAGE,
+    tokens,
   });
 
-  const apps = appsResult?.data ?? [];
-  const pagination = appsResult?.pagination;
-
-  // 페이징 버튼 클릭 시
-  const onPageChange = (newPage: number) => {
-    const params = new URLSearchParams(sp.toString());
-    params.set('page', String(newPage));
-    router.replace(`?${params.toString()}`);
-  };
-
-  if (isLoading || !pagination) {
-    return null;
-  }
+  const positionsOptions = getRecruitmentPositionsQueryOptions({
+    recruitmentId,
+    tokens,
+  });
 
   return (
-    <>
-      <Flex
-        wrap="wrap"
-        gap="2rem"
-        justify="flexStart"
-        style={{ minHeight: '36rem' }}
-      >
-        {apps.map((app) => {
-          // 서버에서 가져온 포지션 이름으로 컬러 찾기
-          const pos = positions.find((p) => p.name === app.positionName);
-          const color = mapServerColorToTagHex(pos!.color);
-          return (
-            <ItemCard
-              key={app.id}
-              item={{
-                id: app.id,
-                name: app.name,
-                positionName: app.positionName,
-                tagColor: color,
-                // 과거 mock의 BEFORE/COMPLETED 구분
-                evaluationStatus:
-                  app.documentEvaluated === false ? 'BEFORE' : 'COMPLETED',
-                pass:
-                  app.status === 'DOX_PASS' || app.status === 'INTERVIEW_PASS',
-                evaluationScore: app.myScoreTotal ?? 0,
-                interviewDate: app.interviewSchedule?.split('T')[0] ?? '',
-                interviewTime:
-                  app.interviewSchedule?.split('T')[1]?.slice(0, 5) ?? '',
-              }}
-            />
-          );
-        })}
-      </Flex>
-
-      <div
-        style={{
-          marginTop: '4rem',
-          textAlign: 'center',
-          paddingBottom: '2.4rem',
-        }}
-      >
-        <Pagination
-          totalItems={pagination!.totalElements}
-          itemCountPerPage={PER_PAGE}
-          currentPage={page}
-          onPageChange={onPageChange}
-        />
-      </div>
-    </>
+    <ServerFetchBoundary fetchOptions={appsOptions}>
+      <ServerFetchBoundary fetchOptions={positionsOptions}>
+        <TabPageClient />
+      </ServerFetchBoundary>
+    </ServerFetchBoundary>
   );
 }

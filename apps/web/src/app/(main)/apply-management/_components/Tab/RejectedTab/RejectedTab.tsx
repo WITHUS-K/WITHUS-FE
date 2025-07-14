@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { MemberWithEval } from '../../ApplyListItem/ApplyListItem';
 import { HeaderMeta } from '../../ApplyListHeader/ApplyListHeader';
 import { Flex } from '@repo/ui/Flex';
@@ -23,7 +23,7 @@ const HEADER: HeaderMeta[] = [
   { key: 'checkbox', label: '', width: '4.7rem' },
   { key: 'id', label: '순번', width: '5rem' },
   { key: 'name', label: '이름', width: '13.3rem', sortable: true },
-  { key: 'fieldTags', label: '지원 분야', width: '22rem' },
+  { key: 'fieldTags', label: '지원 분야', width: '22rem', sortable: true },
   {
     key: 'documentScore',
     label: '서류 점수',
@@ -58,8 +58,17 @@ export default function RejectedTab({
   const side = searchParams.get('sideTab');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
+  const pageQuery = Number(searchParams.get('page'));
+  const initialPage = !isNaN(pageQuery) && pageQuery > 0 ? pageQuery - 1 : 0;
 
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(initialPage);
+
+  useEffect(() => {
+    if (page !== initialPage) {
+      setPage(initialPage);
+    }
+  }, [initialPage, page]);
+
   const size = 7;
   const [sortKey, setSortKey] = useState<keyof typeof sortByMap>('name');
   const [direction, setDirection] = useState<'ASC' | 'DESC'>('ASC');
@@ -94,6 +103,8 @@ export default function RejectedTab({
         smsSent: item.isSmsSent,
         mailSent: item.isMailSent,
         evaluators: item.documentEvaluators.map((e) => ({
+          userId: e.userId,
+          profileImageUrl: e.profileImageUrl,
           name: e.name,
           profileColor: e.profileColor,
         })),
@@ -115,6 +126,14 @@ export default function RejectedTab({
   const handleCloseSideTab = () => {
     setModalParam(null);
     setSelectedIds([]); // 체크박스 리셋
+  };
+
+  const onPageChange = (newPageOneBased: number) => {
+    const nextPageZeroBased = newPageOneBased - 1;
+    setPage(nextPageZeroBased);
+    const qp = new URLSearchParams(Array.from(searchParams.entries()));
+    qp.set('page', String(newPageOneBased));
+    router.push(`${pathname}?${qp.toString()}`);
   };
 
   return (
@@ -142,7 +161,7 @@ export default function RejectedTab({
         currentPage={page + 1}
         totalItems={data?.pagination.totalElements ?? 0}
         pageSize={size}
-        onPageChange={(p) => setPage(p - 1)}
+        onPageChange={onPageChange}
         onToggleAll={(c) => setSelectedIds(c ? rows.map((m) => m.id) : [])}
         onToggleOne={(id, checked) =>
           setSelectedIds((prev) =>

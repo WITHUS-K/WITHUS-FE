@@ -34,8 +34,8 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
 
   const organizationId = useUserStore.getState().organizationId!;
 
-  const { data: rolesData } = useOrganizationRolesQuery(organizationId);
-  const latestQuery = useLatestDistributionQuery(recruitmentId);
+  const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
+  const latestQuery = useLatestDistributionQuery({ recruitmentId });
   const positionsQuery = useRecruitmentPositionsQuery(recruitmentId);
   const distribute = useDistributeEvaluators(recruitmentId);
 
@@ -45,6 +45,11 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
     color: mapServerColorToTagHex(r.color),
   }));
   //console.log('안녕', availableRoles);
+
+  /*if (distribute === null) {
+    // 404(분배 데이터 없음)인 경우
+    return <div>아직 최신 분배 정보가 없습니다.</div>;
+  }*/
 
   // 현재 탭에 맞춰 DOCUMENT/INTERVIEW 로 매핑
   const currentEvalType: 'DOCUMENT' | 'INTERVIEW' =

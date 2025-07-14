@@ -3,17 +3,21 @@ import { vars } from '@repo/theme';
 import { fontStyles } from '@repo/theme';
 
 export const navigator = style({
-  position: 'fixed',
-  top: '8.4rem',
-  right: '9rem',
-  width: '32rem',
+  position: 'sticky',
+  top: '8rem',
+  alignSelf: 'flex-start',
+  maxWidth: '32rem',
+  maxHeight: 'calc(100vh - 10rem)', // 안전한 높이
 
   background: vars.colors.white,
   border: `1px solid ${vars.colors.grayscale5}`,
   borderRadius: '24px',
-
   overflow: 'hidden',
-  zIndex: 100,
+});
+
+export const space = style({
+  minWidth: '2rem',
+  maxWidth: '7rem',
 });
 
 export const scrollArea = style({
@@ -39,12 +43,16 @@ export const scrollArea = style({
 export const contentWrapper = style({
   // 실제 내부 여백은 여기서
   padding: '2.8rem',
+  width: '100%',
   gap: '0.8rem',
   display: 'flex',
   flexDirection: 'column',
 });
+
 export const item = style({
   width: '100%',
+  //width : '26.4rem',
+  gap: '2rem',
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
@@ -63,13 +71,26 @@ export const required = style({
   color: vars.colors.error,
 });
 
+export const labelWrapper = style({
+  display: 'flex',
+  alignItems: 'center',
+  overflow: 'hidden',
+  gap: '0.4rem',
+});
+
 export const active = style({
   background: vars.colors.primary5,
 });
 
 export const label = style({
-  color: vars.colors.grayscale70,
   ...fontStyles.md1_text_semibold,
+  color: vars.colors.grayscale70,
+
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  maxWidth: '18rem',
+
   selectors: {
     [`${active} &`]: {
       color: vars.colors.primary50,

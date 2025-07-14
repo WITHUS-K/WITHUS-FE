@@ -1,5 +1,11 @@
 'use client';
-import { HTMLAttributes, ElementType, ReactNode, CSSProperties } from 'react';
+import {
+  HTMLAttributes,
+  ElementType,
+  ReactNode,
+  CSSProperties,
+  MouseEvent,
+} from 'react';
 import clsx from 'clsx';
 import { selectable } from './Selectable.css';
 
@@ -10,6 +16,7 @@ export interface SelectableProps extends HTMLAttributes<HTMLDivElement> {
   width?: string;
   height?: string;
   children: ReactNode;
+  onClick?: (e: MouseEvent<HTMLElement>) => void;
 }
 
 export const Selectable = ({
@@ -21,6 +28,7 @@ export const Selectable = ({
   className,
   children,
   style,
+  onClick,
   ...rest
 }: SelectableProps) => {
   const inlineStyles: CSSProperties = {
@@ -33,6 +41,7 @@ export const Selectable = ({
   return (
     <Tag
       {...rest}
+      onClick={onClick}
       className={clsx(selectable({ isSelected, disableHover }), className)}
       style={inlineStyles}
     >

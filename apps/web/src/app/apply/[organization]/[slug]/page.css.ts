@@ -14,7 +14,7 @@ export const page = style({
 
 export const formWrapper = style({
   flex: 1,
-  marginRight: '41rem',
+  //marginRight: '41rem',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -50,7 +50,7 @@ export const headerWrapper = style({
   border: `1px solid ${vars.colors.grayscale5}`,
   borderRadius: '16px',
   background: vars.colors.bg,
-  gap: '1rem',
+  gap: '8rem',
 });
 
 export const item = style({

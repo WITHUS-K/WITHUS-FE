@@ -43,6 +43,7 @@ export async function login(data: LoginRequest): Promise<LoginPayload> {
 
   const cookiesToSet: Record<string, unknown> = {
     userId,
+    //organizations: userOrganizations,
     organizationId: userOrganizations?.[0]?.organizationId,
     name,
     profileImageUrl,

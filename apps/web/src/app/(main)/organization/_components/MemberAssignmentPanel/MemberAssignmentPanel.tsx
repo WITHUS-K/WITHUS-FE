@@ -52,7 +52,7 @@ export default function MemberAssignmentPanel({
   return (
     <div className={styles.root}>
       <Text variant="md1_text_semibold" color="grayscale90">
-        역할 부여
+        파트 부여
       </Text>
       <div style={{ height: '4rem' }}>
         <SearchInput
@@ -65,29 +65,6 @@ export default function MemberAssignmentPanel({
         />
       </div>
       <div className={styles.panels}>
-        <MemberPanel
-          title="추가된 멤버"
-          count={filteredAdded.length}
-          items={filteredAdded}
-          selected={selAdded}
-          allSelected={allAdded}
-          onToggleAll={() =>
-            setSelAdded(
-              allAdded ? new Set() : new Set(filteredAdded.map((u) => u.userId))
-            )
-          }
-          onAction={() => {
-            filteredAdded.forEach((u) => {
-              if (selAdded.has(u.userId)) onRemove(u);
-            });
-            setSelAdded(new Set());
-          }}
-          actionLabel="제외"
-          actionIcon={<IcDeleteRight />}
-          onToggleItem={(id) => toggleSet(selAdded, setSelAdded, id)}
-          search={search}
-        />
-
         <MemberPanel
           title="추가하지 않은 멤버"
           count={filteredAvail.length}
@@ -106,8 +83,31 @@ export default function MemberAssignmentPanel({
             setSelAvail(new Set());
           }}
           actionLabel="추가"
-          actionIcon={<IcPlusLeft />}
+          actionIcon={<IcDeleteRight />}
           onToggleItem={(id) => toggleSet(selAvail, setSelAvail, id)}
+          search={search}
+        />
+
+        <MemberPanel
+          title="추가된 멤버"
+          count={filteredAdded.length}
+          items={filteredAdded}
+          selected={selAdded}
+          allSelected={allAdded}
+          onToggleAll={() =>
+            setSelAdded(
+              allAdded ? new Set() : new Set(filteredAdded.map((u) => u.userId))
+            )
+          }
+          onAction={() => {
+            filteredAdded.forEach((u) => {
+              if (selAdded.has(u.userId)) onRemove(u);
+            });
+            setSelAdded(new Set());
+          }}
+          actionLabel="제외"
+          actionIcon={<IcPlusLeft />}
+          onToggleItem={(id) => toggleSet(selAdded, setSelAdded, id)}
           search={search}
         />
       </div>

@@ -1,15 +1,15 @@
-import { ComponentPropsWithoutRef } from 'react';
+'use client';
+import React from 'react';
 import * as styles from './Sidebar.css';
 
-const SidebarList = ({
-  children,
-  ...props
-}: ComponentPropsWithoutRef<'ul'>) => {
+interface SidebarListProps extends React.ComponentPropsWithoutRef<'ul'> {
+  children: React.ReactNode;
+}
+
+export default function SidebarList({ children, ...props }: SidebarListProps) {
   return (
     <ul className={styles.sidebarList} {...props}>
-      {children}
+      {React.Children.toArray(children)}
     </ul>
   );
-};
-
-export default SidebarList;
+}

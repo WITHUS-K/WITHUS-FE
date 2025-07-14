@@ -36,11 +36,7 @@ export default function ApplicationListClient() {
   };
 
   const handleCopy = (slug: string, organization: string) => {
-    const url = `${window.location.origin}/apply/${organization}/${slug}`;
-    navigator.clipboard
-      .writeText(url)
-      .then(() => toast.success('응답자 링크가 복사되었습니다!'))
-      .catch(() => toast.error('복사에 실패했습니다.'));
+    //템플릿 복제 로직으로 전환하기
   };
 
   return (

@@ -17,6 +17,7 @@ interface InterviewScheduleFormProps {
   duration: number;
   selectedScheduleList: InterviewScheduleItem[];
   onScheduleChange: (date: string, items: InterviewScheduleItem[]) => void;
+  isRequired: boolean;
 }
 
 export function InterviewScheduleForm({
@@ -24,12 +25,20 @@ export function InterviewScheduleForm({
   scheduleMap,
   duration,
   selectedScheduleList,
+  isRequired,
   onScheduleChange,
 }: InterviewScheduleFormProps) {
+  if (!isRequired) return null;
+
   const scheduleStatus = useFormFieldStatus('interview-schedule');
 
   return (
-    <div id="interview-schedule" tabIndex={-1} className={focusableWrapper}>
+    <div
+      id="interview-schedule"
+      tabIndex={-1}
+      className={focusableWrapper}
+      style={{ width: '100%' }}
+    >
       <Flex gap="0.4rem" direction="column">
         <Flex gap="0.4rem">
           <Text variant="md1_text_semibold" color="grayscale70">

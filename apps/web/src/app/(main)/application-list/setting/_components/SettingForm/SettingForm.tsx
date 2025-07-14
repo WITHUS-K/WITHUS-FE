@@ -46,7 +46,10 @@ export function SettingForm({
   const searchParams = useSearchParams();
   const activeTab = (searchParams.get('tab') as TabKey) || 'form';
 
+  const lastSegment = pathname.split('/').pop();
+  const isNewPage = lastSegment === 'new';
   const isTemporaryParam = searchParams.get('isTemporary');
+  const hasIdParam = lastSegment != null && lastSegment !== 'new';
   const isTemporary = isTemporaryParam === 'true';
 
   const ctx = useContext(SettingContext)!;
@@ -279,7 +282,7 @@ export function SettingForm({
               leftIcon={<IcLinkCopy />}
               size="40"
               width="14.6rem"
-              disabled={isTemporary}
+              disabled={isTemporary || isNewPage}
               onClick={handleCopyLink}
             >
               응답자 링크
@@ -299,7 +302,7 @@ export function SettingForm({
               size="40"
               width="13.2rem"
               onClick={handleSave}
-              disabled={!isTemporary}
+              disabled={!isTemporary && hasIdParam}
             >
               임시 저장
             </Button>

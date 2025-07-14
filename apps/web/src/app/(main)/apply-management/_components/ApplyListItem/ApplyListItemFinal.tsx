@@ -8,6 +8,7 @@ import { Text } from '@repo/ui/Text';
 import * as styles from './ApplyListItem.css';
 import { TagColor } from '@repo/utils';
 import StatusBadge, { Status } from '../StatusBadge/StatusBadge';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 export interface Evaluator {
   name: string;
@@ -25,6 +26,7 @@ export interface MemberWithEval {
   status: string;
   smsSent: boolean;
   mailSent: boolean;
+  applicationId?: number;
 }
 
 interface Props {
@@ -38,8 +40,27 @@ export default function ApplyListLastItem({
   isSelected,
   onToggle,
 }: Props) {
+  const router = useRouter();
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const rawTab = params.tab;
+  const activeTab = Array.isArray(rawTab) ? rawTab[0] : rawTab;
+  const recruitmentIdParam = searchParams.get('recruitmentId');
+  const recruitmentId = recruitmentIdParam ? Number(recruitmentIdParam) : 0;
+
+  const goDetailPage = () => {
+    console.log(member.applicationId);
+    router.push(
+      `/apply-management/${activeTab}/${member.applicationId}?recruitmentId=${recruitmentId}`
+    );
+  };
+
   return (
-    <div className={styles.row} data-selected={isSelected}>
+    <div
+      className={styles.row}
+      data-selected={isSelected}
+      onClick={goDetailPage}
+    >
       <div
         style={{ marginRight: '2.4rem', height: '2.4rem' }}
         onClick={(e) => e.stopPropagation()}

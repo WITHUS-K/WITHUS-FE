@@ -11,13 +11,15 @@ import { Profile } from '@repo/ui/Profile';
 import { Text } from '@repo/ui/Text';
 import { Flex } from '@repo/ui/Flex';
 import { vars } from '@repo/theme';
+import { IcPlusRole } from '@repo/ui/icons/mono';
 interface Props {
   member: Member;
   isSelected: boolean;
   onToggle: (checked: boolean) => void;
   availableRoles: OrgRole[];
-  onAddRole: (role: OrgRole) => void;
+  onPartClick: (memberId: number) => void;
   search: string;
+  index: number;
 }
 
 export default function OrgListItem({
@@ -25,8 +27,9 @@ export default function OrgListItem({
   isSelected,
   onToggle,
   availableRoles,
-  onAddRole,
+  onPartClick,
   search,
+  index,
 }: Props) {
   // 검색어가 없거나 포함되지 않으면 원본 이름만
   const nameParts = search
@@ -49,7 +52,7 @@ export default function OrgListItem({
         color="grayscale50"
         style={{ marginRight: '1.8rem', width: '2.4rem' }}
       >
-        {member.id}
+        {String(index + 1).padStart(3, '0')}
       </Text>
 
       <div style={{ marginRight: '1.8rem' }}>
@@ -82,15 +85,21 @@ export default function OrgListItem({
       </Flex>
 
       <Flex align="center" gap="0.8rem" width="31rem" marginRight="4.4rem">
-        <RolesDropdown
-          availableRoles={availableRoles}
-          onSelect={(r) => onAddRole(r)}
-        />
-        {member.roles.map((r) => (
-          <Tag key={r.label} color={r.color} withCircle>
-            {r.label}
-          </Tag>
-        ))}
+        <button
+          type="button"
+          onClick={() => onPartClick(Number(member.id))}
+          className={styles.buttonBase}
+        >
+          <IcPlusRole width={11} height={11} />
+        </button>
+
+        <div className={styles.tagContainer}>
+          {member.roles.map((r) => (
+            <Tag key={r.label} color={r.color} withCircle>
+              {r.label}
+            </Tag>
+          ))}
+        </div>
       </Flex>
 
       {/* 5) 성별 / 생년월일 / 전화번호 / 가입일 */}
@@ -117,7 +126,7 @@ export default function OrgListItem({
           {member.phone}
         </Text>
         <Text variant="sm_caption_medium" color="grayscale70">
-          {member.joined}
+          {member.joined.split('/')[0]}
         </Text>
       </Flex>
     </div>

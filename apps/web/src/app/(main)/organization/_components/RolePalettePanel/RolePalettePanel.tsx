@@ -10,8 +10,9 @@ import type { RoleSelectWithCount } from '@web/types/organization';
 import type { PaletteColor } from '@repo/utils';
 import { RoleEditor } from './RoleEditor';
 import { RoleItem } from './RoleItem';
+import { mapServerColorToTagHex } from '@web/utils/color';
 
-const COLOR_OPTIONS: PaletteColor[] = [
+export const COLOR_OPTIONS: PaletteColor[] = [
   '#FF5C6C',
   '#FF9D32',
   '#FFD732',
@@ -24,14 +25,27 @@ const COLOR_OPTIONS: PaletteColor[] = [
   '#A9ABC0',
 ];
 
+export const colorHexToNameMap: Record<string, string> = {
+  '#FF5C6C': 'red',
+  '#FF9D32': 'orange',
+  '#FFD732': 'yellow',
+  '#32CA89': 'green',
+  '#32B6EE': 'bluesky',
+  '#5E92FF': 'blue',
+  '#B36FFF': 'purple',
+  '#FF8FFF': 'pink',
+  '#C4C6D4': 'gray',
+  '#A9ABC0': 'darkgray',
+};
+
 interface Props {
   roles: RoleSelectWithCount[];
   search: string;
   selectedIdx: number | null;
   onSelectRole: (i: number) => void;
   onSearchChange?: (v: string) => void;
-  onAddRole: (r: { label: string; color: PaletteColor }) => void;
-  onUpdateRole: (i: number, label: string, color: PaletteColor) => void;
+  onAddRole: (r: { label: string; color: string }) => void;
+  onUpdateRole: (i: number, label: string, color: string) => void;
 }
 export default function RolePalettePanel({
   roles,
@@ -52,14 +66,16 @@ export default function RolePalettePanel({
 
   const handleAddKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newLabel.trim()) {
-      onAddRole({ label: newLabel.trim(), color: newColor });
+      const colorName = colorHexToNameMap[newColor] ?? 'gray';
+      onAddRole({ label: newLabel.trim(), color: colorName });
       setIsAdding(false);
       setNewLabel('');
     }
   };
   const handleEditKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && editingIdx != null) {
-      onUpdateRole(editingIdx, editLabel.trim(), editColor);
+      const colorName = colorHexToNameMap[editColor] ?? 'gray';
+      onUpdateRole(editingIdx, editLabel.trim(), colorName);
       setEditingIdx(null);
       setEditOpen(false);
     }
@@ -68,7 +84,7 @@ export default function RolePalettePanel({
   return (
     <div className={styles.root}>
       <Flex align="center" gap="0.8rem">
-        <Text variant="md1_text_semibold">역할</Text>
+        <Text variant="md1_text_semibold">파트</Text>
         <Text variant="md1_text_medium" color="grayscale30">
           {roles.length}
         </Text>

@@ -11,9 +11,7 @@ type OptionType = 'checkbox' | 'radio' | 'highlight';
 interface BaseOptionProps {
   type: OptionType;
   label: string;
-  /** ex: "auto", "21.6rem", "100%" */
   width?: string;
-  /** ex: "3.5rem", "2.75rem", "4rem" */
   height?: string;
   onFocus?: () => void;
   onBlur?: () => void;
@@ -53,10 +51,8 @@ export function Option(props: OptionProps) {
     onBlur,
   } = props;
 
-  // 왼쪽 컨트롤 요소 분기
   let control: JSX.Element;
   if (type === 'checkbox') {
-    // 이 블록 안에서만 props.isChecked, props.onChange 사용
     control = (
       <CheckBox isChecked={props.isChecked} onChange={props.onChange} />
     );
@@ -76,6 +72,18 @@ export function Option(props: OptionProps) {
 
   const textColor = selected ? 'primary50' : 'grayscale50';
 
+  const handleClick = (e: React.MouseEvent) => {
+    // input 자체를 클릭한 경우엔 input.onChange 에만 맡기고
+    if (e.target instanceof HTMLInputElement) return;
+
+    // checkbox/radio 타입일 때만 props.onChange 호출
+    if (type === 'checkbox') {
+      props.onChange();
+    } else if (type === 'radio') {
+      props.onChange();
+    }
+  };
+
   return (
     <Selectable
       width={width}
@@ -84,6 +92,7 @@ export function Option(props: OptionProps) {
       disableHover={type === 'highlight'}
       onFocus={onFocus}
       onBlur={onBlur}
+      onClick={handleClick}
     >
       {control}
       <Text variant="md2_text_medium" color={textColor}>

@@ -19,18 +19,18 @@ export function DocsDetailHeader({
   return (
     <Flex
       direction="column"
-      gap="2.4rem"
+      gap="0.4rem"
       width="100%"
-      marginBottom="1.2rem"
-      marginLeft="0.5rem"
+      //marginBottom="1.2rem"
+      //marginLeft="0.5rem"
     >
-      <Breadcrumb style={{ marginBottom: '2.4rem' }}>
+      <Breadcrumb>
         <Breadcrumb.Item>서류 평가</Breadcrumb.Item>
-        <Breadcrumb.Item active>{name} 서류 상세</Breadcrumb.Item>
+        <Breadcrumb.Item active>{name} 상세 정보</Breadcrumb.Item>
       </Breadcrumb>
       <Flex align="center" justify="spaceBetween" width="100%">
         <Text variant="xl_title_semibold" color="black">
-          {name} 서류 상세
+          {name} 상세 정보
         </Text>
         <Option
           type="checkbox"

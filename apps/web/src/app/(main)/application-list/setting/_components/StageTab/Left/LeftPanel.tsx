@@ -119,7 +119,8 @@ export default function LeftPanel({ onChipClick }: LeftPanelProps) {
             <CommonDropdown
               options={['15분', '30분', '1시간']}
               value={field.value}
-              onSelect={field.onChange}
+              onSelect={schedOn ? field.onChange : () => {}}
+              disabled={!schedOn}
               triggerHeight="5.6rem"
               listWidth="33.1rem"
               itemHeight="3.4rem"

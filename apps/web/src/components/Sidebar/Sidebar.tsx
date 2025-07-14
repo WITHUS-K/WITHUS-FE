@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import SidebarList from './SidebarList';
 import SidebarItem from './SidebarItem';
-import { sidebarContainer } from './Sidebar.css';
+import { sidebarContainer, sidebarOrgs } from './Sidebar.css';
 import {
   IcSidebarCalender,
   IcSidebarGroup,
@@ -12,15 +12,38 @@ import {
   IcSidebarSearch,
 } from '@repo/ui/icons/mono';
 import { usePathname, useRouter } from 'next/navigation';
+import { setCookie } from 'cookies-next';
+import { Option } from '@repo/ui/Option';
+import { Flex } from '@repo/ui/Flex';
+import { Text } from '@repo/ui/Text';
+import { Divider } from '@repo/ui/Divider';
 
 interface SidebarProps {
   role: string;
+  organizations: Organization[];
+  currentOrganizationId: number | null;
 }
 
-const Sidebar = ({ role }: SidebarProps) => {
+export interface Organization {
+  id: number;
+  name: string;
+}
+
+const Sidebar = ({
+  role,
+  organizations,
+  currentOrganizationId,
+}: SidebarProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const [activeItem, setActiveItem] = useState<string>('');
+
+  //console.log('넘겨진 조직', organizations);
+  const onSelectOrg = (orgId: number) => {
+    console.log('흠', orgId);
+    setCookie('organizationId', String(orgId), { path: '/' });
+    router.refresh();
+  };
 
   const adminItems = [
     { icon: <IcSidebarHome width={24} height={24} />, label: '홈', route: '/' },
@@ -97,6 +120,28 @@ const Sidebar = ({ role }: SidebarProps) => {
           />
         ))}
       </SidebarList>
+
+      {role === 'USER' && (
+        <Flex direction="column" gap="1.2rem" width="100%">
+          <Divider direction="row" length="100%" borderColor="grayscale10" />
+          <Text variant="sm_caption_medium" color="grayscale50">
+            소속
+          </Text>
+          <div className={sidebarOrgs}>
+            {organizations.map((org) => (
+              <Option
+                key={org.id}
+                type="radio"
+                label={org.name}
+                isSelected={org.id === currentOrganizationId}
+                onChange={() => onSelectOrg(org.id)}
+                width="100%"
+                height="3.7rem"
+              />
+            ))}
+          </div>
+        </Flex>
+      )}
     </nav>
   );
 };

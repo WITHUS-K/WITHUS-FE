@@ -29,6 +29,7 @@ export default function Filters() {
   const { confirm } = useModal();
   const pathname = usePathname();
   const tokens = getClientSideTokens();
+  const { accessToken, refreshToken } = tokens;
 
   // URL 파라미터 파싱
   const urlRid = Number(searchParams.get('recruitmentId') ?? NaN) || undefined;
@@ -313,7 +314,7 @@ export default function Filters() {
                   queryFn: () =>
                     GET<{ availableTimeRanges: { date: string }[] }>(
                       `api/v1/recruitments/${found.recruitmentId}`,
-                      tokens
+                      { accessToken, refreshToken }
                     ),
                 });
 

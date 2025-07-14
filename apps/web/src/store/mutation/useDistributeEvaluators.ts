@@ -24,7 +24,7 @@ export function useDistributeEvaluators(recruitmentId: number) {
       console.log('분배', res);
       return res.result;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       qc.invalidateQueries({
         queryKey: queryKeys.distribution.latest(recruitmentId),
       });

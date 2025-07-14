@@ -37,11 +37,11 @@ export default function InviteModalContent() {
   // 2) 서버 검색
   const organizationId = useUserStore.getState().organizationId!;
   const roleId = activeTab === 'interviewer' ? 1 : 2;
-  const { data: candidates = [], isFetching } = useOrganizationUsersQuery(
+  const { data: candidates = [], isFetching } = useOrganizationUsersQuery({
     organizationId,
     roleId,
-    searchKeyword
-  );
+    keyword: searchKeyword,
+  });
 
   // 3) 전체 수정 훅
   const updateUsers = useUpdateTimeSlotUsersMutation(timeSlotId, interviewId);

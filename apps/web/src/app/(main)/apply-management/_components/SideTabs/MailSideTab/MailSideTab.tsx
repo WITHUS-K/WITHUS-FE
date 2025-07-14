@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IcSendBtn } from '@repo/ui/icons/mono';
 import {
   IcBold,
@@ -29,7 +29,6 @@ import { Descendant, Transforms, createEditor } from 'slate';
 import {
   RichTextEditor,
   insertVariable,
-  serialize,
   toggleMark,
   withVariables,
 } from '../RichTextEditor/RichTextEditor';
@@ -37,6 +36,8 @@ import { withHistory } from 'slate-history';
 import { withReact } from 'slate-react';
 import { serializeHtml } from '@web/utils/serializers';
 import { deserializeHtml } from '@web/utils/deserializeHtml';
+import { getCookie } from 'cookies-next';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 interface MailSideTabProps {
   applicationIds: number[];
@@ -49,6 +50,8 @@ export function MailSideTab({
   recipients,
   onClose,
 }: MailSideTabProps) {
+  const { organizationId } = getClientSideTokens();
+
   // — 템플릿 목록 가져오기
   const { data: tplSummaries = [] } = useTemplatesQuery('MAIL');
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -61,6 +64,8 @@ export function MailSideTab({
       }))
     );
   }, [tplSummaries]);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // — 로컬 받는사람 복사본
   const [localRecipients, setLocalRecipients] = useState<string[]>(recipients);
@@ -117,7 +122,13 @@ export function MailSideTab({
   const handleSaveTemplate = () => {
     const html = serializeHtml(editorValue);
     createTpl.mutate(
-      { name: newTitle, subject, body: html, medium: 'MAIL' },
+      {
+        name: newTitle,
+        subject,
+        body: html,
+        medium: 'MAIL',
+        organizationId: organizationId,
+      },
       {
         onSuccess: (newTpl: TemplateDetail) => {
           const added: Template = {
@@ -226,10 +237,12 @@ export function MailSideTab({
               size="32"
               width="8.5rem"
               leftIcon={<IcFilePlus />}
+              onClick={() => fileInputRef.current?.click()}
             >
               업로드
             </Button>
             <input
+              ref={fileInputRef}
               id="mail-file-upload"
               type="file"
               style={{ display: 'none' }}

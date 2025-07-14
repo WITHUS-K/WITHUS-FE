@@ -33,6 +33,7 @@ export default async function Page({
 
   const { modal } = await params;
   const showInvite = modal?.[0] === 'invite';
+  const showPart = modal?.[0] === 'part';
 
   return (
     <>
@@ -41,6 +42,7 @@ export default async function Page({
           <OrganizationPageClient
             organizationId={organizationId}
             showInvite={showInvite}
+            showPart={showPart}
           />
         </ServerFetchBoundary>
       </ServerFetchBoundary>
