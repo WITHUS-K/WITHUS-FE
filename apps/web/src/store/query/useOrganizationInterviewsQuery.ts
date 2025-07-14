@@ -40,7 +40,7 @@ export function getOrgInterviewsOptions(
     queryKey: queryKeys.interview.orgList(),
     queryFn: async () => {
       const res = await GET<OrgInterviewInfo[]>(
-        `api/v1/interviews/organization/${organizationId}`,
+        `api/v1/interviews/organizations/${organizationId}`,
         undefined,
         tokens
       );
@@ -59,7 +59,7 @@ export function useOrganizationInterviewsQuery(
     queryKey: queryKeys.interview.orgList(),
     queryFn: async () => {
       const res = await GET<OrgInterviewInfo[]>(
-        `api/v1/interviews/organization/${organizationId}`,
+        `api/v1/interviews/organizations/${organizationId}`,
         undefined,
         tokens
       );
