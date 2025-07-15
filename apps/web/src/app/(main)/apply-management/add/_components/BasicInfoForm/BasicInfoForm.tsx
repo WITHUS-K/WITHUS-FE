@@ -226,7 +226,6 @@ export function BasicInfoForm({
                           width="14.65rem"
                           isSelected={selectedGender === g}
                           onFocus={genderStatus.setEditing}
-                          onBlur={genderStatus.setCompleted}
                           onChange={() => {
                             setSelectedGender(g);
                             onChange('gender', g);
