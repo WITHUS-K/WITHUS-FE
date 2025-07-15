@@ -1,4 +1,4 @@
-import { style, globalStyle, keyframes } from '@vanilla-extract/css';
+import { style, keyframes } from '@vanilla-extract/css';
 import { vars } from '@repo/theme';
 import { fontStyles } from '@repo/theme';
 
@@ -110,15 +110,20 @@ export const focusableWrapper = style({
   scrollMarginTop: '100px',
 });
 
-const focusFlash = keyframes({
-  '0%':   { backgroundColor: vars.colors.primary5 },
-  '100%': { backgroundColor: 'transparent' },
-})
+
+const focusShadow = keyframes({
+  '0%, 100%': {
+    boxShadow: 'none',
+  },
+  '50%': {
+    backgroundColor: vars.colors.primary5,
+    boxShadow: `0 0 0 0.4rem ${vars.colors.primary5}`,
+  },
+});
 
 export const flash = style({
-  padding: '0.5rem',
   borderRadius: '12px',
-  animation: `${focusFlash} 1.5s ease-in-out forwards`,
+  animation: `${focusShadow} 1s ease-in-out forwards`,
 });
 
 export const focusHighlight = style({
