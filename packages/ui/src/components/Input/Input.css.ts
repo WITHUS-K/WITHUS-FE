@@ -132,7 +132,7 @@ export const commentInputWrapper = style({
       backgroundColor: vars.colors.bg,
       border: `1px solid ${vars.colors.grayscale5}`,
     },
-    '&[has-error="true"]': {
+    '&[data-has-error="true"]': {
       border: `1px solid ${vars.colors.error}`,
     },
     '&:focus-within': {

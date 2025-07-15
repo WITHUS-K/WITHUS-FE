@@ -1,10 +1,13 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Button } from '@repo/ui/Button';
-import { IcApplicationFileUpload } from '@repo/ui/icons/colored';
+import {
+  IcApplicationFileUpload,
+  IcApplicationFileUploadCo,
+} from '@repo/ui/icons/colored';
 import { IcFileUpload } from '@repo/ui/icons/mono';
 import * as styles from './FileUpload.css';
 import type { DetailItem } from '@web/types/application';
@@ -73,7 +76,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   const maxMB = Number(infoDetail);
   const download = useFileDownload();
   const inputRef = useRef<HTMLInputElement>(null);
-
+  const [dragActive, setDragActive] = useState(false);
   const handleSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files ?? []);
     if (!selected.length) return;
@@ -103,8 +106,18 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     e.target.value = '';
   };
 
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(true);
+  };
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+  };
+
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
+    setDragActive(false);
     if (!e.dataTransfer.files.length) return;
     const dtFiles = Array.from(e.dataTransfer.files);
     const combined = [...files, ...dtFiles];
@@ -214,9 +227,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
         {!readOnly && (
           <label
+            data-drag-active={dragActive ? 'true' : 'false'}
             className={styles.dropZone}
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
           >
             <input
               type="file"
@@ -226,8 +242,15 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               className={styles.input}
               onChange={handleSelect}
             />
-            <IcApplicationFileUpload width={72} height={73} />
-            <Text variant="md2_text_medium" color="grayscale50">
+            {dragActive ? (
+              <IcApplicationFileUploadCo width={72} height={73} />
+            ) : (
+              <IcApplicationFileUpload width={72} height={73} />
+            )}
+            <Text
+              variant="md2_text_medium"
+              color={dragActive ? 'primary50' : 'grayscale50'}
+            >
               파일을 드래그 앤 드롭하거나 직접 추가하세요。
             </Text>
             <Button

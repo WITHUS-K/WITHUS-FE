@@ -1,5 +1,5 @@
 import { vars } from '@repo/theme';
-import { style } from '@vanilla-extract/css';
+import { globalStyle, style } from '@vanilla-extract/css';
 
 export const wrapper = style({
   display: 'flex',
@@ -39,6 +39,12 @@ export const dropZone = style({
   borderRadius: '16px',
   padding: '6.55rem 0',
   marginTop: '1.6rem',
+  transition: 'all 0.1s ease-in-out',
+  selectors: {
+    '&[data-drag-active="true"]': {
+      borderColor: vars.colors.primary50,
+    },
+  },
 });
 
 export const input = style({

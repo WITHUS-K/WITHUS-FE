@@ -57,7 +57,7 @@ export const QuestionInput = ({
     <div
       className={styles.commentInputWrapper}
       data-read-only={readOnly ? 'true' : 'false'}
-      has-error={hasError ? 'true' : 'false'}
+      data-has-error={hasError ? 'true' : 'false'}
     >
       <Flex justify="spaceBetween" align="center" width="100%" gap="2rem">
         <Flex width="100%" align="flexStart" direction="column" gap="1rem">
