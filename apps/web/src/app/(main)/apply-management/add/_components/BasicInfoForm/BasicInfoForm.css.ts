@@ -17,7 +17,6 @@ export const gender = style({
 export const header = style({
   display: 'flex',
   flexDirection: 'row',
-  gap: '2.4rem',
   width: '100%',
 });
 
@@ -147,4 +146,12 @@ export const imageBase = style({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+});
+
+export const rowItemWide = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '1.6rem',
+  flex: '1 1 0',
+  minWidth: 0,
 });

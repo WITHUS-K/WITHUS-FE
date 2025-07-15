@@ -21,6 +21,7 @@ import {
   useFormFieldStatus,
 } from '@web/app/apply/[organization]/[slug]/_context/FormFieldStatusContext';
 import { focusableWrapper } from '@web/app/apply/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
+import clsx from 'clsx';
 
 interface BasicInfoFormProps {
   value: {
@@ -179,7 +180,7 @@ export function BasicInfoForm({
             <div
               id="basic-name"
               tabIndex={-1}
-              className={focusableWrapper}
+              className={clsx(styles.rowItemWide, focusableWrapper)}
               style={{ width: '100%', flex: 1 }}
             >
               <InfoField
