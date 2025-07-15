@@ -381,7 +381,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         { payload, profileImage, answerFiles },
         {
           onSuccess: (res) => {
-            router.push(
+            router.replace(
               `/apply/${data.organizationName}/${slug}/submitted?title=${encodeURIComponent(data.title)}`
             );
             console.log('지원서 생성 성공 res:', res);

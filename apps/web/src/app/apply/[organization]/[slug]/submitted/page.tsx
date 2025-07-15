@@ -3,7 +3,6 @@
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { IcSubmit } from '@repo/ui/icons/colored';
-import { Button } from '@repo/ui/Button';
 import { Divider } from '@repo/ui';
 import { useParams, useSearchParams } from 'next/navigation';
 
@@ -43,10 +42,6 @@ export default function SubmittedPage() {
           지원서 접수가 완료되었습니다.
         </Text>
       </Flex>
-
-      <Button variant="main" width="43.4rem">
-        확인
-      </Button>
     </Flex>
   );
 }
