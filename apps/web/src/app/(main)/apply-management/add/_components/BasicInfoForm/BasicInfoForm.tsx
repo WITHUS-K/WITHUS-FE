@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, FocusEvent } from 'react';
+import React, { useState, useEffect, FocusEvent, useContext } from 'react';
 import { parseISO } from 'date-fns';
 import { DatePicker } from '@repo/ui/DatePicker';
 import {
@@ -16,7 +16,10 @@ import Image from 'next/image';
 import * as styles from './BasicInfoForm.css';
 import { Flex } from '@repo/ui/Flex';
 import * as styles1 from '../../../../application-list/setting/(preview)/_components/AdditionalInfoPreview/AdditionalInfoPreview.css';
-import { useFormFieldStatus } from '@web/app/apply/[organization]/[slug]/_context/FormFieldStatusContext';
+import {
+  FormFieldStatusContext,
+  useFormFieldStatus,
+} from '@web/app/apply/[organization]/[slug]/_context/FormFieldStatusContext';
 import { focusableWrapper } from '@web/app/apply/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
 
 interface BasicInfoFormProps {
@@ -47,23 +50,34 @@ export function BasicInfoForm({
   needBirthDate = true,
   readOnly = false,
 }: BasicInfoFormProps) {
+  const { fieldStatuses, getStatus } = useContext(FormFieldStatusContext);
   const [previewUrl, setPreviewUrl] = useState<string>();
   const [isIconHover, setIconHover] = useState(false);
-  const nameStatus = useFormFieldStatus('basic-name');
+  const nameStatus = fieldStatuses['basic-name'] ?? getStatus('basic-name');
+  const emailStatus = fieldStatuses['basic-email'] ?? getStatus('basic-email');
   const genderStatus = useFormFieldStatus('basic-gender');
-  const phoneStatus = useFormFieldStatus('basic-phone');
+  const phoneStatus = fieldStatuses['basic-phone'] ?? getStatus('basic-phone');
   const birthDateStatus = useFormFieldStatus('basic-birthDate');
-  const emailStatus = useFormFieldStatus('basic-email');
   const imageStatus = useFormFieldStatus('additional-image');
 
-  const handleBlurFactory =
-    (status: ReturnType<typeof useFormFieldStatus>) =>
-    (
-      e: FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-    ) =>
-      e.currentTarget.value.trim()
-        ? status.setCompleted()
-        : status.setDefault();
+  const handleBlurFactory = (
+    status: ReturnType<typeof getStatus>,
+    validator?: (value: string) => boolean
+  ) => {
+    return (
+      e: React.FocusEvent<
+        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+      >
+    ) => {
+      const v = e.currentTarget.value.trim();
+      const isValid = validator ? validator(v) : v !== '';
+      if (isValid) {
+        status.setCompleted();
+      } else {
+        status.setDefault();
+      }
+    };
+  };
 
   useEffect(() => {
     // File 객체인 경우 blob URL 생성
@@ -260,10 +274,12 @@ export function BasicInfoForm({
                     onChange('phone', e.currentTarget.value);
                     phoneStatus.setEditing();
                   },
-                  disabled: readOnly,
-                  width: '100%',
                   onFocus: phoneStatus.setEditing,
-                  onBlur: handleBlurFactory(phoneStatus),
+                  onBlur: () => {
+                    if (/^\d{3}-\d{4}-\d{4}$/.test(value.phone)) {
+                      phoneStatus.setCompleted();
+                    }
+                  },
                 }}
                 readOnly={readOnly}
               />
