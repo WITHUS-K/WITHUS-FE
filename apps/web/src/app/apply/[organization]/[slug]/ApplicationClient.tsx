@@ -65,6 +65,10 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         type: 'warning',
         title: `해당페이지는\nPC에서만 접근 가능합니다.`,
         confirmText: '확인',
+        hideCancel: true,
+        onConfirm: () => {
+          router.replace(`/apply/${data.organizationName}/${slug}/mobile-only`);
+        },
       });
     }
   }, [confirm]);
@@ -284,10 +288,10 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   const schedule = watch('interviewSchedule.scheduleList') || [];
   const hasSchedule = !needInterview || schedule.length > 0;
 
-  console.log('basicFilled', basicFilled);
-  console.log('additionalFilled', additionalFilled);
-  console.log('questionsAnswered', questionsAnswered);
-  console.log('hasSchedule', hasSchedule);
+  // console.log('basicFilled', basicFilled);
+  // console.log('additionalFilled', additionalFilled);
+  // console.log('questionsAnswered', questionsAnswered);
+  // console.log('hasSchedule', hasSchedule);
 
   const canSubmit =
     basicFilled && additionalFilled && questionsAnswered && hasSchedule;

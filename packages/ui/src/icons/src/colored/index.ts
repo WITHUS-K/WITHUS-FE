@@ -1,6 +1,7 @@
 export { default as IcAdminActive } from './IcAdminActive';
 export { default as IcAdminDefault } from './IcAdminDefault';
 export { default as IcAdminHover } from './IcAdminHover';
+export { default as IcAnnotationAlert } from './IcAnnotationAlert';
 export { default as IcApplicationFileUpload } from './IcApplicationFileUpload';
 export { default as IcApplicationFileUploadCo } from './IcApplicationFileUploadCo';
 export { default as IcApplyEmpty } from './IcApplyEmpty';
