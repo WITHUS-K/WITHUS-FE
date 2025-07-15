@@ -303,7 +303,13 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         { questionId: number; answerText: string; fileName: string }[]
       >((acc, item) => {
         if (item.type === 'text') {
-          const answer = vals.questionAnswers[textIndex++]?.trim() ?? '';
+          const raw = vals.questionAnswers[textIndex++] ?? '';
+          const limitInfo = item.typeInfo.info;
+          const limit =
+            limitInfo === '제한 없음'
+              ? Infinity
+              : Number(limitInfo.replace('자', ''));
+          const answer = raw.trim().slice(0, limit);
 
           // 필수가 아니고 빈 문자열이면 스킵
           if (!item.isEssential && !answer) return acc;
