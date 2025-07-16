@@ -1,6 +1,6 @@
 import { style, styleVariants } from '@vanilla-extract/css';
 import { colors, fontStyles } from '@repo/theme';
-
+import { vars } from '@repo/theme';
 export const wrapper = style({
   width: '34.8rem',
   backgroundColor: colors.white,
@@ -282,9 +282,26 @@ export const birthDropdownHeader = style({
 
 export const birthDropdownBody = style({
   flex: '1 1 auto',
+  //display: 'flex',
+  //alignItems: 'center',
+  //justifyContent: 'center',
   overflowY: 'auto',
-  width: '30.2rem',
+  width: '100%',
+  //padding: '1rem',
+  //width: '30.2rem',
   height: '20.4rem',
+  selectors: {
+    '&::-webkit-scrollbar': {
+      width: '2px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: vars.colors.grayscale20,
+      borderRadius: '2px',
+    },
+    '&::-webkit-scrollbar-track': {
+      background: 'transparent',
+    },
+  },
 });
 
 export const birthGrid = style({
@@ -292,6 +309,7 @@ export const birthGrid = style({
   gridTemplateColumns: 'repeat(3, 1fr)',
   columnGap: '1.6rem',
   rowGap: '0.8rem',
+  padding: '1rem',
 });
 
 export const birthCell = style({
