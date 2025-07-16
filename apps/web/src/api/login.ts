@@ -1,6 +1,7 @@
 import { LoginRequest, LoginPayload } from '@web/types/auth';
 import { api } from './api';
 import { setCookie } from 'cookies-next';
+import { cookieOptions } from './authCookies';
 
 export async function login(data: LoginRequest): Promise<LoginPayload> {
   const response = await api.post('api/v1/auth/login', {
@@ -13,8 +14,8 @@ export async function login(data: LoginRequest): Promise<LoginPayload> {
     ? authHeader.slice(7)
     : authHeader;
   const refreshToken = response.headers.get('refresh-token') ?? '';
-  setCookie('accessToken', accessToken, { path: '/' });
-  setCookie('refreshToken', refreshToken, { path: '/' });
+  setCookie('accessToken', accessToken, cookieOptions);
+  setCookie('refreshToken', refreshToken, cookieOptions);
 
   // JSON 파싱
   const json = (await response.json()) as {
@@ -56,7 +57,7 @@ export async function login(data: LoginRequest): Promise<LoginPayload> {
     if (value != null) {
       const stringValue =
         typeof value === 'string' ? value : JSON.stringify(value);
-      setCookie(key, stringValue, { path: '/' });
+      setCookie(key, stringValue, cookieOptions);
     }
   });
 

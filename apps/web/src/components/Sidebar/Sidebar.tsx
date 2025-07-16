@@ -17,6 +17,7 @@ import { Option } from '@repo/ui/Option';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Divider } from '@repo/ui/Divider';
+import { cookieOptions } from '@web/api/authCookies';
 
 interface SidebarProps {
   role: string;
@@ -41,7 +42,7 @@ const Sidebar = ({
   //console.log('넘겨진 조직', organizations);
   const onSelectOrg = (orgId: number) => {
     console.log('흠', orgId);
-    setCookie('organizationId', String(orgId), { path: '/' });
+    setCookie('organizationId', String(orgId), cookieOptions);
     router.refresh();
   };
 
