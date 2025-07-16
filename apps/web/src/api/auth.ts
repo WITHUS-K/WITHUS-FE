@@ -1,4 +1,5 @@
 import { api } from './api';
+import { cookieOptions } from './authCookies';
 import { Tokens } from './types';
 import { setCookie } from 'cookies-next';
 
@@ -25,9 +26,8 @@ export async function reissueTokens(tokens: Tokens): Promise<Tokens> {
   console.log('리이슈 토큰', newAccessToken);
 
   // 3) 쿠키에 저장 (브라우저 측)
-  setCookie('accessToken', newAccessToken, { path: '/' });
-  setCookie('refreshToken', newRefreshToken, { path: '/' });
-
+  setCookie('accessToken', newAccessToken, cookieOptions);
+  setCookie('refreshToken', newRefreshToken, cookieOptions);
   return {
     accessToken: newAccessToken,
     refreshToken: newRefreshToken,

@@ -11,6 +11,7 @@ import {
   Organization,
   useMyOrganizationsQuery,
 } from '@web/store/query/useMyOrganizationsQuery';
+import { cookieOptions } from '@web/api/authCookies';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -58,10 +59,11 @@ export default function AuthLayout({
           'userId',
         ];
         cookiesToRemove.forEach((cookieName) =>
-          deleteCookie(cookieName, { path: '/' })
+          deleteCookie(cookieName, cookieOptions)
         );
 
         clearUser();
+        router.refresh();
         router.push('/');
       },
     });
