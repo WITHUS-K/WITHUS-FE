@@ -1,6 +1,6 @@
 'use client';
 
-import { vars } from '@repo/theme';
+import { Flex, Text } from '@repo/ui';
 import Spinner from 'node_modules/@repo/ui/dist/components/Spinner/Spinner';
 import React from 'react';
 
@@ -17,7 +17,12 @@ export default function Loading() {
         zIndex: 9999,
       }}
     >
-      <Spinner size={64} strokeWidth={4} color={vars.colors.primary50} />
+      <Flex direction="column" gap="2rem" align="center" justify="center">
+        <Spinner size={64} strokeWidth={4} color="rgba(44, 96, 255, 0.7)" />
+        <Text variant="md1_text_bold" color="grayscale70">
+          잠시만 기다려주세요..
+        </Text>
+      </Flex>
     </div>
   );
 }
