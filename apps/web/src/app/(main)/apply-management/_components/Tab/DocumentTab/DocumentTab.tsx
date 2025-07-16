@@ -107,11 +107,13 @@ export default function DocumentTab({
               ? '서류 합격'
               : item.status === 'DOX_FAIL'
                 ? '서류 불합격'
-                : //: item.status.startsWith('INTERVIEW')
-                  //? '서류 합격'
-                  item.status == 'DOX_PENDING'
+                : item.status == 'DOX_PENDING'
                   ? '보류'
-                  : '선택',
+                  : item.status == 'INTERVIEW_PASS'
+                    ? '면접 합격'
+                    : item.status == 'INTERVIEW_FAIL'
+                      ? '면접 불합격'
+                      : '선택',
         smsSent: item.isSmsSent,
         mailSent: item.isMailSent,
         evaluators: item.documentEvaluators.map((e) => ({
