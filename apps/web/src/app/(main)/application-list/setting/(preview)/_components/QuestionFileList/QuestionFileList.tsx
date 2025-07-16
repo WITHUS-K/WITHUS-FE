@@ -24,6 +24,8 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
     });
   };
 
+  console.log('미리보기', textItems);
+
   const fileItems = detailItems.filter((item) => item.type === 'file');
   const [files, setFiles] = useState<AnswerFile[][]>(
     fileItems.map(() => []) // 초기엔 질문별 빈 배열
@@ -39,37 +41,40 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
 
   return (
     <div className={s.wrapper} style={{ pointerEvents: 'none' }}>
-      {textItems.map((item, idx) => (
-        <div key={idx} className={s.questionContainer}>
-          <Flex gap="0.4rem" align="center" width="100%">
-            <Text variant="md1_text_semibold" color="grayscale70">
-              질문-{idx + 1}
-            </Text>
-            {item.isEssential && (
-              <Text variant="md2_text_semibold" color="error">
-                *
-              </Text>
-            )}
-          </Flex>
+      {textItems.map((item, idx) => {
+        const rawMax = parseInt(
+          item.typeInfo.infoDetail.replace(/\D/g, ''),
+          10
+        );
+        const maxLengthValue = Number.isNaN(rawMax) ? Infinity : rawMax;
 
-          <QuestionInput
-            title={item.description}
-            maxLength={
-              item.typeInfo.info === '제한 없음'
-                ? Infinity
-                : parseInt(item.typeInfo.info.replace(/\D/g, ''), 10)
-            }
-            infoDetail={item.typeInfo.infoDetail}
-            value={answers[idx] as string}
-            onChange={(val) => handleAnswerChange(idx, val)}
-            description={item.addDescription}
-          />
-        </div>
-      ))}
+        return (
+          <div key={idx} className={s.questionContainer}>
+            <Flex gap="0.4rem" align="center" width="100%">
+              <Text variant="md1_text_semibold" color="grayscale70">
+                질문-{idx + 1}
+              </Text>
+              {item.isEssential && (
+                <Text variant="md2_text_semibold" color="error">
+                  *
+                </Text>
+              )}
+            </Flex>
+
+            <QuestionInput
+              title={item.description}
+              maxLength={maxLengthValue}
+              infoDetail={item.typeInfo.infoDetail}
+              value={answers[idx] as string}
+              onChange={(val) => handleAnswerChange(idx, val)}
+              description={item.addDescription}
+            />
+          </div>
+        );
+      })}
       {fileItems.map((item, idx) => {
         const countStr = item.typeInfo.info.replace(/\D/g, '');
         const sizeStr = item.typeInfo.infoDetail.replace(/\D/g, '');
-
         const stringItem: DetailItem = {
           ...item,
           typeInfo: {

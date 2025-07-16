@@ -23,22 +23,18 @@ export default function PageClient({
   const params = useParams();
   const search = useSearchParams();
 
-  // 탭 (path-param)
   const tab = Array.isArray(params.tab) ? params.tab[0] : params.tab!;
 
-  // recruitmentId: prop(recId) 우선, 없으면 query
   const recIdStr =
     recId != null ? String(recId) : (search.get('recruitmentId') ?? '');
   const recruitmentId = Number(recIdStr);
 
-  // 조직 목록 (SSR prefetch된 데이터를 hydration)
   const { data: recs = [] } = useRecruitmentsQuery();
   const options = recs.map((r) => ({
     id: String(r.recruitmentId),
     name: r.title,
   }));
 
-  // counts (SSR prefetch된 데이터를 hydration)
   const { data: adminData } = useAdminApplicationsQuery({
     recruitmentId,
     stage: 'DOCUMENT',

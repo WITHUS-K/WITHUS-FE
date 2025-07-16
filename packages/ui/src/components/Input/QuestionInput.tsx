@@ -33,6 +33,8 @@ export const QuestionInput = ({
 }: QuestionInputProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const safeMax = Number.isNaN(maxLength) ? Infinity : maxLength;
+
   const currentCount = includeWhitespace
     ? value.length
     : value.replace(/\s/g, '').length;
@@ -82,13 +84,13 @@ export const QuestionInput = ({
           >
             {currentCount}
           </span>
-          {maxLength !== Infinity && (
+          {safeMax !== Infinity && (
             <span
               style={{
                 color: vars.colors.grayscale40,
               }}
             >
-              /{maxLength}자 ({infoDetail})
+              /{safeMax}자 ({infoDetail})
             </span>
           )}
         </Text>
