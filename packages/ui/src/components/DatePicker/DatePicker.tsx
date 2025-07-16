@@ -5,6 +5,7 @@ import {
   addDays,
   startOfDay,
   isAfter,
+  isBefore,
 } from 'date-fns';
 import * as styles from './DatePicker.css';
 import { MonthSelect } from './MonthSelect';
@@ -23,14 +24,18 @@ interface DatePickerProps {
   selectedDate: Date;
   onSelect: (date: Date) => void;
   variant?: 'default' | 'birth';
+  minDate?: Date;
 }
 
 export const DatePicker = ({
   selectedDate,
   onSelect,
   variant = 'default',
+  minDate,
 }: DatePickerProps) => {
   const today = startOfDay(new Date());
+  const minSelectableDate = minDate ? startOfDay(minDate) : undefined;
+
   const [hasUserSelected, setHasUserSelected] = useState(false);
   const [currentMonth, setCurrentMonth] = useState<Date>(
     startOfMonth(selectedDate)
@@ -106,10 +111,15 @@ export const DatePicker = ({
         {days.map((d) => {
           const afterMonth = isAfterMonth(d, monthEnd);
           const outsideMonth = d.getMonth() !== currentMonth.getMonth();
-          const disabled =
+
+          const baseDisabled =
             variant === 'birth'
               ? outsideMonth || isAfter(d, today)
               : isDateDisabled(d, currentMonth, today);
+
+          const disabled =
+            baseDisabled ||
+            (minSelectableDate ? isBefore(d, minSelectableDate) : false);
 
           const originalVariant = getDayVariant({
             date: d,

@@ -44,6 +44,7 @@ export default function CommonSectionPanel({
         <DatePicker
           selectedDate={localDate ?? new Date()}
           onSelect={(d) => setLocalDate(d)}
+          minDate={minDate}
         />
       </Flex>
 
