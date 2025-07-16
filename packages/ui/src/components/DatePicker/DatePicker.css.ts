@@ -13,8 +13,7 @@ export const wrapper = style({
 
 export const shadow = style({
   boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.10)',
-
-})
+});
 
 export const header = style({
   display: 'flex',
@@ -259,9 +258,9 @@ export const monthOnlySelect = style({
 
 export const birthDropdownFull = style({
   position: 'absolute',
-  top: 0,           
+  top: 0,
   left: 0,
-  width: '100%',     
+  width: '100%',
   height: '100%',
   backgroundColor: colors.white,
   borderRadius: '12px',
@@ -270,7 +269,7 @@ export const birthDropdownFull = style({
   display: 'flex',
   flexDirection: 'column',
   padding: '2.7rem',
-  overflow: 'hidden',        
+  overflow: 'hidden',
 });
 
 export const birthDropdownHeader = style({
@@ -324,5 +323,5 @@ export const dropdownFooter = style({
   display: 'flex',
   justifyContent: 'space-between',
   marginTop: '4.8rem',
-  gap: '0.8rem'
+  gap: '0.8rem',
 });

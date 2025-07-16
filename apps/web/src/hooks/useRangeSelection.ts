@@ -23,7 +23,6 @@ export function useSelectableRanges(
       if (isDragging && origin.current !== null && current) {
         const base = prevRangesRef.current;
         const { start, end } = current;
-
         const segments: Range[] = [];
         let segStart: number | null = null;
         for (let i = start; i <= end; i++) {
@@ -35,15 +34,30 @@ export function useSelectableRanges(
           }
         }
         if (segStart !== null) segments.push({ start: segStart, end });
-
-        let updated = [...base];
+        let updated: Range[] = [];
         if (isRemovingRef.current) {
-          segments.forEach((seg) => {
-            updated = updated.filter(
-              (r) => !(r.start === seg.start && r.end === seg.end)
-            );
+          base.forEach((orig) => {
+            let fragments: Range[] = [orig];
+            segments.forEach((seg) => {
+              fragments = fragments.flatMap((frag) => {
+                if (seg.end < frag.start || seg.start > frag.end) {
+                  return [frag];
+                }
+                const parts: Range[] = [];
+                if (frag.start < seg.start) {
+                  parts.push({ start: frag.start, end: seg.start - 1 });
+                }
+                if (seg.end < frag.end) {
+                  parts.push({ start: seg.end + 1, end: frag.end });
+                }
+                return parts;
+              });
+            });
+            updated.push(...fragments);
           });
         } else {
+          // 추가: base에 없는 segments만 추가
+          updated = [...base];
           segments.forEach((seg) => {
             const exists = updated.some(
               (r) => r.start === seg.start && r.end === seg.end
@@ -56,7 +70,6 @@ export function useSelectableRanges(
         onChange(updated);
       }
 
-      // 상태 초기화
       origin.current = null;
       prevRangesRef.current = [];
       isRemovingRef.current = false;
@@ -74,7 +87,6 @@ export function useSelectableRanges(
       if (disabledRows[row]) return;
       origin.current = row;
       prevRangesRef.current = ranges;
-      // 시작 셀이 이미 선택된 상태면 삭제 모드
       isRemovingRef.current = ranges.some(
         (r) => row >= r.start && row <= r.end
       );
@@ -97,59 +109,66 @@ export function useSelectableRanges(
   const onClick = useCallback(
     (row: number) => {
       if (disabledRows[row]) return;
+      if (isDragging) return;
 
-      // 드래그 아님
-      if (!isDragging) {
-        // 두 번 클릭으로 range 토글
-        if (lastClick.current !== null && lastClick.current !== row) {
-          const s = Math.min(lastClick.current, row);
-          const e = Math.max(lastClick.current, row);
-          // s~e 구간을 disabledRows 제외하고 contiguous segments로 분할
-          const segments: Range[] = [];
-          let segStart: number | null = null;
-          for (let i = s; i <= e; i++) {
-            if (!disabledRows[i]) {
-              if (segStart === null) segStart = i;
-            } else if (segStart !== null) {
-              segments.push({ start: segStart, end: i - 1 });
-              segStart = null;
-            }
+      if (lastClick.current !== null && lastClick.current !== row) {
+        const s = Math.min(lastClick.current, row);
+        const e = Math.max(lastClick.current, row);
+        const segments: Range[] = [];
+        let segStart: number | null = null;
+        for (let i = s; i <= e; i++) {
+          if (!disabledRows[i]) {
+            if (segStart === null) segStart = i;
+          } else if (segStart !== null) {
+            segments.push({ start: segStart, end: i - 1 });
+            segStart = null;
           }
-          if (segStart !== null) segments.push({ start: segStart, end: e });
-
-          let updated = [...ranges];
-          segments.forEach((seg) => {
-            const idx = updated.findIndex(
-              (r) => r.start === seg.start && r.end === seg.end
-            );
-            if (idx >= 0) {
-              // 이미 있으면 삭제
-              updated.splice(idx, 1);
-            } else {
-              // 없으면 추가
-              updated.push(seg);
-            }
-          });
-
-          setRanges(updated);
-          onChange(updated);
-          lastClick.current = null;
         }
-        // 단일 클릭 토글
-        else {
-          const seg = { start: row, end: row };
-          const idx = ranges.findIndex((r) => r.start === row && r.end === row);
-          let updated = [...ranges];
+        if (segStart !== null) segments.push({ start: segStart, end: e });
+
+        let updated = [...ranges];
+        segments.forEach((seg) => {
+          const idx = updated.findIndex(
+            (r) => r.start === seg.start && r.end === seg.end
+          );
           if (idx >= 0) {
             updated.splice(idx, 1);
           } else {
             updated.push(seg);
           }
-          setRanges(updated);
-          onChange(updated);
-          lastClick.current = row;
-        }
+        });
+
+        setRanges(updated);
+        onChange(updated);
+        lastClick.current = null;
+        return;
       }
+      const inExisting = ranges.some((r) => row >= r.start && row <= r.end);
+      let updated: Range[];
+      if (inExisting) {
+        updated = [];
+        ranges.forEach((orig) => {
+          const frags = [];
+          if (row < orig.start || row > orig.end) {
+            frags.push(orig);
+          } else {
+            if (orig.start < row) {
+              frags.push({ start: orig.start, end: row - 1 });
+            }
+            if (row < orig.end) {
+              frags.push({ start: row + 1, end: orig.end });
+            }
+          }
+          updated.push(...frags);
+        });
+      } else {
+        // 추가
+        updated = [...ranges, { start: row, end: row }];
+      }
+
+      setRanges(updated);
+      onChange(updated);
+      lastClick.current = row;
     },
     [disabledRows, isDragging, ranges, onChange]
   );

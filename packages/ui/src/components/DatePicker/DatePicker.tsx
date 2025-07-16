@@ -1,16 +1,20 @@
-import { useState, useMemo } from 'react';
+export type DayVariant =
+  | 'normal'
+  | 'disabled'
+  | 'selected'
+  | 'today'
+  | 'sunday';
+
+import { useState, useMemo, useEffect } from 'react';
 import {
   startOfMonth,
   endOfMonth,
   addDays,
   startOfDay,
-  isAfter,
   isBefore,
 } from 'date-fns';
 import * as styles from './DatePicker.css';
 import { MonthSelect } from './MonthSelect';
-import { YearSelect } from './YearSelect';
-import { MonthOnlySelect } from './MonthOnlySelect';
 import { IcArrowLeft, IcArrowRight } from '../../icons/src/mono';
 import {
   generateCalendarData,
@@ -23,15 +27,15 @@ import clsx from 'clsx';
 interface DatePickerProps {
   selectedDate: Date;
   onSelect: (date: Date) => void;
-  variant?: 'default' | 'birth';
   minDate?: Date;
+  variant?: 'default' | 'birth';
 }
 
 export const DatePicker = ({
   selectedDate,
   onSelect,
-  variant = 'default',
   minDate,
+  variant = 'default',
 }: DatePickerProps) => {
   const today = startOfDay(new Date());
   const minSelectableDate = minDate ? startOfDay(minDate) : undefined;
@@ -40,6 +44,11 @@ export const DatePicker = ({
   const [currentMonth, setCurrentMonth] = useState<Date>(
     startOfMonth(selectedDate)
   );
+
+  // selectedDate prop이 바뀌면 달력만 해당 월로 이동
+  useEffect(() => {
+    setCurrentMonth(startOfMonth(selectedDate));
+  }, [selectedDate]);
 
   const handleSelectDate = (date: Date) => {
     setHasUserSelected(true);
@@ -52,12 +61,7 @@ export const DatePicker = ({
   );
 
   return (
-    <div
-      className={clsx(
-        styles.wrapper,
-        variant === 'birth' ? styles.shadow : null
-      )}
-    >
+    <div className={styles.wrapper}>
       <div className={styles.header}>
         <button
           type="button"
@@ -66,25 +70,10 @@ export const DatePicker = ({
         >
           <IcArrowLeft width={17} height={17} />
         </button>
-
-        {variant === 'birth' ? (
-          <>
-            <YearSelect
-              currentMonth={currentMonth}
-              onYearChange={(m) => setCurrentMonth(m)}
-            />
-            <MonthOnlySelect
-              currentMonth={currentMonth}
-              onMonthChange={(m) => setCurrentMonth(m)}
-            />
-          </>
-        ) : (
-          <MonthSelect
-            currentMonth={currentMonth}
-            onMonthChange={(date) => setCurrentMonth(date)}
-          />
-        )}
-
+        <MonthSelect
+          currentMonth={currentMonth}
+          onMonthChange={(d) => setCurrentMonth(d)}
+        />
         <button
           type="button"
           className={styles.navRightButton}
@@ -110,18 +99,11 @@ export const DatePicker = ({
 
         {days.map((d) => {
           const afterMonth = isAfterMonth(d, monthEnd);
-          const outsideMonth = d.getMonth() !== currentMonth.getMonth();
+          const beforeMin = minSelectableDate && isBefore(d, minSelectableDate);
+          const disabled = isDateDisabled(d, currentMonth, today) || beforeMin;
 
-          const baseDisabled =
-            variant === 'birth'
-              ? outsideMonth || isAfter(d, today)
-              : isDateDisabled(d, currentMonth, today);
-
-          const disabled =
-            baseDisabled ||
-            (minSelectableDate ? isBefore(d, minSelectableDate) : false);
-
-          const originalVariant = getDayVariant({
+          // getDayVariant이 반환하는 문자열 리터럴 타입을 받아옵니다
+          const original = getDayVariant({
             date: d,
             monthEnd,
             currentMonth,
@@ -130,15 +112,8 @@ export const DatePicker = ({
             hasUserSelected,
           });
 
-          const dayVariant =
-            variant === 'birth' &&
-            originalVariant === 'disabled' &&
-            !outsideMonth &&
-            !isAfter(d, today)
-              ? d.getDay() === 0
-                ? 'sunday'
-                : 'normal'
-              : originalVariant;
+          // 'disabled' 여부를 가장 우선으로 처리
+          const dayVariant: DayVariant = disabled ? 'disabled' : original;
 
           return (
             <div

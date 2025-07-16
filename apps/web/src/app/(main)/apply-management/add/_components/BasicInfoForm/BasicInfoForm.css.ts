@@ -18,6 +18,7 @@ export const header = style({
   display: 'flex',
   flexDirection: 'row',
   width: '100%',
+  gap: '2rem',
 });
 
 export const contentColumn = style({

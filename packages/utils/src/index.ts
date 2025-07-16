@@ -21,3 +21,4 @@ export {
   getProfileBackground,
   getProfileTextColor,
 } from './util/tag';
+export type { DayVariant } from './util/datePicker';
