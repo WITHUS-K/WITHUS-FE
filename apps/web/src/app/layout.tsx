@@ -7,6 +7,7 @@ import Script from 'next/script';
 import './globals.css';
 import { Providers } from '@web/components/providers/Providers';
 import { META } from '@web/constants/metadata';
+import GoogleAnalytics from '@web/components/GoogleAnalytics/GoogleAnalytics';
 
 const pretendard = localFont({
   src: '../../public/font/subset-PretendardVariable.woff2',
@@ -36,6 +37,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${pretendard.className} ${themeClass}`}>
+        {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS ? (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS} />
+        ) : null}
         <Script
           id="microsoft-clarity"
           strategy="afterInteractive"
