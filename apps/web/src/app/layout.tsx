@@ -6,14 +6,26 @@ import localFont from 'next/font/local';
 import Script from 'next/script';
 import './globals.css';
 import { Providers } from '@web/components/providers/Providers';
+import { META } from '@web/constants/metadata';
 
 const pretendard = localFont({
   src: '../../public/font/subset-PretendardVariable.woff2',
 });
 
 export const metadata: Metadata = {
-  title: 'WithUS',
-  description: '큐시즘 밋업프로젝트 7팀',
+  title: META.title,
+  description: META.description,
+  keywords: [...META.keyword],
+  openGraph: {
+    title: META.title,
+    description: META.description,
+    locale: 'ko_KR',
+    type: 'website',
+    url: META.url,
+    images: {
+      url: `${META.url}${META.ogImage}`,
+    },
+  },
 };
 
 export default function RootLayout({
