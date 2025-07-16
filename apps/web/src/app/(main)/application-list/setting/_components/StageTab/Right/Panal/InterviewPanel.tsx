@@ -183,11 +183,13 @@ export default function InterviewPanel({ minDate }: InterviewPanelProps) {
 
       {/* 본문: 달력 + 시간 입력 영역 */}
       <Flex gap="3.2rem" width="100%" height="100%">
-        <DatePicker
-          selectedDate={selDate}
-          onSelect={setSelDate}
-          minDate={minDate}
-        />
+        <div style={{ width: '100%' }}>
+          <DatePicker
+            selectedDate={selDate}
+            onSelect={setSelDate}
+            minDate={minDate}
+          />
+        </div>
 
         <Flex direction="column" width="100%">
           <div className={styles.timescroll}>

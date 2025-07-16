@@ -34,6 +34,11 @@ export const containerStyle = style({
   height: 'calc(100vh - 60px)',
 });
 
+export const mobileContainerStyle = style({
+  paddingTop: '2.4rem',
+  height: 'calc(100vh - 60px)',
+})
+
 export const headerStyle = style({
   position: 'fixed',
   borderBottom: `1px solid ${vars.colors.grayscale10}`,

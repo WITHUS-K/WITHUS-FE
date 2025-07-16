@@ -72,7 +72,6 @@ export const QuestionAndFileListForm = ({
             </Flex>
             <QuestionInput
               title={item.description}
-              info={item.typeInfo.info}
               description={item.addDescription}
               infoDetail={item.typeInfo.infoDetail}
               value={

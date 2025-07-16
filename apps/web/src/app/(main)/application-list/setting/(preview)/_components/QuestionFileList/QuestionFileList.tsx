@@ -36,7 +36,6 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
       return copy;
     });
   };
-  //console.log('파일 질문', fileItems);
 
   return (
     <div className={s.wrapper} style={{ pointerEvents: 'none' }}>
@@ -55,7 +54,11 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
 
           <QuestionInput
             title={item.description}
-            info={item.typeInfo.info}
+            maxLength={
+              item.typeInfo.info === '제한 없음'
+                ? Infinity
+                : parseInt(item.typeInfo.info.replace(/\D/g, ''), 10)
+            }
             infoDetail={item.typeInfo.infoDetail}
             value={answers[idx] as string}
             onChange={(val) => handleAnswerChange(idx, val)}

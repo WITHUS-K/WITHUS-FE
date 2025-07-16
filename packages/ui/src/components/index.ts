@@ -10,3 +10,4 @@ export * from  './Divider/Divider';
 export * from './FileUploader/FileUploader';
 export * from './List/AccordianList/AccordianList';
 export * from './List/List';
+export * from './Spinner/Spinner';

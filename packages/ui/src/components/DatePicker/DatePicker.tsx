@@ -1,10 +1,15 @@
+export type DayVariant =
+  | 'normal'
+  | 'disabled'
+  | 'selected'
+  | 'today'
+  | 'sunday';
+
 import { useState, useMemo, useEffect } from 'react';
 import {
   startOfMonth,
   endOfMonth,
   addDays,
-  format,
-  setMonth,
   startOfDay,
   isBefore,
 } from 'date-fns';
@@ -23,36 +28,32 @@ interface DatePickerProps {
   selectedDate: Date;
   onSelect: (date: Date) => void;
   minDate?: Date;
+  variant?: 'default' | 'birth';
 }
 
 export const DatePicker = ({
   selectedDate,
   onSelect,
   minDate,
+  variant = 'default',
 }: DatePickerProps) => {
   const today = startOfDay(new Date());
-  const [hasUserSelected, setHasUserSelected] = useState(false);
+  const minSelectableDate = minDate ? startOfDay(minDate) : undefined;
 
+  const [hasUserSelected, setHasUserSelected] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState<Date>(
+    startOfMonth(selectedDate)
+  );
+
+  // selectedDate prop이 바뀌면 달력만 해당 월로 이동
   useEffect(() => {
     setCurrentMonth(startOfMonth(selectedDate));
-    setHasUserSelected(true);
   }, [selectedDate]);
 
   const handleSelectDate = (date: Date) => {
     setHasUserSelected(true);
     onSelect(date);
   };
-  const [currentMonth, setCurrentMonth] = useState<Date>(
-    startOfMonth(selectedDate)
-  );
-
-  const monthOptions = Array.from({ length: 12 }, (_, i) => {
-    const date = setMonth(currentMonth, i);
-    return {
-      value: date,
-      label: format(date, 'yyyy년 M월'),
-    };
-  });
 
   const { days, monthEnd } = useMemo(
     () => generateCalendarData(currentMonth),
@@ -69,12 +70,10 @@ export const DatePicker = ({
         >
           <IcArrowLeft width={17} height={17} />
         </button>
-
         <MonthSelect
           currentMonth={currentMonth}
-          onMonthChange={(date) => setCurrentMonth(date)}
+          onMonthChange={(d) => setCurrentMonth(d)}
         />
-
         <button
           type="button"
           className={styles.navRightButton}
@@ -100,10 +99,11 @@ export const DatePicker = ({
 
         {days.map((d) => {
           const afterMonth = isAfterMonth(d, monthEnd);
-          const beforeMin = minDate && isBefore(d, startOfDay(minDate));
-          // 기존 disabled 로직에 minDate 체크 추가
+          const beforeMin = minSelectableDate && isBefore(d, minSelectableDate);
           const disabled = isDateDisabled(d, currentMonth, today) || beforeMin;
-          const rawVariant = getDayVariant({
+
+          // getDayVariant이 반환하는 문자열 리터럴 타입을 받아옵니다
+          const original = getDayVariant({
             date: d,
             monthEnd,
             currentMonth,
@@ -111,11 +111,14 @@ export const DatePicker = ({
             selectedDate,
             hasUserSelected,
           });
-          const variant = disabled ? 'disabled' : rawVariant;
+
+          // 'disabled' 여부를 가장 우선으로 처리
+          const dayVariant: DayVariant = disabled ? 'disabled' : original;
+
           return (
             <div
               key={d.toISOString()}
-              className={clsx(styles.dayCell, styles.dayVariants[variant])}
+              className={clsx(styles.dayCell, styles.dayVariants[dayVariant])}
               onClick={() => !disabled && handleSelectDate(d)}
             >
               {!afterMonth ? d.getDate() : null}

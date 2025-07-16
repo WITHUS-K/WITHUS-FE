@@ -37,7 +37,9 @@ export function FormNavigator({ items, scrollContainerRef }: Props) {
   const { fieldStatuses, getStatus } = useContext(FormFieldStatusContext);
 
   // 모든 항목이 completed 상태인지 체크
-  const filteredItems = items.filter((item) => !item.isDivider); // divider 제외
+  const filteredItems = items.filter(
+    (item) => !item.isDivider && item.required
+  ); // divider, 필수 항목 아닌 것 제외
 
   const isAllCompleted = filteredItems.every((item) => {
     const fs = fieldStatuses[item.id] ?? getStatus(item.id);
@@ -47,14 +49,22 @@ export function FormNavigator({ items, scrollContainerRef }: Props) {
   const handleClick = (id: string) => {
     setSelectedId((prev) => (prev === id ? null : id));
     const el = document.getElementById(id);
-
     if (!el) return;
 
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el.classList.add(css.flash);
+    setTimeout(() => {
+      el.classList.remove(css.flash);
+    }, 1000);
 
-    // 래퍼 div에 포커스 줘서 테두리 효과
-    el.classList.add(css.focusHighlight);
-    el.focus({ preventScroll: true });
+    const input = el.querySelector(
+      'input, textarea, select, [contenteditable="true"]'
+    ) as HTMLElement | null;
+    if (input) {
+      setTimeout(() => {
+        input.focus();
+      }, 300);
+    }
   };
 
   return (

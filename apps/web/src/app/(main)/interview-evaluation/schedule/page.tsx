@@ -12,6 +12,7 @@ import {
   TimeRange,
 } from '@web/components/TimeTable/SelectableTimeTable';
 import { useRegisterAvailabilitiesMutation } from '@web/store/mutation/useRegisterAvailabilitiesMutation';
+import { useUserStore } from '@web/store/state/userStore';
 
 export default function SchedulePage() {
   const router = useRouter();
@@ -21,13 +22,14 @@ export default function SchedulePage() {
   const recruitmentId = recruitmentIdParam
     ? Number(recruitmentIdParam)
     : undefined;
-
+  const organizationId = useUserStore.getState().organizationId!;
   // 쿼리에서 interviewId 가져오기
   const interviewIdParam = sp.get('interviewId');
   const interviewId = interviewIdParam ? Number(interviewIdParam) : undefined;
 
   // 1) 내 조직의 면접 목록 불러오기
-  const { data: orgs = [], isLoading } = useOrganizationInterviewsQuery();
+  const { data: orgs = [], isLoading } =
+    useOrganizationInterviewsQuery(organizationId);
   console.log('면접', orgs);
   if (isLoading) return <Text>로딩 중…</Text>;
   if (!orgs.length) return <Text>등록된 면접이 없습니다.</Text>;

@@ -65,6 +65,10 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         type: 'warning',
         title: `해당페이지는\nPC에서만 접근 가능합니다.`,
         confirmText: '확인',
+        hideCancel: true,
+        onConfirm: () => {
+          router.replace(`/apply/${data.organizationName}/${slug}/mobile-only`);
+        },
       });
     }
   }, [confirm]);
@@ -284,10 +288,10 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   const schedule = watch('interviewSchedule.scheduleList') || [];
   const hasSchedule = !needInterview || schedule.length > 0;
 
-  console.log('basicFilled', basicFilled);
-  console.log('additionalFilled', additionalFilled);
-  console.log('questionsAnswered', questionsAnswered);
-  console.log('hasSchedule', hasSchedule);
+  // console.log('basicFilled', basicFilled);
+  // console.log('additionalFilled', additionalFilled);
+  // console.log('questionsAnswered', questionsAnswered);
+  // console.log('hasSchedule', hasSchedule);
 
   const canSubmit =
     basicFilled && additionalFilled && questionsAnswered && hasSchedule;
@@ -303,7 +307,13 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         { questionId: number; answerText: string; fileName: string }[]
       >((acc, item) => {
         if (item.type === 'text') {
-          const answer = vals.questionAnswers[textIndex++]?.trim() ?? '';
+          const raw = vals.questionAnswers[textIndex++] ?? '';
+          const limitInfo = item.typeInfo.info;
+          const limit =
+            limitInfo === '제한 없음'
+              ? Infinity
+              : Number(limitInfo.replace('자', ''));
+          const answer = raw.trim().slice(0, limit);
 
           // 필수가 아니고 빈 문자열이면 스킵
           if (!item.isEssential && !answer) return acc;
@@ -375,7 +385,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         { payload, profileImage, answerFiles },
         {
           onSuccess: (res) => {
-            router.push(
+            router.replace(
               `/apply/${data.organizationName}/${slug}/submitted?title=${encodeURIComponent(data.title)}`
             );
             console.log('지원서 생성 성공 res:', res);

@@ -3,12 +3,13 @@ import * as styles from './Input.css';
 import Flex from '../Flex/Flex';
 import Text from '../Text/Text';
 import React, { FocusEvent, useEffect, useRef } from 'react';
+import { IcInputError } from '../../icons/src/colored';
+import { vars } from '@repo/theme';
 
 interface QuestionInputProps {
   value: string;
   onChange: (value: string) => void;
   title?: string;
-  info?: string;
   infoDetail?: string;
   readOnly?: boolean;
   onFocus?: (e: FocusEvent<HTMLTextAreaElement>) => void;
@@ -22,18 +23,25 @@ export const QuestionInput = ({
   value,
   onChange,
   title = '질문 제목',
-  info,
   infoDetail,
   readOnly = false,
   onFocus,
   onBlur,
-  maxLength,
-  includeWhitespace,
+  maxLength = Infinity,
+  includeWhitespace = true,
   description,
 }: QuestionInputProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // 높이 자동 조정
+  const currentCount = includeWhitespace
+    ? value.length
+    : value.replace(/\s/g, '').length;
+
+  const displayCount =
+    maxLength === Infinity ? currentCount : Math.min(currentCount, maxLength);
+
+  const hasError = maxLength !== Infinity && currentCount > maxLength;
+
   useEffect(() => {
     const ta = textareaRef.current;
     if (!ta) return;
@@ -41,68 +49,73 @@ export const QuestionInput = ({
     ta.style.height = ta.scrollHeight + 'px';
   }, [value]);
 
-  // 입력된 문자열을 조건에 따라 자르는 유틸
-  const enforceLimit = (text: string) => {
-    if (maxLength === Infinity) return text;
-    if (includeWhitespace) {
-      return text.slice(0, maxLength);
-    } else {
-      let count = 0;
-      let result = '';
-      for (const ch of text) {
-        if (ch !== ' ') {
-          count += 1;
-        }
-        if (count > maxLength!) break;
-        result += ch;
-      }
-      return result;
-    }
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const raw = e.currentTarget.value;
-    const truncated = enforceLimit(raw);
-    onChange(truncated);
+    onChange(e.currentTarget.value);
   };
 
   return (
     <div
       className={styles.commentInputWrapper}
       data-read-only={readOnly ? 'true' : 'false'}
+      data-has-error={hasError ? 'true' : 'false'}
     >
       <Flex justify="spaceBetween" align="center" width="100%" gap="2rem">
         <Flex width="100%" align="flexStart" direction="column" gap="1rem">
           <Text variant="md1_text_semibold" color="grayscale70">
             {title}
           </Text>
-          <Text
-            variant="md2_text_regular"
-            color="grayscale60"
-            style={{ whiteSpace: 'pre-line' }}
-          >
-            {description}
-          </Text>
+          {description && (
+            <Text
+              variant="md2_text_regular"
+              color="grayscale60"
+              style={{ whiteSpace: 'pre-line' }}
+            >
+              {description}
+            </Text>
+          )}
         </Flex>
-        <Text
-          variant="sm_caption_medium"
-          color="grayscale40"
-          style={{ whiteSpace: 'nowrap' }}
-        >
-          ({info} {infoDetail})
+        <Text variant="sm_caption_medium" style={{ whiteSpace: 'nowrap' }}>
+          <span
+            style={{
+              color: hasError ? vars.colors.error : vars.colors.grayscale40,
+            }}
+          >
+            {currentCount}
+          </span>
+          {maxLength !== Infinity && (
+            <span
+              style={{
+                color: vars.colors.grayscale40,
+              }}
+            >
+              /{maxLength}자 ({infoDetail})
+            </span>
+          )}
         </Text>
       </Flex>
+
       <div className={styles.commentDivider} />
-      <textarea
-        className={styles.commentInput}
-        placeholder={'답변을 입력해주세요'}
-        value={value}
-        onChange={handleChange}
-        rows={5}
-        disabled={readOnly}
-        onFocus={onFocus}
-        onBlur={onBlur}
-      />
+
+      <div className={styles.commentTextArea}>
+        <textarea
+          className={styles.commentInput}
+          placeholder={'답변을 입력해주세요'}
+          value={value}
+          onChange={handleChange}
+          rows={5}
+          disabled={readOnly}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          style={{ resize: 'none', overflow: 'hidden' }}
+        />
+      </div>
+
+      {hasError && (
+        <div className={styles.errorTextStyle}>
+          <IcInputError width={24} height={24} />
+          최대 {maxLength}자까지 입력 가능합니다.
+        </div>
+      )}
     </div>
   );
 };

@@ -42,14 +42,7 @@ export type OptionProps =
  * 하나의 컴포넌트로 checkbox, radio, highlight 옵션을 처리
  */
 export function Option(props: OptionProps) {
-  const {
-    type,
-    label,
-    width = 'auto',
-    height = '5.6rem',
-    onFocus,
-    onBlur,
-  } = props;
+  const { type, label, width = 'auto', height = '5.6rem', onFocus } = props;
 
   let control: JSX.Element;
   if (type === 'checkbox') {
@@ -91,7 +84,6 @@ export function Option(props: OptionProps) {
       isSelected={selected}
       disableHover={type === 'highlight'}
       onFocus={onFocus}
-      onBlur={onBlur}
       onClick={handleClick}
     >
       {control}

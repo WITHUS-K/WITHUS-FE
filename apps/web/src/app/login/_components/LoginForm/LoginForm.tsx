@@ -4,7 +4,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { TextField } from '@repo/ui/TextField';
 import { Button } from '@repo/ui/Button';
 import { Flex } from '@repo/ui/Flex';
-import { HTTPError } from 'ky';
 import { useLoginMutation } from '@web/store/mutation/useLoginMutation';
 import { LoginRequest } from '@web/types/auth';
 
@@ -18,24 +17,31 @@ export default function LoginForm() {
     mode: 'onTouched',
     defaultValues: { email: '', password: '' },
   });
-  const { mutate } = useLoginMutation();
 
-  // 에러 로직 처리 - 서버랑 이야기 후 처리하기!! 임시로 해놓음!
-  const onSubmit = (data: LoginRequest) => {
+  const { mutate: login, isPending } = useLoginMutation();
+
+  const onSubmit = async (data: LoginRequest) => {
     console.log('📝 onSubmit 호출됨', data);
-    mutate(data, {
-      onError: (error) => {
-        if (error instanceof HTTPError && error.response.status === 401) {
-          // 인증 실패: 이메일/비번 불일치
-          setError('password', {
-            type: 'manual',
-            message: '비밀번호가 일치하지 않습니다. 다시 입력해주세요.',
-          });
+    login(data, {
+      onError: async (error) => {
+        const errData = (await error.response.json()) as { code: string };
+        if (errData.code === 'USER404') {
           setError('email', {
             type: 'manual',
             message: '가입된 이메일이 존재하지 않습니다. 다시 입력해주세요.',
           });
+        } else if (errData.code === 'USER401') {
+          setError('password', {
+            type: 'manual',
+            message: '비밀번호가 일치하지 않습니다. 다시 입력해주세요.',
+          });
+        } else if (errData.code === 'COMMON401') {
+          setError('password', {
+            type: 'manual',
+            message: '인증에 실패했습니다.',
+          });
         }
+        console.log(error);
       },
     });
   };
@@ -55,7 +61,12 @@ export default function LoginForm() {
           }}
           render={({ field }) => (
             <TextField
-              inputProps={{ ...field, placeholder: '이메일', type: 'text' }}
+              inputProps={{
+                ...field,
+                placeholder: '이메일',
+                type: 'text',
+                disabled: isPending,
+              }}
               errorMessage={errors.email?.message}
               size="auth"
             />
@@ -78,6 +89,7 @@ export default function LoginForm() {
                 ...field,
                 placeholder: '비밀번호',
                 type: 'password',
+                disabled: isPending,
               }}
               errorMessage={errors.password?.message}
               size="auth"
@@ -91,6 +103,8 @@ export default function LoginForm() {
           disabled={!isValid}
           style={{ marginTop: '1.2rem' }}
           size="64"
+          isLoading={isPending}
+          loadingText="로그인 중..."
         >
           로그인하기
         </Button>

@@ -90,6 +90,16 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
             type: 'manual',
             message: '이미 존재하는 동아리명입니다.',
           });
+        } else if (errData.code === 'USER400') {
+          setError('name', {
+            type: 'manual',
+            message: '이미 회원가입된 유저입니다.',
+          });
+        } else if (errData.code === 'COMMON401') {
+          setError('authCode', {
+            type: 'manual',
+            message: '인증에 실패했습니다.',
+          });
         }
       },
     });
