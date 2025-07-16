@@ -1,10 +1,14 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Button } from '@repo/ui/Button';
-import { IcApplicationFileUpload } from '@repo/ui/icons/colored';
+import {
+  IcApplicationFileUpload,
+  IcApplicationFileUploadCo,
+  IcInputError,
+} from '@repo/ui/icons/colored';
 import { IcFileUpload } from '@repo/ui/icons/mono';
 import * as styles from './FileUpload.css';
 import type { DetailItem } from '@web/types/application';
@@ -73,7 +77,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   const maxMB = Number(infoDetail);
   const download = useFileDownload();
   const inputRef = useRef<HTMLInputElement>(null);
-
+  const [dragActive, setDragActive] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const handleSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files ?? []);
     if (!selected.length) return;
@@ -84,14 +90,16 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     );
 
     if (unique.length > maxCount) {
-      alert(`최대 ${maxCount}개까지 업로드할 수 있습니다.`);
+      setHasError(true);
+      setErrorMessage(`최대 ${maxCount}개까지 업로드할 수 있습니다.`);
       e.target.value = '';
       return;
     }
 
     const overSized = unique.filter((f) => f.size > maxMB * 1024 * 1024);
     if (overSized.length) {
-      alert(
+      setHasError(true);
+      setErrorMessage(
         `다음 파일이 ${maxMB}MB를 초과했습니다: ` +
           overSized.map((f) => f.name).join(', ')
       );
@@ -103,8 +111,18 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     e.target.value = '';
   };
 
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(true);
+  };
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+  };
+
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
+    setDragActive(false);
     if (!e.dataTransfer.files.length) return;
     const dtFiles = Array.from(e.dataTransfer.files);
     const combined = [...files, ...dtFiles];
@@ -112,12 +130,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       (f, i) => combined.findIndex((g) => g.name === f.name) === i
     );
     if (unique.length > maxCount) {
-      alert(`최대 ${maxCount}개까지 업로드할 수 있습니다.`);
+      setHasError(true);
+      setErrorMessage(`최대 ${maxCount}개까지 업로드할 수 있습니다.`);
       return;
     }
     const overSized = unique.filter((f) => f.size > maxMB * 1024 * 1024);
     if (overSized.length) {
-      alert(
+      setHasError(true);
+      setErrorMessage(
         `다음 파일이 ${maxMB}MB를 초과했습니다: ` +
           overSized.map((f) => f.name).join(', ')
       );
@@ -162,6 +182,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       <div
         className={styles.bodyContainer}
         data-read-only={readOnly ? 'true' : 'false'}
+        data-has-error={hasError ? 'true' : 'false'}
       >
         <Flex direction="column" gap="1.6rem" marginBottom="2.8rem">
           <Flex align="center" justify="spaceBetween" width="100%">
@@ -214,9 +235,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
         {!readOnly && (
           <label
+            data-drag-active={dragActive ? 'true' : 'false'}
             className={styles.dropZone}
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
           >
             <input
               type="file"
@@ -226,8 +250,15 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               className={styles.input}
               onChange={handleSelect}
             />
-            <IcApplicationFileUpload width={72} height={73} />
-            <Text variant="md2_text_medium" color="grayscale50">
+            {dragActive ? (
+              <IcApplicationFileUploadCo width={72} height={73} />
+            ) : (
+              <IcApplicationFileUpload width={72} height={73} />
+            )}
+            <Text
+              variant="md2_text_medium"
+              color={dragActive ? 'primary50' : 'grayscale50'}
+            >
               파일을 드래그 앤 드롭하거나 직접 추가하세요。
             </Text>
             <Button
@@ -243,6 +274,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               파일 추가
             </Button>
           </label>
+        )}
+        {hasError && (
+          <div className={styles.errorTextStyle}>
+            <IcInputError width={24} height={24} />
+            {errorMessage}
+          </div>
         )}
       </div>
     </div>

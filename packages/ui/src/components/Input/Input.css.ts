@@ -132,14 +132,25 @@ export const commentInputWrapper = style({
       backgroundColor: vars.colors.bg,
       border: `1px solid ${vars.colors.grayscale5}`,
     },
+    '&[data-has-error="true"]': {
+      border: `1px solid ${vars.colors.error}`,
+    },
+    '&:focus-within': {
+      border: `1px solid ${vars.colors.primary50}`,
+    },
   },
 });
 
+  
 export const questionTitleInput = style({
   all: 'unset',
   width: '100%',
   height: 'auto',
 });
+
+export const commentTextArea = style({
+  width: '100%',
+})
 
 export const commentInput = style({
   all: 'unset',

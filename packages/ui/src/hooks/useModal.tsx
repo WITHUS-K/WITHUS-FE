@@ -11,6 +11,17 @@ type Controls = {
 
 type ConfirmType = 'info' | 'warning' | 'logout';
 
+export type ConfirmOpts = {
+  type?: ConfirmType;
+  title?: string;
+  description?: string;
+  cancelText?: string;
+  confirmText?: string;
+  onCancel?: () => void;
+  onConfirm?: () => void;
+  hideCancel?: boolean;
+};
+
 const useModal = () => {
   const openBase = useCallback(
     (opts: {
@@ -36,16 +47,9 @@ const useModal = () => {
     },
     []
   );
+
   const confirm = useCallback(
-    (opts: {
-      type?: ConfirmType;
-      title?: string;
-      description?: string;
-      cancelText?: string;
-      confirmText?: string;
-      onCancel?: () => void;
-      onConfirm?: () => void;
-    }) => {
+    (opts: ConfirmOpts) => {
       const icon =
         opts.type === 'warning' ? (
           <IcModalWarning width={36} height={36} />
@@ -56,7 +60,7 @@ const useModal = () => {
         );
 
       openBase({
-        content: () => (
+        content: ({ close, unmount }) => (
           <Modal.Content>
             <Modal.ModalTextContent
               icon={icon}
@@ -65,28 +69,45 @@ const useModal = () => {
             />
           </Modal.Content>
         ),
-        footer: ({ close, unmount }) => (
-          <Modal.Footer hasTopBorder={false}>
-            <Modal.DoubleCTA
-              cancelText={opts.cancelText ?? '취소'}
-              confirmText={opts.confirmText ?? '저장'}
-              cancelProps={{
-                onClick: () => {
-                  opts.onCancel?.();
-                  close();
-                  unmount();
-                },
-              }}
-              confirmProps={{
-                onClick: () => {
-                  opts.onConfirm?.();
-                  close();
-                  unmount();
-                },
-              }}
-            />
-          </Modal.Footer>
-        ),
+        footer: ({ close, unmount }) => {
+          if (opts.hideCancel) {
+            return (
+              <Modal.Footer hasTopBorder={false}>
+                <Modal.CTA
+                  text={opts.confirmText ?? '확인'}
+                  onClick={() => {
+                    opts.onConfirm?.();
+                    close();
+                    unmount();
+                  }}
+                />
+              </Modal.Footer>
+            );
+          } else {
+            return (
+              <Modal.Footer hasTopBorder={false}>
+                <Modal.DoubleCTA
+                  cancelText={opts.cancelText ?? '취소'}
+                  confirmText={opts.confirmText ?? '확인'}
+                  cancelProps={{
+                    onClick: () => {
+                      opts.onCancel?.();
+                      close();
+                      unmount();
+                    },
+                  }}
+                  confirmProps={{
+                    onClick: () => {
+                      opts.onConfirm?.();
+                      close();
+                      unmount();
+                    },
+                  }}
+                />
+              </Modal.Footer>
+            );
+          }
+        },
       });
     },
     [openBase]

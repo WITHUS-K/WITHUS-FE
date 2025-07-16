@@ -1,5 +1,5 @@
-import { vars } from '@repo/theme';
-import { style } from '@vanilla-extract/css';
+import { fontStyles, vars } from '@repo/theme';
+import { globalStyle, style } from '@vanilla-extract/css';
 
 export const wrapper = style({
   display: 'flex',
@@ -21,6 +21,9 @@ export const bodyContainer = style({
   borderRadius: '16px',
   padding: '1.6rem',
   selectors: {
+    '&[data-has-error="true"]': {
+      border: `1px solid ${vars.colors.error}`,
+    },
     '&[data-read-only="true"]': {
       backgroundColor: vars.colors.bg,
       border: `1px solid ${vars.colors.grayscale5}`,
@@ -39,6 +42,12 @@ export const dropZone = style({
   borderRadius: '16px',
   padding: '6.55rem 0',
   marginTop: '1.6rem',
+  transition: 'all 0.1s ease-in-out',
+  selectors: {
+    '&[data-drag-active="true"]': {
+      borderColor: vars.colors.primary50,
+    },
+  },
 });
 
 export const input = style({
@@ -53,4 +62,14 @@ export const input = style({
 export const commentDivider = style({
   width: '100%',
   borderTop: `1px dashed ${vars.colors.grayscale10}`,
+});
+
+
+export const errorTextStyle = style({
+  color: vars.colors.error,
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.8rem',
+  marginTop: '1.6rem',
+  ...fontStyles.sm_caption_regular,
 });

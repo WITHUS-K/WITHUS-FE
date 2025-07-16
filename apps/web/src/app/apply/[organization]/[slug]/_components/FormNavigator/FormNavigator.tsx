@@ -49,16 +49,22 @@ export function FormNavigator({ items, scrollContainerRef }: Props) {
   const handleClick = (id: string) => {
     setSelectedId((prev) => (prev === id ? null : id));
     const el = document.getElementById(id);
-
     if (!el) return;
 
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
     el.classList.add(css.flash);
-
     setTimeout(() => {
       el.classList.remove(css.flash);
-    }, 1500);
+    }, 1000);
+
+    const input = el.querySelector(
+      'input, textarea, select, [contenteditable="true"]'
+    ) as HTMLElement | null;
+    if (input) {
+      setTimeout(() => {
+        input.focus();
+      }, 300);
+    }
   };
 
   return (

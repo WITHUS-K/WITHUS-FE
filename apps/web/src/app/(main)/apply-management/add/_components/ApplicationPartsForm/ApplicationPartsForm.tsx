@@ -49,7 +49,6 @@ export function ApplicationPartsForm({
               label={part.label}
               width="19.6rem"
               onFocus={partStatus.setEditing}
-              onBlur={partStatus.setCompleted}
               isSelected={selectedPartId === part.id}
               onChange={() => {
                 onChange(part);
