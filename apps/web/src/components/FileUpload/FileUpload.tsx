@@ -171,9 +171,16 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
-        <Text variant="md1_text_semibold" color="grayscale70">
-          첨부파일
-        </Text>
+        <Flex align="center" gap="0.5rem">
+          <Text variant="md1_text_semibold" color="grayscale70">
+            첨부파일
+          </Text>
+          {item.required && (
+            <Text variant="md1_text_semibold" color="error">
+              *
+            </Text>
+          )}
+        </Flex>
         <Text variant="sm_caption_medium" color="grayscale50">
           지원 형식: PDF, PNG, JPG
         </Text>
