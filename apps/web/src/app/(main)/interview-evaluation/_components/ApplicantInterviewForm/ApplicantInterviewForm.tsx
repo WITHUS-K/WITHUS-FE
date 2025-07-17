@@ -18,10 +18,10 @@ import { useAddCommentMutation } from '@web/store/mutation/useAddCommentMutation
 import { useUpdateCommentMutation } from '@web/store/mutation/useUpdateCommentMutation';
 import { useAddEvaluationMutation } from '@web/store/mutation/useAddEvaluationMutation';
 import { useParams, useSearchParams } from 'next/navigation';
-import { useUserStore } from '@web/store/state/userStore';
 import { getOriginalFileName } from '@web/utils/file';
 import { useFileDownload } from '@web/store/mutation/useFileDownload';
 import { useRecruitmentDetailQuery } from '@web/store/query/useRecruitmentDetailQuery';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 export interface FileInfo {
   name: string;
@@ -36,7 +36,7 @@ interface ApplicantInterviewFormProps {
 export const ApplicantInterviewForm = ({
   detail,
 }: ApplicantInterviewFormProps) => {
-  const myUserId = useUserStore.getState().userId;
+  const { userId: myUserId } = getClientSideTokens();
   const params = useParams();
   const timeSlotId = Number(params.id);
   const sp = useSearchParams();

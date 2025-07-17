@@ -17,11 +17,11 @@ import { useDraftRecruitmentMutation } from '@web/store/mutation/useDraftRecruit
 import { usePublishRecruitmentMutation } from '@web/store/mutation/usePublishRecruitmentMutation';
 import { convertFormToRequest } from '@web/utils/convertFormToRequest';
 import * as styles from './SettingForm.css';
-import { useUserStore } from '@web/store/state/userStore';
 import * as C from '@web/constants/application';
 import { useToast } from '@repo/ui/hooks';
 import CriteriaDocsTab from '../CriteriaTabs/CriteriaDocsTab/CriteriaDocsTab';
 import CriteriaInterviewTab from '../CriteriaTabs/CriteriaInterviewTab/CriteriaInterviewTab';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 type TabKey = 'form' | 'stages' | 'docs' | 'interview';
 const TAB_KEYS: TabKey[] = ['form', 'stages', 'docs', 'interview'];
@@ -55,7 +55,7 @@ export function SettingForm({
   const ctx = useContext(SettingContext)!;
   const toast = useToast();
 
-  const organizationId = useUserStore.getState().organizationId!;
+  const { organizationId } = getClientSideTokens();
   //console.log('id', organizationId);
 
   const draftMutation = useDraftRecruitmentMutation();

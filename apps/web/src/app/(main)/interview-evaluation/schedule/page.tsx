@@ -12,7 +12,7 @@ import {
   TimeRange,
 } from '@web/components/TimeTable/SelectableTimeTable';
 import { useRegisterAvailabilitiesMutation } from '@web/store/mutation/useRegisterAvailabilitiesMutation';
-import { useUserStore } from '@web/store/state/userStore';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 export default function SchedulePage() {
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function SchedulePage() {
   const recruitmentId = recruitmentIdParam
     ? Number(recruitmentIdParam)
     : undefined;
-  const organizationId = useUserStore.getState().organizationId!;
+  const { organizationId } = getClientSideTokens();
   // 쿼리에서 interviewId 가져오기
   const interviewIdParam = sp.get('interviewId');
   const interviewId = interviewIdParam ? Number(interviewIdParam) : undefined;

@@ -21,7 +21,6 @@ import { queryKeys } from '@web/store/constants';
 import { queryClient } from '@web/store/query/QueryClientProvider';
 import { GET } from '@web/api';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
-import { useUserStore } from '@web/store/state/userStore';
 
 export default function Filters() {
   const qc = useQueryClient();
@@ -31,7 +30,7 @@ export default function Filters() {
   const pathname = usePathname();
   const tokens = getClientSideTokens();
   const { accessToken, refreshToken } = tokens;
-  const organizationId = useUserStore.getState().organizationId!;
+  const { organizationId } = getClientSideTokens();
 
   // URL 파라미터 파싱
   const urlRid = Number(searchParams.get('recruitmentId') ?? NaN) || undefined;

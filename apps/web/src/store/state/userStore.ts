@@ -1,4 +1,4 @@
-'use client'; // Next.js App Router 환경에서 반드시 맨 위에 선언하세요.
+'use client';
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
@@ -58,7 +58,6 @@ export const useUserStore = create<UserState>()(
     {
       name: 'user-storage', // localStorage key
       storage: createJSONStorage(() => localStorage), // 브라우저에서만 읽히도록 래핑
-      // 필요하다면 저장할 state slice를 선택할 수도 있습니다.
       // partialize: (state) => ({
       //   userId: state.userId,
       //   organizationId: state.organizationId,

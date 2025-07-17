@@ -10,7 +10,7 @@ import { LoginRequest, LoginPayload } from '@web/types/auth';
 import { useUserStore } from '../state/userStore';
 
 export function useLoginMutation(): UseMutationResult<
-  LoginPayload, // 이제 정확한 반환 타입을 적어주면 더 좋습니다
+  LoginPayload,
   HTTPError,
   LoginRequest
 > {
@@ -20,8 +20,6 @@ export function useLoginMutation(): UseMutationResult<
   return useMutation<LoginPayload, HTTPError, LoginRequest>({
     mutationFn: login,
     onSuccess: (data) => {
-      // 변경 전 ▶ const { userId, … } = data.result;
-      // 변경 후 ▶ data 에서 바로 꺼내세요
       const {
         userId,
         name,
@@ -41,7 +39,6 @@ export function useLoginMutation(): UseMutationResult<
         userOrganizationRoles,
       });
 
-      // 홈으로 이동
       router.push(ROUTES.HOME);
     },
   });

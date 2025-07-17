@@ -3,7 +3,6 @@ import { getOrganizationRolesQueryOptions } from '@web/store/query/useOrganizati
 import { getOrganizationMembersQueryOptions } from '@web/store/query/useOrganizationMembersQuery';
 import { ServerFetchBoundary } from '@web/store/query/ServerFetchBoundary';
 import OrganizationPageClient from '../OrganizationPageClient';
-import { useUserStore } from '@web/store/state/userStore';
 import { notFound } from 'next/navigation';
 
 export default async function Page({
