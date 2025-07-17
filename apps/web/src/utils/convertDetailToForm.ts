@@ -62,7 +62,7 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
       };
 
       return {
-        isEssential: tq.required,
+        required: tq.required,
         type: 'text' as const,
         description: tq.title,
         addDescription: tq.description,
@@ -85,7 +85,7 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
       };
 
       return {
-        isEssential: fq.required,
+        required: fq.required,
         type: 'file' as const,
         description: fq.title,
         addDescription: fq.description,

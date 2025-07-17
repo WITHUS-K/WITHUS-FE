@@ -180,7 +180,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
               tq.textLimit === 0 ? '제한 없음' : `${tq.textLimit}자`;
             return {
               questionId: tq.questionId,
-              isEssential: tq.required,
+              required: tq.required,
               type: 'text',
               description: tq.title,
               addDescription: tq.description,
@@ -193,7 +193,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
             const fq = q as FileQuestionDto;
             return {
               questionId: fq.questionId,
-              isEssential: fq.required,
+              required: fq.required,
               type: 'file',
               description: fq.title,
               addDescription: fq.description,
@@ -266,8 +266,8 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   const fileItems = detailItems.filter((d) => d.type === 'file');
 
   // 필수(required) 질문만 골라서
-  const requiredTextItems = textItems.filter((d) => d.isEssential);
-  const requiredFileItems = fileItems.filter((d) => d.isEssential);
+  const requiredTextItems = textItems.filter((d) => d.required);
+  const requiredFileItems = fileItems.filter((d) => d.required);
 
   // 리액트훅폼에서 watch 해온 값
   const textAnswers = watch('questionAnswers'); // string[]
@@ -316,7 +316,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
           const answer = raw.trim().slice(0, limit);
 
           // 필수가 아니고 빈 문자열이면 스킵
-          if (!item.isEssential && !answer) return acc;
+          if (!item.required && !answer) return acc;
 
           acc.push({
             questionId: item.questionId,
@@ -445,7 +445,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         items.push({
           id: `question-text-${idx}`,
           label: d.description,
-          required: d.isEssential,
+          required: d.required,
         });
       });
 
@@ -468,7 +468,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         items.push({
           id: `question-file-${idx}`,
           label: d.description,
-          required: d.isEssential,
+          required: d.required,
         });
       });
 

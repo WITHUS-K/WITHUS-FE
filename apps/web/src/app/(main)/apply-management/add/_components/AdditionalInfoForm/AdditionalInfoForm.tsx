@@ -72,6 +72,7 @@ export function AdditionalInfoForm({
               wrapperClass={styles.fieldGrowForSchool}
               disabled={readOnly}
               readOnly={readOnly}
+              required
               inputProps={{
                 placeholder: 'oo대학교',
                 value: value.school ?? '',
@@ -93,6 +94,7 @@ export function AdditionalInfoForm({
             <div className={s.fieldWrapper}>
               <InfoField
                 label="학적 상태"
+                required
                 itemClass={styles.rowItemWide}
                 wrapperClass={styles.fieldGrowForSchool}
                 readOnly={readOnly}
@@ -112,6 +114,7 @@ export function AdditionalInfoForm({
             >
               <InfoField
                 label="학적 상태"
+                required
                 itemClass={styles.rowItemAuto}
                 wrapperClass={styles.fieldAuto}
                 readOnly={readOnly}
@@ -141,6 +144,7 @@ export function AdditionalInfoForm({
         <div id="additional-major" tabIndex={-1} className={focusableWrapper}>
           <InfoField
             label="전공"
+            required
             itemClass={styles.rowItemWide}
             wrapperClass={styles.fieldGrowForSchool}
             disabled={readOnly}
@@ -164,6 +168,7 @@ export function AdditionalInfoForm({
         <div id="additional-address" tabIndex={-1} className={focusableWrapper}>
           <InfoField
             label="주소"
+            required
             itemClass={styles.rowItemWide}
             wrapperClass={styles.fieldGrowForSchool}
             disabled={readOnly}

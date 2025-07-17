@@ -24,7 +24,7 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
   const textItems: DetailItem[] = application.documentAnswers
     .filter((a) => a.questionType === 'TEXT')
     .map((a, idx) => ({
-      isEssential: true,
+      required: true,
       type: 'text',
       description: a.questionTitle,
       responseTarget: idx,
@@ -52,7 +52,7 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
     (answersForThisQuestion) => {
       const first = answersForThisQuestion[0];
       return {
-        isEssential: true,
+        required: true,
         type: 'file',
         description: first!.questionTitle,
         addDescription: first!.questionDescription,

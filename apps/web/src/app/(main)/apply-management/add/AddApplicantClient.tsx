@@ -164,7 +164,7 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
               tq.textLimit === 0 ? '제한 없음' : `${tq.textLimit}자`;
             return {
               questionId: tq.questionId,
-              isEssential: tq.required,
+              required: tq.required,
               type: 'text',
               description: tq.title,
               addDescription: tq.description,
@@ -177,7 +177,7 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
             const fq = q as FileQuestionDto;
             return {
               questionId: fq.questionId,
-              isEssential: fq.required,
+              required: fq.required,
               type: 'file',
               description: fq.title,
               addDescription: fq.description,

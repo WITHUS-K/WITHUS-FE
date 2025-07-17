@@ -42,7 +42,7 @@ export function convertFormToRequest(
       const base = {
         title: item.description,
         description: item.addDescription || '',
-        required: item.isEssential,
+        required: item.required,
         positionName,
       };
 

@@ -17,7 +17,7 @@ export interface ApplicationParts {
 
 export interface DetailItem {
   // 상세 내용 (장문형 / 파일업로드)
-  isEssential: boolean;
+  required: boolean;
   type: 'text' | 'file';
   description: string;
   addDescription?: string;

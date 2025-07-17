@@ -91,7 +91,7 @@ export default function DetailItemCard({ index, onRemove }: Props) {
                 필수
               </Text>
               <Controller
-                name={`detailItems.${index}.isEssential` as const}
+                name={`detailItems.${index}.required` as const}
                 control={control}
                 render={({ field }) => (
                   <SimpleToggleSwitch
