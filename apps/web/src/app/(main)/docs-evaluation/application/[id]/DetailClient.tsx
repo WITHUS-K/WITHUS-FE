@@ -16,8 +16,8 @@ import {
   useApplicationDetailQuery,
 } from '@web/store/query/useApplicationDetailQuery';
 import { useBulkEvaluationsMutation } from '@web/store/mutation/useBulkEvaluations';
-import { useUserStore } from '@web/store/state/userStore';
 import { useToggleAcquaintanceMutation } from '@web/store/mutation/useToggleAcquaintanceMutation';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 export default function DetailClient() {
   const router = useRouter();
@@ -29,7 +29,7 @@ export default function DetailClient() {
     isLoading,
     isError,
   } = useApplicationDetailQuery({ applicationId });
-  const myUserId = useUserStore.getState().userId;
+  const { userId: myUserId } = getClientSideTokens();
   console.log('사용자', application);
   const [isRelation, setIsRelation] = useState(false);
 

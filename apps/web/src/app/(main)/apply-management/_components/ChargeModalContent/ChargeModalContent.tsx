@@ -14,9 +14,9 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { stageMap } from '../../[tab]/TabClient';
 import { useAdminApplicationsQuery } from '@web/store/query/useAdminApplicationsQuery';
 import { useOrganizationUsersQuery } from '@web/store/query/useOrganizationUsersQuery';
-import { useUserStore } from '@web/store/state/userStore';
 import { useUpdateEvaluators } from '@web/store/mutation/useUpdateEvaluators';
 import { useEvaluatorStore } from '@web/store/state/evaluatorStore';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 export interface ChargeModalContentRef {
   handleConfirm: () => void;
@@ -49,7 +49,7 @@ export const ChargeModalContent = forwardRef<ChargeModalContentRef, Props>(
       }
     }, [inputKeyword]);
 
-    const organizationId = useUserStore.getState().organizationId!;
+    const { organizationId } = getClientSideTokens();
 
     console.log('조직id', organizationId);
     const { data: candidates = [] } = useOrganizationUsersQuery({

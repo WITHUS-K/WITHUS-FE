@@ -18,7 +18,7 @@ import DistributionContainer, {
   OrgRole,
   PartState,
 } from './DistributionContainer/DistributionContainer';
-import { useUserStore } from '@web/store/state/userStore';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 export interface AssignModalContentRef {
   handleConfirm: () => Promise<void>;
@@ -32,7 +32,7 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
   const searchParams = useSearchParams();
   const recruitmentId = Number(searchParams.get('recruitmentId'));
 
-  const organizationId = useUserStore.getState().organizationId!;
+  const { organizationId } = getClientSideTokens();
 
   const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
   const latestQuery = useLatestDistributionQuery({ recruitmentId });

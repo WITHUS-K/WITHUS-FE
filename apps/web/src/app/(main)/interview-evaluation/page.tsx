@@ -5,12 +5,12 @@ import { Text } from '@repo/ui';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useOrganizationInterviewsQuery } from '@web/store/query/useOrganizationInterviewsQuery';
 import { useMyTimeSlotsQuery } from '@web/store/query/useMyTimeSlotsQuery';
-import { useUserStore } from '@web/store/state/userStore';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 export default function EvaluationPage() {
   const router = useRouter();
   const search = useSearchParams();
-  const organizationId = useUserStore.getState().organizationId!;
+  const { organizationId } = getClientSideTokens();
   // URL에 이미 interviewId가 있으면 사용, 아니면 조직 첫 면접의 ID를 나중에 결정
   const urlIv = Number(search.get('interviewId') ?? '0') || undefined;
 
