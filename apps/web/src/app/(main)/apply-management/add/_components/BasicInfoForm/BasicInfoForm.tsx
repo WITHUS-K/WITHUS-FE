@@ -228,7 +228,8 @@ export function BasicInfoForm({
                 >
                   <InfoField
                     label="성별"
-                    labelWidth="6.3rem"
+                    labelWidth="7.6rem"
+                    required
                     wrapperClass={styles1.fieldAuto}
                     itemClass={styles1.rowItemAuto}
                   >
@@ -310,6 +311,7 @@ export function BasicInfoForm({
                 >
                   <InfoField
                     label="생년월일"
+                    required
                     itemClass={styles1.rowItemAuto}
                     wrapperClass={styles1.fieldAuto}
                   >
