@@ -15,6 +15,7 @@ const publicPathPatterns = [
   /^\/join\/[1-4](\?type=(user|admin))?$/,
   /^\/join\/3\/club-search(\?.*)?$/,
   /^\/apply\/[^\/]+\/[^\/]+$/,
+  /^\/apply\/[^\/]+\/[^\/]+\/mobile-only$/
 ];
 
 export function middleware(request: NextRequest) {
