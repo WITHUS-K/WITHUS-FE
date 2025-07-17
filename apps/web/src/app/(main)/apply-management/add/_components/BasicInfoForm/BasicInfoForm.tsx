@@ -23,6 +23,8 @@ import {
 import { focusableWrapper } from '@web/app/apply/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
 import clsx from 'clsx';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 interface BasicInfoFormProps {
   value: {
     name: string;
@@ -371,7 +373,9 @@ export function BasicInfoForm({
                 disabled: readOnly,
                 width: '100%',
                 onFocus: emailStatus.setEditing,
-                onBlur: handleBlurFactory(emailStatus),
+                onBlur: handleBlurFactory(emailStatus, (v) =>
+                  EMAIL_REGEX.test(v)
+                ),
               }}
               readOnly={readOnly}
             />

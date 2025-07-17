@@ -107,6 +107,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       return;
     }
 
+    setHasError(false);
+    setErrorMessage('');
+
     onChange(unique);
     e.target.value = '';
   };
@@ -143,11 +146,17 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       );
       return;
     }
+
+    setHasError(false);
+    setErrorMessage('');
+
     onChange(unique);
   };
 
   const handleRemove = (idx: number) => {
     const next = files.filter((_, i) => i !== idx);
+    setHasError(false);
+    setErrorMessage('');
     onChange(next);
   };
 
