@@ -5,7 +5,7 @@ import { Text } from '@repo/ui/Text';
 import { IcSubmit } from '@repo/ui/icons/colored';
 import { Divider } from '@repo/ui';
 import { useParams, useSearchParams } from 'next/navigation';
-
+import Image from 'next/image';
 export default function SubmittedPage() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -37,7 +37,13 @@ export default function SubmittedPage() {
       </Flex>
 
       <Flex direction="column" align="center" justify="center" gap="3.2rem">
-        <IcSubmit width={136.8} height={148} />
+        <Image
+          src="/images/apply.png"
+          alt="submit"
+          width={136.8}
+          height={148}
+          quality={100}
+        />
         <Text variant="xl_title_semibold" color="grayscale80">
           지원서 접수가 완료되었습니다.
         </Text>
