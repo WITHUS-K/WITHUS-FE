@@ -65,7 +65,7 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
               title={item.description}
               maxLength={maxLengthValue}
               infoDetail={item.typeInfo.infoDetail}
-              value={answers[idx] as string}
+              value={answers[idx] ?? ''}
               onChange={(val) => handleAnswerChange(idx, val)}
               description={item.addDescription}
             />
