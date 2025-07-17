@@ -38,7 +38,9 @@ export const YearSelect = ({
 
   const yearOptions = useMemo(() => {
     const arr: number[] = [];
-    for (let y = minYear; y <= maxYear; y++) arr.push(y);
+    for (let y = maxYear; y >= minYear; y--) {
+      arr.push(y);
+    }
     return arr;
   }, [minYear, maxYear]);
 
