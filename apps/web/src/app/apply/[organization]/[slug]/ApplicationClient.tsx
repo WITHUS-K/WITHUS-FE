@@ -51,7 +51,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   const createApp = useCreateApplication();
   const { data } = useRecruitmentBySlugQuery({ slug });
   const { confirm } = useModal();
-  console.log('슬러그', data);
+  //console.log('슬러그', data);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -173,7 +173,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
             q.positionName === '공통' || q.positionName === selectedPartLabel
         )
         .map((q) => {
-          console.log(q);
+          //console.log(q);
           if (q.type === 'TEXT') {
             const tq = q as TextQuestionDto;
             const infoText =

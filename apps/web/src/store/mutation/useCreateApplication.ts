@@ -62,8 +62,8 @@ export function useCreateApplication() {
       // 1) FormData 생성
       const form = new FormData();
 
-      console.log('payload to be stringified:', payload);
-      console.log('JSON stringified:', JSON.stringify(payload));
+      //console.log('payload to be stringified:', payload);
+      //console.log('JSON stringified:', JSON.stringify(payload));
 
       form.append(
         'request',
@@ -88,7 +88,7 @@ export function useCreateApplication() {
 
       console.log('FormData entries:');
       for (const [key, val] of Array.from(form.entries())) {
-        console.log(key, val);
+        //console.log(key, val);
       }
 
       const res = await fetch(
@@ -99,7 +99,7 @@ export function useCreateApplication() {
         }
       );
 
-      console.log('응답', res);
+      //console.log('응답', res);
       if (!res.ok) {
         const text = await res.text();
         console.error('API error status/text:', res.status, text);
@@ -108,7 +108,7 @@ export function useCreateApplication() {
 
       // 6) 결과 파싱
       const json = (await res.json()) as CreateApplicationResponse;
-      console.log('API 응답 JSON:', json);
+      //console.log('API 응답 JSON:', json);
       return json;
     },
 
