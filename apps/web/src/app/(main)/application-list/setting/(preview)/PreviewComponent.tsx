@@ -65,12 +65,10 @@ export default function PreviewComponent() {
   const [selectedPartIdx, setSelectedPartIdx] = useState<number>(0);
 
   const filteredItems = useMemo(() => {
-    const allItems = form.detailItems;
-    const common = allItems.filter((item) => item.responseTarget === 0);
-    const partItems = allItems.filter(
-      (item) => item.responseTarget === selectedPartIdx + 1
+    return form.detailItems.filter(
+      (item) =>
+        item.responseTarget === 0 || item.responseTarget === selectedPartIdx + 1
     );
-    return [...common, ...partItems];
   }, [form.detailItems, selectedPartIdx]);
 
   const interval = TIME_STEP[form.interviewDuration];

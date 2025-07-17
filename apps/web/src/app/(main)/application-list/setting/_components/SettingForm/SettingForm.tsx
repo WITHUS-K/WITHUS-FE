@@ -95,7 +95,7 @@ export function SettingForm({
         ? initial.detailItems
         : [
             {
-              isEssential: false,
+              required: false,
               type: 'text',
               description: '',
               addDescription: '',

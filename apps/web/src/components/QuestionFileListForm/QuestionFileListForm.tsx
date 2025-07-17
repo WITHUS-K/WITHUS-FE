@@ -64,7 +64,7 @@ export const QuestionAndFileListForm = ({
               <Text variant="md1_text_semibold" color="grayscale70">
                 질문-{idx + 1}
               </Text>
-              {item.isEssential && (
+              {item.required && (
                 <Text variant="md2_text_semibold" color="error">
                   *
                 </Text>
