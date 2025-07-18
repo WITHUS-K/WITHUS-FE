@@ -75,7 +75,7 @@ export default function DocumentTab({
   const apiSortBy = sortByMap['documents']![sortKey] as AdminApplicationSortBy;
 
   // ─── 데이터 패칭 ────────────────────────────────────────────────────────
-  const { data, isLoading } = useAdminApplicationsClientQuery({
+  const { data, isLoading, isFetching } = useAdminApplicationsClientQuery({
     recruitmentId,
     stage: stageMap[activeTab], // 'DOCUMENT'
     sortBy: apiSortBy, // 캐스팅 덕분에 에러 사라짐
@@ -196,6 +196,8 @@ export default function DocumentTab({
             checked ? [...prev, id] : prev.filter((x) => x !== id)
           )
         }
+        isLoading={isLoading}
+        isFetching={isFetching}
       />
 
       {sideTab === 'sms' && (

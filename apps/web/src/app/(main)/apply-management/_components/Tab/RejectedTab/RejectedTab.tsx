@@ -73,7 +73,7 @@ export default function RejectedTab({
   const [sortKey, setSortKey] = useState<keyof typeof sortByMap>('name');
   const [direction, setDirection] = useState<'ASC' | 'DESC'>('ASC');
 
-  const { data, isLoading } = useAdminApplicationsQuery({
+  const { data, isLoading, isFetching } = useAdminApplicationsQuery({
     recruitmentId,
     stage: stageMap[activeTab],
     sortBy: sortByMap[sortKey] as any,
@@ -168,6 +168,8 @@ export default function RejectedTab({
             checked ? [...prev, id] : prev.filter((x) => x !== id)
           )
         }
+        isLoading={isLoading}
+        isFetching={isFetching}
       />
 
       {sideTab === 'sms' && (

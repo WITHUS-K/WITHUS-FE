@@ -77,7 +77,7 @@ export default function InterviewTab({
   const apiSortBy = sortByMap['interviews']![sortKey] as AdminApplicationSortBy;
 
   // 데이터 패칭
-  const { data, isLoading } = useAdminApplicationsClientQuery({
+  const { data, isLoading, isFetching } = useAdminApplicationsClientQuery({
     recruitmentId,
     stage: stageMap[activeTab], // 'INTERVIEW'
     sortBy: apiSortBy,
@@ -188,6 +188,8 @@ export default function InterviewTab({
             checked ? [...prev, id] : prev.filter((x) => x !== id)
           )
         }
+        isLoading={isLoading}
+        isFetching={isFetching}
       />
 
       {sideTab === 'sms' && (
