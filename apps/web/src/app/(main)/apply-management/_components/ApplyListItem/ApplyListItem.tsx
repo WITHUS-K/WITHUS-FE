@@ -74,6 +74,11 @@ export default function ApplyListItem({
     activeTab as AdminApplicationStage
   );
 
+  const isInterviewStatus =
+    status === '면접 보류' ||
+    status === '면접 합격' ||
+    status === '면접 불합격';
+
   const handleStatusChange = (newStatus: Status) => {
     setStatus(newStatus);
 
@@ -198,12 +203,18 @@ export default function ApplyListItem({
         style={{ width: '7.5rem', marginRight: '3.8rem' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <StatusDropdown
-          key={status}
-          status={status}
-          onChange={handleStatusChange}
-          tab={tabKey}
-        />
+        {activeTab === 'documents' && isInterviewStatus ? (
+          // 문서 탭에서 면접 관련 상태면 Badge 로만 표시
+          <StatusBadge status={member.status as Status} />
+        ) : (
+          // 그 외엔 기존대로 Dropdown
+          <StatusDropdown
+            key={status}
+            status={status}
+            onChange={handleStatusChange}
+            tab={tabKey}
+          />
+        )}
       </div>
 
       <Text
