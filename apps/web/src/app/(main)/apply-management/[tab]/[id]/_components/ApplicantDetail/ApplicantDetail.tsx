@@ -32,6 +32,7 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
         info: `${a.textLimit}자`,
         infoDetail: a.includeWhitespace ? '공백포함' : '공백제외',
       },
+      includeWhitespace: a.includeWhitespace,
       answer: a.answerText,
     }));
 
@@ -61,6 +62,7 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
           info: `${first!.maxFileCount}`,
           infoDetail: `${first!.maxFileSizeMb}`,
         },
+
         // readOnly 모드에서만 쓰이는 answer 필드
         answer: '',
       };

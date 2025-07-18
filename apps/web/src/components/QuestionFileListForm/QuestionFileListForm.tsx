@@ -52,7 +52,7 @@ export const QuestionAndFileListForm = ({
           item.typeInfo.info === '제한 없음'
             ? Infinity
             : Number(item.typeInfo.info.replace('자', ''));
-        const includeWhitespace = item.typeInfo.infoDetail === '공백 포함';
+        //const includeWhitespace
         return (
           <div
             key={`text-${idx}`}
@@ -80,7 +80,7 @@ export const QuestionAndFileListForm = ({
                   : (answers[idx] ?? '')
               }
               maxLength={maxLength}
-              includeWhitespace={includeWhitespace}
+              includeWhitespace={item.includeWhitespace}
               onFocus={status.setEditing}
               onChange={(val) => {
                 if (!readOnly) {

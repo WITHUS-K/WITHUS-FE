@@ -31,7 +31,7 @@ export const QuestionInput = ({
   includeWhitespace = true,
   description,
 }: QuestionInputProps) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  /* const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const currentCount = includeWhitespace
     ? value.length
@@ -54,6 +54,35 @@ export const QuestionInput = ({
     onChange(e.currentTarget.value);
     autoResize();
   };
+  */
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  console.log('공백', includeWhitespace);
+  const normalized = value.replace(/[\r\n]/g, '');
+
+  // 공백 포함 여부에 따라 글자 수 계산
+  const currentCount = includeWhitespace
+    ? normalized.length
+    : normalized.replace(/\s/g, '').length;
+
+  // maxLength <= 0 또는 Infinity면 “제한 없음” 처리
+  const safeMax = maxLength > 0 ? maxLength : Infinity;
+  // 제한이 있을 때만 에러 판단
+  const hasError = safeMax !== Infinity && currentCount > safeMax;
+
+  //내용 전체 보이도록
+  const autoResize = () => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
+  };
+  useLayoutEffect(autoResize, [value]);
+
+  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    onChange(e.currentTarget.value);
+    autoResize();
+  };
 
   return (
     <div
@@ -62,7 +91,16 @@ export const QuestionInput = ({
       data-has-error={hasError ? 'true' : 'false'}
     >
       <Flex justify="spaceBetween" align="center" width="100%" gap="2rem">
-        <Flex width="100%" align="flexStart" direction="column" gap="1rem">
+        <Flex
+          width="100%"
+          align="flexStart"
+          direction="column"
+          gap="1rem"
+          style={{
+            wordBreak: 'keep-all',
+            overflowWrap: 'break-word',
+          }}
+        >
           <Text variant="md1_text_semibold" color="grayscale70">
             {title}
           </Text>
@@ -77,17 +115,25 @@ export const QuestionInput = ({
           )}
         </Flex>
         <Text variant="sm_caption_medium" style={{ whiteSpace: 'nowrap' }}>
-          <span
-            style={{
-              color: hasError ? vars.colors.error : vars.colors.grayscale40,
-            }}
-          >
-            {currentCount}
-          </span>
-          {safeMax !== Infinity && (
+          {safeMax === Infinity ? (
+            // 제한 없음인 경우
             <span style={{ color: vars.colors.grayscale40 }}>
-              /{safeMax}자 {infoDetail && `(${infoDetail})`}
+              {currentCount}자
             </span>
+          ) : (
+            // 제한이 있을 경우
+            <>
+              <span
+                style={{
+                  color: hasError ? vars.colors.error : vars.colors.grayscale40,
+                }}
+              >
+                {currentCount}
+              </span>
+              <span style={{ color: vars.colors.grayscale40 }}>
+                /{safeMax}자 {infoDetail && `(${infoDetail})`}
+              </span>
+            </>
           )}
         </Text>
       </Flex>
@@ -104,15 +150,10 @@ export const QuestionInput = ({
           disabled={readOnly}
           onFocus={onFocus}
           onBlur={onBlur}
-          style={{
-            resize: 'none',
-            overflow: 'hidden',
-            height: 'auto',
-          }}
         />
       </div>
 
-      {hasError && (
+      {hasError && safeMax !== Infinity && (
         <div className={styles.errorTextStyle}>
           <IcInputError width={24} height={24} />
           최대 {safeMax}자까지 입력 가능합니다.

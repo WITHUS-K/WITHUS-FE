@@ -27,6 +27,10 @@ export interface DetailItem {
     infoDetail: string;
   };
   answer?: string;
+  textLimit?: number;
+  includeWhitespace?: boolean;
+  maxFileCount?: number;
+  maxFileSizeMb?: number;
 }
 
 export interface AnnouncementResult {
