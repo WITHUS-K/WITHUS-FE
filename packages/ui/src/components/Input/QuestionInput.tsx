@@ -2,7 +2,7 @@
 import * as styles from './Input.css';
 import Flex from '../Flex/Flex';
 import Text from '../Text/Text';
-import React, { FocusEvent, useEffect, useRef } from 'react';
+import React, { FocusEvent, useLayoutEffect, useRef, ChangeEvent } from 'react';
 import { IcInputError } from '../../icons/src/colored';
 import { vars } from '@repo/theme';
 
@@ -33,26 +33,26 @@ export const QuestionInput = ({
 }: QuestionInputProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const safeMax = Number.isNaN(maxLength) ? Infinity : maxLength;
-
   const currentCount = includeWhitespace
     ? value.length
     : value.replace(/\s/g, '').length;
+  const safeMax = Number.isNaN(maxLength) ? Infinity : maxLength;
+  const hasError = safeMax !== Infinity && currentCount > safeMax;
 
-  const displayCount =
-    maxLength === Infinity ? currentCount : Math.min(currentCount, maxLength);
-
-  const hasError = maxLength !== Infinity && currentCount > maxLength;
-
-  useEffect(() => {
+  const autoResize = () => {
     const ta = textareaRef.current;
     if (!ta) return;
     ta.style.height = 'auto';
     ta.style.height = ta.scrollHeight + 'px';
+  };
+
+  useLayoutEffect(() => {
+    autoResize();
   }, [value]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.currentTarget.value);
+    autoResize();
   };
 
   return (
@@ -85,12 +85,8 @@ export const QuestionInput = ({
             {currentCount}
           </span>
           {safeMax !== Infinity && (
-            <span
-              style={{
-                color: vars.colors.grayscale40,
-              }}
-            >
-              /{safeMax}자 ({infoDetail})
+            <span style={{ color: vars.colors.grayscale40 }}>
+              /{safeMax}자 {infoDetail && `(${infoDetail})`}
             </span>
           )}
         </Text>
@@ -100,22 +96,26 @@ export const QuestionInput = ({
 
       <div className={styles.commentTextArea}>
         <textarea
+          ref={textareaRef}
           className={styles.commentInput}
-          placeholder={'답변을 입력해주세요'}
+          placeholder="답변을 입력해주세요"
           value={value}
           onChange={handleChange}
-          rows={5}
           disabled={readOnly}
           onFocus={onFocus}
           onBlur={onBlur}
-          style={{ resize: 'none', overflow: 'hidden' }}
+          style={{
+            resize: 'none',
+            overflow: 'hidden',
+            height: 'auto',
+          }}
         />
       </div>
 
       {hasError && (
         <div className={styles.errorTextStyle}>
           <IcInputError width={24} height={24} />
-          최대 {maxLength}자까지 입력 가능합니다.
+          최대 {safeMax}자까지 입력 가능합니다.
         </div>
       )}
     </div>
