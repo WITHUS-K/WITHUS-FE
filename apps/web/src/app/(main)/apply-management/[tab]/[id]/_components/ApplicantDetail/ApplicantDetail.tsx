@@ -29,8 +29,8 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
       description: a.questionTitle,
       responseTarget: idx,
       typeInfo: {
-        info: a.includeWhitespace ? '공백포함' : '공백제외',
-        infoDetail: `${a.textLimit}자`,
+        info: `${a.textLimit}자`,
+        infoDetail: a.includeWhitespace ? '공백포함' : '공백제외',
       },
       answer: a.answerText,
     }));
