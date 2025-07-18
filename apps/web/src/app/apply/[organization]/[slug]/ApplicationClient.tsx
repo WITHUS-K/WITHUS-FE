@@ -55,6 +55,19 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // 자정 데드라인 계산**
+  const deadlineEndOfDay = useMemo(() => {
+    if (!data?.documentDeadline) return null;
+    const d = new Date(data.documentDeadline);
+    d.setHours(23, 59, 59, 999);
+    return d.getTime();
+  }, [data?.documentDeadline]);
+
+  // 테스트용: 2025-07-19 00:07:00 (KST)
+  /*const deadlineEndOfDay = useMemo(() => {
+    return new Date('2025-07-19T00:07:00+09:00').getTime();
+  }, []);*/
+
   useEffect(() => {
     const isMobile =
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -494,6 +507,21 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   const submitForm = handleSubmit(onSubmit);
 
   const handleModalClick = () => {
+    // 데드라인이 지났다면
+    if (deadlineEndOfDay !== null && Date.now() > deadlineEndOfDay) {
+      confirm({
+        type: 'warning',
+        title: `지원 기간이 지나\n지원서 제출이 불가합니다.`,
+        confirmText: '확인',
+        hideCancel: true,
+        onConfirm: () => {
+          router.replace(`/apply/${data.organizationName}/${slug}/end`);
+        },
+      });
+      return;
+    }
+
+    // 아직 데드라인 전이라면, 기존 제출 확인 모달
     confirm({
       type: 'info',
       title: '지원서를 제출하시겠습니까?',
