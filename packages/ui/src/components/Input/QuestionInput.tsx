@@ -91,7 +91,16 @@ export const QuestionInput = ({
       data-has-error={hasError ? 'true' : 'false'}
     >
       <Flex justify="spaceBetween" align="center" width="100%" gap="2rem">
-        <Flex width="100%" align="flexStart" direction="column" gap="1rem">
+        <Flex
+          width="100%"
+          align="flexStart"
+          direction="column"
+          gap="1rem"
+          style={{
+            wordBreak: 'keep-all',
+            overflowWrap: 'break-word',
+          }}
+        >
           <Text variant="md1_text_semibold" color="grayscale70">
             {title}
           </Text>
