@@ -96,7 +96,6 @@ export function FormNavigator({ items, scrollContainerRef }: Props) {
             >
               전체 {filteredItems.length}개 항목
             </Text>
-            <div className={css.space} />
             <Chip
               style={{ whiteSpace: 'nowrap' }}
               bg={isAllCompleted ? 'primary5' : 'grayscale5'}

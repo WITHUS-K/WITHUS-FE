@@ -41,6 +41,7 @@ import {
 } from './_components/FormNavigator/FormNavigator';
 import { FormFieldStatusProvider } from './_context/FormFieldStatusContext';
 import { PartStatusResetter } from './_context/PartStatusResetter';
+import { Spinner } from '@repo/ui/Spinner';
 
 interface ApplicationClientProps {
   slug: string;
@@ -54,6 +55,19 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   //console.log('슬러그', data);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // 자정 데드라인 계산**
+  const deadlineEndOfDay = useMemo(() => {
+    if (!data?.documentDeadline) return null;
+    const d = new Date(data.documentDeadline);
+    d.setHours(23, 59, 59, 999);
+    return d.getTime();
+  }, [data?.documentDeadline]);
+
+  // 테스트용: 2025-07-19 00:07:00 (KST)
+  /*const deadlineEndOfDay = useMemo(() => {
+    return new Date('2025-07-19T00:07:00+09:00').getTime();
+  }, []);*/
 
   useEffect(() => {
     const isMobile =
@@ -399,6 +413,8 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
     [createApp, data, detailItems]
   );
 
+  const isSubmitting = createApp.isPending;
+
   const navItems: NavItem[] = useMemo(() => {
     const items: NavItem[] = [];
 
@@ -494,6 +510,21 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   const submitForm = handleSubmit(onSubmit);
 
   const handleModalClick = () => {
+    // 데드라인이 지났다면
+    if (deadlineEndOfDay !== null && Date.now() > deadlineEndOfDay) {
+      confirm({
+        type: 'warning',
+        title: `지원 기간이 지나\n지원서 제출이 불가합니다.`,
+        confirmText: '확인',
+        hideCancel: true,
+        onConfirm: () => {
+          router.replace(`/apply/${data.organizationName}/${slug}/end`);
+        },
+      });
+      return;
+    }
+
+    // 아직 데드라인 전이라면, 기존 제출 확인 모달
     confirm({
       type: 'info',
       title: '지원서를 제출하시겠습니까?',
@@ -514,6 +545,21 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         commonFileCount={commonFileCount}
       />
       <div className={styles.page} ref={scrollRef}>
+        {isSubmitting && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 9999,
+            }}
+          >
+            <Spinner size={64} strokeWidth={4} color="rgba(44, 96, 255, 0.7)" />
+          </div>
+        )}
+
         <form className={styles.formWrapper}>
           <div className={styles.container}>
             <Flex direction="column" width="100%" gap="5rem" align="center">

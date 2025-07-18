@@ -57,7 +57,7 @@ export const QuestionInput = ({
   */
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  console.log('공백', includeWhitespace);
+  //console.log('공백', includeWhitespace);
   const normalized = value.replace(/[\r\n]/g, '');
 
   // 공백 포함 여부에 따라 글자 수 계산

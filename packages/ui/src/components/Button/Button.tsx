@@ -13,7 +13,7 @@ import {
   textVariantMap,
 } from './Button.css';
 import Text from '../Text/Text';
-import Spinner from '../Spinner/Spinner';
+import { Spinner } from '../Spinner/Spinner';
 
 export type ButtonVariant = 'main' | 'sub' | 'basic' | 'stroke' | 'white';
 export type ButtonSize = '32' | '40' | '48' | '56' | '64';

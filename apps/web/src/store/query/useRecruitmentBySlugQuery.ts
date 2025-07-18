@@ -34,3 +34,12 @@ export function getRecruitmentBySlugQueryOptions(
 export function useRecruitmentBySlugQuery(params: RecruitmentBySlugParams) {
   return useSuspenseQuery(getRecruitmentBySlugQueryOptions(params));
 }
+
+export async function fetchRecruitmentBySlug(
+  slug: string
+): Promise<RecruitmentDetailDto> {
+  const res = await GET_PUBLIC<RecruitmentDetailResponse['result']>(
+    `api/v1/recruitments/slug/${slug}`
+  );
+  return res.result;
+}

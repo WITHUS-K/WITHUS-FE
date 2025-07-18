@@ -86,7 +86,7 @@ export function useCreateApplication() {
         form.append('files', file, file.name);
       }
 
-      console.log('FormData entries:');
+      //console.log('FormData entries:');
       for (const [key, val] of Array.from(form.entries())) {
         //console.log(key, val);
       }
@@ -99,7 +99,7 @@ export function useCreateApplication() {
         }
       );
 
-      //console.log('응답', res);
+      console.log('응답', res);
       if (!res.ok) {
         const text = await res.text();
         console.error('API error status/text:', res.status, text);

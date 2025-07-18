@@ -17,6 +17,7 @@ const publicPathPatterns = [
   /^\/apply\/[^\/]+\/[^\/]+$/,
   /^\/apply\/[^\/]+\/[^\/]+\/mobile-only$/,
   /^\/apply\/[^\/]+\/[^\/]+\/submitted(\?.*)?$/,
+  /^\/apply\/[^\/]+\/[^\/]+\/end$/,
 ];
 
 export function middleware(request: NextRequest) {

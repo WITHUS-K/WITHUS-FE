@@ -6,7 +6,7 @@ export const navigator = style({
   position: 'sticky',
   top: '8rem',
   alignSelf: 'flex-start',
-  maxWidth: '32rem',
+  width: '30rem',
   maxHeight: 'calc(100vh - 10rem)', // 안전한 높이
 
   background: vars.colors.white,
@@ -15,10 +15,10 @@ export const navigator = style({
   overflow: 'hidden',
 });
 
-export const space = style({
+/*export const space = style({
   minWidth: '2rem',
   maxWidth: '7rem',
-});
+});*/
 
 export const scrollArea = style({
   maxHeight: '60rem',
@@ -109,7 +109,6 @@ export const divider = style({
 export const focusableWrapper = style({
   scrollMarginTop: '100px',
 });
-
 
 const focusShadow = keyframes({
   '0%, 100%': {
