@@ -41,6 +41,7 @@ import {
 } from './_components/FormNavigator/FormNavigator';
 import { FormFieldStatusProvider } from './_context/FormFieldStatusContext';
 import { PartStatusResetter } from './_context/PartStatusResetter';
+import { Spinner } from '@repo/ui/Spinner';
 
 interface ApplicationClientProps {
   slug: string;
@@ -412,6 +413,8 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
     [createApp, data, detailItems]
   );
 
+  const isSubmitting = createApp.isPending;
+
   const navItems: NavItem[] = useMemo(() => {
     const items: NavItem[] = [];
 
@@ -542,6 +545,21 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         commonFileCount={commonFileCount}
       />
       <div className={styles.page} ref={scrollRef}>
+        {isSubmitting && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 9999,
+            }}
+          >
+            <Spinner size={64} strokeWidth={4} color="rgba(44, 96, 255, 0.7)" />
+          </div>
+        )}
+
         <form className={styles.formWrapper}>
           <div className={styles.container}>
             <Flex direction="column" width="100%" gap="5rem" align="center">

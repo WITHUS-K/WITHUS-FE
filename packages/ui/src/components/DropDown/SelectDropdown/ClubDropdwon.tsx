@@ -29,7 +29,7 @@ export default function ClubDropdown({
         <ClubDropdownTriggerContent selected={selected} />
       </Dropdown.Trigger>
 
-      <Dropdown.List width="31.1rem">
+      <Dropdown.List width="max-content">
         {clubs.map((name) => (
           <Dropdown.Item
             key={name}

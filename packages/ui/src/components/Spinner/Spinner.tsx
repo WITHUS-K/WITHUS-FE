@@ -11,13 +11,13 @@ export interface SpinnerProps {
   style?: CSSProperties;
 }
 
-const Spinner = ({
+export function Spinner({
   size = 16,
   color = 'currentColor',
   strokeWidth = 2,
   className = '',
   style = {},
-}: SpinnerProps) => {
+}: SpinnerProps) {
   const sizeValue = typeof size === 'number' ? `${size}px` : size;
   const strokeWidthValue =
     typeof strokeWidth === 'number' ? `${strokeWidth}px` : strokeWidth;
@@ -45,6 +45,4 @@ const Spinner = ({
       />
     </svg>
   );
-};
-
-export default Spinner;
+}
