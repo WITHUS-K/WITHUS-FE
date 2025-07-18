@@ -141,7 +141,6 @@ export const commentInputWrapper = style({
   },
 });
 
-  
 export const questionTitleInput = style({
   all: 'unset',
   width: '100%',
@@ -150,16 +149,19 @@ export const questionTitleInput = style({
 
 export const commentTextArea = style({
   width: '100%',
-})
+});
 
 export const commentInput = style({
   all: 'unset',
   width: '100%',
-  height: 'auto',
+  //height: 'auto',
   whiteSpace: 'pre-line',
   wordBreak: 'break-word',
   overflowWrap: 'break-word',
   resize: 'none',
+  //resize: 'vertical',
+  overflow: 'hidden',
+  //maxHeight: '50rem',
   color: vars.colors.grayscale90,
   selectors: {
     '&::placeholder': {
