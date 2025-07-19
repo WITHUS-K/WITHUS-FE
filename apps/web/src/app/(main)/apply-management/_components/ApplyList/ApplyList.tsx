@@ -91,8 +91,8 @@ export function ApplyList({
       ) : (
         <div
           className={styles.listContainer}
-          ref={listRef}
-          style={{ paddingBottom: isScrollable ? '10rem' : '0.6rem' }}
+          //ref={listRef}
+          //style={{ paddingBottom: isScrollable ? '10rem' : '0.6rem' }}
         >
           {data.map((m) =>
             useFinalItem ? (

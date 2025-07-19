@@ -9,6 +9,7 @@ import { TabBar } from '@repo/ui/TabBar';
 import { useRecruitmentsQuery } from '@web/store/query/useRecruitmentsQuery';
 import { useAdminApplicationsQuery } from '@web/store/query/useAdminApplicationsQuery';
 import TabClient from './TabClient';
+import { container } from './layout.css';
 
 const TAB_KEYS = ['documents', 'interviews', 'final', 'rejected'];
 
@@ -106,6 +107,7 @@ export default function PageClient({
         )}
         <Flex
           width="100%"
+          paddingBottom="1.5rem"
           height="100%"
           marginTop={!isNaN(recruitmentId) ? '2.4rem' : '0'}
         >

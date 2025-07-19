@@ -7,6 +7,8 @@ export const root = style({
   borderRadius: '12px',
   backgroundColor: vars.colors.white,
   width: '100%',
+  height: '100%',
+  //paddingBottom: '4.4rem',
   border: `1px solid ${vars.colors.grayscale5}`,
 });
 
@@ -17,6 +19,7 @@ export const listContainer = style({
   paddingTop: '0.6rem',
   paddingLeft: '0.6rem',
   paddingRight: '0.6rem',
+  paddingBottom: '0.6rem',
   width: '100%',
   maxHeight: '50rem',
   overflowY: 'auto',
