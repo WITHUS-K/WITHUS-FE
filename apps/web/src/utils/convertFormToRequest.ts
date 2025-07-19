@@ -98,11 +98,16 @@ export function convertFormToRequest(
   );
 
   const availableTimeRanges = form.interviewSchedule?.isSelected
-    ? form.interviewSchedule.scheduleList.map((s) => ({
-        date: s.date,
-        startTime: s.startTime,
-        endTime: s.endTime,
-      }))
+    ? form.interviewSchedule.scheduleList
+        .filter(
+          (s): s is { date: string; startTime: string; endTime: string } =>
+            typeof s.date === 'string'
+        )
+        .map((s) => ({
+          date: s.date,
+          startTime: s.startTime,
+          endTime: s.endTime,
+        }))
     : [];
 
   const documentDeadlineStr = form.deadline

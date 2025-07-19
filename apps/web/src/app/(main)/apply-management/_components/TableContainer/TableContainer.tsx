@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { Pagination } from '@repo/ui/Pagination';
 import { Flex } from '@repo/ui/Flex';
 

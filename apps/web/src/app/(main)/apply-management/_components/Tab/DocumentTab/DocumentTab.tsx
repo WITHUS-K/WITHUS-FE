@@ -56,7 +56,7 @@ export default function DocumentTab({
   const side = searchParams.get('sideTab');
   const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
 
-  // ─── 페이지 번호 관리 ────────────────────────────────────────────────────
+  // 페이지 번호 관리
   const pageQuery = Number(searchParams.get('page'));
   const initialPage = !isNaN(pageQuery) && pageQuery > 0 ? pageQuery - 1 : 0;
   const [page, setPage] = useState(initialPage);
@@ -66,25 +66,22 @@ export default function DocumentTab({
 
   const size = 7;
 
-  // ─── 정렬 키 & 방향 ─────────────────────────────────────────────────────
   const [sortKey, setSortKey] =
     useState<keyof (typeof sortByMap)['documents']>('name');
   const [direction, setDirection] = useState<'ASC' | 'DESC'>('ASC');
 
-  // ─── 요게 포인트: string → AdminApplicationSortBy 캐스팅 ────────────────
   const apiSortBy = sortByMap['documents']![sortKey] as AdminApplicationSortBy;
 
-  // ─── 데이터 패칭 ────────────────────────────────────────────────────────
   const { data, isLoading, isFetching } = useAdminApplicationsClientQuery({
     recruitmentId,
-    stage: stageMap[activeTab], // 'DOCUMENT'
-    sortBy: apiSortBy, // 캐스팅 덕분에 에러 사라짐
+    stage: stageMap[activeTab],
+    sortBy: apiSortBy,
     direction,
     page,
     size,
   });
 
-  // ─── 테이블용 row 생성 ─────────────────────────────────────────────────
+  // 테이블용 row 생성
   const rows = useMemo(() => {
     if (!data) return [];
     return data.data.map((item, idx) => ({

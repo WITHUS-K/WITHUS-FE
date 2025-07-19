@@ -14,10 +14,15 @@ import {
   AdminApplicationStage,
   useUpdateApplicationsStatus,
 } from '@web/store/mutation/useUpdateApplicationsStatus';
+import { useRecruitmentDetailQuery } from '@web/store/query/useRecruitmentDetailQuery';
+import { TimeRange } from '@web/components/TimeTable/SelectableTimeTable';
+import { InterviewScheduleItem } from '@web/types/application';
+import { parseToMin } from '@web/utils/time';
 
 interface Props {
   tab: string;
   applicationId: number;
+  recruitmentId: number;
 }
 
 const stageMap: Record<
@@ -30,11 +35,13 @@ const stageMap: Record<
   rejected: 'FAIL',
 };
 
-export default function ApplicationDetailClient({ tab, applicationId }: Props) {
-  const search = useSearchParams();
-  const recIdStr = search.get('recruitmentId') ?? '';
-  const recruitmentId = Number(recIdStr);
-
+export default function ApplicationDetailClient({
+  tab,
+  applicationId,
+  recruitmentId,
+}: Props) {
+  const { data: rec } = useRecruitmentDetailQuery({ recruitmentId });
+  //console.log('공고', rec);
   const { data } = useApplicationDetailQuery({
     applicationId,
   });
@@ -51,6 +58,35 @@ export default function ApplicationDetailClient({ tab, applicationId }: Props) {
     recruitmentId,
     stage
   );
+
+  const scheduleMap: Record<string, TimeRange[]> = {};
+  rec.availableTimeRanges.forEach((slot) => {
+    (scheduleMap[slot.date] ??= []).push({
+      startTime: slot.startTime,
+      endTime: slot.endTime,
+    });
+  });
+
+  // 2) 지원자가 앱 신청 시 선택한 **시각들** (로그의 availableTimes)
+  //    e.g. app.availableTimes = ["11:00","11:15", …]
+  const applicantMap: Record<string, InterviewScheduleItem[]> = {};
+  (data.availableTimes ?? []).forEach((time) => {
+    // 가정: 지원자는 한 날짜만 골랐거나, interviewDates[0] 이 시각들의 날짜임
+    const date = data.interviewDates[0];
+    // duration 만큼 더해서 endTime 만들기
+    const startMin = parseToMin(time);
+    const endMin = startMin + rec.interviewDuration;
+    const hh = String(Math.floor(endMin / 60)).padStart(2, '0');
+    const mm = String(endMin % 60).padStart(2, '0');
+
+    (applicantMap[date!] ??= []).push({
+      date,
+      startTime: time,
+      endTime: `${hh}:${mm}`,
+    });
+  });
+
+  // console.log('공고 시간', scheduleMap);
 
   // 버튼 핸들러
   const handleAccept = () => {
@@ -81,7 +117,12 @@ export default function ApplicationDetailClient({ tab, applicationId }: Props) {
         onReject={handleReject}
       />
       <Flex gap="2rem" width="100%">
-        <ApplicantDetail application={data} />
+        <ApplicantDetail
+          application={data}
+          scheduleMap={scheduleMap}
+          interviewDuration={rec.interviewDuration}
+          applicantMap={applicantMap}
+        />
 
         <div className={styles.rightSection}>
           <EvaluationScoreCard

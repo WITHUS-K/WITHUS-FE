@@ -352,7 +352,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
       }, []);
 
       const rawTimes = vals.interviewSchedule.scheduleList.flatMap((slot) => {
-        const date = slot.date.replace(/\./g, '-');
+        const date = slot.date!.replace(/\./g, '-');
         const start = new Date(`${date}T${slot.startTime}:00`);
         const end = new Date(`${date}T${slot.endTime}:00`);
         const interval = data.interviewDuration;

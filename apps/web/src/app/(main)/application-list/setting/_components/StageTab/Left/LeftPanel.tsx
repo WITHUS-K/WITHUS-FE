@@ -47,9 +47,9 @@ export default function LeftPanel({ onChipClick }: LeftPanelProps) {
   const groupMap = new Map<string, InterviewScheduleItem[]>();
   scheduleList.forEach((slot) => {
     const key = slot.date; // '' 또는 'YYYY-MM-DD'
-    const arr = groupMap.get(key) || [];
+    const arr = groupMap.get(key!) || [];
     arr.push(slot);
-    groupMap.set(key, arr);
+    groupMap.set(key!, arr);
   });
 
   const groups = Array.from(groupMap.entries()).map(([date, slots]) => ({

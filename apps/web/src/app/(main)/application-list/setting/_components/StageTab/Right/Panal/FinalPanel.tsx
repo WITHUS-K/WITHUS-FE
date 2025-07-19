@@ -26,7 +26,7 @@ export default function FinalPanel({
   const dates = scheduleList
     .map((s) => s.date)
     .filter(Boolean)
-    .map((d) => parseISO(d));
+    .map((d) => parseISO(d!));
   const maxDate = dates.length
     ? new Date(Math.max(...dates.map((d) => d.getTime())))
     : undefined;
