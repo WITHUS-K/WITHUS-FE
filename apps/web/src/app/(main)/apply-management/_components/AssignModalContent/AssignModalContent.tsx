@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { TabBar } from '@repo/ui/TabBar';
-import { useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useOrganizationRolesQuery } from '@web/store/query/useOrganizationRolesQuery';
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { useLatestDistributionQuery } from '@web/store/query/useLatestDistribution';
@@ -19,17 +19,29 @@ import DistributionContainer, {
   PartState,
 } from './DistributionContainer/DistributionContainer';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+import { useToast } from '@repo/ui/hooks';
+import { HTTPError } from 'ky';
 
 export interface AssignModalContentRef {
-  handleConfirm: () => Promise<void>;
+  handleConfirm: () => Promise<boolean>;
 }
 
 const TABS = ['documents', 'interviews'];
 
 const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
-  const [activeTab, setActiveTab] =
-    useState<(typeof TABS)[number]>('documents');
   const searchParams = useSearchParams();
+  const params = useParams();
+  const { tab } = params as { tab?: string };
+
+  const initialTab = tab === 'interviews' ? 'interviews' : 'documents';
+  const [activeTab, setActiveTab] = useState<'documents' | 'interviews'>(
+    initialTab
+  );
+
+  useEffect(() => {
+    setActiveTab(tab === 'interviews' ? 'interviews' : 'documents');
+  }, [tab]);
+
   const recruitmentId = Number(searchParams.get('recruitmentId'));
 
   const { organizationId } = getClientSideTokens();
@@ -38,6 +50,8 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
   const latestQuery = useLatestDistributionQuery({ recruitmentId });
   const positionsQuery = useRecruitmentPositionsQuery(recruitmentId);
   const distribute = useDistributeEvaluators(recruitmentId);
+
+  const toast = useToast();
 
   const availableRoles: OrgRole[] = (rolesData?.roles ?? []).map((r) => ({
     id: r.id,
@@ -111,8 +125,9 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
     setState(computeInitial());
   }, [activeTab]);
 
-  const handleConfirm = async () => {
-    if (!state) return;
+  const handleConfirm = async (): Promise<boolean> => {
+    if (!state) return false;
+
     const assignments = Object.values(state).flatMap((ps) =>
       ps.roles.map((role) => ({
         positionId: ps.positionId,
@@ -121,7 +136,25 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
         count: ps.count,
       }))
     );
-    await distribute.mutateAsync({ recruitmentId, assignments });
+
+    try {
+      await distribute.mutateAsync({
+        recruitmentId,
+        evaluationType: currentEvalType,
+        assignments,
+      });
+
+      return true;
+    } catch (error) {
+      if (error instanceof HTTPError && error.response.status === 400) {
+        toast.error('해당 파트에 평가자가 충분하지 않습니다.');
+      } else {
+        toast.error('분배 중 오류가 발생했습니다.');
+      }
+
+      console.error('분배 에러:', error);
+      return false;
+    }
   };
 
   useImperativeHandle(ref, () => ({ handleConfirm }), [state, activeTab]);

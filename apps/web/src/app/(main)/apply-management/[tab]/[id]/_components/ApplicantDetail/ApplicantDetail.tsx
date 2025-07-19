@@ -208,11 +208,14 @@ export default function ApplicantDetail({
           readOnly={true}
         />
 
-        <InterviewScheduleViewer
-          scheduleMap={scheduleMap!}
-          applicantMap={applicantMap!}
-          duration={interviewDuration!}
-        />
+        {scheduleMap &&
+          Object.values(scheduleMap).some((arr) => arr.length > 0) && (
+            <InterviewScheduleViewer
+              scheduleMap={scheduleMap}
+              applicantMap={applicantMap!}
+              duration={interviewDuration!}
+            />
+          )}
       </div>
     </Flex>
   );

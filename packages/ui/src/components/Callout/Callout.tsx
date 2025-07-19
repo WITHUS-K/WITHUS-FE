@@ -57,7 +57,7 @@ export function Callout({
                   ? 'translate(-50%, calc(-100% - 10px))'
                   : 'translate(-50%, 10px)',
               marginLeft: offsetValue,
-              zIndex: 10,
+              zIndex: 1000,
             }}
           >
             {items.map((t, i) => (
