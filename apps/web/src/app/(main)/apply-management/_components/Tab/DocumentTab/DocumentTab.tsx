@@ -64,7 +64,7 @@ export default function DocumentTab({
     if (page !== initialPage) setPage(initialPage);
   }, [initialPage, page]);
 
-  const size = 7;
+  const size = 20;
 
   const [sortKey, setSortKey] =
     useState<keyof (typeof sortByMap)['documents']>('name');
@@ -162,7 +162,7 @@ export default function DocumentTab({
   };
 
   return (
-    <Flex direction="column" width="100%" height="100%" gap="1.2rem">
+    <Flex direction="column" width="100%" gap="1.2rem">
       <ActionToolbar
         hasSelection={selectedIds.length > 0}
         onSms={() => setModalParam('sms')}

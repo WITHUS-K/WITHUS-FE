@@ -69,7 +69,7 @@ export default function FinalTab({
       setPage(initialPage);
     }
   }, [initialPage, page]);
-  const size = 7;
+  const size = 20;
   const [sortKey, setSortKey] = useState<keyof typeof sortByMap>('name');
   const [direction, setDirection] = useState<'ASC' | 'DESC'>('ASC');
 

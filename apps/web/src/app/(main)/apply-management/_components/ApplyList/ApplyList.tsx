@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import {
   ApplyListHeader,
@@ -57,8 +57,18 @@ export function ApplyList({
   const useFinalItem = tab === 'final' || tab === 'rejected';
   const showEmpty = !isLoading && !isFetching && data.length === 0;
 
+  const [isScrollable, setIsScrollable] = useState(false);
+
   const allChecked =
     data.length > 0 && data.every((m) => selectedIds.includes(m.id));
+
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    setIsScrollable(el.scrollHeight > el.clientHeight);
+  }, [data]);
 
   return (
     <div className={styles.root}>
@@ -79,7 +89,11 @@ export function ApplyList({
           </Text>
         </div>
       ) : (
-        <div className={styles.listContainer}>
+        <div
+          className={styles.listContainer}
+          ref={listRef}
+          style={{ paddingBottom: isScrollable ? '10rem' : '0.6rem' }}
+        >
           {data.map((m) =>
             useFinalItem ? (
               <ApplyListItemFinal

@@ -67,7 +67,7 @@ export default function InterviewTab({
   useEffect(() => {
     if (page !== initialPage) setPage(initialPage);
   }, [initialPage, page]);
-  const size = 7;
+  const size = 20;
 
   // 정렬 상태
   const [sortKey, setSortKey] = useState<InterviewSortKey>('name');
