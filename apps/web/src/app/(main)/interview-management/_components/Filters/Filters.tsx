@@ -230,6 +230,8 @@ export default function Filters() {
   const handleGenerate = async () => {
     if (!effectiveRid) return;
 
+    //지금은 존재하는 인터뷰 면 기존의 인터뷰아이디 써서 스케쥴 생성하고 있음...!!
+    // 바꿔야 될게... 타임테이블 재생성하면 이제 인터뷰를 삭제 할 거 니까... existingInterview ?? 이로직 없어도 될듯..!!
     const newIv =
       existingInterview ??
       (await createInterview.mutateAsync({ recruitmentId: effectiveRid }));

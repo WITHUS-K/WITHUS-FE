@@ -51,6 +51,10 @@ export function useCreateScheduleMutation(): UseMutationResult<
       qc.invalidateQueries({
         queryKey: queryKeys.interview.config(variables.interviewId),
       });
+
+      qc.invalidateQueries({
+        queryKey: queryKeys.interview.orgList(),
+      });
     },
   });
 }
