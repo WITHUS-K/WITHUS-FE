@@ -51,6 +51,8 @@ export default function TabPageClient() {
     size: PER_PAGE,
   });
 
+  console.log('지원서 리스트', appsResult);
+
   const apps = appsResult?.data ?? [];
   const pagination = appsResult?.pagination;
 
@@ -85,7 +87,10 @@ export default function TabPageClient() {
                     app.documentEvaluated === false ? 'BEFORE' : 'COMPLETED',
                   pass:
                     app.status === 'DOX_PASS' ||
-                    app.status === 'INTERVIEW_PASS',
+                    app.status === 'INTERVIEW_PASS' ||
+                    app.status === 'PENDING' ||
+                    app.status === 'DOX_PENDING' ||
+                    app.status === 'INTERVIEW_PENDING',
                   evaluationScore: app.myScoreTotal ?? 0,
                   interviewDate: app.interviewSchedule?.split('T')[0] ?? '',
                   interviewTime:

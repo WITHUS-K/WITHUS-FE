@@ -37,17 +37,30 @@ export interface BulkEvaluationResponse {
   success: boolean;
 }
 
-export function useBulkEvaluationsMutation(applicationId: number) {
+export function useBulkEvaluationsMutation({
+  applicationId,
+  recruitmentId,
+  evaluationStatus = 'ALL',
+  keyword = '',
+  page = 0,
+  size = 9,
+}: {
+  applicationId: number;
+  recruitmentId: number;
+  evaluationStatus?: 'ALL' | 'EVALUATED' | 'NOT_EVALUATED';
+  keyword?: string;
+  page?: number;
+  size?: number;
+}) {
   const qc = useQueryClient();
 
   return useMutation<
-    BulkEvaluationResponse['result'], // TData
+    BulkEvaluationResponse['result'],
     Error,
-    BulkEvaluationRequest // TVariables
+    BulkEvaluationRequest
   >({
     mutationFn: async (data) => {
       try {
-        // ▶ 제네릭을 BulkEvaluationResponse 전체로 지정
         const res = await POST<BulkEvaluationResponse['result']>(
           'api/v1/evaluations/bulk',
           data
@@ -58,7 +71,6 @@ export function useBulkEvaluationsMutation(applicationId: number) {
         console.error('[BulkEvaluations] request payload:', data);
 
         if (err.response) {
-          // 서버가 돌려준 JSON을 정확히 읽어봅니다
           try {
             const body = await err.response.json();
             console.error('[BulkEvaluations] error response JSON:', body);
@@ -70,11 +82,23 @@ export function useBulkEvaluationsMutation(applicationId: number) {
         throw err;
       }
     },
+
     onSuccess: () => {
       qc.invalidateQueries({
         queryKey: queryKeys.applications.detail(applicationId),
       });
+
+      qc.invalidateQueries({
+        queryKey: queryKeys.applications.userList(
+          recruitmentId,
+          evaluationStatus,
+          keyword,
+          page,
+          size
+        ),
+      });
     },
+
     onError: (error: any) => {
       console.error('[BulkEvaluations] mutation error:', error);
     },

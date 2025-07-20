@@ -33,7 +33,31 @@ function formatMB(bytes: number, decimals = 2) {
  * 이름에서 UUID prefix와 중복된 suffix를 제거하고,
  * 첫 번째 확장자 이후로만 포함하여 순수한 원본 파일명만 추출
  */
-function extractOriginalName(name: string): string {
+/*function extractOriginalName(name: string): string {
+  const idx = name.indexOf('_');
+  const raw = idx >= 0 ? name.slice(idx + 1) : name;
+  const match = raw.match(/\.(?:pdf|png|jpg|jpeg)/i);
+  if (match) {
+    const ext = match[0];
+    const pos = raw.indexOf(ext);
+    return raw.slice(0, pos + ext.length);
+  }
+  return raw;
+}*/
+
+// 업로드 시: 이름 그대로 사용
+function extractOriginalNameAsIs(name: string): string {
+  const match = name.match(/\.(?:pdf|png|jpg|jpeg)/i);
+  if (match) {
+    const ext = match[0];
+    const pos = name.indexOf(ext);
+    return name.slice(0, pos + ext.length);
+  }
+  return name;
+}
+
+// 다운로드용 readOnly 파일: uuid_제거
+function extractNameFromDownloadUrl(name: string): string {
   const idx = name.indexOf('_');
   const raw = idx >= 0 ? name.slice(idx + 1) : name;
   const match = raw.match(/\.(?:pdf|png|jpg|jpeg)/i);
@@ -53,12 +77,15 @@ function getOriginalFileName(fileRef: string): string {
   } catch {
     name = fileRef.split(/[/\\]/).pop() || fileRef;
   }
-  return extractOriginalName(name);
+  return name;
 }
 
-function normalizeFile(f: AnswerFile) {
+function normalizeFile(f: AnswerFile, forReadOnly = false) {
   const rawRef = (f as any).downloadUrl ?? f.name;
-  const displayName = getOriginalFileName(rawRef);
+  const fileNameRaw = getOriginalFileName(rawRef);
+  const displayName = forReadOnly
+    ? extractNameFromDownloadUrl(fileNameRaw)
+    : extractOriginalNameAsIs(fileNameRaw);
   const size = (f as any).size;
   const downloadUrl = (f as any).downloadUrl;
   return { displayName, size, downloadUrl };
@@ -222,7 +249,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
         <Flex direction="column" gap="1rem" width="100%">
           {dedupedFiles.map((f, idx) => {
-            const { displayName, size, downloadUrl } = normalizeFile(f);
+            const { displayName, size, downloadUrl } = normalizeFile(
+              f,
+              readOnly
+            );
 
             if (readOnly) {
               return (
