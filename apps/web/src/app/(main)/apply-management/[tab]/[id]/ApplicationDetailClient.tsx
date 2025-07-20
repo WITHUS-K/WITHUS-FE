@@ -42,6 +42,7 @@ export default function ApplicationDetailClient({
 }: Props) {
   const { data: rec } = useRecruitmentDetailQuery({ recruitmentId });
   //console.log('공고', rec);
+  console.log('지원서 아이디', applicationId);
   const { data } = useApplicationDetailQuery({
     applicationId,
   });
@@ -67,7 +68,7 @@ export default function ApplicationDetailClient({
     });
   });
 
-  // 2) 지원자가 앱 신청 시 선택한 **시각들** (로그의 availableTimes)
+  // 지원자가 앱 신청 시 선택한 **시각들** (로그의 availableTimes)
   //    e.g. app.availableTimes = ["11:00","11:15", …]
   const applicantMap: Record<string, InterviewScheduleItem[]> = {};
   (data.availableTimes ?? []).forEach((time) => {

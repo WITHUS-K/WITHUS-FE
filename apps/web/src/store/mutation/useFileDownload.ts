@@ -12,8 +12,11 @@ export function useFileDownload() {
     mutationFn: async ({ imageUrl, fileName }: DownloadParams) => {
       const { accessToken } = getClientSideTokens();
 
+      const payload = { imageUrl, fileName };
+      console.log('[useFileDownload] request payload:', payload);
+
       const res = await api.post('api/v1/files/download', {
-        json: { imageUrl, fileName },
+        json: payload,
         headers: { Authorization: `Bearer ${accessToken}` },
       });
 
@@ -22,6 +25,14 @@ export function useFileDownload() {
         '[useFileDownload] response headers:',
         Array.from(res.headers.entries())
       );
+
+      try {
+        const cloned = res.clone(); // blob 변환 전에 clone
+        const text = await cloned.text();
+        console.log('[useFileDownload] response body (as text):', text);
+      } catch (e) {
+        console.warn('[useFileDownload] failed to read response body as text');
+      }
 
       // blob 변환 후 다운로드
       const blob = await res.blob();

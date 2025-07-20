@@ -120,8 +120,6 @@ export default function ApplicantDetail({
     },
   ];
 
-  console.log('지원자 상세', application);
-
   return (
     <Flex
       direction="column"
@@ -166,56 +164,60 @@ export default function ApplicantDetail({
         </Flex>
 
         <Flex direction="column" gap="4rem" width="100%">
-          <BasicInfoForm
-            value={{
-              name: application.name,
-              phone: application.phoneNumber,
-              birthDate: application.birthDate ?? '',
-              gender: application.gender?.toLowerCase() as
-                | 'male'
-                | 'female'
-                | undefined,
-              email: application.email,
-            }}
-            file={application.imageUrl}
-            onChange={() => {}}
-            onImageChange={() => {}}
-            readOnly
-            needGender={!!application.gender}
-            needBirthDate={!!application.birthDate}
-          />
-          <AdditionalInfoForm
-            value={{
-              school: application.university,
-              academicStatus: application.academicStatus as AcademicStatus,
-              major: application.major,
-              address: application.address,
-            }}
-            onChange={() => {}}
-            readOnly
-            needSchool={!!application.university}
-            needAcademicStatus={!!application.academicStatus}
-            needMajor={!!application.major}
-            needAddress={!!application.address}
-          />
-        </Flex>
-
-        <QuestionAndFileListForm
-          detailItems={detailItems}
-          files={files2d}
-          onAnswerChange={() => {}}
-          onFileChange={() => {}}
-          readOnly={true}
-        />
-
-        {scheduleMap &&
-          Object.values(scheduleMap).some((arr) => arr.length > 0) && (
-            <InterviewScheduleViewer
-              scheduleMap={scheduleMap}
-              applicantMap={applicantMap!}
-              duration={interviewDuration!}
+          <Flex direction="column" gap="4rem" width="100%">
+            <BasicInfoForm
+              value={{
+                name: application.name,
+                phone: application.phoneNumber,
+                birthDate: application.birthDate ?? '',
+                gender: application.gender?.toLowerCase() as
+                  | 'male'
+                  | 'female'
+                  | undefined,
+                email: application.email,
+              }}
+              file={application.imageUrl}
+              onChange={() => {}}
+              onImageChange={() => {}}
+              readOnly
+              needGender={!!application.gender}
+              needBirthDate={!!application.birthDate}
             />
-          )}
+            <AdditionalInfoForm
+              value={{
+                school: application.university,
+                academicStatus: application.academicStatus as AcademicStatus,
+                major: application.major,
+                address: application.address,
+              }}
+              onChange={() => {}}
+              readOnly
+              needSchool={!!application.university}
+              needAcademicStatus={!!application.academicStatus}
+              needMajor={!!application.major}
+              needAddress={!!application.address}
+            />
+          </Flex>
+
+          <QuestionAndFileListForm
+            detailItems={detailItems}
+            files={files2d}
+            onAnswerChange={() => {}}
+            onFileChange={() => {}}
+            readOnly={true}
+          />
+
+          {/* 일단 주석처리 - api 수정 되면 반영하기
+  {scheduleMap &&
+    Object.values(scheduleMap).some((arr) => arr.length > 0) && (
+      <InterviewScheduleViewer
+        scheduleMap={scheduleMap}
+        applicantMap={applicantMap!}
+        duration={interviewDuration!}
+      />
+    )}
+*/}
+        </Flex>
       </div>
     </Flex>
   );

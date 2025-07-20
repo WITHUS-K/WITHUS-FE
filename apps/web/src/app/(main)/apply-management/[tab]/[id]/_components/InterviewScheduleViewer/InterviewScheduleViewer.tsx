@@ -86,7 +86,7 @@ export default function InterviewScheduleViewer({
               interval={duration}
               startHour={startHour}
               endHour={endHour}
-              width="40rem"
+              width="30rem"
               interviewSchedule={{ isSelected: true, scheduleList: baseline }}
               renderCell={(row) => {
                 if (!selectedRows[row]) return null;
