@@ -330,7 +330,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
           const answer = raw.trim().slice(0, limit);
 
           // 필수가 아니고 빈 문자열이면 스킵
-          if (!item.required && !answer) return acc;
+          // if (!item.required && !answer) return acc;
 
           acc.push({
             questionId: item.questionId,
@@ -395,7 +395,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
       const answerFiles: File[] = vals.questionFiles
         .flat()
         .filter((f): f is File => f instanceof File);
-      console.log(payload);
+      //console.log(payload);
       createApp.mutate(
         { payload, profileImage, answerFiles },
         {
