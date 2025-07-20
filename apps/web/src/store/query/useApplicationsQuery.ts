@@ -26,7 +26,9 @@ export interface ApplicationSummary {
     | 'DOX_PASS'
     | 'DOX_FAIL'
     | 'INTERVIEW_PASS'
-    | 'INTERVIEW_FAIL';
+    | 'INTERVIEW_FAIL'
+    | 'INTERVIEW_PENDING'
+    | 'DOX_PENDING';
   documentEvaluated: boolean;
   myScoreTotal?: number;
   documentMaxScore: number;

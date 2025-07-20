@@ -8,7 +8,7 @@ export interface CreateApplicationRequest {
   name: string;
   email: string;
   phoneNumber: string;
-  gender: 'MALE' | 'FEMALE';
+  gender?: 'MALE' | 'FEMALE';
   university?: string;
   major?: string;
   academicStatus?: 'ENROLLED' | 'GRADUATED' | 'LEAVE_OF_ABSENCE' | 'DEFERRED';
@@ -63,7 +63,7 @@ export function useCreateApplication() {
       const form = new FormData();
 
       console.log('payload to be stringified:', payload);
-      //console.log('JSON stringified:', JSON.stringify(payload));
+      console.log('JSON stringified:', JSON.stringify(payload));
 
       form.append(
         'request',
