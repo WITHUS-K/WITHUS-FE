@@ -25,7 +25,7 @@ import {
   TemplateDetail,
 } from '@web/store/query/useTemplatesQuery';
 import { useTemplateDetailQuery } from '@web/store/query/useTemplateDetailQuery';
-import { Descendant, Transforms, createEditor } from 'slate';
+import { Descendant, Editor, Transforms, createEditor } from 'slate';
 import {
   RichTextEditor,
   insertVariable,
@@ -101,8 +101,14 @@ export function MailSideTab({
     if (tplDetailQ.data && !isCreating) {
       setSubject(tplDetailQ.data.subject ?? tplDetailQ.data.name);
       // 줄마다 paragraph 로 deserialize
-
       const nodes = deserializeHtml(tplDetailQ.data.body);
+      Transforms.deselect(editor);
+
+      for (let i = editor.children.length - 1; i >= 0; i--) {
+        Transforms.removeNodes(editor, { at: [i] });
+      }
+      Transforms.insertNodes(editor, nodes);
+
       setEditorValue(nodes);
       Transforms.deselect(editor);
     }
