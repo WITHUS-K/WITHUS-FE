@@ -374,7 +374,8 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         name: vals.basicInfo.name,
         email: vals.basicInfo.email,
         phoneNumber: vals.basicInfo.phone,
-        gender: (vals.basicInfo.gender! || '').toUpperCase() as
+        //서버 api 수정되면 바꾸기!!!
+        gender: (vals.basicInfo.gender! || 'MALE').toUpperCase() as
           | 'MALE'
           | 'FEMALE',
         recruitmentId: data.recruitmentId,

@@ -24,6 +24,9 @@ export default function DetailClient() {
   const params = useParams();
   const applicationId = Number(params.id);
 
+  const searchParams = useSearchParams();
+  const recruitmentId = Number(searchParams.get('recruitmentId'));
+
   const {
     data: application,
     isLoading,
@@ -33,7 +36,6 @@ export default function DetailClient() {
   console.log('사용자', application);
   const [isRelation, setIsRelation] = useState(false);
 
-  // 3) 서버에서 데이터 로드 완료되면 초기화
   useEffect(() => {
     if (application) {
       const rel = application.acquaintances.some((a) => a.userId === myUserId);
@@ -57,22 +59,27 @@ export default function DetailClient() {
 
   const [scores, setScores] = useState<number[]>([]);
 
-  // 3) Bulk Mutation
-  const mutation = useBulkEvaluationsMutation(applicationId);
+  const mutation = useBulkEvaluationsMutation({
+    applicationId,
+    recruitmentId,
+    page: 0,
+    size: 9,
+    evaluationStatus: 'ALL',
+    keyword: '',
+  });
 
   const average = application?.documentAverageScore;
 
   const allCriteria = application?.documentEvaluationCriterias ?? [];
 
-  // 2) 지원자의 appliedPosition
   const appliedPosition = application?.appliedPosition; // 예: "1", "2" 등
 
-  // 3) 공통(null) 또는 지원자의 포지션과 일치하는 것만 필터
+  // 공통(null) 또는 지원자의 포지션과 일치하는 것만 필터
   const criteriaList = allCriteria.filter(
     (c) => c.positionName === null || c.positionName === appliedPosition
   );
 
-  // 4) Evaluation 리스트 생성
+  // Evaluation 리스트 생성
   const evaluationList: Evaluation[] = criteriaList.map((c) => ({
     id: c.id,
     score: c.score ?? 5,
@@ -94,7 +101,7 @@ export default function DetailClient() {
   }, [evaluationList.length]);
 
   const handleSave = () => {
-    // 1) 보낼 페이로드 생성
+    // 보낼 페이로드 생성
     const payload = {
       applicationId,
       evaluations: evaluationList.map((e, idx) => ({
@@ -103,10 +110,8 @@ export default function DetailClient() {
       })),
     };
 
-    // 2) 콘솔에 찍기
     console.log('[DocsEvaluation] handleSave payload:', payload);
 
-    // 3) 실제 호출
     mutation.mutate(payload);
   };
 
@@ -120,9 +125,6 @@ export default function DetailClient() {
       return copy;
     });
   };
-
-  // 6) DocsEvaluation에 넘길 평가 리스트 포맷
-  // DocsEvaluation에 넘길 데이터
 
   const evaluationType =
     application?.documentScaleTypeKey === '점수제 평가' ? 'score' : 'level';
