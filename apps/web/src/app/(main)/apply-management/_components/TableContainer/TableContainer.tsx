@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { Pagination } from '@repo/ui/Pagination';
 import { Flex } from '@repo/ui/Flex';
 
@@ -36,6 +36,8 @@ export interface TableContainerProps {
   pageSize: number;
   /** 페이지 변경 */
   onPageChange: (page: number) => void;
+  isLoading: boolean;
+  isFetching: boolean;
 }
 
 export default function TableContainer({
@@ -52,6 +54,8 @@ export default function TableContainer({
   totalItems,
   pageSize,
   onPageChange,
+  isLoading,
+  isFetching,
 }: TableContainerProps) {
   return (
     <Flex direction="column" width="100%">
@@ -69,6 +73,8 @@ export default function TableContainer({
         totalItems={totalItems}
         onPageChange={onPageChange}
         pageSize={pageSize}
+        isLoading={isLoading}
+        isFetching={isFetching}
       />
 
       <div className={styles.pagination}>

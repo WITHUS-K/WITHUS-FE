@@ -11,16 +11,27 @@ import {
   AnswerFile,
   QuestionAndFileListForm,
 } from '@web/components/QuestionFileListForm/QuestionFileListForm';
-import type { DetailItem } from '@web/types/application';
+import type { DetailItem, InterviewScheduleItem } from '@web/types/application';
 import * as styles from './ApplicantDetail.css';
 import { ApplicationDetail } from '@web/store/query/useApplicationDetailQuery';
 import { Divider } from '@repo/ui';
+import { useSearchParams } from 'next/navigation';
+import { TimeRange } from '@web/components/TimeTable/SelectableTimeTable';
+import InterviewScheduleViewer from '../InterviewScheduleViewer/InterviewScheduleViewer';
 
 interface ApplicantDetailProps {
   application: ApplicationDetail;
+  scheduleMap?: Record<string, TimeRange[]>;
+  interviewDuration?: number;
+  applicantMap?: Record<string, InterviewScheduleItem[]>;
 }
 
-export default function ApplicantDetail({ application }: ApplicantDetailProps) {
+export default function ApplicantDetail({
+  application,
+  scheduleMap,
+  interviewDuration,
+  applicantMap,
+}: ApplicantDetailProps) {
   const textItems: DetailItem[] = application.documentAnswers
     .filter((a) => a.questionType === 'TEXT')
     .map((a, idx) => ({
@@ -71,7 +82,7 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
 
   const detailItems = [...textItems, ...fileItems];
 
-  console.log('지원서', application);
+  //console.log('지원서', application);
   //const answers = application.documentAnswers.map((a) => a.answerText);
   const files1d = application.documentAnswers
     .filter((a) => a.questionType === 'FILE')
@@ -108,8 +119,6 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
       date: application.finalResultDate,
     },
   ];
-
-  console.log('지원자 상세', application);
 
   return (
     <Flex
@@ -155,47 +164,60 @@ export default function ApplicantDetail({ application }: ApplicantDetailProps) {
         </Flex>
 
         <Flex direction="column" gap="4rem" width="100%">
-          <BasicInfoForm
-            value={{
-              name: application.name,
-              phone: application.phoneNumber,
-              birthDate: application.birthDate ?? '',
-              gender: application.gender?.toLowerCase() as
-                | 'male'
-                | 'female'
-                | undefined,
-              email: application.email,
-            }}
-            file={application.imageUrl}
-            onChange={() => {}}
-            onImageChange={() => {}}
-            readOnly
-            needGender={!!application.gender}
-            needBirthDate={!!application.birthDate}
-          />
-          <AdditionalInfoForm
-            value={{
-              school: application.university,
-              academicStatus: application.academicStatus as AcademicStatus,
-              major: application.major,
-              address: application.address,
-            }}
-            onChange={() => {}}
-            readOnly
-            needSchool={!!application.university}
-            needAcademicStatus={!!application.academicStatus}
-            needMajor={!!application.major}
-            needAddress={!!application.address}
-          />
-        </Flex>
+          <Flex direction="column" gap="4rem" width="100%">
+            <BasicInfoForm
+              value={{
+                name: application.name,
+                phone: application.phoneNumber,
+                birthDate: application.birthDate ?? '',
+                gender: application.gender?.toLowerCase() as
+                  | 'male'
+                  | 'female'
+                  | undefined,
+                email: application.email,
+              }}
+              file={application.imageUrl}
+              onChange={() => {}}
+              onImageChange={() => {}}
+              readOnly
+              needGender={!!application.gender}
+              needBirthDate={!!application.birthDate}
+            />
+            <AdditionalInfoForm
+              value={{
+                school: application.university,
+                academicStatus: application.academicStatus as AcademicStatus,
+                major: application.major,
+                address: application.address,
+              }}
+              onChange={() => {}}
+              readOnly
+              needSchool={!!application.university}
+              needAcademicStatus={!!application.academicStatus}
+              needMajor={!!application.major}
+              needAddress={!!application.address}
+            />
+          </Flex>
 
-        <QuestionAndFileListForm
-          detailItems={detailItems}
-          files={files2d}
-          onAnswerChange={() => {}}
-          onFileChange={() => {}}
-          readOnly={true}
-        />
+          <QuestionAndFileListForm
+            detailItems={detailItems}
+            files={files2d}
+            onAnswerChange={() => {}}
+            onFileChange={() => {}}
+            readOnly={true}
+          />
+
+          {/* 일단 주석처리 - api 수정 되면 반영하기
+  {scheduleMap &&
+    Object.values(scheduleMap).some((arr) => arr.length > 0) && (
+      <InterviewScheduleViewer
+        scheduleMap={scheduleMap}
+        applicantMap={applicantMap!}
+        duration={interviewDuration!}
+      />
+    )}
+*/}
+        </Flex>
       </div>
     </Flex>
   );

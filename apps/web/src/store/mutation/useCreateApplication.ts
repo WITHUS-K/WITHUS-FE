@@ -62,7 +62,7 @@ export function useCreateApplication() {
       // 1) FormData 생성
       const form = new FormData();
 
-      //console.log('payload to be stringified:', payload);
+      console.log('payload to be stringified:', payload);
       //console.log('JSON stringified:', JSON.stringify(payload));
 
       form.append(

@@ -41,7 +41,7 @@ export interface AnnouncementResult {
 
 export interface InterviewScheduleItem {
   // 면접 일정 세부 값
-  date: string;
+  date: string | undefined;
   startTime: string;
   endTime: string;
 }

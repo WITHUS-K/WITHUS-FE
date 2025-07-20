@@ -39,7 +39,7 @@ export default function PreviewComponent() {
       label: '면접 일정',
       date: form.interviewSchedule?.scheduleList.length
         ? form.interviewSchedule.scheduleList
-            .map((s) => format(parseISO(s.date), 'yyyy/MM/dd'))
+            .map((s) => format(parseISO(s.date!), 'yyyy/MM/dd'))
             .join(', ')
         : '',
     },
@@ -164,7 +164,7 @@ export default function PreviewComponent() {
               style={{ marginTop: '1.6rem' }}
             >
               {dates.map((isoDate) => {
-                const dt = parseISO(isoDate);
+                const dt = parseISO(isoDate!);
                 const label = format(dt, 'yyyy년 MM월 dd일 (EEE)', {
                   locale: ko,
                 });

@@ -352,7 +352,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
       }, []);
 
       const rawTimes = vals.interviewSchedule.scheduleList.flatMap((slot) => {
-        const date = slot.date.replace(/\./g, '-');
+        const date = slot.date!.replace(/\./g, '-');
         const start = new Date(`${date}T${slot.startTime}:00`);
         const end = new Date(`${date}T${slot.endTime}:00`);
         const interval = data.interviewDuration;
@@ -402,10 +402,10 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
             router.replace(
               `/apply/${data.organizationName}/${slug}/submitted?title=${encodeURIComponent(data.title)}`
             );
-            console.log('지원서 생성 성공 res:', res);
+            //console.log('지원서 생성 성공 res:', res);
           },
           onError: (err) => {
-            console.error('지원서 생성 에러:', err);
+            //console.error('지원서 생성 에러:', err);
           },
         }
       );

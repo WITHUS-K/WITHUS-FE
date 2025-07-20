@@ -4,6 +4,7 @@ import { queryKeys } from '../constants';
 
 export interface DistributeRequest {
   recruitmentId: number;
+  evaluationType: 'DOCUMENT' | 'INTERVIEW';
   assignments: Array<{
     positionId: number;
     organizationRoleId: number;
@@ -16,11 +17,12 @@ export function useDistributeEvaluators(recruitmentId: number) {
   const qc = useQueryClient();
   return useMutation<string, Error, DistributeRequest>({
     mutationFn: async (body) => {
+      console.log('분배 payload', body);
       const res = await POST<string>(
         'api/v1/admin/applications/distribute-evaluators',
         body
       );
-      console.log('분배', body);
+
       console.log('분배', res);
       return res.result;
     },

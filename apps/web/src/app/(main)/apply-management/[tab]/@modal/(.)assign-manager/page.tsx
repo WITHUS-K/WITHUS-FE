@@ -29,9 +29,10 @@ export default function AssignManagerModal() {
             cancelProps={{ onClick: close }}
             confirmProps={{
               onClick: async () => {
-                // content 내부의 handleConfirm 호출 → API 요청
-                await contentRef.current?.handleConfirm();
-                close();
+                const success = await contentRef.current?.handleConfirm();
+                if (success) {
+                  close(); // 성공했을 때만 닫기
+                }
               },
             }}
           />

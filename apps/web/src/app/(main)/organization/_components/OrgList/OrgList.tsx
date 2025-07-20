@@ -47,8 +47,8 @@ export default function OrgList({
 
       <div
         className={styles.listContainer}
-        ref={listRef}
-        style={{ paddingBottom: isScrollable ? '5rem' : '0.6rem' }}
+        //ref={listRef}
+        //style={{ paddingBottom: isScrollable ? '5rem' : '0.6rem' }}
       >
         {data.map((m, idx) => (
           <OrgListItem

@@ -9,6 +9,7 @@ import { TabBar } from '@repo/ui/TabBar';
 import { useRecruitmentsQuery } from '@web/store/query/useRecruitmentsQuery';
 import { useAdminApplicationsQuery } from '@web/store/query/useAdminApplicationsQuery';
 import TabClient from './TabClient';
+import { container } from './layout.css';
 
 const TAB_KEYS = ['documents', 'interviews', 'final', 'rejected'];
 
@@ -78,9 +79,8 @@ export default function PageClient({
         style={{
           display: 'flex',
           flexDirection: 'column',
-          padding: '2.4rem',
-          height: '100%',
           width: '100%',
+          padding: '2.4rem',
         }}
       >
         {!isNaN(recruitmentId) && (
@@ -105,7 +105,12 @@ export default function PageClient({
             </div>
           </Flex>
         )}
-        <Flex width="100%" marginTop={!isNaN(recruitmentId) ? '2.4rem' : '0'}>
+        <Flex
+          width="100%"
+          paddingBottom="1.5rem"
+          height="100%"
+          marginTop={!isNaN(recruitmentId) ? '2.4rem' : '0'}
+        >
           <TabClient />
         </Flex>
       </div>

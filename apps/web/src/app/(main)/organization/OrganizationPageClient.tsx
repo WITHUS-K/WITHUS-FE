@@ -172,48 +172,50 @@ export default function OrganizationPageClient({
           totalCount={totalCount}
           onDelete={handleDeleteClick}
         />
-        <OrgList
-          data={filtered.map((m) => ({
-            id: String(m.userId),
-            name: m.name,
-            email: m.email,
-            profileUrl: m.profileImageUrl ?? '',
+        <Flex width="100%" paddingBottom="1.5rem" height="100%">
+          <OrgList
+            data={filtered.map((m) => ({
+              id: String(m.userId),
+              name: m.name,
+              email: m.email,
+              profileUrl: m.profileImageUrl ?? '',
 
-            roles: m.roles.map((r) => ({
+              roles: m.roles.map((r) => ({
+                id: r.id,
+                label: r.roleName,
+                color: mapServerColorToTagHex(r.color),
+              })),
+
+              gender: m.gender,
+              dob: m.birthDate,
+              phone: m.phoneNumber,
+              joined: m.createdAt,
+            }))}
+            page={page}
+            selectedIds={selectedIds}
+            onToggleAll={handleToggleAll}
+            onToggleOne={handleToggleOne}
+            availableRoles={rolesData.roles.map((r) => ({
               id: r.id,
               label: r.roleName,
               color: mapServerColorToTagHex(r.color),
-            })),
-
-            gender: m.gender,
-            dob: m.birthDate,
-            phone: m.phoneNumber,
-            joined: m.createdAt,
-          }))}
-          page={page}
-          selectedIds={selectedIds}
-          onToggleAll={handleToggleAll}
-          onToggleOne={handleToggleOne}
-          availableRoles={rolesData.roles.map((r) => ({
-            id: r.id,
-            label: r.roleName,
-            color: mapServerColorToTagHex(r.color),
-          }))}
-          search={search}
-          onPartClick={handlePartClick}
-        />
-        <div className={styles.paginationStyle}>
-          <Pagination
-            currentPage={page}
-            totalItems={totalCount}
-            itemCountPerPage={PAGE_SIZE}
-            pageCount={5}
-            onPageChange={(p) => {
-              router.push(`?page=${p}`);
-              setSelectedIds([]);
-            }}
+            }))}
+            search={search}
+            onPartClick={handlePartClick}
           />
-        </div>
+          <div className={styles.paginationStyle}>
+            <Pagination
+              currentPage={page}
+              totalItems={totalCount}
+              itemCountPerPage={PAGE_SIZE}
+              pageCount={5}
+              onPageChange={(p) => {
+                router.push(`?page=${p}`);
+                setSelectedIds([]);
+              }}
+            />
+          </div>
+        </Flex>
       </Flex>
     </>
   );

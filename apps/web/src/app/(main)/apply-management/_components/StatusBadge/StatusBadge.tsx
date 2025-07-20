@@ -12,7 +12,8 @@ export type Status =
   | '면접 합격'
   | '면접 불합격'
   | '최종 합격'
-  | '불합격';
+  | '불합격'
+  | '면접 보류';
 
 interface Props {
   status: Status;
@@ -22,7 +23,7 @@ export default function StatusBadge({ status }: Props) {
   let variantClass;
   if (status === '선택') {
     variantClass = styles.selected;
-  } else if (status === '보류') {
+  } else if (status.includes('보류')) {
     variantClass = styles.onHold;
   } else if (status.includes('불합격')) {
     variantClass = styles.fail;

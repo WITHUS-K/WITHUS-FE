@@ -84,12 +84,16 @@ async function fetchWrapperWithTokenHandler<Data>(
       if (status === STATUS.NOT_FOUND) {
         notFound();
       }
+      /*if (status === STATUS.UNKNOWN) {
+        throw error; // 핵심!!
+      }*/
     }
 
     // 그 외 오류
-    throw new Error(
+    /*throw new Error(
       `API 요청 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`
-    );
+    );*/
+    throw error;
   }
 }
 

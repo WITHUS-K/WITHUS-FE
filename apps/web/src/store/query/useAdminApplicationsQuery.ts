@@ -118,7 +118,7 @@ export function getAdminApplicationsQueryOptions(
     sortBy = 'NAME',
     direction = 'ASC',
     page = 0,
-    size = 7,
+    size = 20,
     tokens,
   } = params;
 
