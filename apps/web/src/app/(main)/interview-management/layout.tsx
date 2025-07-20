@@ -1,8 +1,8 @@
 // app/(main)/interview-management/InterviewLayout.tsx
 'use client';
 
-import { ReactNode } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { ReactNode, useEffect } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Filters from './_components/Filters/Filters';
 import { Flex } from '@repo/ui/Flex';
 import { IcCalendar } from '@repo/ui/icons/colored';
@@ -11,12 +11,20 @@ import { Text } from '@repo/ui/Text';
 export default function InterviewLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   // ① timetable 경로인지 확인
   const isTimetable = pathname.includes('/interview-management/timetable/');
   // ② URL 에 interviewId 가 있는지
   const ivParam = searchParams.get('interviewId');
   const interviewId = ivParam ? Number(ivParam) : undefined;
+  const ridParam = searchParams.get('recruitmentId');
+
+  useEffect(() => {
+    if (isTimetable && !interviewId && ridParam) {
+      router.replace(`/interview-management?recruitmentId=${ridParam}`);
+    }
+  }, [isTimetable, interviewId, ridParam, router]);
 
   // ③ 기본 detail 페이지 구분은 그대로
   const isDetail = pathname.includes('/application/');
@@ -34,7 +42,7 @@ export default function InterviewLayout({ children }: { children: ReactNode }) {
       {!isDetail && <Filters />}
 
       {/*
-        ④ timetable 경로 + interviewId 없으면 placeholder,
+        timetable 경로 + interviewId 없으면 placeholder,
            그렇지 않으면 자식 렌더
       */}
       {!interviewId ? (

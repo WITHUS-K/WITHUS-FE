@@ -243,6 +243,7 @@ export default function Filters() {
       body: {
         interviewerPerSlot: settings.interviewerPerSlot,
         applicantPerSlot: settings.applicantPerSlot,
+        assistantPerSlot: settings.assistantPerSlot,
         roomCount: settings.rooms.length,
         roomNames: settings.rooms, // ← 방 이름 배열 추가
       },
@@ -262,9 +263,10 @@ export default function Filters() {
   const handleRegenerateConfirm = () =>
     confirm({
       type: 'info',
-      description: '면접 테이블을 확정하시겠습니까?',
+      title: '타임테이블 재생성',
+      description: '타임테이블을 재성성 하시겠습니까?',
       cancelText: '취소',
-      confirmText: '저장',
+      confirmText: '재생성',
       onConfirm: handleRegenerate,
     });
 
@@ -274,18 +276,6 @@ export default function Filters() {
     isGenerated && !isEditing ? '타임테이블 재생성' : '타임테이블 생성';
   const btnAction =
     isGenerated && !isEditing ? handleRegenerateConfirm : handleGenerate;
-
-  // 저장 핸들러
-  const handleSave = () =>
-    confirm({
-      type: 'info',
-      description: `면접 타임테이블을 저장하시겠습니까?\n 저장 후에도 언제든 수정 가능합니다.`,
-      cancelText: '취소',
-      confirmText: '저장',
-      onConfirm: () => {
-        /* TODO */
-      },
-    });
 
   return (
     <Flex direction="column" width="100%" gap="2.5rem">
@@ -349,16 +339,6 @@ export default function Filters() {
               style={{ padding: '0.8rem 2rem' }}
             >
               {btnLabel}
-            </Button>
-            <Button
-              variant="main"
-              size="40"
-              leftIcon={<IcSave width={24} height={24} />}
-              disabled={!isGenerated || isEditing}
-              onClick={handleSave}
-              style={{ padding: '0.8rem 2rem' }}
-            >
-              저장
             </Button>
           </Flex>
         </Flex>
