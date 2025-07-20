@@ -30,8 +30,12 @@ export default function ApplicationListClient() {
     setSearch(e.target.value);
 
   const handleModify = (item: RecruitmentDto) => {
+    const hasApplicants = item.positionSummaries.some(
+      (summary) => summary.applicantCount > 0
+    );
+
     router.push(
-      `/application-list/setting/${item.recruitmentId}?isTemporary=${item.isTemporary}`
+      `/application-list/setting/${item.recruitmentId}?isTemporary=${item.isTemporary}&hasApplicants=${hasApplicants}`
     );
   };
 
