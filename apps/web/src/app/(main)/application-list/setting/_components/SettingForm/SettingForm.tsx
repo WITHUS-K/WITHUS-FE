@@ -51,6 +51,8 @@ export function SettingForm({
   const isTemporaryParam = searchParams.get('isTemporary');
   const hasIdParam = lastSegment != null && lastSegment !== 'new';
   const isTemporary = isTemporaryParam === 'true';
+  const hasApplicantsParam = searchParams.get('hasApplicants');
+  const hasApplicants = hasApplicantsParam === 'true';
 
   const ctx = useContext(SettingContext)!;
   const toast = useToast();
@@ -306,7 +308,7 @@ export function SettingForm({
               size="40"
               width="13.2rem"
               onClick={handleSave}
-              disabled={!isTemporary && hasIdParam}
+              disabled={hasApplicants || (!isTemporary && hasIdParam)}
             >
               임시 저장
             </Button>
@@ -314,7 +316,7 @@ export function SettingForm({
               variant="main"
               type="submit"
               form="application-form"
-              disabled={!canSubmit}
+              disabled={hasApplicants || !canSubmit}
               size="40"
               width="10rem"
             >
