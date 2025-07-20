@@ -31,3 +31,10 @@ export const tagStyle = style({
     borderRadius: '8px',
     backgroundColor: vars.colors.white,
 })
+
+export const levelsWrapper = style({
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.6rem',
+    width: '100%',
+})

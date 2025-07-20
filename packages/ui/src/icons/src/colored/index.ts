@@ -25,6 +25,8 @@ export { default as IcDotsMenu } from './IcDotsMenu';
 export { default as IcDownload } from './IcDownload';
 export { default as IcDropdwonGray90 } from './IcDropdwonGray90';
 export { default as IcEditMenu } from './IcEditMenu';
+export { default as IcExpiredDateLg } from './IcExpiredDateLg';
+export { default as IcExpiredDateSm } from './IcExpiredDateSm';
 export { default as IcFileDelete } from './IcFileDelete';
 export { default as IcFileInfo } from './IcFileInfo';
 export { default as IcFilePlus } from './IcFilePlus';
