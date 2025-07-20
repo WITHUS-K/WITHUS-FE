@@ -13,6 +13,7 @@ import { queryKeys } from '../constants';
 export interface ScheduleBody {
   interviewerPerSlot: number;
   applicantPerSlot: number;
+  assistantPerSlot: number;
   roomCount: number;
   roomNames: string[];
 }
@@ -35,6 +36,7 @@ export function useCreateScheduleMutation(): UseMutationResult<
     mutationKey: queryKeys.interview.scheduleCreate(),
     mutationFn: async ({ recruitmentId, interviewId, body }) => {
       // RESTful 경로로 변경
+      console.log('보내는거', body);
       const url = `api/v1/interviews/recruitments/${recruitmentId}/interviews/${interviewId}/schedule`;
       const res = await POST<CreateScheduleResult>(url, body);
       console.log('타임테이블 생성', res);
