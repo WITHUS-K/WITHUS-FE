@@ -41,7 +41,7 @@ import {
 } from './_components/FormNavigator/FormNavigator';
 import { FormFieldStatusProvider } from './_context/FormFieldStatusContext';
 import { PartStatusResetter } from './_context/PartStatusResetter';
-import { Spinner } from '@repo/ui/Spinner';
+import Spinner from 'node_modules/@repo/ui/dist/components/Spinner/Spinner';
 
 interface ApplicationClientProps {
   slug: string;

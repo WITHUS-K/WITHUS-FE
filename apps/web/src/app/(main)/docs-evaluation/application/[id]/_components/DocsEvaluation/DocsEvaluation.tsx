@@ -4,6 +4,7 @@ import { Flex } from '@repo/ui/Flex';
 import { Stepper } from '@repo/ui/Stepper';
 import { Tag } from '@repo/ui/Tag';
 import { Text } from '@repo/ui/Text';
+import { Option } from '@repo/ui/Option';
 
 import * as styles from './DocsEvaluation.css';
 import { IcScore } from '@repo/ui/icons/colored';
@@ -29,10 +30,22 @@ export const DocsEvaluation = ({
   onSave,
   average,
 }: DocsEvaluationProps) => {
+  const levels = [
+    { id: 10, name: '만족' },
+    { id: 5, name: '보통' },
+    { id: 0, name: '불만족' },
+  ];
   const total = scores.reduce((sum, v) => sum + v, 0);
   const maxTotal = scores.length * 10;
   const averageScore =
-    scores.length > 0 ? (total / scores.length).toFixed(1) : '0';
+    scores.length > 0 ? (total / scores.length).toFixed(0) : '0';
+
+  const isLevel = evaluationData.evaluationType === 'level';
+  const displayTotal = isLevel ? Math.round((total / maxTotal) * 100) : total;
+  const displayMax = isLevel ? 100 : maxTotal;
+  const displayAverage = isLevel
+    ? ((total / maxTotal) * 100).toFixed(0)
+    : averageScore;
 
   return (
     <Flex direction="column" gap="3.2rem" width="100%">
@@ -76,18 +89,40 @@ export const DocsEvaluation = ({
                 />
               </Flex>
 
-              {/* 점수 스테퍼 */}
-              <Flex direction="column" gap="2rem">
-                <Text variant="md1_text_semibold" color="grayscale90">
-                  점수
-                </Text>
-                <Stepper
-                  name={`score-${idx}`}
-                  value={scores[idx] ?? 0}
-                  onChange={onScoreChange}
-                  disabled={false}
-                />
-              </Flex>
+              {evaluationData.evaluationType === 'score' ? (
+                // 점수제 평가
+                <Flex direction="column" gap="2rem">
+                  <Text variant="md1_text_semibold" color="grayscale90">
+                    점수
+                  </Text>
+                  <Stepper
+                    name={`score-${idx}`}
+                    value={scores[idx] ?? 0}
+                    onChange={onScoreChange}
+                    disabled={false}
+                  />
+                </Flex>
+              ) : (
+                // 3단계 평가
+                <Flex direction="column" gap="2rem" width="15%">
+                  <Text variant="md1_text_semibold" color="grayscale90">
+                    점수
+                  </Text>
+                  <div className={styles.levelsWrapper}>
+                    {levels.map((l) => (
+                      <Option
+                        key={l.id}
+                        type="radio"
+                        label={l.name}
+                        isSelected={scores[idx] === l.id}
+                        onChange={() => onScoreChange(`score-${idx}`, l.id)}
+                        width="100%"
+                        height="4.4rem"
+                      />
+                    ))}
+                  </div>
+                </Flex>
+              )}
             </Flex>
 
             <Divider length="100%" borderColor="grayscale10" />
@@ -105,15 +140,15 @@ export const DocsEvaluation = ({
           <Flex gap="1.6rem" align="center">
             <Flex gap="0" align="center">
               <Text variant="md1_text_semibold" color="primary50">
-                {total}
+                {displayTotal}
               </Text>
               <Text variant="md1_text_semibold" color="grayscale70">
-                /{maxTotal}점
+                /{displayMax}점
               </Text>
             </Flex>
             <div className={styles.tagStyle}>
               <Text variant="xs_caption_medium" color="grayscale50">
-                평균 점수: {averageScore}점
+                평균 점수: {displayAverage}점
               </Text>
             </div>
           </Flex>
