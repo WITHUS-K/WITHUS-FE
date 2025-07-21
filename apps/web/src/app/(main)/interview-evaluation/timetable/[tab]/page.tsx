@@ -19,7 +19,6 @@ export default function EvaluationTimetablePage() {
 
   const { data: slots = [] } = useMyTimeSlotsQuery(interviewId);
   console.log('내 배정', slots);
-  if (!slots.length) return <Text>배정된 시간이 없습니다.</Text>;
 
   const schedulesByDate = useMemo(() => {
     return slots.reduce<Record<string, typeof slots>>((map, schedule) => {
@@ -34,6 +33,8 @@ export default function EvaluationTimetablePage() {
     (acc[slot.date] = acc[slot.date] || []).push(slot);
     return acc;
   }, {});
+
+  // if (!slots.length) return <Text>배정된 시간이 없습니다.</Text>;
 
   return (
     <Flex gap="6.4rem" justify="center" paddingBottom="4rem">

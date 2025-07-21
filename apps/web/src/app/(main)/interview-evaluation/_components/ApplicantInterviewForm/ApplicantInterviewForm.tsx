@@ -18,10 +18,11 @@ import { useAddCommentMutation } from '@web/store/mutation/useAddCommentMutation
 import { useUpdateCommentMutation } from '@web/store/mutation/useUpdateCommentMutation';
 import { useAddEvaluationMutation } from '@web/store/mutation/useAddEvaluationMutation';
 import { useParams, useSearchParams } from 'next/navigation';
-import { getOriginalFileName } from '@web/utils/file';
+
 import { useFileDownload } from '@web/store/mutation/useFileDownload';
 import { useRecruitmentDetailQuery } from '@web/store/query/useRecruitmentDetailQuery';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+import { getOriginalFileName } from '@web/components/FileUpload/FileUpload';
 
 export interface FileInfo {
   name: string;
@@ -46,15 +47,49 @@ export const ApplicantInterviewForm = ({
   const { data: recruitmentDetail } = useRecruitmentDetailQuery({
     recruitmentId,
   });
+  console.log('공고', recruitmentDetail);
+  const positionName = recruitmentDetail?.positions.find(
+    (p) => p.id === detail.appliedPosition
+  )?.name;
 
-  console.log('타임슬롯', timeSlotId);
-
-  const interviewCriteria =
+  // 해당 포지션의 Interview 평가 기준만 추출
+  const allCriteria =
     recruitmentDetail?.interviewEvaluationCriteria.filter(
-      (c) => c.type === 'INTERVIEW'
+      (c) => c.type === 'INTERVIEW' && c.positionName === positionName
     ) ?? [];
 
-  console.log('면접', interviewCriteria);
+  //console.log('타임슬롯', timeSlotId);
+
+  const mergedCriteria = allCriteria.map((c) => {
+    const existing = detail.evaluations.find(
+      (e) => e.criteria.id === c.id && e.user.userId === myUserId // ← 여기서 내 userId 로 추가 필터링
+    );
+
+    return {
+      id: c.id,
+      content: c.content,
+      description: c.description,
+      // 내 평가가 있으면 그 점수, 없으면 null → SelectScoreDropdown 은 빈 값으로 렌더
+      score: existing?.score ?? null,
+    };
+  });
+
+  const [scores, setScores] = useState<Record<number, string>>(() =>
+    mergedCriteria.reduce(
+      (acc, c) => {
+        if (c.score != null) acc[c.id] = String(c.score);
+        return acc;
+      },
+      {} as Record<number, string>
+    )
+  );
+
+  /*const interviewCriteria =
+    recruitmentDetail?.interviewEvaluationCriteria.filter(
+      (c) => c.type === 'INTERVIEW'
+    ) ?? [];*/
+
+  //console.log('면접', interviewCriteria);
   // Mutations
   const addComment = useAddCommentMutation(detail.applicationId, timeSlotId);
   const updateComment = useUpdateCommentMutation(
@@ -67,7 +102,7 @@ export const ApplicantInterviewForm = ({
     timeSlotId
   );
 
-  const [scores, setScores] = useState<Record<number, string>>(() =>
+  /*const [scores, setScores] = useState<Record<number, string>>(() =>
     detail.evaluations.reduce(
       (acc, e) => {
         acc[e.criteria.id] = String(e.score);
@@ -75,11 +110,11 @@ export const ApplicantInterviewForm = ({
       },
       {} as Record<number, string>
     )
-  );
+  );*/
 
-  const myDocumentComment =
-    detail.documentComments.find((c: CommentItem) => c.user.userId === myUserId)
-      ?.content ?? '';
+  const myDocumentComments = detail.documentComments.filter(
+    (c) => c.type === 'DOCUMENT' && c.user.userId === myUserId
+  );
 
   // 내 면접 코멘트
   const existingInterviewCommentItem = detail.interviewComments.find(
@@ -91,6 +126,10 @@ export const ApplicantInterviewForm = ({
   const [newComment, setNewComment] = useState(myInterviewComment);
   const [isSubmitted, setIsSubmitted] = useState(
     !!existingInterviewCommentItem
+  );
+
+  const fileAnswers = detail.documentAnswers.filter(
+    (q) => q.questionType === 'FILE'
   );
 
   const download = useFileDownload();
@@ -106,6 +145,7 @@ export const ApplicantInterviewForm = ({
     } else {
       addComment.mutate({ content: newComment, type: 'INTERVIEW' });
     }
+    ('');
     setIsSubmitted(true);
   };
 
@@ -129,7 +169,7 @@ export const ApplicantInterviewForm = ({
     <div className={styles.content}>
       <section aria-labelledby="self-intro-and-portfolio">
         <Text variant="lg_subtitle_semibold" color="grayscale90">
-          자기소개서 & 포트폴리오
+          작성 정보
         </Text>
 
         <Flex
@@ -140,7 +180,7 @@ export const ApplicantInterviewForm = ({
           marginTop="2.4rem"
         >
           <Text variant="md2_text_semibold" color="grayscale70">
-            자기소개서 문항
+            질문 항목
           </Text>
 
           <AccordianList
@@ -156,29 +196,29 @@ export const ApplicantInterviewForm = ({
           />
         </Flex>
 
-        <Flex
-          direction="column"
-          align="flexStart"
-          gap="1.6rem"
-          marginTop="3.2rem"
-        >
-          <Text variant="md2_text_semibold" color="grayscale70">
-            포트폴리오
-          </Text>
-          {detail.documentAnswers
-            .filter((q) => q.fileUrl)
-            .map((q) => (
+        {fileAnswers.length > 0 && (
+          <Flex
+            direction="column"
+            align="flexStart"
+            gap="1.6rem"
+            marginTop="3.2rem"
+          >
+            <Text variant="md2_text_semibold" color="grayscale70">
+              첨부파일
+            </Text>
+            {fileAnswers.map((q) => (
               <FileUploader
                 key={q.questionId}
                 file={{
-                  name: getOriginalFileName(q.fileUrl!), // 혹은 실제 파일명 정보가 있다면 그걸 사용
+                  name: getOriginalFileName(q.fileUrl!, true),
                   downloadUrl: q.fileUrl!,
                   size: 10 * 1024 * 1024,
                 }}
                 onDownload={handleDownload}
               />
             ))}
-        </Flex>
+          </Flex>
+        )}
       </section>
 
       <Divider borderColor="grayscale10" />
@@ -217,7 +257,7 @@ export const ApplicantInterviewForm = ({
           </Text>
 
           <Flex direction="column" width="100%" gap="1.6rem">
-            {interviewCriteria.map((c) => (
+            {mergedCriteria.map((c) => (
               <Flex key={c.id} width="100%" gap="1.6rem">
                 <AccordianList
                   items={[{ title: c.content, content: c.description }]}
@@ -251,7 +291,13 @@ export const ApplicantInterviewForm = ({
           <Text variant="md2_text_semibold" color="grayscale70">
             서류 평가
           </Text>
-          <div className={styles.comment}>{myDocumentComment}</div>
+          <Flex direction="column" width="100%" gap="1rem">
+            {myDocumentComments.map((c) => (
+              <div key={c.id} className={styles.comment}>
+                {c.content}
+              </div>
+            ))}
+          </Flex>
         </Flex>
 
         <Flex

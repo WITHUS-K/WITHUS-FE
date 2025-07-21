@@ -69,15 +69,21 @@ function extractNameFromDownloadUrl(name: string): string {
   return raw;
 }
 
-function getOriginalFileName(fileRef: string): string {
-  let name = fileRef;
+export function getOriginalFileName(
+  fileRef: string,
+  forReadOnly = false
+): string {
+  let name: string;
   try {
     const url = new URL(fileRef);
     name = decodeURIComponent(url.pathname.split('/').pop() || fileRef);
   } catch {
     name = fileRef.split(/[/\\]/).pop() || fileRef;
   }
-  return name;
+
+  return forReadOnly
+    ? extractNameFromDownloadUrl(name)
+    : extractOriginalNameAsIs(name);
 }
 
 function normalizeFile(f: AnswerFile, forReadOnly = false) {

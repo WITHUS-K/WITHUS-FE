@@ -65,14 +65,17 @@ export const AccordianList = ({
                   {isNumbering && `${idx + 1}. `}
                   {item.title}
                 </Text>
-                <IcArrowDropdown
-                  width={24}
-                  height={24}
-                  className={styles.arrowIcon}
-                />
-              </AccordionTrigger>
 
-              {scoreItems.length > 0 && <ScoreChip items={scoreItems} />}
+                <Flex align="center" gap="2rem">
+                  {scoreItems.length > 0 && <ScoreChip items={scoreItems} />}
+
+                  <IcArrowDropdown
+                    width={24}
+                    height={24}
+                    className={styles.arrowIcon}
+                  />
+                </Flex>
+              </AccordionTrigger>
             </Flex>
 
             <AccordionContent

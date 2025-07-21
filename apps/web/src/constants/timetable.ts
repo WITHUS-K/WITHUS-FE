@@ -23,7 +23,7 @@ export interface InterviewQuestion {
 
 export interface InterviewContentItem {
   question: string;
-  standard: string;
+  standard?: string;
   standardDetail: string;
   reviewers: { name: string; avatar: string; score: number }[];
 }
@@ -40,7 +40,7 @@ export interface Applicant {
     title: string;
     content: IntroductionContent[];
   };
-  portfolioFile: FileInfo;
+  portfolioFile?: FileInfo;
   interviewQuestions: InterviewQuestion[];
   interviewContent: {
     title: string;

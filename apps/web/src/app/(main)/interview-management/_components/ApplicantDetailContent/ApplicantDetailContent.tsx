@@ -25,6 +25,7 @@ export const ApplicantDetailContent = ({
 }: ApplicantDetailContentProps) => {
   const download = useFileDownload();
 
+  console.log('인터뷰', detail.interviewContent);
   const handlePortfolioDownload = (file: FileInfo) => {
     download.mutate({
       imageUrl: file.downloadUrl!,
@@ -36,7 +37,7 @@ export const ApplicantDetailContent = ({
     <div className={styles.content}>
       <section aria-labelledby="self-intro-and-portfolio">
         <Text variant="lg_subtitle_semibold" color="grayscale90">
-          자기소개서 & 포트폴리오
+          작성 정보
         </Text>
 
         <Flex
@@ -47,36 +48,43 @@ export const ApplicantDetailContent = ({
           marginTop="2.4rem"
         >
           <Text variant="md2_text_semibold" color="grayscale70">
-            자기소개서 문항
+            질문 항목
           </Text>
 
-          <AccordianList
-            items={detail.selfIntroductionContent.content
-              .filter((q) => q.questionType === 'TEXT')
-              .map((q) => ({
-                title: q.question,
-                content: q.standardDetail,
-                reviewers: [],
-              }))}
-            isNumbering
-            width="100%"
-          />
+          {detail.selfIntroductionContent.content
+            .filter((q) => q.questionType === 'TEXT')
+            .map((q, i) => (
+              <AccordianList
+                key={i}
+                items={[
+                  {
+                    title: q.question,
+                    content: q.standardDetail,
+                    reviewers: [],
+                  },
+                ]}
+                isNumbering
+                width="100%"
+              />
+            ))}
         </Flex>
 
-        <Flex
-          direction="column"
-          align="flexStart"
-          gap="1.6rem"
-          marginTop="3.2rem"
-        >
-          <Text variant="md2_text_semibold" color="grayscale70">
-            포트폴리오
-          </Text>
-          <FileUploader
-            file={detail.portfolioFile}
-            onDownload={handlePortfolioDownload}
-          />
-        </Flex>
+        {detail.portfolioFile?.downloadUrl && (
+          <Flex
+            direction="column"
+            align="flexStart"
+            gap="1.6rem"
+            marginTop="3.2rem"
+          >
+            <Text variant="md2_text_semibold" color="grayscale70">
+              첨부파일
+            </Text>
+            <FileUploader
+              file={detail.portfolioFile}
+              onDownload={handlePortfolioDownload}
+            />
+          </Flex>
+        )}
       </section>
 
       <Divider borderColor="grayscale10" />
@@ -117,15 +125,20 @@ export const ApplicantDetailContent = ({
             면접 평가
           </Text>
 
-          <AccordianList
-            items={detail.interviewContent.content.map((e) => ({
-              title: e.question,
-              content: e.standardDetail,
-              reviewers: e.reviewers,
-            }))}
-            isNumbering={false}
-            width="100%"
-          />
+          {detail.interviewContent.content.map((e, i) => (
+            <AccordianList
+              key={i}
+              items={[
+                {
+                  title: e.question,
+                  content: e.standardDetail,
+                  reviewers: e.reviewers,
+                },
+              ]}
+              isNumbering={false}
+              width="100%"
+            />
+          ))}
         </Flex>
       </section>
 

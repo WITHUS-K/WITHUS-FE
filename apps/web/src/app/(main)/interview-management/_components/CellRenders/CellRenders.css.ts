@@ -18,13 +18,22 @@ export const profileStyle = style({
   alignItems: 'center',
   justifyContent: 'center',
   borderRadius: '50%',
-  width: '2.4rem',
-  height: '2.4rem',
+  width: '2.5rem',
+  height: '2.5rem',
   padding: '1rem',
+  //border: `1px solid ${vars.colors.grayscale5}`,
   backgroundColor: vars.colors.grayscale5,
 });
 
 export const profileItem = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  //borderRadius: '50%',
+  width: '2.5rem',
+  height: '2.5rem',
+  padding: '0.1rem',
   borderRadius: '50%',
-  border: `1px solid ${vars.colors.grayscale5}`,
+  backgroundColor: vars.colors.black,
+  //border: `1px solid ${vars.colors.grayscale5}`,
 });

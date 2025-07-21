@@ -11,9 +11,21 @@ export interface AddEvaluationRequest {
 }
 export type EvaluationItem = {
   id: number;
-  criteria: { id: number; content: string; description: string; type: string };
+  criteria: {
+    id: number;
+    content: string;
+    description: string;
+    type: 'DOCUMENT' | 'INTERVIEW';
+    positionName: string;
+    score: number;
+  };
   score: number;
-  user: { userId: number; name: string; profileImageUrl?: string };
+  user: {
+    userId: number;
+    name: string;
+    profileImageUrl?: string;
+    profileColor?: string;
+  };
 };
 
 export function useAddEvaluationMutation(

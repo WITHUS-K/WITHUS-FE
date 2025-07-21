@@ -1,7 +1,7 @@
 import React from 'react';
 import { Profile } from '@repo/ui/Profile';
 import { Text } from '@repo/ui/Text';
-import { Callout } from '@repo/ui/Callout';
+import { Callout, HoverCallout } from '@repo/ui/Callout';
 import * as styles from './ProfileGroup.css';
 
 export interface ProfileItem {
@@ -28,11 +28,16 @@ export const ProfileGroup: React.FC<ProfileGroupProps> = ({
     <div className={styles.wrapper}>
       {visibleItems.map((item, i) => (
         <div
-          key={i}
+          key={item.userId ?? i}
           className={styles.profileItem}
           style={{ left: `${i * 1.2}rem` }}
         >
-          <Profile src={item.src} alt={item.name} size={size} />
+          <HoverCallout
+            trigger={
+              <Profile src={item.src} alt={item.name} size={size} bordered />
+            }
+            texts={item.name}
+          />
         </div>
       ))}
 
@@ -41,14 +46,13 @@ export const ProfileGroup: React.FC<ProfileGroupProps> = ({
           className={styles.countItem}
           style={{ left: `${visibleItems.length * 1.2}rem` }}
         >
-          <Callout
+          <HoverCallout
             trigger={
               <Text variant="xs_caption_medium" color="grayscale70">
                 +{hiddenItems.length}
               </Text>
             }
             texts={hiddenItems.map((it) => it.name)}
-            position="bottom"
           />
         </div>
       )}

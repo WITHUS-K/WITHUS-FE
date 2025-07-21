@@ -74,9 +74,9 @@ export default function DetailClient() {
 
   const appliedPosition = application?.appliedPosition; // 예: "1", "2" 등
 
-  // 공통(null) 또는 지원자의 포지션과 일치하는 것만 필터
+  // 지원자의 포지션과 일치하는 것만 필터
   const criteriaList = allCriteria.filter(
-    (c) => c.positionName === null || c.positionName === appliedPosition
+    (c) => c.positionName === appliedPosition
   );
 
   // Evaluation 리스트 생성

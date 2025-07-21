@@ -6,8 +6,30 @@ import { IcTimetableExpand } from '@repo/ui/icons/colored';
 import * as styles from './CellRenders.css';
 import { SlotItem } from '@web/constants/timetable';
 import { TimeSlot } from '@web/store/query/useInterviewScheduleQuery';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
+import { HoverCallout } from '@repo/ui/Callout';
 
 export default function ApplicantCell({ slot }: { slot: TimeSlot }) {
+  const router = useRouter();
+  const params = useParams();
+  const tab = params.tab as string;
+  const date = params.date as string;
+  const sp = useSearchParams();
+
+  const baseQs = sp.toString();
+
+  const withTimeSlot = (path: string) => {
+    const newQs = `${baseQs}&timeSlotId=${slot.timeSlotId}`;
+    router.push(`${path}?${newQs}`);
+  };
+
+  const openApplication = () =>
+    withTimeSlot(
+      `/interview-management/timetable/${tab}/${date}/application/${encodeURIComponent(
+        `${slot.startTime}-${slot.endTime}`
+      )}`
+    );
+
   return (
     <Flex
       align="center"
@@ -23,9 +45,14 @@ export default function ApplicantCell({ slot }: { slot: TimeSlot }) {
           </Chip>
         ))}
       </Flex>
-      <button className={styles.buttonStyle}>
-        <IcTimetableExpand width={16} height={16} />
-      </button>
+      <HoverCallout
+        trigger={
+          <button className={styles.buttonStyle} onClick={openApplication}>
+            <IcTimetableExpand width={16} height={16} />
+          </button>
+        }
+        texts="자세히 보기"
+      />
     </Flex>
   );
 }
