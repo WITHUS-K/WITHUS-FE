@@ -68,25 +68,28 @@ export default function ApplicationDetailClient({
     });
   });
 
-  // 지원자가 앱 신청 시 선택한 **시각들** (로그의 availableTimes)
-  //    e.g. app.availableTimes = ["11:00","11:15", …]
+  console.log('스케쥴', scheduleMap);
+
   const applicantMap: Record<string, InterviewScheduleItem[]> = {};
-  (data.availableTimes ?? []).forEach((time) => {
-    // 가정: 지원자는 한 날짜만 골랐거나, interviewDates[0] 이 시각들의 날짜임
-    const date = data.interviewDates[0];
-    // duration 만큼 더해서 endTime 만들기
-    const startMin = parseToMin(time);
+  for (const dateTime of data.availableTimes ?? []) {
+    if (!dateTime) continue;
+
+    const [date, startTime] = dateTime.split('/');
+    if (!date || !startTime) {
+      continue;
+    }
+
+    const startMin = parseToMin(startTime);
     const endMin = startMin + rec.interviewDuration;
     const hh = String(Math.floor(endMin / 60)).padStart(2, '0');
     const mm = String(endMin % 60).padStart(2, '0');
+    const endTime = `${hh}:${mm}`;
 
-    (applicantMap[date!] ??= []).push({
-      date,
-      startTime: time,
-      endTime: `${hh}:${mm}`,
-    });
-  });
-
+    if (!applicantMap[date]) {
+      applicantMap[date] = [];
+    }
+    applicantMap[date]!.push({ date, startTime, endTime });
+  }
   // console.log('공고 시간', scheduleMap);
 
   // 버튼 핸들러

@@ -46,7 +46,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
             {file.name}
           </Text>
           <Text variant="sm_caption_medium" color="grayscale50">
-            {file.size.toFixed(2)} MB
+            {typeof file.size === 'number' ? `${file.size.toFixed(2)} MB` : ''}
           </Text>
         </Flex>
       </Flex>

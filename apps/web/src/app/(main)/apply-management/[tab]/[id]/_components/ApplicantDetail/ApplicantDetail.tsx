@@ -211,16 +211,14 @@ export default function ApplicantDetail({
             readOnly={true}
           />
 
-          {/* 일단 주석처리 - api 수정 되면 반영하기
-  {scheduleMap &&
-    Object.values(scheduleMap).some((arr) => arr.length > 0) && (
-      <InterviewScheduleViewer
-        scheduleMap={scheduleMap}
-        applicantMap={applicantMap!}
-        duration={interviewDuration!}
-      />
-    )}
-*/}
+          {scheduleMap &&
+            Object.values(scheduleMap).some((arr) => arr.length > 0) && (
+              <InterviewScheduleViewer
+                scheduleMap={scheduleMap}
+                applicantMap={applicantMap!}
+                duration={interviewDuration!}
+              />
+            )}
         </Flex>
       </div>
     </Flex>
