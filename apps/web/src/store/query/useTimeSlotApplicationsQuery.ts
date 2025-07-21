@@ -9,6 +9,7 @@ export interface DocumentAnswer {
   questionType: 'TEXT' | string;
   answerText: string;
   fileUrl?: string;
+  fileSize?: number;
 }
 
 export interface InterviewQuestion {
@@ -18,6 +19,7 @@ export interface InterviewQuestion {
     userId: number;
     name: string;
     profileImageUrl?: string;
+    profileColor?: string;
   };
 }
 
@@ -27,13 +29,16 @@ export interface Evaluation {
     id: number;
     content: string;
     description: string;
-    type: 'DOCUMENT' | string;
+    type: 'DOCUMENT' | 'INTERVIEW';
+    positionName: string;
+    score: number;
   };
   score: number;
   user: {
     userId: number;
     name: string;
     profileImageUrl?: string;
+    profileColor?: string;
   };
 }
 
@@ -46,11 +51,13 @@ export interface CommentItem {
     userId: number;
     name: string;
     profileImageUrl?: string;
+    profileColor: string;
   };
 }
 
 export interface TimeSlotApplication {
   applicationId: number;
+  appliedPosition: number;
   name: string;
   date: string;
   startTime: string;
@@ -80,6 +87,7 @@ export function useTimeSlotApplicationsQuery(
       console.log('지원서', res);
       return res.result;
     },
-    staleTime: 1000 * 60,
+    staleTime: 0, // 캐시를 바로 오래된 것으로 간주
+    refetchOnMount: 'always', // 마운트될 때마다 재요청
   });
 }

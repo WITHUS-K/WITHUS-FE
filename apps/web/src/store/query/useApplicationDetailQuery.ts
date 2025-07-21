@@ -10,6 +10,7 @@ export interface ApplicationAnswer {
   includeWhitespace: boolean;
   maxFileCount: number;
   maxFileSizeMb: number;
+  fileSize?: number;
 }
 
 /** 사용자 요약 정보 */

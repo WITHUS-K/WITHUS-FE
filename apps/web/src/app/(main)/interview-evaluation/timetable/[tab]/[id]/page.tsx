@@ -30,6 +30,8 @@ export default function ApplicantDetailPage() {
     setOpenIdx(null);
   }, [tab, timeSlotId]);
 
+  console.log('지원서', applicants);
+
   if (!timeSlotId || applicants.length === 0) {
     return <></>;
   }

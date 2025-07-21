@@ -13,7 +13,8 @@ import { useTimeSlotApplicationsQuery } from '@web/store/query/useTimeSlotApplic
 import { ApplicantSliderHeader } from '@web/app/(main)/interview-management/_components/ApplicantHeader/ApplicantHeader';
 import { ApplicantDetailContent } from '@web/app/(main)/interview-management/_components/ApplicantDetailContent/ApplicantDetailContent';
 import { Applicant } from '@web/constants/timetable';
-import { getOriginalFileName } from '@web/utils/file';
+import { getOriginalFileName } from '@web/components/FileUpload/FileUpload';
+import { useRecruitmentDetailQuery } from '@web/store/query/useRecruitmentDetailQuery';
 
 export default function ApplicantDetailPage() {
   const router = useRouter();
@@ -26,11 +27,16 @@ export default function ApplicantDetailPage() {
   const [startTime, endTime] = rawTime.split('-');
 
   const timeSlotId = Number(sp.get('timeSlotId'));
+  const recruitmentId = Number(sp.get('recruitmentId'));
   const {
     data: apps,
     isLoading,
     isError,
   } = useTimeSlotApplicationsQuery(timeSlotId);
+
+  const { data: recruitmentDetail } = useRecruitmentDetailQuery({
+    recruitmentId,
+  }); // 면접 기준 가져오기
 
   // Hooks는 모두 위에 호출!
   const [current, setCurrent] = useState(0);
@@ -51,14 +57,48 @@ export default function ApplicantDetailPage() {
     );
   }
 
+  console.log('지원서', apps);
+
   // 이 시점부터 apps는 non-null, length ≥ 1
   const applications = apps;
-  const total = applications.length;
-  const app = applications[current]!;
+  const total = applications!.length;
+  const app = applications![current]!;
 
-  const portfolioUrl = apps?.[current]?.documentAnswers.find(
-    (d) => d.fileUrl
-  )?.fileUrl;
+  const portfolioAnswer = app.documentAnswers.find((d) => !!d.fileUrl);
+
+  console.log('파일', portfolioAnswer);
+  const portfolioUrl = portfolioAnswer?.fileUrl ?? '';
+  const portfolioFile = portfolioUrl
+    ? {
+        name: getOriginalFileName(portfolioUrl, true),
+        size: portfolioAnswer?.fileSize ?? 0,
+        downloadUrl: portfolioUrl,
+      }
+    : undefined;
+
+  const positionName = recruitmentDetail?.positions.find(
+    (p) => p.id === app.appliedPosition
+  )?.name;
+  const criteriaList =
+    recruitmentDetail?.interviewEvaluationCriteria.filter(
+      (c) => c.type === 'INTERVIEW' && c.positionName === positionName
+    ) ?? [];
+
+  const interviewContent = criteriaList.map((c) => {
+    const reviewers = app.evaluations
+      .filter((e) => e.criteria.id === c.id)
+      .map((e) => ({
+        name: e.user.name,
+        avatar: e.user.profileImageUrl!,
+        score: e.score,
+      }));
+
+    return {
+      question: c.content,
+      standardDetail: c.description,
+      reviewers,
+    };
+  });
 
   const detail: Applicant = {
     id: app.applicationId.toString(),
@@ -72,11 +112,7 @@ export default function ApplicantDetailPage() {
         questionType: d.questionType,
       })),
     },
-    portfolioFile: {
-      name: getOriginalFileName(portfolioUrl!),
-      size: 10 * 1024 * 1024,
-      downloadUrl: portfolioUrl || '',
-    },
+    ...(portfolioFile && { portfolioFile }),
     interviewQuestions: app.interviewQuestions.map((q) => ({
       question: q.content,
       src: q.user.profileImageUrl!,
@@ -101,18 +137,7 @@ export default function ApplicantDetailPage() {
     })),
     interviewContent: {
       title: '면접 평가',
-      content: app.evaluations.map((e) => ({
-        question: e.criteria.content,
-        standard: `점수: ${e.score}`,
-        standardDetail: '', // leave empty or fill with additional info
-        reviewers: [
-          {
-            name: e.user.name,
-            avatar: e.user.profileImageUrl!,
-            score: e.score,
-          },
-        ],
-      })),
+      content: interviewContent,
     },
   };
 

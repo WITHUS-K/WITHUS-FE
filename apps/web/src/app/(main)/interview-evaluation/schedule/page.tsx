@@ -117,7 +117,7 @@ export default function SchedulePage() {
       paddingTop="4rem"
     >
       <Flex gap="6.4rem" width="100%" justify="center">
-        {dates.slice(0, 1).map((date) => {
+        {dates.map((date) => {
           const slots = scheduleMap[date];
 
           const label = format(

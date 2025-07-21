@@ -21,10 +21,6 @@ export interface FileUploaderProps {
   readOnly?: boolean;
 }
 
-function formatFileSize(size: number): string {
-  return `${(size / 1024 / 1024).toFixed(2)}MB`;
-}
-
 function getFileExtension(filename: string): string {
   return filename.split('.').pop()?.toUpperCase() ?? 'FILE';
 }
@@ -50,7 +46,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
             {file.name}
           </Text>
           <Text variant="sm_caption_medium" color="grayscale50">
-            {formatFileSize(file.size)}
+            {typeof file.size === 'number' ? `${file.size.toFixed(2)} MB` : ''}
           </Text>
         </Flex>
       </Flex>

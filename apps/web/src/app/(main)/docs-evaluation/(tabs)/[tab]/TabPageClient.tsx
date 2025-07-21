@@ -72,16 +72,20 @@ export default function TabPageClient() {
       <div className={styles.scrollContainer}>
         <Flex wrap="wrap" gap="2rem">
           {apps.map((app) => {
+            const displayPositionName = app.positionName ?? '공통';
             const pos = positions.find((p) => p.name === app.positionName);
-            const color = mapServerColorToTagHex(pos!.color);
+            const tagColor =
+              app.positionName == null
+                ? '#7F82A1'
+                : mapServerColorToTagHex(pos?.color ?? 'GRAY');
             return (
               <ItemCard
                 key={app.id}
                 item={{
                   id: app.id,
                   name: app.name,
-                  positionName: app.positionName,
-                  tagColor: color,
+                  positionName: displayPositionName,
+                  tagColor: tagColor,
 
                   evaluationStatus:
                     app.documentEvaluated === false ? 'BEFORE' : 'COMPLETED',

@@ -19,11 +19,12 @@ export function useAddCommentMutation(
   const qc = useQueryClient();
   return useMutation<CommentItem, Error, AddCommentRequest>({
     mutationFn: async (body) => {
+      console.log('코멘트', body);
+
       const res = await POST<CommentItem>(
         `api/v1/applications/${applicationId}/comments`,
         body
       );
-      console.log('코멘트', body);
       console.log('코멘트', res);
       return res.result;
     },
