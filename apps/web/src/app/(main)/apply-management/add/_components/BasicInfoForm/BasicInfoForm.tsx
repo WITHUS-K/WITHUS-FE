@@ -210,18 +210,20 @@ export function BasicInfoForm({
 
             {needGender &&
               (readOnly ? (
-                <div
-                  className={styles1.fieldGrowForSchool}
-                  style={{ maxWidth: '11rem' }}
-                >
-                  <TextField
-                    inputProps={{
-                      value: value.gender == 'male' ? '남성' : '여성',
-                      disabled: true,
-                    }}
-                    readOnly
-                  />
-                </div>
+                (value.gender === 'male' || value.gender === 'female') && (
+                  <div
+                    className={styles1.fieldGrowForSchool}
+                    style={{ maxWidth: '11rem' }}
+                  >
+                    <TextField
+                      inputProps={{
+                        value: value.gender == 'male' ? '남성' : '여성',
+                        disabled: true,
+                      }}
+                      readOnly
+                    />
+                  </div>
+                )
               ) : (
                 <div
                   id="basic-gender"

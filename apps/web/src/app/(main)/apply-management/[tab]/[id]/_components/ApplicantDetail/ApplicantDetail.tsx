@@ -25,6 +25,10 @@ interface ApplicantDetailProps {
   scheduleMap?: Record<string, TimeRange[]>;
   interviewDuration?: number;
   applicantMap?: Record<string, InterviewScheduleItem[]>;
+  questions?: Array<{
+    questionId: number;
+    required: boolean;
+  }>;
 }
 
 export default function ApplicantDetail({
@@ -32,11 +36,16 @@ export default function ApplicantDetail({
   scheduleMap,
   interviewDuration,
   applicantMap,
+  questions = [],
 }: ApplicantDetailProps) {
+  const requiredMap = new Map<number, boolean>(
+    questions.map((q) => [q.questionId, q.required])
+  );
+
   const textItems: DetailItem[] = application.documentAnswers
     .filter((a) => a.questionType === 'TEXT')
     .map((a, idx) => ({
-      required: true,
+      required: requiredMap.get(a.questionId) ?? true,
       type: 'text',
       description: a.questionTitle,
       responseTarget: idx,
@@ -65,7 +74,7 @@ export default function ApplicantDetail({
     (answersForThisQuestion) => {
       const first = answersForThisQuestion[0];
       return {
-        required: true,
+        required: requiredMap.get(first!.questionId) ?? true,
         type: 'file',
         description: first!.questionTitle,
         addDescription: first!.questionDescription,
