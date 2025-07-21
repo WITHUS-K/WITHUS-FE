@@ -26,6 +26,7 @@ export interface DetailItem {
     info: string;
     infoDetail: string;
   };
+  fileSize?: number;
   answer?: string;
   textLimit?: number;
   includeWhitespace?: boolean;

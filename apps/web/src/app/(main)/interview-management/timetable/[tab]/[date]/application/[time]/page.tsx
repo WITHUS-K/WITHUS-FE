@@ -66,11 +66,12 @@ export default function ApplicantDetailPage() {
 
   const portfolioAnswer = app.documentAnswers.find((d) => !!d.fileUrl);
 
+  console.log('파일', portfolioAnswer);
   const portfolioUrl = portfolioAnswer?.fileUrl ?? '';
   const portfolioFile = portfolioUrl
     ? {
         name: getOriginalFileName(portfolioUrl, true),
-        size: 10 * 1024 * 1024,
+        size: portfolioAnswer?.fileSize ?? 0,
         downloadUrl: portfolioUrl,
       }
     : undefined;

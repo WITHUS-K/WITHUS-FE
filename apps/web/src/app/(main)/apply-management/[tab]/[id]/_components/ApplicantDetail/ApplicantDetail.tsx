@@ -18,6 +18,7 @@ import { Divider } from '@repo/ui';
 import { useSearchParams } from 'next/navigation';
 import { TimeRange } from '@web/components/TimeTable/SelectableTimeTable';
 import InterviewScheduleViewer from '../InterviewScheduleViewer/InterviewScheduleViewer';
+import { fi } from 'date-fns/locale';
 
 interface ApplicantDetailProps {
   application: ApplicationDetail;
@@ -73,6 +74,7 @@ export default function ApplicantDetail({
           info: `${first!.maxFileCount}`,
           infoDetail: `${first!.maxFileSizeMb}`,
         },
+        fileSize: first?.fileSize,
 
         // readOnly 모드에서만 쓰이는 answer 필드
         answer: '',
@@ -99,10 +101,12 @@ export default function ApplicantDetail({
   const files2d: AnswerFile[][] = Object.values(fileByQuestion).map((group) =>
     group.map((a) => ({
       name: decodeURIComponent(a.fileUrl.split('/').pop()!),
-      size: a.maxFileSizeMb,
+      size: a.fileSize!,
       downloadUrl: a.fileUrl,
     }))
   );
+
+  console.log('파일', files2d);
 
   const applicationSchedule = [
     { label: '지원 마감', date: application.documentDeadline },

@@ -9,6 +9,7 @@ export interface DocumentAnswer {
   questionType: 'TEXT' | string;
   answerText: string;
   fileUrl?: string;
+  fileSize?: number;
 }
 
 export interface InterviewQuestion {

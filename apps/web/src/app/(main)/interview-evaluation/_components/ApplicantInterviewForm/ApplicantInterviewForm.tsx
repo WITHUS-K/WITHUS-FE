@@ -212,7 +212,7 @@ export const ApplicantInterviewForm = ({
                 file={{
                   name: getOriginalFileName(q.fileUrl!, true),
                   downloadUrl: q.fileUrl!,
-                  size: 10 * 1024 * 1024,
+                  size: q.fileSize!,
                 }}
                 onDownload={handleDownload}
               />
