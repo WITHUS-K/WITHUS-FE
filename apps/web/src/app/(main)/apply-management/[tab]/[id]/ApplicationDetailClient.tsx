@@ -126,6 +126,7 @@ export default function ApplicationDetailClient({
           scheduleMap={scheduleMap}
           interviewDuration={rec.interviewDuration}
           applicantMap={applicantMap}
+          questions={rec.applicationQuestions}
         />
 
         <div className={styles.rightSection}>
