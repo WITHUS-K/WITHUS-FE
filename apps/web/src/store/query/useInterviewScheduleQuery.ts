@@ -3,9 +3,12 @@ import {
   useSuspenseQuery,
   type FetchQueryOptions,
   UseSuspenseQueryResult,
+  queryOptions,
+  UseSuspenseQueryOptions,
 } from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
 import { queryKeys } from '../constants';
+import { Tokens } from '@web/api/types';
 
 // — 요청/응답 타입 —
 // GET /api/v1/interviews/{interviewId}/schedule
@@ -48,44 +51,40 @@ export interface InterviewSchedule {
   timeSlots: TimeSlot[];
 }
 
-// — QueryOptions & Hook —
-export function getScheduleOptions(
-  interviewId: number
-): FetchQueryOptions<
-  InterviewSchedule[],
-  Error,
-  InterviewSchedule[],
-  ReturnType<typeof queryKeys.interview.schedule>
-> {
-  return {
-    queryKey: queryKeys.interview.schedule(interviewId),
-    queryFn: async () => {
-      const res = await GET<InterviewSchedule[]>(
-        `api/v1/interviews/${interviewId}/schedule`
-      );
-
-      return res.result;
-    },
-    staleTime: 1000 * 60,
-  };
+export interface InterviewScheduleParams {
+  interviewId: number;
+  tokens?: Tokens;
 }
 
 /**
  * @param interviewId
+ * @param tokens  optional authentication tokens
+ */
+export function getInterviewScheduleQueryOptions({
+  interviewId,
+  tokens,
+}: InterviewScheduleParams): UseSuspenseQueryOptions<
+  InterviewSchedule[],
+  Error
+> {
+  return queryOptions<InterviewSchedule[]>({
+    queryKey: queryKeys.interview.schedule(interviewId),
+    queryFn: () =>
+      GET<InterviewSchedule[]>(
+        `api/v1/interviews/${interviewId}/schedule`,
+        undefined,
+        tokens
+      ).then((res) => res.result),
+    staleTime: 1000 * 60,
+    enabled: interviewId > 0,
+  });
+}
+
+/**
+ * @param params.interviewId
+ * @param params.tokens   optional authentication tokens
  * @returns 조직의 면접 스케줄 배열
  */
-export function useInterviewScheduleQuery(
-  interviewId: number
-): UseSuspenseQueryResult<InterviewSchedule[], Error> {
-  return useSuspenseQuery<InterviewSchedule[], Error>({
-    queryKey: queryKeys.interview.schedule(interviewId),
-    queryFn: async () => {
-      const res = await GET<InterviewSchedule[]>(
-        `api/v1/interviews/${interviewId}/schedule`
-      );
-
-      return res.result;
-    },
-    staleTime: 1000 * 60,
-  });
+export function useInterviewScheduleQuery(params: InterviewScheduleParams) {
+  return useSuspenseQuery(getInterviewScheduleQueryOptions(params));
 }

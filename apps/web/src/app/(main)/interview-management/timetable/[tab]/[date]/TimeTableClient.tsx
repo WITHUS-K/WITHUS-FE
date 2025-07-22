@@ -31,14 +31,13 @@ export default function TimetableClient({
   const ivParam = sp.get('interviewId');
   const interviewId = ivParam ? Number(ivParam) : undefined;
 
-  const { data: schedules, isLoading } = useInterviewScheduleQuery(
-    interviewId ?? 0
-  );
+  const { data: schedules, isLoading } = useInterviewScheduleQuery({
+    interviewId: interviewId ?? 0,
+  });
   if (isLoading) return null;
 
   const { data: positions = [] } = useRecruitmentPositionsQuery(recruitmentId);
 
-  // server 에서 주는 color 이름(red, orange, …) → TagHex 매핑
   const serverColorToHex: Record<string, string> = Object.fromEntries(
     positions.map((p) => [p.color, mapServerColorToTagHex(p.color)])
   );

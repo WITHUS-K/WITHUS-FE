@@ -19,8 +19,9 @@ export default function ApplicantDetailPage() {
   const tab = params.tab as string;
 
   const timeSlotId = Number(params.id);
-  const { data: applicants = [], isLoading } =
-    useTimeSlotApplicationsQuery(timeSlotId);
+  const { data: applicants = [], isLoading } = useTimeSlotApplicationsQuery({
+    timeSlotId,
+  });
 
   const [current, setCurrent] = useState(0);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
