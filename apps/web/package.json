@@ -39,6 +39,7 @@
     "@vanilla-extract/recipes": "^0.5.5",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.5",
     "framer-motion": "^12.20.5",
