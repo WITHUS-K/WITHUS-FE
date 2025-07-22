@@ -1,19 +1,22 @@
 'use client';
+
+import React, { useEffect, useState, useCallback } from 'react';
 import { Breadcrumb } from '@repo/ui/Breadcrumb';
-import { Flex, Text } from '@repo/ui';
-import { IcArrowRight } from '@repo/ui/icons/mono';
-import { vars } from '@repo/theme';
+import { ClubDropdown } from '@repo/ui/DropDown';
+import { Text } from '@repo/ui/Text';
+import { Flex } from '@repo/ui/Flex';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+import {
+  useOrganizationInterviewsQuery,
+  OrgInterviewInfo,
+} from '@web/store/query/useOrganizationInterviewsQuery';
+
 export type EvaluationStage = 'schedule' | 'timetable';
 
-const LABEL_MAP: Record<
-  EvaluationStage,
-  {
-    title: string;
-    desc: string;
-  }
-> = {
+const LABEL_MAP: Record<EvaluationStage, { title: string; desc: string }> = {
   schedule: {
-    title: '면접 시간 조율',
+    title: '면접 시간 선택',
     desc: '가능한 시간대를 모두 선택해주세요.\n제출 이후에 시간대 변경을 원하시면, 관리자에게 직접 연락 바랍니다.',
   },
   timetable: {
@@ -23,18 +26,92 @@ const LABEL_MAP: Record<
 };
 
 export function EvaluationHeader({ stage }: { stage: EvaluationStage }) {
+  const router = useRouter();
+  const search = useSearchParams();
+  const params = useParams();
+  const tab = params.tab as string;
+  const ivParam = search.get('interviewId');
+  const { organizationId } = getClientSideTokens();
+
+  // 조직의 면접 목록
+  const { data: orgs = [], isLoading } =
+    useOrganizationInterviewsQuery(organizationId);
+
+  const titles = orgs.map((o) => o.recruitmentTitle);
+  const [selectedTitle, setSelectedTitle] = useState<string>(() => {
+    if (ivParam) {
+      return (
+        orgs.find((o) => o.interviewId === Number(ivParam))?.recruitmentTitle ??
+        ''
+      );
+    }
+    return '';
+  });
+
+  // 첫 렌더 시, interviewId 없으면 첫 면접으로 리다이렉트
+  useEffect(() => {
+    if (!isLoading && orgs.length > 0 && !ivParam) {
+      const first = orgs[0]!;
+      setSelectedTitle(first.recruitmentTitle);
+
+      const base =
+        stage === 'schedule'
+          ? `/interview-evaluation/schedule`
+          : `/interview-evaluation/timetable/${tab}`;
+
+      // 첫 번째 면접의 첫 번째 날짜
+      const defaultDate =
+        first.availableTimeRanges[0]?.date.replace(/\./g, '-') ?? '';
+
+      router.replace(
+        `${base}` +
+          `?interviewId=${first.interviewId}` +
+          `&recruitmentId=${first.recruitmentId}` +
+          (stage === 'timetable' && defaultDate ? `&date=${defaultDate}` : '')
+      );
+    }
+  }, [isLoading, orgs, ivParam, router, stage, tab]);
+
+  // 드롭다운 바꿀 때
+  const handleSelect = useCallback(
+    (title: string) => {
+      setSelectedTitle(title);
+      const info = orgs.find((o) => o.recruitmentTitle === title)!;
+
+      const base =
+        stage === 'schedule'
+          ? `/interview-evaluation/schedule`
+          : `/interview-evaluation/timetable/${tab}`;
+
+      const defaultDate =
+        info.availableTimeRanges[0]?.date.replace(/\./g, '-') ?? '';
+
+      router.replace(
+        `${base}` +
+          `?interviewId=${info.interviewId}` +
+          `&recruitmentId=${info.recruitmentId}` +
+          (stage === 'timetable' && defaultDate ? `&date=${defaultDate}` : '')
+      );
+    },
+    [orgs, router, stage, tab]
+  );
+
   const { title, desc } = LABEL_MAP[stage];
 
   return (
-    <Flex direction="column" gap="0.5rem" width="100%">
+    <Flex direction="column" gap="1rem" align="flexStart">
       <Breadcrumb>
         <Breadcrumb.Item>면접 평가</Breadcrumb.Item>
         <Breadcrumb.Item active>{title}</Breadcrumb.Item>
       </Breadcrumb>
 
-      <Text variant="xl_title_semibold" color="black">
-        {title}
-      </Text>
+      {titles.length > 0 && (
+        <ClubDropdown
+          clubs={titles}
+          value={selectedTitle}
+          onSelect={handleSelect}
+        />
+      )}
 
       <Text
         variant="md1_text_regular"

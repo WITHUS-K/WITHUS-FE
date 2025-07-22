@@ -76,6 +76,7 @@ export { default as IcPwDefault } from './IcPwDefault';
 export { default as IcRefresh } from './IcRefresh';
 export { default as IcRoomPlus } from './IcRoomPlus';
 export { default as IcSave } from './IcSave';
+export { default as IcSchedule } from './IcSchedule';
 export { default as IcScore } from './IcScore';
 export { default as IcSearch } from './IcSearch';
 export { default as IcStepperMinus } from './IcStepperMinus';

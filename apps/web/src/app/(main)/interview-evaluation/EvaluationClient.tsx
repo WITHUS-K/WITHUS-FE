@@ -12,19 +12,24 @@ export default function EvaluationClient() {
   const search = useSearchParams();
   const { organizationId } = getClientSideTokens();
 
-  // URL에 이미 interviewId가 있으면 사용, 아니면 조직 첫 면접의 ID를 나중에 결정
+  // URL에 이미 interviewId가 있으면 사용
   const urlIv = Number(search.get('interviewId') ?? '0') || undefined;
 
+  // 1) 조직 면접 목록 불러오기
   const { data: orgs = [], isLoading: loadingOrgs } =
     useOrganizationInterviewsQuery(organizationId);
 
+  // 2) 선택된 면접 정보 찾기 (URL or 첫 번째)
   const chosenId = urlIv ?? orgs[0]?.interviewId;
-  const recruitmentId = orgs[0]?.recruitmentId;
+  const chosenOrg = orgs.find((o) => o.interviewId === chosenId) ?? orgs[0];
+  const recruitmentId = chosenOrg?.recruitmentId;
+
+  // 3) 해당 면접의 내 시간 슬롯 불러오기
   const { data: slots = [], isLoading: loadingSlots } = useMyTimeSlotsQuery({
     interviewId: chosenId ?? 0,
   });
 
-  //타임테이블이 빈배열일때
+  // 4) 타임테이블이 모두 빈 배열인지 체크
   const isAllEmpty = slots.every((d) => d.timeSlots.length === 0);
 
   useEffect(() => {
@@ -48,15 +53,7 @@ export default function EvaluationClient() {
           (dateParam ? `&date=${dateParam}` : '')
       );
     }
-  }, [loadingOrgs, loadingSlots, chosenId, slots, router]);
-
-  if (loadingOrgs || loadingSlots) {
-    return <Text>로딩 중…</Text>;
-  }
-
-  if (!orgs.length) {
-    return <Text>등록된 면접이 없습니다.</Text>;
-  }
+  }, [loadingOrgs, loadingSlots, chosenId, slots, router, recruitmentId]);
 
   return null;
 }

@@ -37,7 +37,6 @@ export default function ScheduleClient({ organizationId }: Props) {
     organizationId!
   );
   console.log('면접', orgs);
-  if (isLoading) return <Text>로딩 중…</Text>;
   if (!orgs.length) return <Text>등록된 면접이 없습니다.</Text>;
 
   // 2) 선택된 인터뷰 결정 (쿼리에 없으면 첫 번째)
