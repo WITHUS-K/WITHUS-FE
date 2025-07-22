@@ -27,7 +27,11 @@ export const Profile = ({
       {src ? (
         <img src={src} alt={alt} className={styles.profileImage} />
       ) : (
-        <div className={styles.emptyProfile} />
+        <img
+          src="/images/profile.png"
+          alt="profile"
+          className={styles.profileImage}
+        />
       )}
     </div>
   );
