@@ -76,11 +76,12 @@ export default function ApplicantDetailPage() {
       }
     : undefined;
 
-  const positionName = recruitmentDetail?.positions.find(
-    (p) => p.id === app.appliedPosition
-  )?.name;
+  const positionName =
+    recruitmentDetail?.positions?.find((p) => p.id === app.appliedPosition)
+      ?.name ?? '';
+
   const criteriaList =
-    recruitmentDetail?.interviewEvaluationCriteria.filter(
+    recruitmentDetail?.interviewEvaluationCriteria?.filter(
       (c) => c.type === 'INTERVIEW' && c.positionName === positionName
     ) ?? [];
 
@@ -157,7 +158,7 @@ export default function ApplicantDetailPage() {
           onNext={() => setCurrent((i) => Math.min(i + 1, total - 1))}
           onViewApplication={() => {
             router.push(
-              `/interview-management/application/${app.applicationId}`
+              `/apply-management/interviews/${app.applicationId}?recruitmentId=${recruitmentId}`
             );
           }}
         />
