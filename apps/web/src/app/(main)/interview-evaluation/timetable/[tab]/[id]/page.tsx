@@ -14,11 +14,8 @@ interface PageProps {
 }
 
 export default async function Page({ params }: PageProps) {
-  // path param에서 id 추출
   const { tab, id: tsIdStr } = await params;
   const timeSlotId = tsIdStr ? Number(tsIdStr) : NaN;
-
-  // 유효성 검사
   if (isNaN(timeSlotId) || timeSlotId <= 0) {
     return notFound();
   }
