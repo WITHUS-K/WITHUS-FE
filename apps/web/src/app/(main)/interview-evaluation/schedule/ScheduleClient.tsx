@@ -29,18 +29,17 @@ export default function ScheduleClient({ organizationId }: Props) {
     ? Number(recruitmentIdParam)
     : undefined;
   // const { organizationId } = getClientSideTokens();
-  // 쿼리에서 interviewId 가져오기
+
   const interviewIdParam = sp.get('interviewId');
   const interviewId = interviewIdParam ? Number(interviewIdParam) : undefined;
 
-  // 1) 내 조직의 면접 목록 불러오기
   const { data: orgs = [], isLoading } = useOrganizationInterviewsQuery(
     organizationId!
   );
   console.log('면접', orgs);
   if (!orgs.length) return <Text>등록된 면접이 없습니다.</Text>;
 
-  // 2) 선택된 인터뷰 결정 (쿼리에 없으면 첫 번째)
+  // 선택된 인터뷰 결정 (쿼리에 없으면 첫 번째)
   const current = (orgs.find((o) => o.interviewId === interviewId) ?? orgs[0])!;
 
   const { availableTimeRanges, interviewDuration } = current;
@@ -59,7 +58,7 @@ export default function ScheduleClient({ organizationId }: Props) {
     return map;
   }, [availableTimeRanges]);
 
-  // 3) 선택된 시간 범위 상태
+  // 선택된 시간 범위 상태
   const [selectedRanges, setSelectedRanges] = useState<TimeRange[]>([]);
   const registerMutation = useRegisterAvailabilitiesMutation(
     current.interviewId
@@ -70,7 +69,6 @@ export default function ScheduleClient({ organizationId }: Props) {
     setSelectedRanges(ranges);
   }, []);
 
-  // 4) 저장: confirm 모달 안에서 mutate 호출
   const handleSave = () => {
     if (selectedRanges.length === 0) return;
 
@@ -123,6 +121,7 @@ export default function ScheduleClient({ organizationId }: Props) {
           direction="column"
           gap="2rem"
           height="100%"
+          marginTop="10rem"
         >
           <IcSchedule width={120} height={120} />
           <Text variant="lg_subtitle_medium" color="grayscale90">
