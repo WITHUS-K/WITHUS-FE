@@ -1,4 +1,3 @@
-// src/app/(main)/interview-evaluation/timetable/[tab]/_components/CellRenders/InterviewerCell.tsx
 'use client';
 
 import { Flex } from '@repo/ui/Flex';
@@ -8,6 +7,7 @@ import * as styles from './CellRenders.css';
 import { OverflowChips } from '@web/components/OverflowChips/OverflowChips';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { TimeSlot } from '@web/store/query/useInterviewScheduleQuery';
+import { HoverCallout } from '@repo/ui/Callout';
 
 export default function InterviewerCell({
   slot,
@@ -22,7 +22,7 @@ export default function InterviewerCell({
   const tab = params.tab as string;
 
   const handleClick = () => {
-    const baseQs = searchParams.toString(); // 기존 쿼리 유지
+    const baseQs = searchParams.toString();
     const slotId = slot.timeSlotId;
 
     router.push(`/interview-evaluation/timetable/${tab}/${slotId}?${baseQs}`);
@@ -56,9 +56,14 @@ export default function InterviewerCell({
       />
 
       {/* 돋보기 버튼 */}
-      <button className={styles.buttonStyle} onClick={handleClick}>
-        <IcTimetableExpand width={16} height={16} />
-      </button>
+      <HoverCallout
+        trigger={
+          <button className={styles.buttonStyle} onClick={handleClick}>
+            <IcTimetableExpand width={16} height={16} />
+          </button>
+        }
+        texts="자세히 보기"
+      />
     </Flex>
   );
 }
