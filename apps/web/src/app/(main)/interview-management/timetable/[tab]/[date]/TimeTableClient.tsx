@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useMemo } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Flex } from '@repo/ui/Flex';
 import { TimeTable } from '@web/components/TimeTable/TimeTable';
@@ -28,22 +29,62 @@ export default function TimetableClient({
   const sp = useSearchParams();
   const router = useRouter();
   const recruitmentId = Number(sp.get('recruitmentId'));
-  const ivParam = sp.get('interviewId');
-  const interviewId = ivParam ? Number(ivParam) : undefined;
+  const interviewId = Number(sp.get('interviewId') || '0');
 
-  const { data: schedules, isLoading } = useInterviewScheduleQuery({
-    interviewId: interviewId ?? 0,
+  const { data: schedules = [], isLoading } = useInterviewScheduleQuery({
+    interviewId,
   });
   if (isLoading) return null;
 
-  const { data: positions = [] } = useRecruitmentPositionsQuery(recruitmentId);
+  // 같은 날짜끼리 하나로 합치기
+  const mergedSchedules = useMemo(() => {
+    type Sch = (typeof schedules)[number];
+    const map: Record<
+      string,
+      {
+        interviewDuration: number;
+        roomNames: string[];
+        startTime: string;
+        endTime: string;
+        timeSlots: Sch['timeSlots'];
+      }
+    > = {};
 
-  const serverColorToHex: Record<string, string> = Object.fromEntries(
-    positions.map((p) => [p.color, mapServerColorToTagHex(p.color)])
-  );
+    schedules.forEach((s) => {
+      if (!map[s.date]) {
+        map[s.date] = {
+          interviewDuration: s.interviewDuration,
+          roomNames: [...s.roomNames],
+          startTime: s.startTime,
+          endTime: s.endTime,
+          timeSlots: [...s.timeSlots],
+        };
+      } else {
+        // 이미 있으면 병합
+        const m = map[s.date]!;
+        // 가장 이른 시작 시간
+        if (s.startTime < m.startTime) m.startTime = s.startTime;
+        // 가장 늦은 종료 시간
+        if (s.endTime > m.endTime) m.endTime = s.endTime;
+        // 중복 없이 방 이름 병합
+        m.roomNames = Array.from(new Set([...m.roomNames, ...s.roomNames]));
+        // 중복 없이 슬롯 병합 (JSON 직렬화 방식)
+        m.timeSlots = Array.from(
+          new Set(
+            [...m.timeSlots, ...s.timeSlots].map((slot) => JSON.stringify(slot))
+          )
+        ).map((str) => JSON.parse(str) as (typeof s.timeSlots)[0]);
+      }
+    });
 
-  // placeholder: interviewId 없거나 아직 스케줄 없음
-  if (!interviewId || !schedules?.length) {
+    // 날짜 키 순으로 정렬된 배열로 변환
+    return Object.entries(map)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, v]) => ({ date, ...v }));
+  }, [schedules]);
+
+  // placeholder: 스케줄이 없거나 interviewId 없으면 안내
+  if (!interviewId || mergedSchedules.length === 0) {
     return (
       <Flex
         direction="column"
@@ -62,39 +103,35 @@ export default function TimetableClient({
     );
   }
 
-  const dates = schedules.map((sch) => sch.date);
-  const schedule = schedules.find((sch) => {
-    // sch.date: "2025.05.21", date: "2025.05.21"
-    if (sch.date === date) return true;
-    // 혹시 URL이 하이픈 포맷일 수도 있으니
-    return sch.date.replace(/\./g, '-') === date;
-  });
-  console.log('타임테이블', schedule);
-  if (!schedule) return null;
+  // 4) DateNav에 사용할 날짜 리스트
+  const dates = mergedSchedules.map((sch) => sch.date);
 
-  // DateNav 날짜 변경 핸들러
+  // 5) URL 또는 파라미터 date에 맞는 schedule 추출
+  const schedule = mergedSchedules.find(
+    (sch) => sch.date === date || sch.date.replace(/\./g, '-') === date
+  )!;
+
+  // 6) 방별로 timeSlots 그룹핑
+  const rooms = schedule.roomNames;
+  const roomsMap: Record<string, typeof schedule.timeSlots> = {};
+  rooms.forEach((r) => (roomsMap[r] = []));
+  schedule.timeSlots.forEach((ts) => {
+    roomsMap[ts.roomName]?.push(ts);
+  });
+
+  // 7) 색상 매핑 준비
+  const { data: positions = [] } = useRecruitmentPositionsQuery(recruitmentId);
+  const serverColorToHex: Record<string, string> = Object.fromEntries(
+    positions.map((p) => [p.color, mapServerColorToTagHex(p.color)])
+  );
+
+  // 8) 렌더링
+  const getWidth = rooms.length === 3 ? '31.3rem' : '51.45rem';
+  const isAll = tab === 'all';
+
   const handleDateChange = (nextDate: string) => {
     router.replace(`/interview-management/timetable/${tab}/${nextDate}?${sp}`);
   };
-
-  // 방별로 slots 그룹핑
-  const rooms = schedule.roomNames;
-  const roomsMap: Record<string, typeof schedule.timeSlots> = rooms.reduce(
-    (acc, room) => {
-      acc[room] = [];
-      return acc;
-    },
-    {} as Record<string, typeof schedule.timeSlots>
-  );
-
-  schedule.timeSlots.forEach((ts) => {
-    if (roomsMap[ts.roomName]) {
-      roomsMap[ts.roomName]!.push(ts);
-    }
-  });
-
-  const getWidth = rooms.length === 3 ? '31.3rem' : '51.45rem';
-  const isAll = tab === 'all';
 
   return (
     <>
@@ -107,6 +144,7 @@ export default function TimetableClient({
         align="center"
       >
         <DateNav dates={dates} active={date} onChange={handleDateChange} />
+
         <Flex gap="4rem" width="100%" justify="center">
           {rooms.map((room) => (
             <TimeTable
@@ -117,11 +155,9 @@ export default function TimetableClient({
               endHour={Number(schedule.endTime.split(':')[0])}
               interval={schedule.interviewDuration}
               slots={roomsMap[room]!.map((ts) => {
-                // 1) 지원자 기준으로 positionName 추출 (여기서는 첫 지원자)
+                // 지원자 파트 기반으로 색상 결정
                 const posName = ts.applicants[0]?.positionName;
-                // 2) positions 배열에서 해당 파트 객체 찾기
                 const part = positions.find((p) => p.name === posName);
-                // 3) serverColorToHex 에서 hex 얻기 (없으면 기본 회색)
                 const hex = part ? nameToHex1[part.color] : undefined;
                 const bg = hex
                   ? tagColorMap[hex as keyof typeof tagColorMap].background
@@ -129,7 +165,7 @@ export default function TimetableClient({
 
                 return {
                   ...ts,
-                  color: bg, // background 색으로 셋팅
+                  color: bg,
                 };
               })}
               width={getWidth}

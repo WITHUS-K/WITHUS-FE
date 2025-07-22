@@ -12,6 +12,7 @@ import {
   TimeRange,
 } from '@web/components/TimeTable/SelectableTimeTable';
 import { useRegisterAvailabilitiesMutation } from '@web/store/mutation/useRegisterAvailabilitiesMutation';
+import { IcSchedule } from '@repo/ui/icons/colored';
 
 interface Props {
   organizationId?: number;
@@ -99,7 +100,7 @@ export default function ScheduleClient({ organizationId }: Props) {
           { availableTimes: slots },
           {
             onSuccess: () => {
-              console.log('가능한 시간', slots);
+              //console.log('가능한 시간', slots);
               router.replace(
                 `/interview-evaluation/timetable/interviewer` +
                   `?interviewId=${current.interviewId}` +
@@ -113,64 +114,82 @@ export default function ScheduleClient({ organizationId }: Props) {
   };
 
   return (
-    <Flex
-      direction="column"
-      gap="4rem"
-      width="100%"
-      align="center"
-      paddingBottom="6rem"
-      paddingTop="4rem"
-    >
-      <Flex gap="6.4rem" width="100%" justify="center">
-        {dates.map((date) => {
-          const slots = scheduleMap[date];
+    <>
+      {orgs.length === 0 ? (
+        <Flex
+          width="100%"
+          align="center"
+          justify="center"
+          direction="column"
+          gap="2rem"
+          height="100%"
+        >
+          <IcSchedule width={120} height={120} />
+          <Text variant="lg_subtitle_medium" color="grayscale90">
+            등록된 면접 일정이 없습니다.
+          </Text>
+        </Flex>
+      ) : (
+        <Flex
+          direction="column"
+          gap="4rem"
+          width="100%"
+          align="center"
+          paddingBottom="6rem"
+          paddingTop="4rem"
+        >
+          <Flex gap="6.4rem" width="100%" justify="center">
+            {dates.map((date) => {
+              const slots = scheduleMap[date];
 
-          const label = format(
-            parseISO(date.replace(/\./g, '-')),
-            'yyyy-MM-dd (EEE)',
-            { locale: ko }
-          );
+              const label = format(
+                parseISO(date.replace(/\./g, '-')),
+                'yyyy-MM-dd (EEE)',
+                { locale: ko }
+              );
 
-          // 테이블 전체 시간 범위 (가장 빠른 시작 ~ 가장 늦은 끝)
-          const hours = slots!.flatMap((s) => [
-            Number(s.startTime.split(':')[0]),
-            Number(s.endTime.split(':')[0]),
-          ]);
-          const startHour = Math.min(...hours);
-          const endHour = Math.max(...hours);
+              // 테이블 전체 시간 범위 (가장 빠른 시작 ~ 가장 늦은 끝)
+              const hours = slots!.flatMap((s) => [
+                Number(s.startTime.split(':')[0]),
+                Number(s.endTime.split(':')[0]),
+              ]);
+              const startHour = Math.min(...hours);
+              const endHour = Math.max(...hours);
 
-          return (
-            <SelectableTimeTable
-              key={date}
-              title={label}
-              startHour={startHour}
-              endHour={endHour}
-              interval={interviewDuration}
-              selectable
-              width="40rem"
-              interviewSchedule={{
-                isSelected: true,
-                scheduleList: slots!.map((slot) => ({
-                  date,
-                  startTime: slot.startTime,
-                  endTime: slot.endTime,
-                })),
-              }}
-              onSelectionChange={handleSelectionChange}
-            />
-          );
-        })}
-      </Flex>
+              return (
+                <SelectableTimeTable
+                  key={date}
+                  title={label}
+                  startHour={startHour}
+                  endHour={endHour}
+                  interval={interviewDuration}
+                  selectable
+                  width="40rem"
+                  interviewSchedule={{
+                    isSelected: true,
+                    scheduleList: slots!.map((slot) => ({
+                      date,
+                      startTime: slot.startTime,
+                      endTime: slot.endTime,
+                    })),
+                  }}
+                  onSelectionChange={handleSelectionChange}
+                />
+              );
+            })}
+          </Flex>
 
-      <Button
-        variant="main"
-        size="48"
-        disabled={!selectedRanges.length}
-        onClick={handleSave}
-        width="24rem"
-      >
-        저장
-      </Button>
-    </Flex>
+          <Button
+            variant="main"
+            size="48"
+            disabled={!selectedRanges.length}
+            onClick={handleSave}
+            width="24rem"
+          >
+            저장
+          </Button>
+        </Flex>
+      )}
+    </>
   );
 }

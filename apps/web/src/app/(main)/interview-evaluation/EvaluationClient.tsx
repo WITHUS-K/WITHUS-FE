@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { Text } from '@repo/ui';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useOrganizationInterviewsQuery } from '@web/store/query/useOrganizationInterviewsQuery';
 import { useMyTimeSlotsQuery } from '@web/store/query/useMyTimeSlotsQuery';
@@ -15,21 +14,21 @@ export default function EvaluationClient() {
   // URL에 이미 interviewId가 있으면 사용
   const urlIv = Number(search.get('interviewId') ?? '0') || undefined;
 
-  // 1) 조직 면접 목록 불러오기
+  // 조직 면접 목록 불러오기
   const { data: orgs = [], isLoading: loadingOrgs } =
     useOrganizationInterviewsQuery(organizationId);
 
-  // 2) 선택된 면접 정보 찾기 (URL or 첫 번째)
+  // 선택된 면접 정보 찾기 (URL or 첫 번째)
   const chosenId = urlIv ?? orgs[0]?.interviewId;
   const chosenOrg = orgs.find((o) => o.interviewId === chosenId) ?? orgs[0];
   const recruitmentId = chosenOrg?.recruitmentId;
 
-  // 3) 해당 면접의 내 시간 슬롯 불러오기
+  // 해당 면접의 내 시간 슬롯 불러오기
   const { data: slots = [], isLoading: loadingSlots } = useMyTimeSlotsQuery({
     interviewId: chosenId ?? 0,
   });
 
-  // 4) 타임테이블이 모두 빈 배열인지 체크
+  // 타임테이블이 모두 빈 배열인지 체크
   const isAllEmpty = slots.every((d) => d.timeSlots.length === 0);
 
   useEffect(() => {

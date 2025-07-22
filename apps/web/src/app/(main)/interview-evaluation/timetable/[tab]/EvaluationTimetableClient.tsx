@@ -32,17 +32,65 @@ export default function EvaluationTimetableClient({
     ? rawDate.replace(/-/g, '.')
     : rawDate;
 
-  // 가장 먼저 절대 빠지지 않게 훅 호출
+  // 1) schedule 원본
   const { data: schedules = [], isLoading } = useMyTimeSlotsQuery({
     interviewId,
   });
+  console.log('스케줄', schedules);
 
-  // 스케줄 찾기
-  const schedule = schedules.find((s) => s.date === activeDate);
+  // 로딩 중
+  if (isLoading) return null;
+  if (schedules.length === 0) return <Text>등록된 일정이 없습니다.</Text>;
 
-  // useMemo도 무조건 호출돼야 함
+  // 2) 날짜별로 머지된 스케줄 계산
+  const mergedSchedules = useMemo(() => {
+    const map: Record<
+      string,
+      {
+        interviewDuration: number;
+        roomNames: string[];
+        startTime: string;
+        endTime: string;
+        timeSlots: (typeof schedules)[number]['timeSlots'];
+      }
+    > = {};
+
+    schedules.forEach((s) => {
+      if (!map[s.date]) {
+        map[s.date] = {
+          interviewDuration: s.interviewDuration,
+          roomNames: [...s.roomNames],
+          startTime: s.startTime,
+          endTime: s.endTime,
+          timeSlots: [...s.timeSlots],
+        };
+      } else {
+        const m = map[s.date]!;
+        // 가장 이른 시작 시간
+        if (s.startTime < m.startTime) m.startTime = s.startTime;
+        // 가장 늦은 종료 시간
+        if (s.endTime > m.endTime) m.endTime = s.endTime;
+        // roomNames 합치기
+        m.roomNames = Array.from(new Set([...m.roomNames, ...s.roomNames]));
+        // timeSlots 합치기
+        m.timeSlots = [...m.timeSlots, ...s.timeSlots];
+      }
+    });
+
+    // 날짜 정렬해서 배열로
+    return Object.entries(map)
+      .sort(([dateA], [dateB]) => dateA.localeCompare(dateB))
+      .map(([date, v]) => ({ date, ...v }));
+  }, [schedules]);
+
+  // 3) DateNav에서 사용할 날짜 리스트
+  const dates = mergedSchedules.map((s) => s.date);
+
+  // 4) activeDate에 해당하는 merged schedule 찾기
+  const schedule = mergedSchedules.find((s) => s.date === activeDate)!;
+
+  // 5) room 별 slot map
   const roomsMap = useMemo(() => {
-    if (!schedule) return {};
     return schedule.roomNames.reduce<Record<string, typeof schedule.timeSlots>>(
       (acc, room) => {
         acc[room] = schedule.timeSlots.filter((ts) => ts.roomName === room);
@@ -52,17 +100,7 @@ export default function EvaluationTimetableClient({
     );
   }, [schedule]);
 
-  // 로딩 중엔 null
-  if (isLoading) return null;
-  // 일정이 없으면 메세지
-  if (!schedule) {
-    return <Text>해당 날짜({activeDate})에 배정된 일정이 없습니다.</Text>;
-  }
-
-  // schedule이 확실할 때만 꺼내 쓰기
-  const { roomNames, timeSlots, startTime, endTime, interviewDuration } =
-    schedule;
-
+  // 날짜 변경 핸들러
   const handleDateChange = (nextDate: string) => {
     const norm = nextDate.replace(/\./g, '-');
     router.replace(
@@ -73,37 +111,40 @@ export default function EvaluationTimetableClient({
     );
   };
 
+  // 6) 렌더링
   return (
     <Flex direction="column" align="center" gap="4rem" width="100%">
-      <DateNav
-        dates={schedules.map((s) => s.date)}
-        active={activeDate}
-        onChange={handleDateChange}
-      />
+      <DateNav dates={dates} active={activeDate} onChange={handleDateChange} />
 
       <Flex gap="4rem" justify="center" width="100%">
-        {roomNames.map((room) => (
-          <TimeTable
-            key={room}
-            title={room}
-            headers={tab === 'interviewer' ? ['지원자', '면접관'] : undefined}
-            startHour={Number(startTime.split(':')[0])}
-            endHour={Number(endTime.split(':')[0])}
-            interval={interviewDuration}
-            slots={roomsMap[room]!}
-            width={roomNames.length === 3 ? '31.3rem' : '40rem'}
-            renderCell={(row) => (
-              <CellRenderer
-                date={schedule.date}
-                row={row}
-                tab={tab}
-                slotData={roomsMap[room]!}
-                startHour={Number(startTime.split(':')[0])}
-                interval={interviewDuration}
-              />
-            )}
-          />
-        ))}
+        {schedule.roomNames.map((room) => {
+          const { startTime, endTime, interviewDuration } = schedule;
+          const startHour = Number(startTime.split(':')[0]);
+          const endHour = Number(endTime.split(':')[0]);
+
+          return (
+            <TimeTable
+              key={room}
+              title={room}
+              headers={tab === 'interviewer' ? ['지원자', '면접관'] : undefined}
+              startHour={startHour}
+              endHour={endHour}
+              interval={interviewDuration}
+              slots={roomsMap[room]!}
+              width={schedule.roomNames.length === 3 ? '31.3rem' : '40rem'}
+              renderCell={(row) => (
+                <CellRenderer
+                  date={schedule.date}
+                  row={row}
+                  tab={tab}
+                  slotData={roomsMap[room]!}
+                  startHour={startHour}
+                  interval={interviewDuration}
+                />
+              )}
+            />
+          );
+        })}
       </Flex>
     </Flex>
   );
