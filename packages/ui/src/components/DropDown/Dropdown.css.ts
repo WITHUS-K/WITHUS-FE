@@ -102,6 +102,7 @@ export const dropdownItemBase = style({
   cursor: 'pointer',
   color: vars.colors.grayscale50,
   borderRadius: '10px',
+  whiteSpace: 'nowrap',
   selectors: {
     '&:hover': {
       backgroundColor: vars.colors.grayscale5,

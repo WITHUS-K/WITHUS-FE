@@ -25,7 +25,7 @@ export const list = style({
   width: '9rem',
   padding: '0.4rem',
   marginTop: '4px',
-  zIndex: 3,
+  zIndex: 1000,
   boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.10)',
 });
 export const item = style({

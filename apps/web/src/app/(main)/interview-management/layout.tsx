@@ -13,9 +13,9 @@ export default function InterviewLayout({ children }: { children: ReactNode }) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // ① timetable 경로인지 확인
+  //timetable 경로인지 확인
   const isTimetable = pathname.includes('/interview-management/timetable/');
-  // ② URL 에 interviewId 가 있는지
+  //URL 에 interviewId 가 있는지
   const ivParam = searchParams.get('interviewId');
   const interviewId = ivParam ? Number(ivParam) : undefined;
   const ridParam = searchParams.get('recruitmentId');
@@ -26,7 +26,7 @@ export default function InterviewLayout({ children }: { children: ReactNode }) {
     }
   }, [isTimetable, interviewId, ridParam, router]);
 
-  // ③ 기본 detail 페이지 구분은 그대로
+  // 기본 detail 페이지 구분은 그대로
   const isDetail = pathname.includes('/application/');
 
   return (

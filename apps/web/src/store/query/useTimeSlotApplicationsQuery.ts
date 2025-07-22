@@ -1,7 +1,14 @@
 // src/store/query/useTimeSlotApplicationsQuery.ts
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import {
+  queryOptions,
+  useQuery,
+  UseSuspenseQueryOptions,
+  type UseQueryResult,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
 import { queryKeys } from '../constants';
+import { Tokens } from '@web/api/types';
 
 export interface DocumentAnswer {
   questionId: number;
@@ -75,19 +82,45 @@ export interface TimeSlotApplication {
   interviewComments: CommentItem[];
 }
 
-export function useTimeSlotApplicationsQuery(
-  timeSlotId: number
-): UseQueryResult<TimeSlotApplication[], Error> {
-  return useQuery<TimeSlotApplication[], Error>({
+export interface TimeSlotApplicationsParams {
+  timeSlotId: number;
+  tokens?: Tokens;
+}
+
+const STALE_TIME = 1000 * 60 * 1;
+const GC_TIME = 1000 * 60 * 2;
+
+/**
+ * @description
+ *   특정 타임슬롯의 지원서 목록을 조회하기 위한 React Query 옵션 생성
+ */
+export function getTimeSlotApplicationsQueryOptions({
+  timeSlotId,
+  tokens,
+}: TimeSlotApplicationsParams): UseSuspenseQueryOptions<
+  TimeSlotApplication[],
+  Error
+> {
+  return queryOptions<TimeSlotApplication[]>({
     queryKey: queryKeys.timeSlot.applications(timeSlotId),
-    queryFn: async () => {
-      const res = await GET<TimeSlotApplication[]>(
-        `api/v1/time-slots/${timeSlotId}/applications`
-      );
-      console.log('지원서', res);
-      return res.result;
-    },
-    staleTime: 0, // 캐시를 바로 오래된 것으로 간주
-    refetchOnMount: 'always', // 마운트될 때마다 재요청
+    queryFn: () =>
+      GET<TimeSlotApplication[]>(
+        `api/v1/time-slots/${timeSlotId}/applications`,
+        undefined,
+        tokens
+      ).then((res) => res.result),
+    staleTime: STALE_TIME,
+    gcTime: GC_TIME,
+    enabled: timeSlotId > 0,
   });
+}
+
+/**
+ * @description
+ *   Suspense 기반으로 특정 타임슬롯의 지원서 목록을 조회하는 훅
+ */
+export function useTimeSlotApplicationsQuery(
+  params: TimeSlotApplicationsParams
+) {
+  return useSuspenseQuery(getTimeSlotApplicationsQueryOptions(params));
 }

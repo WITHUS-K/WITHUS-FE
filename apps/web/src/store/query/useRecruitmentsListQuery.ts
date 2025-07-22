@@ -50,7 +50,6 @@ export function useRecruitmentsListQuery(keyword?: string) {
         keyword ? { keyword } : undefined
       ).then((res) => res.result),
 
-    // 새 옵션 이름에 맞춰 교체
     staleTime: STALE_TIME,
     gcTime: GC_TIME,
 

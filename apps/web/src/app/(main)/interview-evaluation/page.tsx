@@ -1,55 +1,45 @@
-'use client';
+// src/app/(main)/interview-evaluation/page.tsx
+import React from 'react';
+import { notFound } from 'next/navigation';
+import { getServerSideTokens } from '@web/api/serverSideTokens';
+import { ServerFetchBoundary } from '@web/store/query/ServerFetchBoundary';
+import {
+  getMyTimeSlotsQueryOptions,
+  type MyTimeSlotsParams,
+} from '@web/store/query/useMyTimeSlotsQuery';
+import { getOrgInterviewsOptions } from '@web/store/query/useOrganizationInterviewsQuery';
+import EvaluationClient from './EvaluationClient';
 
-import React, { useEffect } from 'react';
-import { Text } from '@repo/ui';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useOrganizationInterviewsQuery } from '@web/store/query/useOrganizationInterviewsQuery';
-import { useMyTimeSlotsQuery } from '@web/store/query/useMyTimeSlotsQuery';
-import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+interface PageProps {
+  searchParams: Promise<{
+    interviewId?: string;
+  }>;
+}
 
-export default function EvaluationPage() {
-  const router = useRouter();
-  const search = useSearchParams();
-  const { organizationId } = getClientSideTokens();
-  // URL에 이미 interviewId가 있으면 사용, 아니면 조직 첫 면접의 ID를 나중에 결정
-  const urlIv = Number(search.get('interviewId') ?? '0') || undefined;
+export default async function Page({ searchParams }: PageProps) {
+  const { interviewId: ivStr } = await searchParams;
+  const interviewId = ivStr ? Number(ivStr) : 0;
 
-  const { data: orgs = [], isLoading: loadingOrgs } =
-    useOrganizationInterviewsQuery(organizationId);
+  const { accessToken, refreshToken, organizationId } =
+    await getServerSideTokens();
+  if (!organizationId) {
+    return notFound();
+  }
+  const tokens = { accessToken, refreshToken };
 
-  const chosenId = urlIv ?? orgs[0]?.interviewId;
-  const recruitmentId = orgs[0]?.recruitmentId;
-  const { data: slots = [], isLoading: loadingSlots } = useMyTimeSlotsQuery(
-    chosenId ?? 0
+  // 조직 면접 목록 SSR prefetch
+  const orgsOptions = getOrgInterviewsOptions(organizationId, tokens);
+  // 내 타임슬롯 SSR prefetch (payload: interviewId > 0일 때만 enabled 옵션 추가해도 좋습니다)
+  const slotsOptions = getMyTimeSlotsQueryOptions({
+    interviewId,
+    tokens,
+  } as MyTimeSlotsParams);
+
+  return (
+    <ServerFetchBoundary fetchOptions={orgsOptions}>
+      <ServerFetchBoundary fetchOptions={slotsOptions}>
+        <EvaluationClient />
+      </ServerFetchBoundary>
+    </ServerFetchBoundary>
   );
-
-  const isAllEmpty = slots.every((d) => d.timeSlots.length === 0);
-
-  useEffect(() => {
-    if (loadingOrgs || chosenId == null) return;
-    if (loadingSlots) return;
-
-    // 빈 배열이면 스케줄 페이지로, 아니면 타임테이블 페이지로
-    if (isAllEmpty) {
-      router.replace(
-        `/interview-evaluation/schedule?interviewId=${chosenId}` +
-          `&recruitmentId=${recruitmentId}`
-      );
-    } else {
-      router.replace(
-        `/interview-evaluation/timetable/interviewer?interviewId=${chosenId}` +
-          `&recruitmentId=${recruitmentId}`
-      );
-    }
-  }, [loadingOrgs, loadingSlots, chosenId, slots, router]);
-
-  if (loadingOrgs || loadingSlots) {
-    return <Text>로딩 중…</Text>;
-  }
-
-  if (!orgs.length) {
-    return <Text>등록된 면접이 없습니다.</Text>;
-  }
-
-  return null;
 }

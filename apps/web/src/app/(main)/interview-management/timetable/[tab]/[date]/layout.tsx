@@ -3,8 +3,6 @@
 import { ReactNode } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { TabBar } from '@repo/ui/TabBar';
-import DateNav from '../../../_components/DateNav/DateNav';
-import { timetableDates } from '@web/constants/timetable';
 import { Flex } from '@repo/ui/Flex';
 
 const TABS = ['all', 'interviewer', 'applicant', 'guide'];

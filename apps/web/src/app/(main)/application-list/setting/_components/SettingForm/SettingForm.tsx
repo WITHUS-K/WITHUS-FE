@@ -132,26 +132,51 @@ export function SettingForm({
 
   const parts = methods.watch('applicationParts.parts') ?? [];
 
+  const paperItems =
+    useWatch({ control: methods.control, name: 'paperEvaluateItems' }) || [];
+  const interviewItems =
+    useWatch({ control: methods.control, name: 'interviewEvaluateItems' }) ||
+    [];
+
+  // 서류 평가 기준 동기화
   useEffect(() => {
-    if (existentForm) return;
+    const needed = (parts.length > 0 ? parts.length : 0) + 1; // 공통(null) + parts
+    if (paperItems.length === needed) return;
 
-    // Context에 저장된 값이 있으면 초기화하지 않음
-    const hasSaved = ctx.form.paperEvaluateItems?.some((section) =>
-      section.items.some((item) => item.evaluate.trim() !== '')
-    );
-    if (hasSaved) return;
+    const sectionNames = parts.length > 0 ? [null, ...parts] : [null];
+    const newPaper = sectionNames.map((p) => {
+      const existing = paperItems.find((sec) => sec.positionName === p);
+      return {
+        positionName: p,
+        items: existing
+          ? existing.items
+          : [{ evaluate: '', evaluateDetail: '' }],
+      };
+    });
 
-    const sections = parts.length > 0 ? [null, ...parts] : [null];
-    const newItems = sections.map((p) => ({
-      positionName: p,
-      items: [{ evaluate: '', evaluateDetail: '' }],
-    }));
+    methods.setValue('paperEvaluateItems', newPaper, { shouldValidate: false });
+  }, [parts, paperItems, methods]);
 
-    methods.setValue('paperEvaluateItems', newItems, { shouldValidate: false });
-    methods.setValue('interviewEvaluateItems', newItems, {
+  //  면접 평가 기준 동기화
+  useEffect(() => {
+    const needed = (parts.length > 0 ? parts.length : 0) + 1;
+    if (interviewItems.length === needed) return;
+
+    const sectionNames = parts.length > 0 ? [null, ...parts] : [null];
+    const newInterview = sectionNames.map((p) => {
+      const existing = interviewItems.find((sec) => sec.positionName === p);
+      return {
+        positionName: p,
+        items: existing
+          ? existing.items
+          : [{ evaluate: '', evaluateDetail: '' }],
+      };
+    });
+
+    methods.setValue('interviewEvaluateItems', newInterview, {
       shouldValidate: false,
     });
-  }, [parts, methods, existentForm, ctx.form.paperEvaluateItems]);
+  }, [parts, interviewItems, methods]);
 
   const title = methods.watch('title') || '';
   const basicInfo = methods.watch('basicInfo')!;
@@ -159,8 +184,8 @@ export function SettingForm({
   const deadline = methods.watch('deadline')!;
   const interviewDuration = methods.watch('interviewDuration')!;
   const finalResultDate = methods.watch('finalResultDate')!;
-  const paperItems = methods.watch('paperEvaluateItems')!;
-  const interviewItems = methods.watch('interviewEvaluateItems')!;
+  //const paperItems = methods.watch('paperEvaluateItems')!;
+  //const interviewItems = methods.watch('interviewEvaluateItems')!;
 
   const last = pathname.split('/').pop()!;
   const recruitmentId = last === 'new' ? null : Number(last);

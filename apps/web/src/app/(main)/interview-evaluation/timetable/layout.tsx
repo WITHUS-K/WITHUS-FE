@@ -16,8 +16,6 @@ export default function TimetableLayout({
   children: React.ReactNode;
 }) {
   const params = useParams();
-  const tab = params.tab as string;
-  const date = params.date as string;
   const id = params.id as string | undefined;
   const router = useRouter();
   const pathname = usePathname()!;
@@ -25,6 +23,10 @@ export default function TimetableLayout({
   const qs = sp.toString(); // 기존 ?interviewId=xxx 등
 
   const active = TABS.find((t) => pathname.endsWith(`/${t}`)) ?? 'interviewer';
+
+  const hasSlots = sp.get('hasSlots') === 'true';
+
+  const showTabs = !id && hasSlots;
 
   return (
     <Flex
@@ -35,7 +37,7 @@ export default function TimetableLayout({
       gap={!id ? '4rem' : '0'}
       marginTop={!id ? '3.2rem' : '0'}
     >
-      {!id && (
+      {showTabs && (
         <TabBar
           tabs={TABS}
           active={active}

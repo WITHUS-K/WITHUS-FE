@@ -11,6 +11,8 @@ import {
 } from '@web/store/query/useApplicationsQuery';
 import { mapServerColorToTagHex } from '@web/utils/color';
 import * as styles from './page.css';
+import { IcDocsNon } from '@repo/ui/icons/colored';
+import { Text } from '@repo/ui/Text';
 
 const PER_PAGE = 9;
 
@@ -63,57 +65,74 @@ export default function TabPageClient() {
     router.replace(`?${params.toString()}`);
   };
 
-  if (isLoading || !pagination) {
-    return null;
-  }
-
   return (
     <>
-      <div className={styles.scrollContainer}>
-        <Flex wrap="wrap" gap="2rem">
-          {apps.map((app) => {
-            const displayPositionName = app.positionName ?? '공통';
-            const pos = positions.find((p) => p.name === app.positionName);
-            const tagColor =
-              app.positionName == null
-                ? '#7F82A1'
-                : mapServerColorToTagHex(pos?.color ?? 'GRAY');
-            return (
-              <ItemCard
-                key={app.id}
-                item={{
-                  id: app.id,
-                  name: app.name,
-                  positionName: displayPositionName,
-                  tagColor: tagColor,
-
-                  evaluationStatus:
-                    app.documentEvaluated === false ? 'BEFORE' : 'COMPLETED',
-                  pass:
-                    app.status === 'DOX_PASS' ||
-                    app.status === 'INTERVIEW_PASS' ||
-                    app.status === 'PENDING' ||
-                    app.status === 'DOX_PENDING' ||
-                    app.status === 'INTERVIEW_PENDING',
-                  evaluationScore: app.myScoreTotal ?? 0,
-                  interviewDate: app.interviewSchedule?.split('T')[0] ?? '',
-                  interviewTime:
-                    app.interviewSchedule?.split('T')[1]?.slice(0, 5) ?? '',
-                }}
-              />
-            );
-          })}
+      {apps.length === 0 ? (
+        <Flex
+          width="100%"
+          height="100%"
+          direction="column"
+          align="center"
+          justify="center"
+          gap="2rem"
+          marginTop="15rem"
+        >
+          <IcDocsNon width={120} height={120} />
+          <Text variant="lg_subtitle_medium" color="grayscale30">
+            아직 접수된 지원자가 없습니다.
+          </Text>
         </Flex>
-      </div>
+      ) : (
+        <>
+          <div className={styles.scrollContainer}>
+            <Flex wrap="wrap" gap="2rem">
+              {apps.map((app) => {
+                const displayPositionName = app.positionName ?? '공통';
+                const pos = positions.find((p) => p.name === app.positionName);
+                const tagColor =
+                  app.positionName == null
+                    ? '#7F82A1'
+                    : mapServerColorToTagHex(pos?.color ?? 'GRAY');
+                return (
+                  <ItemCard
+                    key={app.id}
+                    item={{
+                      id: app.id,
+                      name: app.name,
+                      positionName: displayPositionName,
+                      tagColor: tagColor,
 
-      <div className={styles.paginationStyle}>
-        <Pagination
-          totalItems={pagination!.totalElements}
-          itemCountPerPage={PER_PAGE}
-          currentPage={page}
-          onPageChange={onPageChange}
-        />
-      </div>
+                      evaluationStatus:
+                        app.documentEvaluated === false
+                          ? 'BEFORE'
+                          : 'COMPLETED',
+                      pass:
+                        app.status === 'DOX_PASS' ||
+                        app.status === 'INTERVIEW_PASS' ||
+                        app.status === 'PENDING' ||
+                        app.status === 'DOX_PENDING' ||
+                        app.status === 'INTERVIEW_PENDING',
+                      evaluationScore: app.myScoreTotal ?? 0,
+                      interviewDate: app.interviewSchedule?.split('T')[0] ?? '',
+                      interviewTime:
+                        app.interviewSchedule?.split('T')[1]?.slice(0, 5) ?? '',
+                    }}
+                  />
+                );
+              })}
+            </Flex>
+          </div>
+
+          <div className={styles.paginationStyle}>
+            <Pagination
+              totalItems={pagination!.totalElements}
+              itemCountPerPage={PER_PAGE}
+              currentPage={page}
+              onPageChange={onPageChange}
+            />
+          </div>
+        </>
+      )}
     </>
   );
 }

@@ -6,8 +6,22 @@ import * as styles from './CellRenders.css';
 import { SlotItem } from '@web/constants/timetable';
 import { OverflowChips } from '@web/components/OverflowChips/OverflowChips';
 import { TimeSlot } from '@web/store/query/useInterviewScheduleQuery';
+import { HoverCallout } from '@repo/ui/Callout';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 
 export default function GuideCell({ slot }: { slot: TimeSlot }) {
+  const router = useRouter();
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const tab = params.tab as string;
+
+  const handleClick = () => {
+    const baseQs = searchParams.toString();
+    const slotId = slot.timeSlotId;
+
+    router.push(`/interview-evaluation/timetable/${tab}/${slotId}?${baseQs}`);
+  };
+
   return (
     <Flex
       align="center"
@@ -25,9 +39,14 @@ export default function GuideCell({ slot }: { slot: TimeSlot }) {
       />
 
       {/* 돋보기 버튼 */}
-      <button className={styles.buttonStyle}>
-        <IcTimetableExpand width={16} height={16} />
-      </button>
+      <HoverCallout
+        trigger={
+          <button className={styles.buttonStyle} onClick={handleClick}>
+            <IcTimetableExpand width={16} height={16} />
+          </button>
+        }
+        texts="자세히 보기"
+      />
     </Flex>
   );
 }
