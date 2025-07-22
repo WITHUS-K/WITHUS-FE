@@ -80,6 +80,7 @@ export default function ApplicantDetailPage() {
                 setCurrent((i) => Math.min(i + 1, applicants.length - 1))
               }
               onViewApplication={() => router.push(`/`)}
+              isOtherUser={false}
             />
 
             <ApplicantInterviewForm detail={applicant} />

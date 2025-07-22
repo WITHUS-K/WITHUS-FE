@@ -9,7 +9,7 @@ const LABEL_MAP: Record<
   EvaluationStage,
   {
     title: string;
-    desc: string; // 문자열 하나로 변경
+    desc: string;
   }
 > = {
   schedule: {
@@ -27,18 +27,15 @@ export function EvaluationHeader({ stage }: { stage: EvaluationStage }) {
 
   return (
     <Flex direction="column" gap="0.5rem" width="100%">
-      {/* 1) Breadcrumb */}
       <Breadcrumb>
         <Breadcrumb.Item>면접 평가</Breadcrumb.Item>
         <Breadcrumb.Item active>{title}</Breadcrumb.Item>
       </Breadcrumb>
 
-      {/* 2) Page Title */}
       <Text variant="xl_title_semibold" color="black">
         {title}
       </Text>
 
-      {/* 3) Description (여러 줄) */}
       <Text
         variant="md1_text_regular"
         color="grayscale90"

@@ -36,24 +36,26 @@ export default function InterviewerCell({
       paddingRight="3.7rem"
       justify="spaceBetween"
     >
-      {/* 지원자 Chip (2개 초과 시 +N 표시) */}
-      <OverflowChips
-        items={slot.applicants}
-        renderLabel={(app) => app.name}
-        maxVisible={2}
-        width="13.3rem"
-        gap="0.8rem"
-      />
+      <Flex width="100%" gap="4rem">
+        {/* 지원자 Chip (2개 초과 시 +N 표시) */}
+        <OverflowChips
+          items={slot.applicants}
+          renderLabel={(app) => app.name}
+          maxVisible={2}
+          width="13.3rem"
+          gap="0.8rem"
+        />
 
-      {/* 면접관 프로필 그룹 */}
-      <ProfileGroup
-        items={slot.interviewers.map((iv) => ({
-          src: iv.profileUrl ?? '',
-          name: iv.name,
-        }))}
-        maxVisible={3}
-        size={23}
-      />
+        {/* 면접관 프로필 그룹 */}
+        <ProfileGroup
+          items={slot.interviewers.map((iv) => ({
+            src: iv.profileUrl ?? '',
+            name: iv.name,
+          }))}
+          maxVisible={3}
+          size={23}
+        />
+      </Flex>
 
       {/* 돋보기 버튼 */}
       <HoverCallout

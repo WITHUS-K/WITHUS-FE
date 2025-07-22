@@ -1,89 +1,84 @@
 'use client';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import React, { useMemo } from 'react';
+import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import { Flex, Text } from '@repo/ui';
 import { useMyTimeSlotsQuery } from '@web/store/query/useMyTimeSlotsQuery';
 import { TimeTable } from '@web/components/TimeTable/TimeTable';
 import { CellRenderer, Tab } from '../../_components/CellRender/CellRenderer';
-import { format } from 'date-fns';
-import { ko } from 'date-fns/locale';
-import { useMemo } from 'react';
+import DateNav from '@web/app/(main)/interview-management/_components/DateNav/DateNav';
 
 export default function EvaluationTimetablePage() {
-  const params = useParams();
+  const router = useRouter();
   const sp = useSearchParams();
-
   const interviewId = Number(sp.get('interviewId') ?? '0');
-  const tabParam = params.tab as Tab;
-  const tab: Tab = tabParam === 'guide' ? 'guide' : 'interviewer';
+  const rawDate = sp.get('date');
+  const { tab } = useParams() as { tab: Tab };
 
-  const { data: slots = [] } = useMyTimeSlotsQuery(interviewId);
-  console.log('내 배정', slots);
+  const activeDate = rawDate!.includes('-')
+    ? rawDate!.replace(/-/g, '.')
+    : rawDate;
 
-  const schedulesByDate = useMemo(() => {
-    return slots.reduce<Record<string, typeof slots>>((map, schedule) => {
-      map[schedule.date] = map[schedule.date] ?? [];
-      map[schedule.date]!.push(schedule);
-      return map;
+  const { data: schedules = [], isLoading } = useMyTimeSlotsQuery(interviewId);
+  if (isLoading) return null;
+
+  // 일치하는 스케줄 찾기
+  const schedule = schedules.find((s) => s.date === activeDate);
+  if (!schedule) {
+    return <Text>해당 날짜({activeDate})에 배정된 일정이 없습니다.</Text>;
+  }
+
+  // 방별로 그룹핑
+  const { roomNames, timeSlots, startTime, endTime, interviewDuration } =
+    schedule;
+  const roomsMap = useMemo(() => {
+    return roomNames.reduce<Record<string, typeof timeSlots>>((acc, room) => {
+      acc[room] = timeSlots.filter((ts) => ts.roomName === room);
+      return acc;
     }, {});
-  }, [slots]);
+  }, [roomNames, timeSlots]);
 
-  // 날짜별 그룹핑
-  const grouped = slots.reduce<Record<string, typeof slots>>((acc, slot) => {
-    (acc[slot.date] = acc[slot.date] || []).push(slot);
-    return acc;
-  }, {});
-
-  // if (!slots.length) return <Text>배정된 시간이 없습니다.</Text>;
+  // 날짜 이동
+  const handleDateChange = (nextDate: string) => {
+    const norm = nextDate.replace(/\./g, '-');
+    router.replace(
+      `/interview-evaluation/timetable/${tab}` +
+        `?interviewId=${interviewId}&date=${norm}`
+    );
+  };
 
   return (
-    <Flex gap="6.4rem" justify="center" paddingBottom="4rem">
-      {Object.entries(schedulesByDate).map(([date, group]) => {
-        // group: 해당 날짜에 속한 여러 schedule 객체
-        // timeSlots는 schedule.timeSlots 배열이므로 모두 합칩니다
-        const allTimeSlots = group.flatMap((s) => s.timeSlots);
+    <Flex direction="column" align="center" gap="4rem" width="100%">
+      <DateNav
+        dates={schedules.map((s) => s.date)}
+        active={activeDate!}
+        onChange={handleDateChange}
+      />
 
-        // 시작 시간(hour)과 종료 시간(hour)
-        const startHour = Math.min(
-          ...group.map((s) => Number(s.startTime.split(':')[0]))
-        );
-        const endHour = Math.max(
-          ...group.map((s) => Number(s.endTime.split(':')[0]))
-        );
-
-        // 날짜 포맷
-        const formattedDate = format(
-          new Date(date.replace(/\./g, '-')),
-          'yyyy년 MM월 dd일 (EEE)',
-          { locale: ko }
-        );
-
-        // 인터벌은 모든 schedule이 동일하다고 가정
-        const interval = group[0]!.interviewDuration;
-
-        return (
+      <Flex gap="4rem" justify="center" width="100%">
+        {roomNames.map((room) => (
           <TimeTable
-            key={date}
-            title={formattedDate}
+            key={room}
+            title={room}
             headers={tab === 'interviewer' ? ['지원자', '면접관'] : undefined}
-            startHour={startHour}
-            endHour={endHour}
-            interval={interval}
-            slots={allTimeSlots}
-            width="40rem"
+            startHour={Number(startTime.split(':')[0])}
+            endHour={Number(endTime.split(':')[0])}
+            interval={interviewDuration}
+            slots={roomsMap[room]!}
+            width={roomNames.length === 3 ? '31.3rem' : '40rem'}
             renderCell={(row) => (
               <CellRenderer
-                date={date}
+                date={schedule.date}
                 row={row}
                 tab={tab}
-                slotData={allTimeSlots}
-                startHour={startHour}
-                interval={interval}
+                slotData={roomsMap[room]!}
+                startHour={Number(startTime.split(':')[0])}
+                interval={interviewDuration}
               />
             )}
           />
-        );
-      })}
+        ))}
+      </Flex>
     </Flex>
   );
 }

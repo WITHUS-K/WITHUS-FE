@@ -14,6 +14,7 @@ export interface ApplicantSliderHeaderProps {
   onPrev: () => void;
   onNext: () => void;
   onViewApplication: () => void;
+  isOtherUser?: boolean;
 }
 
 export const ApplicantSliderHeader = ({
@@ -23,6 +24,7 @@ export const ApplicantSliderHeader = ({
   onPrev,
   onNext,
   onViewApplication,
+  isOtherUser = true,
 }: ApplicantSliderHeaderProps) => {
   return (
     <div className={styles.container}>
@@ -49,14 +51,16 @@ export const ApplicantSliderHeader = ({
           </Text>
         </Flex>
 
-        <Button
-          variant="sub"
-          size="32"
-          width="8.8rem"
-          onClick={onViewApplication}
-        >
-          지원서 열람
-        </Button>
+        {isOtherUser && (
+          <Button
+            variant="sub"
+            size="32"
+            width="8.8rem"
+            onClick={onViewApplication}
+          >
+            지원서 열람
+          </Button>
+        )}
       </Flex>
 
       <DataController
