@@ -29,7 +29,7 @@ export interface OrgInterviewInfo {
 // — QueryOptions & Hook —
 export function getOrgInterviewsOptions(
   organizationId: number,
-  tokens?: Tokens,
+  tokens?: Tokens
 ): FetchQueryOptions<
   OrgInterviewInfo[],
   Error,
@@ -47,7 +47,7 @@ export function getOrgInterviewsOptions(
       console.log(res);
       return res.result;
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 1,
   };
 }
 
@@ -66,6 +66,6 @@ export function useOrganizationInterviewsQuery(
       console.log(res);
       return res.result;
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 1,
   });
 }
