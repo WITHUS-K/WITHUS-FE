@@ -10,6 +10,7 @@ import { useDeleteRecruitmentMutation } from '@web/store/mutation/useDeleteRecru
 import { useRecruitmentsListQuery } from '@web/store/query/useRecruitmentsListQuery';
 import { useModal, useToast } from '@repo/ui/hooks';
 import { RecruitmentDto } from '@web/types/recruitment';
+import { getDDay } from '@web/utils/date';
 
 export default function ApplicationListClient() {
   const router = useRouter();
@@ -98,19 +99,7 @@ export default function ApplicationListClient() {
 
       <Flex direction="column" gap="1.2rem" marginTop="1.2rem" width="100%">
         {recruitments?.map((item) => {
-          const today = new Date();
-
-          let diffDays: number | null = null;
-
-          if (item.documentDeadline) {
-            const deadline = new Date(
-              item.documentDeadline.replace(/\./g, '-')
-            );
-            diffDays = Math.ceil(
-              (deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-            );
-          }
-
+          const diffDays = getDDay(item.documentDeadline);
           //console.log('리스트', item);
 
           const handleDelete = () => {

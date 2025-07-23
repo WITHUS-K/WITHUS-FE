@@ -19,13 +19,12 @@ export default async function Page({ params }: PageProps) {
 
   const data = await fetchRecruitmentBySlug(slug);
 
-  // 마감 날짜 지나면 지원마감 페이지로 리다이렉트되게
-  const raw = new Date(data.documentDeadline);
-  raw.setHours(23, 59, 59, 999);
-  if (Date.now() >= raw.getTime()) {
+  const raw = data.documentDeadline?.replace(/\./g, '-');
+  const deadlineEndMs = new Date(`${raw}T23:59:59.999+09:00`).getTime();
+
+  if (Date.now() >= deadlineEndMs) {
     redirect(`/apply/${organization}/${slug}/end`);
   }
-
   const fetchOptions = getRecruitmentBySlugQueryOptions({ slug });
 
   return (

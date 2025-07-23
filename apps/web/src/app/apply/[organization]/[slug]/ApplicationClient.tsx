@@ -59,9 +59,9 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   // 자정 데드라인 계산**
   const deadlineEndOfDay = useMemo(() => {
     if (!data?.documentDeadline) return null;
-    const d = new Date(data.documentDeadline);
-    d.setHours(23, 59, 59, 999);
-    return d.getTime();
+
+    const formatted = data.documentDeadline.replace(/\./g, '-'); // "2025.07.22" → "2025-07-22"
+    return new Date(`${formatted}T23:59:59.999+09:00`).getTime();
   }, [data?.documentDeadline]);
 
   // 테스트용: 2025-07-19 00:07:00 (KST)
