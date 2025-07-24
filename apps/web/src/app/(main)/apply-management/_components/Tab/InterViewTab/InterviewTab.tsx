@@ -44,7 +44,6 @@ interface InterviewTabProps {
   posColorMap: Record<string, string>;
 }
 
-// sortByMap['interviews'] 의 키만 허용
 type InterviewSortKey = keyof (typeof sortByMap)['interviews'];
 
 export default function InterviewTab({
@@ -60,33 +59,41 @@ export default function InterviewTab({
   const side = searchParams.get('sideTab');
   const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
 
-  // 페이지 관리
-  const pageQuery = Number(searchParams.get('page'));
-  const initialPage = !isNaN(pageQuery) && pageQuery > 0 ? pageQuery - 1 : 0;
+  // ─── 페이지 관리 ───────────────────────────────────────────────────────────────
+  const pageParam = Number(searchParams.get('page'));
+  const initialPage = !isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
   const [page, setPage] = useState(initialPage);
   useEffect(() => {
     if (page !== initialPage) setPage(initialPage);
-  }, [initialPage, page]);
+  }, [initialPage]);
   const size = 20;
 
-  // 정렬 상태
-  const [sortKey, setSortKey] = useState<InterviewSortKey>('name');
-  const [direction, setDirection] = useState<'ASC' | 'DESC'>('ASC');
+  // ─── 정렬 키 · 방향 관리 (URL 동기화) ────────────────────────────────────────────
+  const urlSortKey =
+    (searchParams.get('sortKey') as InterviewSortKey) ?? 'name';
+  const urlDirection =
+    (searchParams.get('direction')?.toUpperCase() as 'ASC' | 'DESC') ?? 'ASC';
+  const [sortKey, setSortKey] = useState<InterviewSortKey>(urlSortKey);
+  const [direction, setDirection] = useState<'ASC' | 'DESC'>(urlDirection);
+  useEffect(() => {
+    setSortKey(urlSortKey);
+    setDirection(urlDirection);
+  }, [urlSortKey, urlDirection]);
 
-  // 올바른 API sortBy 값 추출 및 캐스팅
+  // ─── API sortBy 값
   const apiSortBy = sortByMap['interviews']![sortKey] as AdminApplicationSortBy;
 
-  // 데이터 패칭
+  // ─── 데이터 패칭
   const { data, isLoading, isFetching } = useAdminApplicationsClientQuery({
     recruitmentId,
-    stage: stageMap[activeTab], // 'INTERVIEW'
+    stage: stageMap[activeTab],
     sortBy: apiSortBy,
     direction,
     page,
     size,
   });
 
-  // 테이블 row 생성
+  // ─── 테이블 row 생성 ───────────────────────────────────────────────────────────
   const rows = useMemo(() => {
     if (!data) return [];
     return data.data.map((item, idx) => ({
@@ -124,7 +131,7 @@ export default function InterviewTab({
     }));
   }, [data, page, size, posColorMap]);
 
-  // 선택/모달 처리
+  // ─── 선택/모달 처리 ───────────────────────────────────────────────────────────
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const applicationIds = rows
     .filter((r) => selectedIds.includes(r.id))
@@ -137,23 +144,35 @@ export default function InterviewTab({
     const qp = new URLSearchParams(Array.from(searchParams.entries()));
     if (value) qp.set('sideTab', value);
     else qp.delete('sideTab');
-    router.push(`${pathname}?${qp.toString()}`);
+    router.replace(`${pathname}?${qp.toString()}`);
   };
 
   const openAssignManagerModal = () =>
-    router.push(
+    router.replace(
       `/apply-management/${activeTab}/assign-manager?recruitmentId=${recruitmentId}`
     );
   const handleCloseSideTab = () => {
     setModalParam(null);
     setSelectedIds([]);
   };
+
+  // ─── 페이지 변경 시 URL 반영 ────────────────────────────────────────────────────
   const onPageChange = (newOneBased: number) => {
-    const zeroBased = newOneBased - 1;
-    setPage(zeroBased);
+    setPage(newOneBased - 1);
     const qp = new URLSearchParams(Array.from(searchParams.entries()));
     qp.set('page', String(newOneBased));
-    router.push(`${pathname}?${qp.toString()}`);
+    qp.set('sortKey', sortKey);
+    qp.set('direction', direction.toLowerCase());
+    router.replace(`${pathname}?${qp.toString()}`);
+  };
+
+  // ─── 정렬 변경 시 URL 반영 ────────────────────────────────────────────────────
+  const handleSortChange = (key: string, dir: 'asc' | 'desc') => {
+    const qp = new URLSearchParams(Array.from(searchParams.entries()));
+    qp.set('sortKey', key);
+    qp.set('direction', dir);
+    qp.set('page', '1');
+    router.replace(`${pathname}?${qp.toString()}`);
   };
 
   return (
@@ -164,7 +183,7 @@ export default function InterviewTab({
         onMail={() => setModalParam('mail')}
         onDistribute={openAssignManagerModal}
         onAdd={() =>
-          router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
+          router.replace(`/apply-management/add?recruitmentId=${recruitmentId}`)
         }
       />
 
@@ -173,21 +192,18 @@ export default function InterviewTab({
         data={rows}
         availableEvals={[]}
         selectedIds={selectedIds}
-        sortState={{ [sortKey]: direction.toLowerCase() as any }}
-        onSortChange={(key, dir) => {
-          setSortKey(key as InterviewSortKey);
-          setDirection(dir.toUpperCase() as 'ASC' | 'DESC');
-        }}
-        currentPage={page + 1}
-        totalItems={data?.pagination.totalElements ?? 0}
-        pageSize={size}
-        onPageChange={onPageChange}
         onToggleAll={(c) => setSelectedIds(c ? rows.map((r) => r.id) : [])}
         onToggleOne={(id, checked) =>
           setSelectedIds((prev) =>
             checked ? [...prev, id] : prev.filter((x) => x !== id)
           )
         }
+        sortState={{ [sortKey]: direction.toLowerCase() as any }}
+        onSortChange={handleSortChange}
+        currentPage={page + 1}
+        totalItems={data?.pagination.totalElements ?? 0}
+        pageSize={size}
+        onPageChange={onPageChange}
         isLoading={isLoading}
         isFetching={isFetching}
       />

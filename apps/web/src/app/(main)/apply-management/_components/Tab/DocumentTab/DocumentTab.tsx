@@ -52,23 +52,34 @@ export default function DocumentTab({
   const params = useParams() as { tab: string };
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
   const activeTab = params.tab;
   const side = searchParams.get('sideTab');
   const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
 
-  // 페이지 번호 관리
-  const pageQuery = Number(searchParams.get('page'));
-  const initialPage = !isNaN(pageQuery) && pageQuery > 0 ? pageQuery - 1 : 0;
+  // ─── 페이지 번호 관리 ─────────────────────────────────────────────────────────
+  const pageParam = Number(searchParams.get('page'));
+  const initialPage = !isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
   const [page, setPage] = useState(initialPage);
   useEffect(() => {
     if (page !== initialPage) setPage(initialPage);
-  }, [initialPage, page]);
+  }, [initialPage]);
 
   const size = 20;
 
+  // ─── 정렬 키 · 방향 관리 (URL 동기화) ────────────────────────────────────────────
+  const urlSortKey =
+    (searchParams.get('sortKey') as keyof (typeof sortByMap)['documents']) ??
+    'name';
+  const urlDirection =
+    (searchParams.get('direction')?.toUpperCase() as 'ASC' | 'DESC') ?? 'ASC';
   const [sortKey, setSortKey] =
-    useState<keyof (typeof sortByMap)['documents']>('name');
-  const [direction, setDirection] = useState<'ASC' | 'DESC'>('ASC');
+    useState<keyof (typeof sortByMap)['documents']>(urlSortKey);
+  const [direction, setDirection] = useState<'ASC' | 'DESC'>(urlDirection);
+  useEffect(() => {
+    setSortKey(urlSortKey);
+    setDirection(urlDirection);
+  }, [urlSortKey, urlDirection]);
 
   const apiSortBy = sortByMap['documents']![sortKey] as AdminApplicationSortBy;
 
@@ -81,7 +92,7 @@ export default function DocumentTab({
     size,
   });
 
-  // 테이블용 row 생성
+  // ─── 테이블용 row 생성 ───────────────────────────────────────────────────────────
   const rows = useMemo(() => {
     if (!data) return [];
     return data.data.map((item, idx) => ({
@@ -94,7 +105,9 @@ export default function DocumentTab({
           color: mapServerColorToTagHex(posColorMap[item.positionName]!),
         },
       ],
-      evalStatus: `${item.documentEvaluatedCount}/${item.documentAssignedCount}`,
+      evalStatus: `${item.documentEvaluatedCount}/${
+        item.documentAssignedCount
+      }`,
       score: Number(item.documentAverageScore),
       status: (() => {
         switch (item.status) {
@@ -127,7 +140,7 @@ export default function DocumentTab({
     }));
   }, [data, page, size, posColorMap]);
 
-  // ─── 모달 & 선택 로직 ───────────────────────────────────────────────────
+  // ─── 모달 & 선택 로직 ───────────────────────────────────────────────────────────
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const applicationIds = rows
     .filter((r) => selectedIds.includes(r.id))
@@ -140,12 +153,14 @@ export default function DocumentTab({
     const qp = new URLSearchParams(Array.from(searchParams.entries()));
     if (value) qp.set('sideTab', value);
     else qp.delete('sideTab');
-    router.push(`${pathname}?${qp.toString()}`);
+    router.replace(`${pathname}?${qp.toString()}`);
   };
 
   const openAssignManagerModal = () =>
-    router.push(
-      `/apply-management/${activeTab}/assign-manager?recruitmentId=${recruitmentId}`
+    router.replace(
+      `/apply-management/${activeTab}/assign-manager?recruitmentId=${
+        recruitmentId
+      }`
     );
 
   const handleCloseSideTab = () => {
@@ -153,12 +168,23 @@ export default function DocumentTab({
     setSelectedIds([]);
   };
 
+  // ─── 페이지 변경 시 URL 반영 ────────────────────────────────────────────────────
   const onPageChange = (newOneBased: number) => {
-    const zeroBased = newOneBased - 1;
-    setPage(zeroBased);
+    setPage(newOneBased - 1);
     const qp = new URLSearchParams(Array.from(searchParams.entries()));
     qp.set('page', String(newOneBased));
-    router.push(`${pathname}?${qp.toString()}`);
+    qp.set('sortKey', sortKey);
+    qp.set('direction', direction.toLowerCase());
+    router.replace(`${pathname}?${qp.toString()}`);
+  };
+
+  // ─── 정렬 변경 시 URL 반영 ────────────────────────────────────────────────────
+  const handleSortChange = (key: string, dir: 'asc' | 'desc') => {
+    const qp = new URLSearchParams(Array.from(searchParams.entries()));
+    qp.set('sortKey', key);
+    qp.set('direction', dir);
+    qp.set('page', '1');
+    router.replace(`${pathname}?${qp.toString()}`);
   };
 
   return (
@@ -169,7 +195,7 @@ export default function DocumentTab({
         onMail={() => setModalParam('mail')}
         onDistribute={openAssignManagerModal}
         onAdd={() =>
-          router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
+          router.replace(`/apply-management/add?recruitmentId=${recruitmentId}`)
         }
       />
 
@@ -178,21 +204,18 @@ export default function DocumentTab({
         data={rows}
         availableEvals={[]}
         selectedIds={selectedIds}
-        sortState={{ [sortKey]: direction.toLowerCase() as any }}
-        onSortChange={(key, dir) => {
-          setSortKey(key as keyof (typeof sortByMap)['documents']);
-          setDirection(dir.toUpperCase() as 'ASC' | 'DESC');
-        }}
-        currentPage={page + 1}
-        totalItems={data?.pagination.totalElements ?? 0}
-        pageSize={size}
-        onPageChange={onPageChange}
         onToggleAll={(c) => setSelectedIds(c ? rows.map((r) => r.id) : [])}
         onToggleOne={(id, checked) =>
           setSelectedIds((prev) =>
             checked ? [...prev, id] : prev.filter((x) => x !== id)
           )
         }
+        sortState={{ [sortKey]: direction.toLowerCase() as any }}
+        onSortChange={handleSortChange}
+        currentPage={page + 1}
+        totalItems={data?.pagination.totalElements ?? 0}
+        pageSize={size}
+        onPageChange={onPageChange}
         isLoading={isLoading}
         isFetching={isFetching}
       />

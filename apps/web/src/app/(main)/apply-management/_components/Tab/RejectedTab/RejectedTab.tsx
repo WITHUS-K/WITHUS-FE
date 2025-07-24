@@ -15,7 +15,11 @@ import {
 import { Template } from '../../SideTabs/TemplatesAccordion/TemplatesAccordion';
 import { SmsSideTab } from '../../SideTabs/SmsSideTab/SmsSideTab';
 import { MailSideTab } from '../../SideTabs/MailSideTab/MailSideTab';
-import { useAdminApplicationsQuery } from '@web/store/query/useAdminApplicationsQuery';
+import {
+  AdminApplicationSortBy,
+  useAdminApplicationsClientQuery,
+  useAdminApplicationsQuery,
+} from '@web/store/query/useAdminApplicationsQuery';
 import { sortByMap, stageMap } from '../../../[tab]/TabClient';
 import { mapServerColorToTagHex } from '@web/utils/color';
 
@@ -46,6 +50,8 @@ interface RejectedTabProps {
   posColorMap: Record<string, string>;
 }
 
+type RejectedSortKey = keyof (typeof sortByMap)['rejected'];
+
 export default function RejectedTab({
   recruitmentId,
   posColorMap,
@@ -53,87 +59,113 @@ export default function RejectedTab({
   const router = useRouter();
   const params = useParams() as { tab: string };
   const pathname = usePathname();
-  const activeTab = params.tab;
   const searchParams = useSearchParams();
-  const side = searchParams.get('sideTab');
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
-  const pageQuery = Number(searchParams.get('page'));
-  const initialPage = !isNaN(pageQuery) && pageQuery > 0 ? pageQuery - 1 : 0;
 
-  const [page, setPage] = useState(initialPage);
+  const activeTab = params.tab;
+  const sideTab =
+    searchParams.get('sideTab') === 'sms'
+      ? 'sms'
+      : searchParams.get('sideTab') === 'mail'
+        ? 'mail'
+        : null;
 
+  // 페이지 관리 (URL 기반)
+  const pageParam = Number(searchParams.get('page'));
+  const initialPage = !isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
+  const [page, setPage] = useState<number>(initialPage);
   useEffect(() => {
-    if (page !== initialPage) {
-      setPage(initialPage);
-    }
-  }, [initialPage, page]);
-
+    if (page !== initialPage) setPage(initialPage);
+  }, [initialPage]);
   const size = 20;
-  const [sortKey, setSortKey] = useState<keyof typeof sortByMap>('name');
-  const [direction, setDirection] = useState<'ASC' | 'DESC'>('ASC');
 
-  const { data, isLoading, isFetching } = useAdminApplicationsQuery({
+  // 정렬 키·방향 관리 (URL 동기화)
+  const urlSortKey = (searchParams.get('sortKey') as RejectedSortKey) ?? 'name';
+  const urlDirection =
+    (searchParams.get('direction')?.toUpperCase() as 'ASC' | 'DESC') ?? 'ASC';
+  const [sortKey, setSortKey] = useState<RejectedSortKey>(urlSortKey);
+  const [direction, setDirection] = useState<'ASC' | 'DESC'>(urlDirection);
+  useEffect(() => {
+    setSortKey(urlSortKey);
+    setDirection(urlDirection);
+  }, [urlSortKey, urlDirection]);
+
+  const apiSortBy = sortByMap['rejected']![sortKey] as AdminApplicationSortBy;
+
+  // 데이터 패칭
+  const { data, isLoading, isFetching } = useAdminApplicationsClientQuery({
     recruitmentId,
     stage: stageMap[activeTab],
-    sortBy: sortByMap[sortKey] as any,
+    sortBy: apiSortBy,
     direction,
     page,
     size,
   });
 
-  const rows = useMemo(() => {
+  // 테이블 row 생성 (MemberWithEval 타입 보장)
+  const rows = useMemo<MemberWithEval[]>(() => {
     if (!data) return [];
-    return data.data.map((item, idx) => {
-      const hex = mapServerColorToTagHex(posColorMap[item.positionName]!);
-      return {
-        applicationId: item.id,
-        id: String(page * size + idx + 1).padStart(3, '0'), // 순번
-        name: item.name,
-        fieldTags: [
-          {
-            label: item.positionName,
-            color: hex,
-          },
-        ],
-        evalStatus: `${item.documentEvaluatedCount}/${item.documentAssignedCount}`,
-        documentScore: Number(item.documentAverageScore),
-        interviewScore: Number(item.interviewAverageScore),
-        status: '불합격',
-        smsSent: item.isSmsSent,
-        mailSent: item.isMailSent,
-        evaluators: item.documentEvaluators.map((e) => ({
-          userId: e.userId,
-          profileImageUrl: e.profileImageUrl,
-          name: e.name,
-          profileColor: e.profileColor,
-        })),
-      };
-    });
+    return data.data.map((item, idx) => ({
+      applicationId: item.id,
+      id: String(page * size + idx + 1).padStart(3, '0'),
+      name: item.name,
+      fieldTags: [
+        {
+          label: item.positionName,
+          color: mapServerColorToTagHex(posColorMap[item.positionName]!),
+        },
+      ],
+      evalStatus: `${item.documentEvaluatedCount}/${item.documentAssignedCount}`,
+      documentScore: Number(item.documentAverageScore),
+      interviewScore: Number(item.interviewAverageScore),
+      status: '불합격',
+      smsSent: item.isSmsSent,
+      mailSent: item.isMailSent,
+      evaluators: item.documentEvaluators.map((e) => ({
+        userId: e.userId,
+        name: e.name,
+        profileImageUrl: e.profileImageUrl,
+        profileColor: e.profileColor,
+      })),
+    }));
   }, [data, page, size, posColorMap]);
 
+  // 선택/모달 처리
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const selectedRows = rows.filter((r) => selectedIds.includes(r.id));
-  const applicationIds = selectedRows.map((r) => r.applicationId);
+  const applicationIds = selectedRows
+    .map((r) => r.applicationId)
+    .filter((id): id is number => id !== undefined);
   const recipientNames = selectedRows.map((r) => r.name);
 
   const setModalParam = (value: string | null) => {
-    const params = new URLSearchParams(Array.from(searchParams.entries()));
-    if (value) params.set('sideTab', value);
-    else params.delete('sideTab');
-    router.push(`${pathname}?${params.toString()}`);
+    const qp = new URLSearchParams(Array.from(searchParams.entries()));
+    if (value) qp.set('sideTab', value);
+    else qp.delete('sideTab');
+    router.replace(`${pathname}?${qp.toString()}`);
   };
 
   const handleCloseSideTab = () => {
     setModalParam(null);
-    setSelectedIds([]); // 체크박스 리셋
+    setSelectedIds([]);
   };
 
-  const onPageChange = (newPageOneBased: number) => {
-    const nextPageZeroBased = newPageOneBased - 1;
-    setPage(nextPageZeroBased);
+  // 페이지 변경 시 URL 동기화
+  const onPageChange = (newOneBased: number) => {
+    setPage(newOneBased - 1);
     const qp = new URLSearchParams(Array.from(searchParams.entries()));
-    qp.set('page', String(newPageOneBased));
-    router.push(`${pathname}?${qp.toString()}`);
+    qp.set('page', String(newOneBased));
+    qp.set('sortKey', sortKey);
+    qp.set('direction', direction.toLowerCase());
+    router.replace(`${pathname}?${qp.toString()}`);
+  };
+
+  // 정렬 변경 시 URL 동기화
+  const handleSortChange = (key: string, dir: 'asc' | 'desc') => {
+    const qp = new URLSearchParams(Array.from(searchParams.entries()));
+    qp.set('sortKey', key as string);
+    qp.set('direction', dir);
+    qp.set('page', '1');
+    router.replace(`${pathname}?${qp.toString()}`);
   };
 
   return (
@@ -144,9 +176,9 @@ export default function RejectedTab({
         onMail={() => setModalParam('mail')}
         onDistribute={() => {}}
         onAdd={() =>
-          router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
+          router.replace(`/apply-management/add?recruitmentId=${recruitmentId}`)
         }
-        communicationOnly={true}
+        communicationOnly
       />
 
       <TableContainer
@@ -154,15 +186,12 @@ export default function RejectedTab({
         data={rows}
         selectedIds={selectedIds}
         sortState={{ [sortKey]: direction.toLowerCase() as any }}
-        onSortChange={(key: string, dir: 'asc' | 'desc') => {
-          setSortKey(key as any);
-          setDirection(dir.toUpperCase() as any);
-        }}
+        onSortChange={handleSortChange}
         currentPage={page + 1}
         totalItems={data?.pagination.totalElements ?? 0}
         pageSize={size}
         onPageChange={onPageChange}
-        onToggleAll={(c) => setSelectedIds(c ? rows.map((m) => m.id) : [])}
+        onToggleAll={(c) => setSelectedIds(c ? rows.map((r) => r.id) : [])}
         onToggleOne={(id, checked) =>
           setSelectedIds((prev) =>
             checked ? [...prev, id] : prev.filter((x) => x !== id)
@@ -179,7 +208,6 @@ export default function RejectedTab({
           onClose={handleCloseSideTab}
         />
       )}
-
       {sideTab === 'mail' && (
         <MailSideTab
           applicationIds={applicationIds}
