@@ -22,6 +22,7 @@ import { queryClient } from '@web/store/query/QueryClientProvider';
 import { GET } from '@web/api';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 import { useAutoAssignInterviewersMutation } from '@web/store/mutation/useAutoAssignInterviewersMutation';
+import { useResetInterviewScheduleMutation } from '@web/store/mutation/useResetInterviewScheduleMutation';
 
 export default function Filters() {
   const qc = useQueryClient();
@@ -47,10 +48,19 @@ export default function Filters() {
     useOrganizationInterviewsQuery(organizationId);
   const { data: positions = [] } = useRecruitmentPositionsQuery(urlRid ?? 0);
   const { data: config } = useInterviewConfigQuery(iv ?? 0);
+  const resetSchedule = useResetInterviewScheduleMutation(iv!);
 
   const [selectedTitle, setSelectedTitle] = useState<string>(() => {
     return recruitments.find((r) => r.recruitmentId === urlRid)?.title ?? '';
   });
+
+  const isConfigEmpty = !!(
+    config &&
+    config.roomNames.length === 0 &&
+    config.interviewerCount === 0 &&
+    config.applicantCount === 0 &&
+    config.assistantCount === 0
+  );
 
   // 면접실, 인원수 state
   const [rooms, setRooms] = useState<string[]>([]);
@@ -193,19 +203,19 @@ export default function Filters() {
 
   // 핸들러: 재생성 -> 편집 모드
   // 핸들러: 재생성 -> 편집 모드 + 필터 리셋
-  const handleRegenerate = () => {
+  const handleRegenerate = async () => {
+    // 1) 서버에 reset 요청
+    await resetSchedule.mutateAsync();
+
+    // 2) 로컬 필터 상태를 config 기준으로 리셋
     setIv(undefined);
     setIsEditing(true);
-
-    // 1) 필터 폼 상태들(config 값)으로 리셋
     setRooms(config?.roomNames ?? ['']);
     setCounts({
       면접관: config?.interviewerCount ?? 0,
       지원자: config?.applicantCount ?? 0,
       안내자: config?.assistantCount ?? 0,
     });
-
-    // 2) onSettingsChange 를 바로 트리거하도록 settings 리셋
     setSettings({
       rooms: config?.roomNames ?? [''],
       interviewerPerSlot: config?.interviewerCount ?? 0,
@@ -213,14 +223,13 @@ export default function Filters() {
       assistantPerSlot: config?.assistantCount ?? 0,
     });
 
+    // 3) 관련 쿼리 무효화
     qc.invalidateQueries({
       queryKey: queryKeys.interview.schedule(existingInterview!),
     });
-    qc.invalidateQueries({
-      queryKey: queryKeys.interview.orgList(),
-    });
+    qc.invalidateQueries({ queryKey: queryKeys.interview.orgList() });
 
-    // 3) interviewId 없는 URL 로 돌아가면 timetable 컴포넌트가 placeholder 를 보여줍니다
+    // 4) URL을 인터뷰 생성 전 상태로 이동
     router.replace(`/interview-management?recruitmentId=${effectiveRid}`);
   };
 
@@ -366,9 +375,9 @@ export default function Filters() {
           parts={parts}
           partColorMap={partColorMap}
           onSettingsChange={setSettings}
-          disabled={!isEditing}
+          disabled={!isEditing && !isConfigEmpty}
           initialSettings={
-            iv != null
+            config && !isConfigEmpty
               ? {
                   rooms,
                   interviewerPerSlot: counts.면접관,

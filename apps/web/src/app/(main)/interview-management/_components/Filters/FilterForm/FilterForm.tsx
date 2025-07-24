@@ -5,9 +5,7 @@ import { useEffect, useState } from 'react';
 import { Flex, Text } from '@repo/ui';
 import { InputChip } from '@repo/ui/Chips';
 import { Stepper } from '@repo/ui/Stepper';
-import { IcPlus24 } from '@repo/ui/icons/colored';
 import { Tag } from '@repo/ui/Tag';
-import type { TagColor } from '@repo/utils';
 import * as styles from './FilterForm.css';
 import { TagHex } from '@web/utils/color';
 import { IcRoomPlus } from '@repo/ui/icons/colored';
@@ -96,7 +94,7 @@ export default function FilterForm({
     if (disabled) return;
     setCounts((prev) => ({
       ...prev,
-      [name]: Math.max(1, next),
+      [name]: Math.max(0, next),
     }));
   };
 
