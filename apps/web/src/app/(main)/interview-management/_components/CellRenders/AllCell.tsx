@@ -16,8 +16,9 @@ export default function AllCell({ slot }: { slot: TimeSlot }) {
   const tab = params.tab as string;
   const date = params.date as string;
   const sp = useSearchParams();
-  console.log('타임슬롯', slot.timeSlotId);
+  //console.log('타임슬롯', slot.timeSlotId);
 
+  console.log('지원자 슬롯별', slot.applicants);
   // 현재 쿼리스트링 (recruitmentId, interviewId 등)
   const baseQs = sp.toString(); // e.g. "recruitmentId=4&interviewId=5"
 

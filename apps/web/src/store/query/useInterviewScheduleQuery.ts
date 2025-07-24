@@ -74,7 +74,10 @@ export function getInterviewScheduleQueryOptions({
         `api/v1/interviews/${interviewId}/schedule`,
         undefined,
         tokens
-      ).then((res) => res.result),
+      ).then((res) => {
+        console.log('[useInterviewSchedule] raw response:', res);
+        return res.result;
+      }),
     staleTime: 1000 * 60,
     enabled: interviewId > 0,
   });
