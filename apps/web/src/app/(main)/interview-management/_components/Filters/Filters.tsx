@@ -23,6 +23,7 @@ import { GET } from '@web/api';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 import { useAutoAssignInterviewersMutation } from '@web/store/mutation/useAutoAssignInterviewersMutation';
 import { useResetInterviewScheduleMutation } from '@web/store/mutation/useResetInterviewScheduleMutation';
+import { IcRe } from '@repo/ui/icons/mono';
 
 export default function Filters() {
   const qc = useQueryClient();
@@ -349,17 +350,28 @@ export default function Filters() {
             <Button
               variant="sub"
               size="40"
-              leftIcon={<IcRefresh width={24} height={24} />}
-              onClick={btnAction}
+              onClick={handleGenerate}
+              disabled={!isConfigEmpty && !!iv}
               style={{ padding: '0.8rem 2rem' }}
             >
-              {btnLabel}
+              타임테이블 세팅
+            </Button>
+
+            <Button
+              variant="sub"
+              size="40"
+              leftIcon={<IcRe width={24} height={24} />}
+              onClick={handleRegenerateConfirm}
+              disabled={isConfigEmpty || !iv}
+              style={{ padding: '0.8rem 2rem' }}
+            >
+              타임테이블 재생성
             </Button>
 
             <Button
               variant="main"
               size="40"
-              disabled={!iv}
+              disabled={isConfigEmpty || !iv}
               style={{ padding: '0.8rem 2rem' }}
               onClick={() => autoAssign.mutate()}
             >
