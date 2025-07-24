@@ -21,6 +21,7 @@ import { queryKeys } from '@web/store/constants';
 import { queryClient } from '@web/store/query/QueryClientProvider';
 import { GET } from '@web/api';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+import { useAutoAssignInterviewersMutation } from '@web/store/mutation/useAutoAssignInterviewersMutation';
 
 export default function Filters() {
   const qc = useQueryClient();
@@ -227,6 +228,9 @@ export default function Filters() {
   const createInterview = useCreateInterviewMutation();
   const createSchedule = useCreateScheduleMutation();
 
+  //console.log('면접ID', iv);
+  const autoAssign = useAutoAssignInterviewersMutation(iv!);
+
   const handleGenerate = async () => {
     if (!effectiveRid) return;
 
@@ -275,7 +279,7 @@ export default function Filters() {
   // 버튼 레이블/액션 분기
   const isGenerated = iv != null;
   const btnLabel =
-    isGenerated && !isEditing ? '타임테이블 재생성' : '타임테이블 생성';
+    isGenerated && !isEditing ? '타임테이블 재생성' : '타임테이블 세팅';
   const btnAction =
     isGenerated && !isEditing ? handleRegenerateConfirm : handleGenerate;
 
@@ -332,7 +336,7 @@ export default function Filters() {
               }
             }}
           />
-          <Flex gap="2rem">
+          <Flex gap="2rem" align="center">
             <Button
               variant="sub"
               size="40"
@@ -341,6 +345,16 @@ export default function Filters() {
               style={{ padding: '0.8rem 2rem' }}
             >
               {btnLabel}
+            </Button>
+
+            <Button
+              variant="main"
+              size="40"
+              disabled={!iv}
+              style={{ padding: '0.8rem 2rem' }}
+              onClick={() => autoAssign.mutate()}
+            >
+              면접관 배정
             </Button>
           </Flex>
         </Flex>

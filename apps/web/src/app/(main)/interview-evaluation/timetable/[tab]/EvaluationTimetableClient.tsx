@@ -33,42 +33,10 @@ export default function EvaluationTimetableClient({
     ? Number(recruitmentIdParam)
     : undefined;
 
-  const rawDate = initialDate ?? sp.get('date')!;
-  const activeDate = rawDate.includes('-')
-    ? rawDate.replace(/-/g, '.')
-    : rawDate;
-
   const { data: schedules = [], isLoading } = useMyTimeSlotsQuery({
     interviewId,
   });
   console.log('스케줄', schedules);
-
-  const hasAnySlot = schedules.some((s) => s.timeSlots.length > 0);
-
-  useEffect(() => {
-    const params = new URLSearchParams(sp.toString());
-    const desired = hasAnySlot ? 'true' : 'false';
-    if (params.get('hasSlots') !== desired) {
-      params.set('hasSlots', desired);
-      if (recruitmentId) params.set('recruitmentId', String(recruitmentId));
-      if (initialDate || sp.get('date')) {
-        params.set(
-          'date',
-          (initialDate ?? sp.get('date')!).replace(/\./g, '-')
-        );
-      }
-      params.set('interviewId', String(interviewId));
-      router.replace(`${pathname}?${params.toString()}`);
-    }
-  }, [
-    hasAnySlot,
-    pathname,
-    recruitmentId,
-    initialDate,
-    interviewId,
-    router,
-    sp,
-  ]);
 
   // 날짜별로 머지된 스케줄 계산
   const mergedSchedules = useMemo(() => {
@@ -112,6 +80,46 @@ export default function EvaluationTimetableClient({
   }, [schedules]);
 
   const dates = mergedSchedules.map((s) => s.date);
+
+  const rawQueryDate = initialDate ?? sp.get('date');
+  // 2) 만약 둘 다 없으면, 첫 번째 날짜를 기본(fallback)으로 사용
+  const fallbackDate = dates[0] || ''; // schedules 가 비어있으면 빈 문자열
+  const rawDate = rawQueryDate ?? fallbackDate;
+  // 3) rawDate 가 반드시 문자열이니 안전하게 replace
+  const activeDate = rawDate.includes('-')
+    ? rawDate.replace(/-/g, '.')
+    : rawDate;
+
+  /*const activeDate = rawDate.includes('-')
+    ? rawDate.replace(/-/g, '.')
+    : rawDate;*/
+
+  const hasAnySlot = schedules.some((s) => s.timeSlots.length > 0);
+
+  useEffect(() => {
+    const params = new URLSearchParams(sp.toString());
+    const desired = hasAnySlot ? 'true' : 'false';
+    if (params.get('hasSlots') !== desired) {
+      params.set('hasSlots', desired);
+      if (recruitmentId) params.set('recruitmentId', String(recruitmentId));
+      if (initialDate || sp.get('date')) {
+        params.set(
+          'date',
+          (initialDate ?? sp.get('date')!).replace(/\./g, '-')
+        );
+      }
+      params.set('interviewId', String(interviewId));
+      router.replace(`${pathname}?${params.toString()}`);
+    }
+  }, [
+    hasAnySlot,
+    pathname,
+    recruitmentId,
+    initialDate,
+    interviewId,
+    router,
+    sp,
+  ]);
 
   const schedule = mergedSchedules.find((s) => s.date === activeDate)!;
 

@@ -103,8 +103,8 @@ interface UseAdminApplicationsQueryOptions {
   tokens?: Tokens;
 }
 
-const ADMIN_APPS_STALE_TIME = 1000 * 60 * 1;
-const ADMIN_APPS_CACHE_TIME = 1000 * 60 * 2;
+const ADMIN_APPS_STALE_TIME = 1000 * 60 * 2;
+const ADMIN_APPS_CACHE_TIME = 1000 * 60 * 3;
 
 /**
  * 공통 옵션 헬퍼: UseQueryOptions 로 선언

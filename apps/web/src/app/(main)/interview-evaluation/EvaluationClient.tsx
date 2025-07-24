@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useOrganizationInterviewsQuery } from '@web/store/query/useOrganizationInterviewsQuery';
 import { useMyTimeSlotsQuery } from '@web/store/query/useMyTimeSlotsQuery';
@@ -28,6 +28,7 @@ export default function EvaluationClient() {
     interviewId: chosenId ?? 0,
   });
 
+  console.log('내 면접', slots);
   // 타임테이블이 모두 빈 배열인지 체크
   const isAllEmpty = slots.every((d) => d.timeSlots.length === 0);
 
@@ -39,7 +40,8 @@ export default function EvaluationClient() {
     const dateParam = firstDate?.replace(/\./g, '-');
 
     // 빈 배열이면 스케줄 페이지로, 아니면 타임테이블 페이지로
-    if (slots.length === 0) {
+    // 수정 필요
+    if (slots.length === 0 || isAllEmpty) {
       router.replace(
         `/interview-evaluation/schedule?interviewId=${chosenId}` +
           `&recruitmentId=${recruitmentId}`

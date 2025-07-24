@@ -8,7 +8,10 @@ import { CellRenderer } from '../../../_components/CellRenders/CellRenderer';
 import InviteModal from './@modal/(.)invite/page';
 import { IcCalendar } from '@repo/ui/icons/colored';
 import { Text } from '@repo/ui/Text';
-import { useInterviewScheduleQuery } from '@web/store/query/useInterviewScheduleQuery';
+import {
+  TimeSlot,
+  useInterviewScheduleQuery,
+} from '@web/store/query/useInterviewScheduleQuery';
 import DateNav from '../../../_components/DateNav/DateNav';
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import {
@@ -60,15 +63,10 @@ export default function TimetableClient({
           timeSlots: [...s.timeSlots],
         };
       } else {
-        // 이미 있으면 병합
         const m = map[s.date]!;
-        // 가장 이른 시작 시간
         if (s.startTime < m.startTime) m.startTime = s.startTime;
-        // 가장 늦은 종료 시간
         if (s.endTime > m.endTime) m.endTime = s.endTime;
-        // 중복 없이 방 이름 병합
         m.roomNames = Array.from(new Set([...m.roomNames, ...s.roomNames]));
-        // 중복 없이 슬롯 병합 (JSON 직렬화 방식)
         m.timeSlots = Array.from(
           new Set(
             [...m.timeSlots, ...s.timeSlots].map((slot) => JSON.stringify(slot))
@@ -77,13 +75,12 @@ export default function TimetableClient({
       }
     });
 
-    // 날짜 키 순으로 정렬된 배열로 변환
     return Object.entries(map)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([date, v]) => ({ date, ...v }));
   }, [schedules]);
 
-  // placeholder: 스케줄이 없거나 interviewId 없으면 안내
+  // 스케줄이 없거나 interviewId 없으면 placeholder
   if (!interviewId || mergedSchedules.length === 0) {
     return (
       <Flex
@@ -103,29 +100,63 @@ export default function TimetableClient({
     );
   }
 
-  // 4) DateNav에 사용할 날짜 리스트
+  // DateNav에 사용할 날짜 리스트
   const dates = mergedSchedules.map((sch) => sch.date);
 
-  // 5) URL 또는 파라미터 date에 맞는 schedule 추출
+  // URL 또는 파라미터 date에 맞는 schedule 추출
   const schedule = mergedSchedules.find(
     (sch) => sch.date === date || sch.date.replace(/\./g, '-') === date
   )!;
 
-  // 6) 방별로 timeSlots 그룹핑
-  const rooms = schedule.roomNames;
-  const roomsMap: Record<string, typeof schedule.timeSlots> = {};
-  rooms.forEach((r) => (roomsMap[r] = []));
-  schedule.timeSlots.forEach((ts) => {
-    roomsMap[ts.roomName]?.push(ts);
-  });
+  // timeSlots 중복 방+시간대 병합 후 applicants 중복 제거
+  const dedupedTimeSlots = useMemo(() => {
+    const keyed: Record<string, TimeSlot> = {};
 
-  // 7) 색상 매핑 준비
+    schedule.timeSlots.forEach((ts) => {
+      const key = `${ts.roomName}_${ts.startTime}`;
+      if (!keyed[key]) {
+        // 배열 복사
+        keyed[key] = {
+          ...ts,
+          applicants: [...ts.applicants],
+          interviewers: [...ts.interviewers],
+          assistants: [...ts.assistants],
+        };
+      } else {
+        keyed[key]!.applicants.push(...ts.applicants);
+        keyed[key]!.interviewers.push(...ts.interviewers);
+        keyed[key]!.assistants.push(...ts.assistants);
+      }
+    });
+
+    // 아이디 기준으로 중복 제거
+    return Object.values(keyed).map((slot) => ({
+      ...slot,
+      applicants: Array.from(
+        new Map(slot.applicants.map((a) => [a.applicationId, a])).values()
+      ),
+      interviewers: Array.from(
+        new Map(slot.interviewers.map((i) => [i.userId, i])).values()
+      ),
+      assistants: Array.from(
+        new Map(slot.assistants.map((a) => [a.userId, a])).values()
+      ),
+    }));
+  }, [schedule.timeSlots]);
+
+  // 방별로 timeSlots 그룹핑
+  const rooms = schedule.roomNames;
+  const roomsMap: Record<string, typeof dedupedTimeSlots> = {};
+  rooms.forEach((r) => (roomsMap[r] = []));
+  dedupedTimeSlots.forEach((ts) => roomsMap[ts.roomName]?.push(ts));
+
+  // 색상 매핑
   const { data: positions = [] } = useRecruitmentPositionsQuery(recruitmentId);
   const serverColorToHex: Record<string, string> = Object.fromEntries(
     positions.map((p) => [p.color, mapServerColorToTagHex(p.color)])
   );
 
-  // 8) 렌더링
+  // 렌더링
   const getWidth = rooms.length === 3 ? '31.3rem' : '51.45rem';
   const isAll = tab === 'all';
 
@@ -155,7 +186,6 @@ export default function TimetableClient({
               endHour={Number(schedule.endTime.split(':')[0])}
               interval={schedule.interviewDuration}
               slots={roomsMap[room]!.map((ts) => {
-                // 지원자 파트 기반으로 색상 결정
                 const posName = ts.applicants[0]?.positionName;
                 const part = positions.find((p) => p.name === posName);
                 const hex = part ? nameToHex1[part.color] : undefined;

@@ -1,3 +1,4 @@
+// src/components/OverflowChips/OverflowChips.tsx
 'use client';
 
 import React from 'react';
@@ -18,24 +19,30 @@ export function OverflowChips<T>({
   maxVisible,
   ...flexProps
 }: OverflowChipsProps<T>) {
-  const visible = items.slice(0, maxVisible);
-  const overflow = items.slice(maxVisible);
+  const totalCount = items.length;
+  const visibleCount = Math.min(totalCount, maxVisible);
+  const visibleItems = items.slice(0, visibleCount);
+
+  // 총 개수 > maxVisible인 경우에만 overflowItems 생성
+  const overflowItems = totalCount > maxVisible ? items.slice(maxVisible) : [];
+  const overflowCount = overflowItems.length;
 
   return (
     <Flex align="center" gap="0.8rem" {...flexProps}>
-      {visible.map((item, i) => (
+      {visibleItems.map((item, i) => (
         <Chip key={i} color="grayscale70" bg="grayscale5">
           {renderLabel(item)}
         </Chip>
       ))}
-      {overflow.length > 0 && (
+
+      {overflowCount > 0 && (
         <Callout
           trigger={
             <Text variant="xs_caption_medium" color="grayscale70">
-              +{overflow.length}
+              +{overflowCount}
             </Text>
           }
-          texts={overflow.map(renderLabel)}
+          texts={overflowItems.map(renderLabel)}
           position="bottom"
           offsetX="0.2rem"
         />
