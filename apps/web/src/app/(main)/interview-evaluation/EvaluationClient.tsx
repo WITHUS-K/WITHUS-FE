@@ -1,7 +1,8 @@
+// src/app/(main)/interview-evaluation/EvaluationClient.tsx
 'use client';
-
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Spinner, Flex } from '@repo/ui';
 import { useOrganizationInterviewsQuery } from '@web/store/query/useOrganizationInterviewsQuery';
 import { useMyTimeSlotsQuery } from '@web/store/query/useMyTimeSlotsQuery';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
@@ -11,50 +12,51 @@ export default function EvaluationClient() {
   const search = useSearchParams();
   const { organizationId } = getClientSideTokens();
 
-  // URL에 이미 interviewId가 있으면 사용
   const urlIv = Number(search.get('interviewId') ?? '0') || undefined;
-
-  // 조직 면접 목록 불러오기
   const { data: orgs = [], isLoading: loadingOrgs } =
     useOrganizationInterviewsQuery(organizationId);
-
-  // 선택된 면접 정보 찾기 (URL or 첫 번째)
   const chosenId = urlIv ?? orgs[0]?.interviewId;
   const chosenOrg = orgs.find((o) => o.interviewId === chosenId) ?? orgs[0];
-  const recruitmentId = chosenOrg?.recruitmentId;
+  const recId = chosenOrg?.recruitmentId;
 
-  // 해당 면접의 내 시간 슬롯 불러오기
   const { data: slots = [], isLoading: loadingSlots } = useMyTimeSlotsQuery({
     interviewId: chosenId ?? 0,
   });
+  const hasSubmitted = slots.some((s) => s.hasSubmittedAvailability);
 
-  console.log('내 면접', slots);
-  // 타임테이블이 모두 빈 배열인지 체크
-  const isAllEmpty = slots.every((d) => d.timeSlots.length === 0);
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
-    if (loadingOrgs || chosenId == null) return;
-    if (loadingSlots) return;
+    if (loadingOrgs || loadingSlots || chosenId == null) return;
+    setRedirecting(true);
 
-    const firstDate = slots[0]?.date;
-    const dateParam = firstDate?.replace(/\./g, '-');
+    const baseSchedule = `/interview-evaluation/schedule?interviewId=${chosenId}&recruitmentId=${recId}`;
+    const dateParam = slots[0]?.date.replace(/\./g, '-');
+    const baseTimetable =
+      `/interview-evaluation/timetable/interviewer` +
+      `?interviewId=${chosenId}&recruitmentId=${recId}` +
+      (dateParam ? `&date=${dateParam}` : '');
 
-    // 빈 배열이면 스케줄 페이지로, 아니면 타임테이블 페이지로
-    // 수정 필요
-    if (slots.length === 0 || isAllEmpty) {
-      router.replace(
-        `/interview-evaluation/schedule?interviewId=${chosenId}` +
-          `&recruitmentId=${recruitmentId}`
-      );
-    } else {
-      router.replace(
-        `/interview-evaluation/timetable/interviewer` +
-          `?interviewId=${chosenId}` +
-          `&recruitmentId=${recruitmentId}` +
-          (dateParam ? `&date=${dateParam}` : '')
-      );
-    }
-  }, [loadingOrgs, loadingSlots, chosenId, slots, router, recruitmentId]);
+    router.replace(hasSubmitted ? baseTimetable : baseSchedule);
+  }, [loadingOrgs, loadingSlots, chosenId, slots, recId, router]);
+
+  // 로딩/리다이렉팅 중엔 스피너
+  if (loadingOrgs || loadingSlots || redirecting) {
+    return (
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+        }}
+      >
+        <Spinner size={64} strokeWidth={4} color="rgba(44, 96, 255, 0.7)" />
+      </div>
+    );
+  }
 
   return null;
 }

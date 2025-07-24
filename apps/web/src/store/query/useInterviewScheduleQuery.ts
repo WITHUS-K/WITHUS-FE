@@ -43,6 +43,7 @@ export interface TimeSlot {
 
 export interface InterviewSchedule {
   interviewId: number;
+  hasSubmittedAvailability?: boolean;
   date: string;
   startTime: string;
   endTime: string;

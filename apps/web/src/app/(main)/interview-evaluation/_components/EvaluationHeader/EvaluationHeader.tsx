@@ -77,21 +77,8 @@ export function EvaluationHeader({ stage }: { stage: EvaluationStage }) {
     (title: string) => {
       setSelectedTitle(title);
       const info = orgs.find((o) => o.recruitmentTitle === title)!;
-
-      const base =
-        stage === 'schedule'
-          ? `/interview-evaluation/schedule`
-          : `/interview-evaluation/timetable/${tab}`;
-
-      const defaultDate =
-        info.availableTimeRanges[0]?.date.replace(/\./g, '-') ?? '';
-
-      router.replace(
-        `${base}` +
-          `?interviewId=${info.interviewId}` +
-          `&recruitmentId=${info.recruitmentId}` +
-          (stage === 'timetable' && defaultDate ? `&date=${defaultDate}` : '')
-      );
+      // 루트 페이지로만 이동. 이후 EvaluationClient가 hasSubmitted 체크 후 schedule/timetable으로 분기
+      router.replace(`/interview-evaluation?interviewId=${info.interviewId}`);
     },
     [orgs, router, stage, tab]
   );
