@@ -34,6 +34,7 @@ export { default as IcPlusCircle } from './IcPlusCircle';
 export { default as IcPlusLeft } from './IcPlusLeft';
 export { default as IcPlusRole } from './IcPlusRole';
 export { default as IcPreview } from './IcPreview';
+export { default as IcRe } from './IcRe';
 export { default as IcRefresh } from './IcRefresh';
 export { default as IcRoleBtn } from './IcRoleBtn';
 export { default as IcSave } from './IcSave';

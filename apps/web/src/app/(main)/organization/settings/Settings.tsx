@@ -2,9 +2,11 @@
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import SettingsHeader from '../_components/SettingsHeader/SettingsHeader';
-import RolePalettePanel from '../_components/RolePalettePanel/RolePalettePanel';
+import RolePalettePanel, {
+  colorHexToNameMap,
+} from '../_components/RolePalettePanel/RolePalettePanel';
 import MemberAssignmentPanel from '../_components/MemberAssignmentPanel/MemberAssignmentPanel';
-import { nameToHex } from '@web/utils/color';
+import { hexToName, nameToHex } from '@web/utils/color';
 import type { RoleSelectWithCount, UserResult } from '@web/types/organization';
 import type { PaletteColor } from '@repo/utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
@@ -118,9 +120,24 @@ export default function Settings({ organizationId }: Props) {
             onSearchChange={setRoleSearch}
             onSelectRole={setSelectedRoleIdx}
             onAddRole={addRole}
-            onUpdateRole={(i, label, color) =>
-              updateRole({ roleId: filteredRoles[i]!.id, label, color })
-            }
+            onUpdateRole={(idx, newLabel, newColorKey) => {
+              const orig = filteredRoles[idx]!;
+
+              // newColorKey가 "gray" 면 변경 없음 → orig.color 사용
+              // 그 외엔 newColorKey 그대로 사용
+              const key = newColorKey === 'gray' ? orig.color : newColorKey;
+
+              // key가 헥스(#...) 이면 이름으로 매핑, 아니면 key 자체를 이름으로 사용
+              const finalColorName = key.startsWith('#')
+                ? (hexToName[key] ?? orig.color)
+                : key;
+
+              updateRole({
+                roleId: orig.id,
+                label: newLabel,
+                color: finalColorName,
+              });
+            }}
           />
           <MemberAssignmentPanel
             addedMembers={addedMembers}

@@ -27,6 +27,7 @@ export function useUpdateOrganizationRoleMutation(organizationId: number) {
         name: label,
         color: color,
       };
+      console.log('역할 수정', payload);
       await PATCH(
         `api/v1/organizations/${organizationId}/roles/${roleId}`,
         payload

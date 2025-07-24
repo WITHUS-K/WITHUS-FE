@@ -39,7 +39,7 @@ export function Stepper({
   // 5) blur 되면 부모 onChange 호출 (숫자 아니면 무시하고 원래 value 복원)
   const handleInputBlur = () => {
     const next = parseInt(inputValue, 10);
-    if (!isNaN(next) && next >= 1) {
+    if (!isNaN(next) && next >= 0) {
       onChange(name, next);
     } else {
       // 잘못 입력했으면 원래 값으로 복원
@@ -53,7 +53,7 @@ export function Stepper({
         type="button"
         className={styles.button}
         onClick={() => onChange(name, value - 1)}
-        disabled={disabled || value <= 1}
+        disabled={disabled || value <= 0}
         aria-label={`decrease ${name}`}
       >
         <IcStepperMinus width={24} height={24} />
@@ -65,7 +65,7 @@ export function Stepper({
         onChange={handleInputChange}
         onBlur={handleInputBlur}
         disabled={disabled}
-        min={1}
+        min={0}
       />
 
       <button

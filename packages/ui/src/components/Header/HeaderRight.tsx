@@ -23,6 +23,9 @@ export const HeaderRight = ({
   onLogout,
   onNotificationClick,
 }: HeaderRightProps) => {
+  console.log('헤더 롤', role);
+  console.log('헤더 파트', part);
+  console.log('헤더 포지션', position);
   return (
     <div className={styles.headerRightWrapper}>
       <div className={styles.profileWrapper}>
@@ -32,19 +35,23 @@ export const HeaderRight = ({
             {username}
           </Text>
         </div>
-        <div className={styles.badgeWrapper}>
-          <Text variant="xs_caption_medium" color="grayscale50">
-            {position}
-          </Text>
-          {!!part && (
-            <>
-              <div className={styles.divider} />
+        {(position || part) && (
+          <div className={styles.badgeWrapper}>
+            {!!position && (
               <Text variant="xs_caption_medium" color="grayscale50">
-                {part}
+                {position}
               </Text>
-            </>
-          )}
-        </div>
+            )}
+            {!!part && (
+              <>
+                <div className={styles.divider} />
+                <Text variant="xs_caption_medium" color="grayscale50">
+                  {part}
+                </Text>
+              </>
+            )}
+          </div>
+        )}
       </div>
       <button className={styles.buttonWrapper} onClick={onLogout}>
         <Text variant="md2_text_medium" color="grayscale60">
