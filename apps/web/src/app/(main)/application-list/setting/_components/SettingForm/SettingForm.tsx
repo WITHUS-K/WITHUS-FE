@@ -64,12 +64,11 @@ export function SettingForm({
   const publishMutation = usePublishRecruitmentMutation();
 
   const initial = ctx.form;
-
   const customParts = initial.applicationParts?.isSelected
     ? initial.applicationParts.parts
     : [];
-  // 최소 하나의 '공통' 섹션이 필요하므로
-  const sections = customParts.length > 0 ? customParts : [null];
+  // 항상 공통(null) + 사용자 파트 순으로 섹션을 시딩
+  const sections = [null, ...customParts];
 
   const seededPaperEvaluateItems =
     initial.paperEvaluateItems && initial.paperEvaluateItems.length > 0

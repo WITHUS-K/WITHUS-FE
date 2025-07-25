@@ -112,6 +112,8 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
     },
   });
 
+  const selectedPart = watch('applicationPart');
+
   const commonTextCount =
     data?.applicationQuestions.filter(
       (q) => q.type === 'TEXT' && q.positionName === '공통'
@@ -308,7 +310,11 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   // console.log('hasSchedule', hasSchedule);
 
   const canSubmit =
-    basicFilled && additionalFilled && questionsAnswered && hasSchedule;
+    basicFilled &&
+    additionalFilled &&
+    questionsAnswered &&
+    hasSchedule &&
+    Boolean(selectedPart);
 
   const onSubmit = useCallback(
     (vals: ApplicantForm) => {

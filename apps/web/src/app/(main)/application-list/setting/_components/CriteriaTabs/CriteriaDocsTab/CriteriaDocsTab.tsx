@@ -26,11 +26,7 @@ export default function CriteriaDocsTab() {
       name: 'paperEvaluateItems' as const,
     }) || [];
 
-  const renderIndices =
-    appParts.length > 0
-      ? paperSections.map((_, idx) => idx).filter((idx) => idx !== 0)
-      : [0];
-
+  const renderIndices = [0, ...appParts.map((_, idx) => idx + 1)];
   return (
     <Flex
       direction="column"
@@ -62,7 +58,9 @@ export default function CriteriaDocsTab() {
 
       <Flex direction="column" width="100%" gap="5rem" marginTop="3.2rem">
         {renderIndices.map((idx) => {
-          const partName = paperSections[idx]!.positionName; // null 또는 파트명
+          const section = paperSections[idx];
+          const partName = section?.positionName ?? '공통';
+
           return (
             <Flex key={idx} direction="column" width="100%" gap="1.2rem">
               <Text variant="lg_subtitle_bold" color="primary50">

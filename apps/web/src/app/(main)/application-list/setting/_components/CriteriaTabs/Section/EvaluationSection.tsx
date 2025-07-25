@@ -8,6 +8,7 @@ import type { FormValues } from '@web/types/application';
 import * as styles from '../CriteriaTab.css';
 import StandardSection from './StandardSection';
 import EvaluationItemCard from './EvaluationItemCard';
+import { useEffect } from 'react';
 
 interface EvaluationSectionProps {
   //standardName: 'paperEvaluateStandard' | 'interviewEvaluateStandard';
