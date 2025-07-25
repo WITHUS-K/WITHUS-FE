@@ -123,11 +123,7 @@ export default function Settings({ organizationId }: Props) {
             onUpdateRole={(idx, newLabel, newColorKey) => {
               const orig = filteredRoles[idx]!;
 
-              // newColorKey가 "gray" 면 변경 없음 → orig.color 사용
-              // 그 외엔 newColorKey 그대로 사용
               const key = newColorKey === 'gray' ? orig.color : newColorKey;
-
-              // key가 헥스(#...) 이면 이름으로 매핑, 아니면 key 자체를 이름으로 사용
               const finalColorName = key.startsWith('#')
                 ? (hexToName[key] ?? orig.color)
                 : key;
