@@ -99,8 +99,8 @@ export default function ApplicationListClient() {
 
       <Flex direction="column" gap="1.2rem" marginTop="1.2rem" width="100%">
         {recruitments?.map((item) => {
-          const diffDays = getDDay(item.documentDeadline);
-          //console.log('리스트', item);
+          const deadline = item.documentDeadline;
+          const diffDays = deadline ? getDDay(deadline) : null;
 
           const handleDelete = () => {
             confirm({

@@ -350,22 +350,22 @@ export default function Filters() {
             <Button
               variant="sub"
               size="40"
-              onClick={handleGenerate}
-              disabled={!isConfigEmpty && !!iv}
-              style={{ padding: '0.8rem 2rem' }}
-            >
-              타임테이블 세팅
-            </Button>
-
-            <Button
-              variant="sub"
-              size="40"
               leftIcon={<IcRe width={24} height={24} />}
               onClick={handleRegenerateConfirm}
               disabled={isConfigEmpty || !iv}
               style={{ padding: '0.8rem 2rem' }}
             >
               타임테이블 재생성
+            </Button>
+
+            <Button
+              variant="sub"
+              size="40"
+              onClick={handleGenerate}
+              disabled={!isConfigEmpty && !!iv}
+              style={{ padding: '0.8rem 2rem' }}
+            >
+              타임테이블 세팅
             </Button>
 
             <Button
