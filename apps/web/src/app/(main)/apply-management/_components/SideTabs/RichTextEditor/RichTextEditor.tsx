@@ -1,21 +1,20 @@
 'use client';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import {
-  createEditor,
   Descendant,
   Transforms,
   Text,
   Editor,
   Element as SlateElement,
+  Range,
 } from 'slate';
 import {
   Slate,
   Editable,
-  withReact,
   RenderLeafProps,
   RenderElementProps,
+  ReactEditor,
 } from 'slate-react';
-import { withHistory } from 'slate-history';
 import * as styles from './RichTextEditor.css';
 
 // 1) 변수 타입 & 머스타시 키
@@ -53,28 +52,44 @@ interface RichTextEditorProps {
   onChange: (value: Descendant[]) => void;
   placeholder?: string;
 }
+
 export function RichTextEditor({
   editor,
   value,
   onChange,
   placeholder,
 }: RichTextEditorProps) {
-  // 엘리먼트 렌더러
-  const renderElement = useCallback((props: RenderElementProps) => {
-    const { element, attributes, children } = props;
-    if ((element as any).type === 'variable') {
-      const varEl = element as VariableElement;
-      const cls = styles.variableStyles[varEl.varType];
-      // children으로 DISPLAY_LABEL 텍스트를 받고, 마크(굵게/이탤릭/밑줄)도 적용 가능
-      return (
-        <span {...attributes} contentEditable={false} className={cls}>
-          {DISPLAY_LABEL[varEl.varType]}
-          {children}
-        </span>
-      );
+  // IME 상태 추적을 위한 ref
+  const isComposingRef = useRef(false);
+  const compositionDataRef = useRef('');
+  const lastSelectionRef = useRef<Range | null>(null);
+  const preventNextChangeRef = useRef(false);
+
+  useEffect(() => {
+    if (editor.selection) {
+      lastSelectionRef.current = editor.selection;
     }
-    return <p {...attributes}>{children}</p>;
-  }, []);
+  }, [editor.selection]);
+
+  // 엘리먼트 렌더러
+  const renderElement = useCallback(
+    (props: RenderElementProps) => {
+      const { element, attributes, children } = props;
+      if ((element as any).type === 'variable') {
+        const varEl = element as VariableElement;
+        const cls = styles.variableStyles[varEl.varType];
+
+        return (
+          <span {...attributes} contentEditable={false} className={cls}>
+            {DISPLAY_LABEL[varEl.varType]}
+            {children}
+          </span>
+        );
+      }
+      return <p {...attributes}>{children}</p>;
+    },
+    [editor]
+  );
 
   // 리프 렌더러
   const renderLeaf = useCallback((props: RenderLeafProps) => {
@@ -85,33 +100,178 @@ export function RichTextEditor({
     return <span {...props.attributes}>{children}</span>;
   }, []);
 
+  const onCompositionStart = useCallback(
+    (event: React.CompositionEvent) => {
+      isComposingRef.current = true;
+      compositionDataRef.current = '';
+
+      const { selection } = editor;
+      if (selection) {
+        const [match] = Editor.nodes(editor, {
+          match: (n) =>
+            !Editor.isEditor(n) &&
+            SlateElement.isElement(n) &&
+            n.type === 'variable',
+        });
+
+        if (match) {
+          const [, path] = match;
+          const after = Editor.after(editor, path);
+          if (after) {
+            Transforms.select(editor, after);
+            lastSelectionRef.current = { anchor: after, focus: after };
+          }
+        }
+      }
+    },
+    [editor]
+  );
+
+  const onCompositionUpdate = useCallback((event: React.CompositionEvent) => {
+    compositionDataRef.current = event.data;
+  }, []);
+
+  const onCompositionEnd = useCallback((event: React.CompositionEvent) => {
+    isComposingRef.current = false;
+    compositionDataRef.current = '';
+
+    setTimeout(() => {
+      if (!isComposingRef.current) {
+        preventNextChangeRef.current = false;
+      }
+    }, 0);
+  }, []);
+
+  const handleChange = useCallback(
+    (newValue: Descendant[]) => {
+      if (preventNextChangeRef.current) {
+        preventNextChangeRef.current = false;
+        return;
+      }
+
+      onChange(newValue);
+    },
+    [onChange]
+  );
+
+  const onKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (isComposingRef.current) {
+        return;
+      }
+
+      const { selection } = editor;
+      if (!selection) return;
+
+      const [match] = Editor.nodes(editor, {
+        match: (n) =>
+          !Editor.isEditor(n) &&
+          SlateElement.isElement(n) &&
+          n.type === 'variable',
+      });
+
+      if (match) {
+        const [, path] = match;
+
+        if (event.key === 'Backspace' || event.key === 'Delete') {
+          event.preventDefault();
+          Transforms.removeNodes(editor, { at: path });
+          return;
+        }
+
+        if (event.key.length === 1 || event.key === 'Enter') {
+          event.preventDefault();
+          const after = Editor.after(editor, path);
+          if (after) {
+            Transforms.select(editor, after);
+            if (event.key === 'Enter') {
+              Transforms.insertNodes(editor, {
+                type: 'paragraph',
+                children: [{ text: '' }],
+              });
+            } else if (event.key.length === 1) {
+              Transforms.insertText(editor, event.key);
+            }
+          }
+          return;
+        }
+      }
+    },
+    [editor]
+  );
+
   return (
-    <Slate
-      editor={editor}
-      initialValue={value}
-      key={JSON.stringify(value)}
-      onChange={onChange}
-    >
+    <Slate editor={editor} initialValue={value} onChange={handleChange}>
       <Editable
         renderElement={renderElement}
         renderLeaf={renderLeaf}
         placeholder={placeholder}
-        spellCheck
+        spellCheck={false}
         autoFocus
         className={styles.textarea}
+        onKeyDown={onKeyDown}
+        onCompositionStart={onCompositionStart}
+        onCompositionUpdate={onCompositionUpdate}
+        onCompositionEnd={onCompositionEnd}
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        data-testid="rich-text-editor"
       />
     </Slate>
   );
 }
 
 export function withVariables(ed: Editor) {
-  const { isInline, isVoid } = ed;
+  const { isInline, isVoid, deleteBackward, deleteForward } = ed;
+
   ed.isInline = (element) =>
     (SlateElement.isElement(element) && (element as any).type === 'variable') ||
     isInline(element);
+
   ed.isVoid = (element) =>
     (SlateElement.isElement(element) && element.type === 'variable') ||
     isVoid(element);
+
+  ed.deleteBackward = (unit) => {
+    const { selection } = ed;
+
+    if (selection && Range.isCollapsed(selection)) {
+      const [match] = Editor.nodes(ed, {
+        match: (n) =>
+          !Editor.isEditor(n) &&
+          SlateElement.isElement(n) &&
+          n.type === 'variable',
+      });
+
+      if (match) {
+        const [, path] = match;
+        Transforms.removeNodes(ed, { at: path });
+        return;
+      }
+    }
+
+    deleteBackward(unit);
+  };
+
+  ed.deleteForward = (unit) => {
+    const { selection } = ed;
+
+    if (selection && Range.isCollapsed(selection)) {
+      const after = Editor.after(ed, selection);
+      if (after) {
+        const [node] = Editor.node(ed, after);
+        if (SlateElement.isElement(node) && node.type === 'variable') {
+          const path = Editor.path(ed, after);
+          Transforms.removeNodes(ed, { at: path });
+          return;
+        }
+      }
+    }
+
+    deleteForward(unit);
+  };
+
   return ed;
 }
 
@@ -119,15 +279,41 @@ export function insertVariable(editor: Editor, varType: VariableType) {
   const node: VariableElement = {
     type: 'variable',
     varType,
-    // children에 DISPLAY_LABEL을 넣어 두어 마크 스타일이 적용되도록 함
     children: [{ text: '' }],
   };
-  Transforms.insertNodes(editor, node);
-  const { anchor } = editor.selection!;
-  const after = Editor.after(editor, anchor, { unit: 'offset' });
 
-  if (after) {
-    Transforms.select(editor, after);
+  const { selection } = editor;
+  if (selection) {
+    const [match] = Editor.nodes(editor, {
+      match: (n) =>
+        !Editor.isEditor(n) &&
+        SlateElement.isElement(n) &&
+        n.type === 'variable',
+    });
+
+    if (match) {
+      const [, path] = match;
+      const after = Editor.after(editor, path);
+      if (after) {
+        Transforms.select(editor, after);
+      }
+    }
+  }
+
+  Transforms.insertNodes(editor, node);
+
+  const currentSelection = editor.selection;
+  if (currentSelection) {
+    const after = Editor.after(editor, currentSelection, { unit: 'offset' });
+    if (after) {
+      Transforms.select(editor, after);
+    } else {
+      Transforms.insertText(editor, ' ');
+      const newAfter = Editor.after(editor, currentSelection);
+      if (newAfter) {
+        Transforms.select(editor, newAfter);
+      }
+    }
   }
 }
 
@@ -144,6 +330,7 @@ export function toggleMark(
 export function serialize(nodes: Descendant[]): string {
   return nodes.map((n) => nodeToString(n)).join('\n');
 }
+
 function nodeToString(node: Descendant): string {
   if (Text.isText(node)) return node.text;
   if (!SlateElement.isElement(node)) return '';
