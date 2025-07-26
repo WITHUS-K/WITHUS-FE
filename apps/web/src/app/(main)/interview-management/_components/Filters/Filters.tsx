@@ -355,7 +355,7 @@ export default function Filters() {
               disabled={isConfigEmpty || !iv}
               style={{ padding: '0.8rem 2rem' }}
             >
-              타임테이블 재생성
+              초기화
             </Button>
 
             <Button
