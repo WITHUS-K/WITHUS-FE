@@ -64,11 +64,6 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
     return new Date(`${formatted}T23:59:59.999+09:00`).getTime();
   }, [data?.documentDeadline]);
 
-  // 테스트용: 2025-07-19 00:07:00 (KST)
-  /*const deadlineEndOfDay = useMemo(() => {
-    return new Date('2025-07-19T00:07:00+09:00').getTime();
-  }, []);*/
-
   useEffect(() => {
     const isMobile =
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -222,6 +217,14 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         }) ?? [],
     [data?.applicationQuestions, selectedPartLabel]
   );
+
+  //큐시즘 공고에 맞춰서 프론트엔드 파트만 필터링 되게 임시로 구현
+  const filteredPositions = useMemo(() => {
+    if (data?.recruitmentId === 18073) {
+      return data.positions.filter((p) => p.id === 20479);
+    }
+    return data.positions;
+  }, [data]);
 
   const partTextCount = detailItems.filter((d) => d.type === 'text').length;
   const partFileCount = detailItems.filter((d) => d.type === 'file').length;
@@ -518,7 +521,8 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
 
   const handleModalClick = () => {
     // 데드라인이 지났다면
-    if (deadlineEndOfDay !== null && Date.now() > deadlineEndOfDay) {
+    // 큐시즘 지원서에 맞춰서 일단 주석처리 함
+    /*if (deadlineEndOfDay !== null && Date.now() > deadlineEndOfDay) {
       confirm({
         type: 'warning',
         title: `지원 기간이 지나\n지원서 제출이 불가합니다.`,
@@ -529,7 +533,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         },
       });
       return;
-    }
+    }*/
 
     // 아직 데드라인 전이라면, 기존 제출 확인 모달
     confirm({
@@ -614,7 +618,12 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
             </Flex>
 
             <ApplicationPartsForm
-              parts={data.positions.map((p) => ({
+              /*parts={data.positions.map((p) => ({
+                id: p.id,
+                label: p.name,
+              }))}*/
+              //큐시즘 공고에 맞춰서 임시로 프론트엔드 파트만 필터링되게 구현
+              parts={filteredPositions.map((p) => ({
                 id: p.id,
                 label: p.name,
               }))}
