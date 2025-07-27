@@ -6,7 +6,7 @@ import { OrgListHeader } from './OrgListHeader';
 import OrgListItem from '../OrgListItem/OrgListItem';
 import { Member, OrgRole, Role } from '@web/types/organization';
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 20;
 
 interface Props {
   data: Member[];
