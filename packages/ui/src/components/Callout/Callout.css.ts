@@ -20,6 +20,7 @@ export const bubble = style({
   borderRadius: '6px',
   padding: '0.5rem 1.4rem',
   whiteSpace: 'nowrap',
+  zIndex: 1000,
 });
 
 export const top = style({
@@ -47,6 +48,7 @@ export const arrowTop = style({
   borderRight: '6px solid transparent',
   borderTop: `6px solid ${vars.colors.grayscale70}`,
   bottom: '-6px',
+  zIndex: 1000,
 });
 
 export const arrowBottom = style({
@@ -54,4 +56,5 @@ export const arrowBottom = style({
   borderRight: '6px solid transparent',
   borderBottom: `6px solid ${vars.colors.grayscale70}`,
   top: '-6px',
+  zIndex: 1000,
 });

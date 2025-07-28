@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Callout } from '@repo/ui/Callout';
 import * as styles from './EvalBubbles.css';
 import { getProfileBackground, getProfileTextColor } from '@web/utils/color';
+import { HoverCallout } from '@repo/ui/Callout';
 
 export interface Evaluator {
   name: string;
@@ -38,7 +38,7 @@ export default function EvalBubbles({
         const offsetX = left + size / 2;
 
         return (
-          <Callout
+          <HoverCallout
             key={ev.name}
             trigger={
               <div
@@ -64,7 +64,7 @@ export default function EvalBubbles({
       })}
 
       {hidden.length > 0 && (
-        <Callout
+        <HoverCallout
           trigger={
             <div
               className={styles.bubble}
