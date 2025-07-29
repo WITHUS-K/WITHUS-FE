@@ -7,6 +7,8 @@ export const section = style({
   display: 'flex',
   marginBottom: '1rem',
   alignItems: 'center',
+  maxHeight: '24rem',
+  overflowY: 'scroll',
 });
 
 export const tags = style({
@@ -88,9 +90,10 @@ export const activeIcon = style({ color: vars.colors.grayscale70 }); // 토글�
 
 export const textarea = style({
   width: '100%',
-  height: '24rem',
+  maxHeight: '24rem',
   resize: 'vertical',
   border: 'none',
+  overflowY: 'scroll',
 
   ...fontStyles.sm_caption_medium,
   color: vars.colors.grayscale90,
