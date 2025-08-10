@@ -1,4 +1,3 @@
-// QuestionAndFileListForm.tsx
 'use client';
 
 import React, { useContext } from 'react';
@@ -34,77 +33,72 @@ export const QuestionAndFileListForm = ({
 }: QuestionAndFileListFormProps) => {
   const { getStatus } = useContext(FormFieldStatusContext);
 
-  const textItems = detailItems.filter((item) => item.type === 'text');
-  const fileItems = detailItems.filter((item) => item.type === 'file');
-
-  const textStatuses = textItems.map((_, idx) =>
-    getStatus(`question-text-${idx}`)
-  );
-  const fileStatuses = fileItems.map((_, idx) =>
-    getStatus(`question-file-${idx}`)
-  );
+  let textIdx = -1;
+  let fileIdx = -1;
 
   return (
     <div className={s.wrapper}>
-      {textItems.map((item, idx) => {
-        const status = textStatuses[idx]!;
-        const maxLength =
-          item.typeInfo.info === '제한 없음'
-            ? Infinity
-            : Number(item.typeInfo.info.replace('자', ''));
-        //const includeWhitespace
-        return (
-          <div
-            key={`text-${idx}`}
-            id={`question-text-${idx}`}
-            tabIndex={-1}
-            className={clsx(s.questionContainer, focusableWrapper)}
-          >
-            <Flex gap="0.4rem" align="center" width="100%">
-              <Text variant="md1_text_semibold" color="grayscale70">
-                질문-{idx + 1}
-              </Text>
-              {item.required && (
-                <Text variant="md2_text_semibold" color="error">
-                  *
-                </Text>
-              )}
-            </Flex>
-            <QuestionInput
-              title={item.description}
-              description={item.addDescription}
-              infoDetail={item.typeInfo.infoDetail}
-              value={
-                readOnly
-                  ? (detailItems[idx]?.answer ?? '')
-                  : (answers[idx] ?? '')
-              }
-              maxLength={maxLength}
-              includeWhitespace={item.includeWhitespace}
-              onFocus={status.setEditing}
-              onChange={(val) => {
-                if (!readOnly) {
-                  onAnswerChange(idx, val);
-                  status.setEditing();
-                }
-              }}
-              onBlur={(e) => {
-                e.currentTarget.value.trim()
-                  ? status.setCompleted()
-                  : status.setDefault();
-              }}
-              readOnly={readOnly}
-            />
-          </div>
-        );
-      })}
+      {detailItems.map((item, idx) => {
+        if (item.type === 'text') {
+          textIdx += 1;
+          const status = getStatus(`question-text-${textIdx}`);
+          const maxLength =
+            item.typeInfo.info === '제한 없음'
+              ? Infinity
+              : Number(item.typeInfo.info.replace('자', ''));
 
-      {fileItems.map((item, idx) => {
-        const status = fileStatuses[idx]!;
+          return (
+            <div
+              key={`text-${textIdx}`}
+              id={`question-text-${textIdx}`}
+              tabIndex={-1}
+              className={clsx(s.questionContainer, focusableWrapper)}
+            >
+              <Flex gap="0.4rem" align="center" width="100%">
+                <Text variant="md1_text_semibold" color="grayscale70">
+                  질문-{textIdx + 1}
+                </Text>
+                {item.required && (
+                  <Text variant="md2_text_semibold" color="error">
+                    *
+                  </Text>
+                )}
+              </Flex>
+
+              <QuestionInput
+                title={item.description}
+                description={item.addDescription}
+                infoDetail={item.typeInfo.infoDetail}
+                value={
+                  readOnly ? (item.answer ?? '') : (answers[textIdx] ?? '')
+                }
+                maxLength={maxLength}
+                includeWhitespace={item.includeWhitespace}
+                onFocus={status.setEditing}
+                onChange={(val) => {
+                  if (!readOnly) {
+                    onAnswerChange(textIdx, val);
+                    status.setEditing();
+                  }
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.value.trim()
+                    ? status.setCompleted()
+                    : status.setDefault();
+                }}
+                readOnly={readOnly}
+              />
+            </div>
+          );
+        }
+
+        fileIdx += 1;
+        const status = getStatus(`question-file-${fileIdx}`);
+
         return (
           <div
-            key={`file-${idx}`}
-            id={`question-file-${idx}`}
+            key={`file-${fileIdx}`}
+            id={`question-file-${fileIdx}`}
             style={{ marginBottom: '2rem' }}
             onMouseDown={status.setEditing}
             tabIndex={-1}
@@ -112,10 +106,10 @@ export const QuestionAndFileListForm = ({
           >
             <FileUpload
               item={item}
-              files={files[idx] || []} // ← 배열로 전달
+              files={files[fileIdx] || []}
               readOnly={readOnly}
               onChange={(newFiles) => {
-                onFileChange(idx, newFiles); // ← 배열로 콜백
+                onFileChange(fileIdx, newFiles);
                 newFiles.length ? status.setCompleted() : status.setDefault();
               }}
             />
