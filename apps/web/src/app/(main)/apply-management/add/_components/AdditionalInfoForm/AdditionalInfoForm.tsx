@@ -68,6 +68,7 @@ export function AdditionalInfoForm({
           >
             <InfoField
               label="학교"
+              labelWidth="7.6rem"
               itemClass={styles.rowItemWide}
               wrapperClass={styles.fieldGrowForSchool}
               disabled={readOnly}

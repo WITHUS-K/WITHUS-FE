@@ -114,7 +114,11 @@ export function BasicInfoForm({
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div id="additional-image" tabIndex={-1} className={focusableWrapper}>
+        <div
+          id="additional-image"
+          tabIndex={-1}
+          className={clsx(focusableWrapper, styles.additionalImage)}
+        >
           {(needImage || readOnly) &&
             (readOnly ? (
               // 읽기전용 모드: previewUrl 이 있을 때만 이미지 태그만 보여줌
