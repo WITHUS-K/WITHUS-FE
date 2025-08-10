@@ -21,6 +21,14 @@ export const header = style({
   gap: '2rem',
 });
 
+export const additionalImage = style({
+  selectors: {
+    '&:empty': {
+      display: 'none',
+    },
+  },
+});
+
 export const contentColumn = style({
   display: 'flex',
   flexDirection: 'column',
