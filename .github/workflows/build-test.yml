@@ -1,0 +1,22 @@
+name: PR Build Test
+
+on:
+  pull_request:
+    branches: [develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v2
+
+      - name: ⚙️ Enable Corepack
+        run: corepack enable
+
+      - name: 📦 Install dependencies
+        run: pnpm install
+
+      - name: ✅ Build Test
+        working-directory: ./apps/web
+        run: pnpm build || exit 1
