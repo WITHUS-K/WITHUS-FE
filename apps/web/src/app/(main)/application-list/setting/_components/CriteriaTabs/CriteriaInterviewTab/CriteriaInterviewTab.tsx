@@ -26,7 +26,10 @@ export default function CriteriaInterviewTab() {
       name: 'interviewEvaluateItems' as const,
     }) || [];
 
-  const renderIndices = [0, ...appParts.map((_, idx) => idx + 1)];
+  const renderIndices =
+    appParts.length > 0
+      ? appParts.map((_, idx) => idx) // 공통 없음
+      : [0]; // 공통만
 
   return (
     <Flex
@@ -60,8 +63,9 @@ export default function CriteriaInterviewTab() {
 
       <Flex direction="column" width="100%" gap="5rem" marginTop="3.2rem">
         {renderIndices.map((idx) => {
-          const section = interviewSections[idx]!;
-          const partName = section?.positionName ?? '공통';
+          const section = interviewSections[idx];
+          const partName =
+            appParts.length > 0 ? (section?.positionName ?? '') : '공통';
 
           return (
             <Flex key={idx} direction="column" width="100%" gap="1.2rem">

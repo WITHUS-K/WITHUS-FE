@@ -279,17 +279,17 @@ export default function Filters() {
   const handleRegenerateConfirm = () =>
     confirm({
       type: 'info',
-      title: '타임테이블 재생성',
-      description: '타임테이블을 재성성 하시겠습니까?',
+      title: '타임테이블 초기화',
+      description: '타임테이블을 초기화 하시겠습니까?',
       cancelText: '취소',
-      confirmText: '재생성',
+      confirmText: '초기화하기',
       onConfirm: handleRegenerate,
     });
 
   // 버튼 레이블/액션 분기
   const isGenerated = iv != null;
   const btnLabel =
-    isGenerated && !isEditing ? '타임테이블 재생성' : '타임테이블 세팅';
+    isGenerated && !isEditing ? '타임테이블 초기화' : '타임테이블 세팅';
   const btnAction =
     isGenerated && !isEditing ? handleRegenerateConfirm : handleGenerate;
 

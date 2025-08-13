@@ -66,11 +66,14 @@ export default function InterviewLayout({ children }: { children: ReactNode }) {
           gap="2rem"
         >
           <IcCalendar width={48} height={48} />
-          <Text variant="lg_subtitle_medium" color="grayscale30">
-            동아리와 면접 조건을 설정한 후,
-            <br />
-            타임테이블을 생성하면 이곳에 표시됩니다.
-          </Text>
+          <Flex direction="column" align="center" justify="center" width="100%">
+            <Text variant="lg_subtitle_medium" color="grayscale30">
+              동아리와 면접 조건을 설정한 후,
+            </Text>
+            <Text variant="lg_subtitle_medium" color="grayscale30">
+              타임테이블을 생성하면 이곳에 표시됩니다.
+            </Text>
+          </Flex>
         </Flex>
       ) : (
         children

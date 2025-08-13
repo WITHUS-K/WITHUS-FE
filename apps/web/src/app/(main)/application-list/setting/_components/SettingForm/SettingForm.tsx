@@ -68,13 +68,13 @@ export function SettingForm({
     ? initial.applicationParts.parts
     : [];
   // 항상 공통(null) + 사용자 파트 순으로 섹션을 시딩
-  const sections = [null, ...customParts];
+  const sections = customParts.length > 0 ? [...customParts] : [null];
 
   const seededPaperEvaluateItems =
     initial.paperEvaluateItems && initial.paperEvaluateItems.length > 0
       ? initial.paperEvaluateItems
       : sections.map((partName) => ({
-          positionName: partName,
+          positionName: partName, // part가 있으면 문자열들만, 없으면 null 1개
           items: [{ evaluate: '', evaluateDetail: '' }],
         }));
 
@@ -137,13 +137,18 @@ export function SettingForm({
     useWatch({ control: methods.control, name: 'interviewEvaluateItems' }) ||
     [];
 
+  const samePositions = (
+    a: { positionName: string | null }[],
+    b: (string | null)[]
+  ) => a.length === b.length && a.every((sec, i) => sec.positionName === b[i]);
+
   // 서류 평가 기준 동기화
   useEffect(() => {
-    const needed = (parts.length > 0 ? parts.length : 0) + 1; // 공통(null) + parts
-    if (paperItems.length === needed) return;
+    const sectionNames = parts.length > 0 ? [...parts] : [null];
 
-    const sectionNames = parts.length > 0 ? [null, ...parts] : [null];
-    const newPaper = sectionNames.map((p) => {
+    if (samePositions(paperItems, sectionNames)) return; // 변동 없으면 스킵
+
+    const next = sectionNames.map((p) => {
       const existing = paperItems.find((sec) => sec.positionName === p);
       return {
         positionName: p,
@@ -153,16 +158,16 @@ export function SettingForm({
       };
     });
 
-    methods.setValue('paperEvaluateItems', newPaper, { shouldValidate: false });
+    methods.setValue('paperEvaluateItems', next, { shouldValidate: false });
   }, [parts, paperItems, methods]);
 
-  //  면접 평가 기준 동기화
+  // 면접 평가 기준 동기화
   useEffect(() => {
-    const needed = (parts.length > 0 ? parts.length : 0) + 1;
-    if (interviewItems.length === needed) return;
+    const sectionNames = parts.length > 0 ? [...parts] : [null];
 
-    const sectionNames = parts.length > 0 ? [null, ...parts] : [null];
-    const newInterview = sectionNames.map((p) => {
+    if (samePositions(interviewItems, sectionNames)) return; // 변동 없으면 스킵
+
+    const next = sectionNames.map((p) => {
       const existing = interviewItems.find((sec) => sec.positionName === p);
       return {
         positionName: p,
@@ -172,9 +177,7 @@ export function SettingForm({
       };
     });
 
-    methods.setValue('interviewEvaluateItems', newInterview, {
-      shouldValidate: false,
-    });
+    methods.setValue('interviewEvaluateItems', next, { shouldValidate: false });
   }, [parts, interviewItems, methods]);
 
   const title = methods.watch('title') || '';
