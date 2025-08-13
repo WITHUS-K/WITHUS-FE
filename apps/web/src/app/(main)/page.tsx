@@ -12,7 +12,7 @@ export default function HomePage() {
     return raw === 'ADMIN' ? 'admin' : 'user';
   }, []);
 
-  // 임시 값
+  // 임시 값 테스트
   const adminHasData = true;
   const userHasData = true;
   if (role === 'admin') {
