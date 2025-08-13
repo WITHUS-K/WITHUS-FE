@@ -53,7 +53,7 @@ export default function GuideCell({ slot }: { slot: TimeSlot }) {
             <IcTimetablePlus width={16} height={16} />
           </button>
         }
-        texts="면접관 / 안내자 추가"
+        texts="지원자 / 면접관 / 안내자 추가"
       />
     </Flex>
   );

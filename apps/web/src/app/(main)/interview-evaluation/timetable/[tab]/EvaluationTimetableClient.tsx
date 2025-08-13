@@ -38,6 +38,14 @@ export default function EvaluationTimetableClient({
   });
   console.log('스케줄', schedules);
 
+  const isVisibleSlot = (
+    t: Tab,
+    s: (typeof schedules)[number]['timeSlots'][number]
+  ) => {
+    if (t === 'interviewer') return s.assistants.length === 0; // 안내자 있으면 숨김
+    return s.interviewers.length === 0; // 면접관 있으면 숨김
+  };
+
   // 날짜별로 머지된 스케줄 계산
   const mergedSchedules = useMemo(() => {
     const map: Record<
@@ -126,12 +134,15 @@ export default function EvaluationTimetableClient({
   const roomsMap = useMemo(() => {
     return schedule.roomNames.reduce<Record<string, typeof schedule.timeSlots>>(
       (acc, room) => {
-        acc[room] = schedule.timeSlots.filter((ts) => ts.roomName === room);
+        const roomSlots = schedule.timeSlots
+          .filter((ts) => ts.roomName === room)
+          .filter((ts) => isVisibleSlot(tab, ts));
+        acc[room] = roomSlots;
         return acc;
       },
       {}
     );
-  }, [schedule]);
+  }, [schedule, tab]);
 
   // 날짜 변경 핸들러
   const handleDateChange = (nextDate: string) => {

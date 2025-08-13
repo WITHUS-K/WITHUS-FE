@@ -18,6 +18,7 @@ import { useRecruitmentDetailQuery } from '@web/store/query/useRecruitmentDetail
 import { TimeRange } from '@web/components/TimeTable/SelectableTimeTable';
 import { InterviewScheduleItem } from '@web/types/application';
 import { parseToMin } from '@web/utils/time';
+import { useMemo } from 'react';
 
 interface Props {
   tab: string;
@@ -40,19 +41,74 @@ export default function ApplicationDetailClient({
   applicationId,
   recruitmentId,
 }: Props) {
-  const { data: rec } = useRecruitmentDetailQuery({ recruitmentId });
-  //console.log('공고', rec);
-  console.log('지원서 아이디', applicationId);
-  const { data } = useApplicationDetailQuery({
-    applicationId,
-  });
+  const {
+    data: rec,
+    isLoading: recLoading,
+    isError: recError,
+  } = useRecruitmentDetailQuery({ recruitmentId });
+
+  const {
+    data,
+    isLoading: appLoading,
+    isError: appError,
+  } = useApplicationDetailQuery({ applicationId });
+
+  type EvalType = 'DOCUMENT' | 'INTERVIEW';
+  type EvalCardItem = {
+    evaluator: string;
+    status: 'complete' | 'pending';
+    score: number | null;
+    color: string;
+    userId: number;
+  };
+
+  function buildEvalByUser(
+    all: typeof data.evaluations,
+    type: EvalType
+  ): EvalCardItem[] {
+    const byUser = new Map<
+      number,
+      { name: string; color: string; scores: number[]; hasAnyScore: boolean }
+    >();
+
+    for (const e of all) {
+      if (e.criteria.type !== type) continue;
+
+      const uid = e.user.userId;
+      const entry = byUser.get(uid) ?? {
+        name: e.user.name,
+        color: e.user.profileColor,
+        scores: [],
+        hasAnyScore: false,
+      };
+
+      if (e.score != null) {
+        entry.scores.push(e.score);
+        entry.hasAnyScore = true;
+      }
+      byUser.set(uid, entry);
+    }
+
+    return Array.from(byUser.entries()).map(([userId, v]) => {
+      const avg =
+        v.scores.length > 0
+          ? Number(
+              (v.scores.reduce((a, b) => a + b, 0) / v.scores.length).toFixed(1)
+            )
+          : null;
+
+      return {
+        userId,
+        evaluator: v.name,
+        status: v.hasAnyScore ? 'complete' : 'pending',
+        score: avg,
+        color: v.color,
+      };
+    });
+  }
 
   const rawStage = stageMap[tab];
-  // 2) 정의되지 않았다면 잘못된 탭이므로 early return
-  if (!rawStage) {
-    return <div>잘못된 탭입니다: {tab}</div>;
-  }
-  // 3) 이 시점부터 rawStage 는 AdminApplicationStage 이므로
+  if (!rawStage) return <div>잘못된 탭입니다: {tab}</div>;
   const stage: AdminApplicationStage = rawStage;
 
   const { mutate: updateStatus } = useUpdateApplicationsStatus(
@@ -60,59 +116,58 @@ export default function ApplicationDetailClient({
     stage
   );
 
-  const scheduleMap: Record<string, TimeRange[]> = {};
-  rec.availableTimeRanges.forEach((slot) => {
-    (scheduleMap[slot.date] ??= []).push({
-      startTime: slot.startTime,
-      endTime: slot.endTime,
-    });
-  });
+  console.log('지원자 디테일', data);
 
-  console.log('스케쥴', scheduleMap);
-
-  const applicantMap: Record<string, InterviewScheduleItem[]> = {};
-  for (const dateTime of data.availableTimes ?? []) {
-    if (!dateTime) continue;
-
-    const [date, startTime] = dateTime.split('/');
-    if (!date || !startTime) {
-      continue;
+  const scheduleMap = useMemo<Record<string, TimeRange[]>>(() => {
+    const map: Record<string, TimeRange[]> = {};
+    for (const slot of rec?.availableTimeRanges ?? []) {
+      (map[slot.date] ??= []).push({
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+      });
     }
+    return map;
+  }, [rec?.availableTimeRanges]);
 
-    const startMin = parseToMin(startTime);
-    const endMin = startMin + rec.interviewDuration;
-    const hh = String(Math.floor(endMin / 60)).padStart(2, '0');
-    const mm = String(endMin % 60).padStart(2, '0');
-    const endTime = `${hh}:${mm}`;
+  const applicantMap = useMemo<Record<string, InterviewScheduleItem[]>>(() => {
+    const map: Record<string, InterviewScheduleItem[]> = {};
+    if (!data || !rec) return map;
 
-    if (!applicantMap[date]) {
-      applicantMap[date] = [];
+    for (const dateTime of data.availableTimes ?? []) {
+      if (!dateTime) continue;
+      const [date, startTime] = dateTime.split('/');
+      if (!date || !startTime) continue;
+
+      const startMin = parseToMin(startTime);
+      const endMin = startMin + rec.interviewDuration;
+      const hh = String(Math.floor(endMin / 60)).padStart(2, '0');
+      const mm = String(endMin % 60).padStart(2, '0');
+      const endTime = `${hh}:${mm}`;
+
+      (map[date] ??= []).push({ date, startTime, endTime });
     }
-    applicantMap[date]!.push({ date, startTime, endTime });
+    return map;
+  }, [data?.availableTimes, rec?.interviewDuration]);
+
+  if (recLoading || appLoading) {
+    return <div className={styles.container}>불러오는 중…</div>;
   }
-  // console.log('공고 시간', scheduleMap);
+  if (recError || appError) {
+    return <div className={styles.container}>데이터를 불러오지 못했어요.</div>;
+  }
+  if (!rec || !data) {
+    return <div className={styles.container}>데이터가 비어있어요.</div>;
+  }
 
-  // 버튼 핸들러
   const handleAccept = () => {
-    updateStatus({
-      applicationIds: [applicationId],
-      stage,
-      status: 'PASS',
-    });
+    updateStatus({ applicationIds: [applicationId], stage, status: 'PASS' });
   };
   const handleReject = () => {
-    updateStatus({
-      applicationIds: [applicationId],
-      stage,
-      status: 'FAIL',
-    });
+    updateStatus({ applicationIds: [applicationId], stage, status: 'FAIL' });
   };
-  console.log('관리자 지원서', data);
 
-  data.interviewComments;
   return (
     <div className={styles.container}>
-      {/* 헤더 */}
       <DetailHeader
         tab={tab}
         name={data.name}
@@ -132,28 +187,16 @@ export default function ApplicationDetailClient({
         <div className={styles.rightSection}>
           <EvaluationScoreCard
             evaluationType="document"
-            evaluation={data.evaluations
-              .filter((e) => e.criteria.type === 'DOCUMENT')
-              .map((e) => ({
-                evaluator: e.user.name,
-                status: 'complete',
-                score: e.score ?? null,
-                color: e.user.profileColor,
-              }))}
+            evaluation={buildEvalByUser(data.evaluations, 'DOCUMENT')}
           />
 
           <EvaluationScoreCard
             evaluationType="interview"
-            evaluation={data.evaluations
-              .filter((e) => e.criteria.type === 'INTERVIEW')
-              .map((e) => ({
-                evaluator: e.user.name,
-                status: e.score != null ? 'complete' : 'pending',
-                score: e.score ?? null,
-                color: e.user.profileColor,
-              }))}
+            evaluation={buildEvalByUser(data.evaluations, 'INTERVIEW')}
           />
+
           <RelationCard relations={data.acquaintances.map((a) => a.name)} />
+
           <EvaluationCommentCard
             comments={(tab === 'documents'
               ? data.documentComments

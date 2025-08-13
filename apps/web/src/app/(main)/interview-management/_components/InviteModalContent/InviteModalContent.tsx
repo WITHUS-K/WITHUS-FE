@@ -19,7 +19,7 @@ import { IcInputSearch } from '@repo/ui/icons/colored';
 import { useUpdateTimeSlotUsersMutation } from '@web/store/mutation/useUpdateTimeSlotUsersMutation';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
-const TABS = ['interviewer', 'guide'];
+const TABS = ['applicant', 'interviewer', 'guide'];
 type TabKey = (typeof TABS)[number];
 
 export default function InviteModalContent() {
@@ -60,6 +60,8 @@ export default function InviteModalContent() {
       userId: u.userId,
     }));
 
+  console.log('배정현황', assignedRaw);
+
   const handleAdd = (p: ProfileItem) => {
     updateUsers.mutate({
       userIds: [...assignedIds, p.userId!],
@@ -80,6 +82,7 @@ export default function InviteModalContent() {
       setSearchKeyword('');
     }
   }, [inputKeyword]);
+
   return (
     <Flex direction="column" gap="1.5rem">
       {/* 탭 */}
