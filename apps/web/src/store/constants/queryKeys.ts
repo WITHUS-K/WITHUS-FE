@@ -68,6 +68,7 @@ export const queryKeys = {
     users: (timeSlotId: number) => ['timeSlot', 'users', timeSlotId] as const,
     applications: (timeSlotId: number) =>
       ['timeSlot', 'applications', timeSlotId] as const,
+    detail: (timeSlotId: number) => ['timeSlot', 'detail', timeSlotId] as const,
   },
   positions: {
     byRecruitment: (recruitmentId: number) =>

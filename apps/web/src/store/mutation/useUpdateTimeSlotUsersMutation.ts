@@ -36,7 +36,8 @@ export function useUpdateTimeSlotUsersMutation(
 
     onSuccess: () => {
       console.log('[useUpdateTimeSlotUsers] onSuccess → 무효화 시작');
-      qc.invalidateQueries({ queryKey: queryKeys.timeSlot.users(timeSlotId) });
+      // qc.invalidateQueries({ queryKey: queryKeys.timeSlot.users(timeSlotId) });
+      qc.invalidateQueries({ queryKey: queryKeys.timeSlot.detail(timeSlotId) });
       qc.invalidateQueries({
         queryKey: queryKeys.interview.schedule(interviewId),
       });
