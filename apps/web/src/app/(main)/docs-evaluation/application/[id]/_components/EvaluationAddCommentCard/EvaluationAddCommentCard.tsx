@@ -134,7 +134,10 @@ export const EvaluationAddCommentCard = ({ comments }: Props) => {
             onEditStart={() => {}}
             onDraftChange={setNewDraft}
             onSubmit={handleAdd}
-            onDelete={() => {}}
+            onDelete={() => {
+              setIsAdding(false);
+              setNewDraft('');
+            }}
           />
         )}
         <button
