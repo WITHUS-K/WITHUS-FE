@@ -44,12 +44,7 @@ export const Memo = ({
   }, [isEditing]);
 
   return (
-    <div
-      className={styles.wrapper}
-      onClick={() => {
-        if (!isEditing) onEditStart();
-      }}
-    >
+    <div className={styles.wrapper}>
       <div className={styles.header}>
         <Flex align="center" gap="0.8rem" justify="center">
           {avatarUrl ? (

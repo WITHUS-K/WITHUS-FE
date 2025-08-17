@@ -35,16 +35,16 @@ export const DocsEvaluation = ({
     { id: 5, name: '보통' },
     { id: 0, name: '불만족' },
   ];
-  const total = scores.reduce((sum, v) => sum + v, 0);
+  const total = scores.reduce((sum, v) => sum + Math.min(v, 10), 0);
   const maxTotal = scores.length * 10;
   const averageScore =
-    scores.length > 0 ? (total / scores.length).toFixed(0) : '0';
+    scores.length > 0 ? (total / scores.length).toFixed(2) : '0';
 
   const isLevel = evaluationData.evaluationType === 'level';
   const displayTotal = isLevel ? Math.round((total / maxTotal) * 100) : total;
   const displayMax = isLevel ? 100 : maxTotal;
   const displayAverage = isLevel
-    ? ((total / maxTotal) * 100).toFixed(0)
+    ? ((total / maxTotal) * 100).toFixed(2)
     : averageScore;
 
   return (
