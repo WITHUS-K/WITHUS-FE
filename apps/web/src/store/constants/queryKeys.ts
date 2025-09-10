@@ -69,6 +69,20 @@ export const queryKeys = {
     applications: (timeSlotId: number) =>
       ['timeSlot', 'applications', timeSlotId] as const,
     detail: (timeSlotId: number) => ['timeSlot', 'detail', timeSlotId] as const,
+    candidates: (
+      recruitmentId: number,
+      timeSlotId: number,
+      query?: string,
+      excludeCurrent: boolean = true
+    ) =>
+      [
+        'timeSlot',
+        'candidates',
+        recruitmentId,
+        timeSlotId,
+        query ?? '',
+        excludeCurrent,
+      ] as const,
   },
   positions: {
     byRecruitment: (recruitmentId: number) =>
