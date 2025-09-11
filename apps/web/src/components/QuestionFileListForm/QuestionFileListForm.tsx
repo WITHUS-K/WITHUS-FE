@@ -17,7 +17,7 @@ export type AnswerFile = File | FileInfo;
 interface QuestionAndFileListFormProps {
   detailItems: Array<
     DetailItem & {
-      questionId: number;
+      questionId?: number;
       type: 'text' | 'file';
       includeWhitespace?: boolean;
     }
