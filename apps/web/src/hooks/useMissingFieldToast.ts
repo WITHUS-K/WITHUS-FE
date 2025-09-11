@@ -151,7 +151,7 @@ export function useMissingFieldToast(params: {
       if (item!.type === 'text') {
         const ans = (textAnswers[tIdx++] ?? '').trim();
         if (item!.required && !ans) {
-          toast.error(`"질문-${qNo}" 항목을 작성해주세요.`);
+          toast.error(`"질문-${qNo - 1}" 항목을 작성해주세요.`);
           return false;
         }
       } else {
