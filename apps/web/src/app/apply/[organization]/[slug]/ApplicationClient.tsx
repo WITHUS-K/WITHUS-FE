@@ -42,6 +42,7 @@ import {
 import { FormFieldStatusProvider } from './_context/FormFieldStatusContext';
 import { PartStatusResetter } from './_context/PartStatusResetter';
 import { Spinner } from '@repo/ui/Spinner';
+import { useMissingFieldToast } from '@web/hooks/useMissingFieldToast';
 
 interface ApplicationClientProps {
   slug: string;
@@ -304,6 +305,29 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   // console.log('questionsAnswered', questionsAnswered);
   // console.log('hasSchedule', hasSchedule);
 
+  // 첫 번째 미완 항목을 찾아 에러 토스트를 띄우기
+  const ensureReadyToSubmit = useMissingFieldToast({
+    needImage: data?.needImage,
+    needGender: data?.needGender,
+    needBirthDate: data?.needBirthDate,
+    needSchool: data?.needSchool,
+    needAcademicStatus: data?.needAcademicStatus,
+    needMajor: data?.needMajor,
+    needAddress: data?.needAddress,
+    needInterview: data?.isInterviewRequired,
+
+    basicInfo: watch('basicInfo'),
+    additionalInfo: watch('additionalInfo'),
+    hasPositions: (data?.positions.length ?? 0) > 0,
+    selectedPartLabel: watch('applicationPart')?.label ?? null,
+
+    detailItems,
+    textAnswers: watch('questionAnswers') ?? [],
+    fileAnswers: (watch('questionFiles') as File[][]) ?? [],
+
+    scheduleList: watch('interviewSchedule.scheduleList') ?? [],
+  });
+
   const canSubmit =
     basicFilled &&
     additionalFilled &&
@@ -512,6 +536,10 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   const submitForm = handleSubmit(onSubmit);
 
   const handleModalClick = () => {
+    if (isSubmitting) return;
+
+    const ok = ensureReadyToSubmit();
+    if (!ok) return;
     // 데드라인이 지났다면
     if (deadlineEndOfDay !== null && Date.now() > deadlineEndOfDay) {
       confirm({
@@ -641,8 +669,10 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
               variant="main"
               size="40"
               width="10rem"
-              disabled={!canSubmit}
-              onClick={handleModalClick}
+              aria-disabled={!canSubmit || isSubmitting}
+              onClick={() => {
+                handleModalClick();
+              }}
             >
               제출
             </Button>
