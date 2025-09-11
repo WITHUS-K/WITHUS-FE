@@ -15,11 +15,17 @@ import { FileInfo } from '@repo/ui';
 export type AnswerFile = File | FileInfo;
 
 interface QuestionAndFileListFormProps {
-  detailItems: DetailItem[];
+  detailItems: Array<
+    DetailItem & {
+      questionId?: number;
+      type: 'text' | 'file';
+      includeWhitespace?: boolean;
+    }
+  >;
   answers?: string[];
   files: AnswerFile[][];
-  onAnswerChange: (idx: number, value: string) => void;
-  onFileChange: (idx: number, files: AnswerFile[]) => void;
+  onAnswerChange: (textIndex: number, value: string) => void;
+  onFileChange: (fileIndex: number, files: AnswerFile[]) => void;
   readOnly?: boolean;
 }
 
@@ -33,30 +39,31 @@ export const QuestionAndFileListForm = ({
 }: QuestionAndFileListFormProps) => {
   const { getStatus } = useContext(FormFieldStatusContext);
 
-  let textIdx = -1;
-  let fileIdx = -1;
+  let t = 0;
+  let f = 0;
 
   return (
     <div className={s.wrapper}>
-      {detailItems.map((item, idx) => {
+      {detailItems.map((item) => {
         if (item.type === 'text') {
-          textIdx += 1;
-          const status = getStatus(`question-text-${textIdx}`);
+          const textIndex = t++;
+          const status = getStatus(`question-text-${textIndex}`);
+
           const maxLength =
             item.typeInfo.info === '제한 없음'
-              ? Infinity
+              ? undefined
               : Number(item.typeInfo.info.replace('자', ''));
 
           return (
             <div
-              key={`text-${textIdx}`}
-              id={`question-text-${textIdx}`}
+              key={item.questionId}
+              id={`question-text-${textIndex}`}
               tabIndex={-1}
               className={clsx(s.questionContainer, focusableWrapper)}
             >
               <Flex gap="0.4rem" align="center" width="100%">
                 <Text variant="md1_text_semibold" color="grayscale70">
-                  질문-{textIdx + 1}
+                  질문-{textIndex + 1}
                 </Text>
                 {item.required && (
                   <Text variant="md2_text_semibold" color="error">
@@ -70,16 +77,17 @@ export const QuestionAndFileListForm = ({
                 description={item.addDescription}
                 infoDetail={item.typeInfo.infoDetail}
                 value={
-                  readOnly ? (item.answer ?? '') : (answers[textIdx] ?? '')
+                  readOnly
+                    ? ((item as any).answer ?? '')
+                    : (answers[textIndex] ?? '')
                 }
-                maxLength={maxLength}
+                maxLength={maxLength as number | undefined}
                 includeWhitespace={item.includeWhitespace}
                 onFocus={status.setEditing}
                 onChange={(val) => {
-                  if (!readOnly) {
-                    onAnswerChange(textIdx, val);
-                    status.setEditing();
-                  }
+                  if (readOnly) return;
+                  onAnswerChange(textIndex, val);
+                  status.setEditing();
                 }}
                 onBlur={(e) => {
                   e.currentTarget.value.trim()
@@ -92,13 +100,14 @@ export const QuestionAndFileListForm = ({
           );
         }
 
-        fileIdx += 1;
-        const status = getStatus(`question-file-${fileIdx}`);
+        // file
+        const fileIndex = f++;
+        const status = getStatus(`question-file-${fileIndex}`);
 
         return (
           <div
-            key={`file-${fileIdx}`}
-            id={`question-file-${fileIdx}`}
+            key={item.questionId}
+            id={`question-file-${fileIndex}`}
             style={{ marginBottom: '2rem' }}
             onMouseDown={status.setEditing}
             tabIndex={-1}
@@ -106,10 +115,10 @@ export const QuestionAndFileListForm = ({
           >
             <FileUpload
               item={item}
-              files={files[fileIdx] || []}
+              files={files[fileIndex] || []}
               readOnly={readOnly}
               onChange={(newFiles) => {
-                onFileChange(fileIdx, newFiles);
+                onFileChange(fileIndex, newFiles);
                 newFiles.length ? status.setCompleted() : status.setDefault();
               }}
             />

@@ -24,6 +24,10 @@ export const buttonVariants = styleVariants({
         backgroundColor: vars.colors.grayscale30,
         color: vars.colors.grayscale10,
       },
+      '&[aria-disabled="true"]': {
+        backgroundColor: vars.colors.grayscale30,
+        color: vars.colors.grayscale10,
+      },
     },
   },
   sub: {

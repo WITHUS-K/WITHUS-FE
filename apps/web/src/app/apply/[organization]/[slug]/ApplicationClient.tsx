@@ -42,6 +42,7 @@ import {
 import { FormFieldStatusProvider } from './_context/FormFieldStatusContext';
 import { PartStatusResetter } from './_context/PartStatusResetter';
 import { Spinner } from '@repo/ui/Spinner';
+import { useMissingFieldToast } from '@web/hooks/useMissingFieldToast';
 
 interface ApplicationClientProps {
   slug: string;
@@ -175,77 +176,93 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
 
   const selectedPartLabel = watch('applicationPart')?.label;
 
-  const detailItems: (DetailItem & { questionId: number })[] = useMemo(
-    () =>
-      data?.applicationQuestions
-        // 파트 이름(positionName) 이 선택된 파트 라벨과 같은 것만
-        .filter(
-          (q) =>
-            q.positionName === '공통' || q.positionName === selectedPartLabel
-        )
-        .map((q) => {
-          //console.log(q);
-          if (q.type === 'TEXT') {
-            const tq = q as TextQuestionDto;
-            const infoText =
-              tq.textLimit === 0 ? '제한 없음' : `${tq.textLimit}자`;
-            return {
-              questionId: tq.questionId,
-              required: tq.required,
-              type: 'text',
-              description: tq.title,
-              addDescription: tq.description,
-              typeInfo: {
-                info: infoText,
-                infoDetail: tq.includeWhitespace ? '공백 포함' : '공백 제외',
-              },
-            };
-          } else {
-            const fq = q as FileQuestionDto;
-            return {
-              questionId: fq.questionId,
-              required: fq.required,
-              type: 'file',
-              description: fq.title,
-              addDescription: fq.description,
-              typeInfo: {
-                info: `${fq.maxFileCount}`,
-                infoDetail: `${fq.maxFileSizeMb}`,
-              },
-            };
-          }
-        }) ?? [],
-    [data?.applicationQuestions, selectedPartLabel]
-  );
+  const detailItems: (DetailItem & { questionId: number })[] = useMemo(() => {
+    if (!data?.applicationQuestions) return [];
+    return data.applicationQuestions
+      .filter(
+        (q) => q.positionName === '공통' || q.positionName === selectedPartLabel
+      )
+      .map((q) => {
+        if (q.type === 'TEXT') {
+          const tq = q as TextQuestionDto;
+          const infoText =
+            tq.textLimit === 0 ? '제한 없음' : `${tq.textLimit}자`;
+          return {
+            questionId: tq.questionId,
+            required: tq.required,
+            type: 'text',
+            description: tq.title,
+            addDescription: tq.description,
+            typeInfo: {
+              info: infoText,
+              infoDetail: tq.includeWhitespace ? '공백 포함' : '공백 제외',
+            },
+          } as const;
+        } else {
+          const fq = q as FileQuestionDto;
+          return {
+            questionId: fq.questionId,
+            required: fq.required,
+            type: 'file',
+            description: fq.title,
+            addDescription: fq.description,
+            typeInfo: {
+              info: `${fq.maxFileCount}`,
+              infoDetail: `${fq.maxFileSizeMb}`,
+            },
+          } as const;
+        }
+      });
+  }, [data?.applicationQuestions, selectedPartLabel]);
 
   const partTextCount = detailItems.filter((d) => d.type === 'text').length;
   const partFileCount = detailItems.filter((d) => d.type === 'file').length;
 
+  const prevDetailItemsRef = useRef<
+    (DetailItem & { questionId: number })[] | null
+  >(null);
+
   // 파트가 바뀔 때 폼 값 리셋
   useEffect(() => {
-    const curAnswers = getValues('questionAnswers') as string[];
-    const newAnswers = [
-      ...curAnswers.slice(0, commonTextCount),
-      ...Array(partTextCount - commonTextCount).fill(''),
-    ];
-    setValue('questionAnswers', newAnswers);
+    const prev = prevDetailItemsRef.current ?? [];
+    const cur = detailItems;
 
-    const curFiles = getValues('questionFiles') as File[][];
-    const newFiles: File[][] = [
-      ...curFiles.slice(0, commonFileCount),
-      ...Array(partFileCount - commonFileCount).fill([]),
-    ];
+    // 이전 상태에서 TEXT/FILE 각각의 배열 인덱스 <-> questionId 매핑
+    const prevTextItems = prev.filter((d) => d.type === 'text');
+    const prevFileItems = prev.filter((d) => d.type === 'file');
 
-    setValue('questionFiles', newFiles);
-  }, [
-    selectedPartLabel,
-    commonTextCount,
-    commonFileCount,
-    partTextCount,
-    partFileCount,
-    getValues,
-    setValue,
-  ]);
+    const prevTextAnswers = (getValues('questionAnswers') as string[]) ?? [];
+    const prevFileAnswers = (getValues('questionFiles') as File[][]) ?? [];
+
+    const textById = new Map<number, string>(
+      prevTextItems.map((it, idx) => [
+        it.questionId,
+        prevTextAnswers[idx] ?? '',
+      ])
+    );
+    const fileById = new Map<number, File[]>(
+      prevFileItems.map((it, idx) => [
+        it.questionId,
+        prevFileAnswers[idx] ?? [],
+      ])
+    );
+
+    // 현재 detailItems(=서버 순서) 기준으로 다시 배열 만들기
+    const curTextItems = cur.filter((d) => d.type === 'text');
+    const curFileItems = cur.filter((d) => d.type === 'file');
+
+    const nextTextAnswers = curTextItems.map(
+      (it) => textById.get(it.questionId) ?? ''
+    );
+    const nextFileAnswers = curFileItems.map(
+      (it) => fileById.get(it.questionId) ?? []
+    );
+
+    setValue('questionAnswers', nextTextAnswers, { shouldDirty: true });
+    setValue('questionFiles', nextFileAnswers, { shouldDirty: true });
+
+    prevDetailItemsRef.current = cur;
+  }, [detailItems, getValues, setValue]);
 
   const needImage = data.needImage;
   const needGender = data?.needGender;
@@ -281,18 +298,26 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   const requiredFileItems = fileItems.filter((d) => d.required);
 
   // 리액트훅폼에서 watch 해온 값
-  const textAnswers = watch('questionAnswers'); // string[]
-  const fileAnswers = watch('questionFiles'); // File[][]
+  const textAnswers = watch('questionAnswers') ?? [];
+  const fileAnswers = (watch('questionFiles') as File[][]) ?? [];
 
   // 1) 텍스트 질문이 모두 채워졌는지
-  const textAnswered = requiredTextItems.every((_, idx) =>
-    Boolean(textAnswers[idx]?.trim())
-  );
+  let tIdx = 0;
+  const textAnswered = textItems.every((it) => {
+    const ok = !it.required || Boolean(textAnswers[tIdx]?.trim());
+    tIdx += 1;
+    return ok;
+  });
 
   // 2) 파일 질문이 모두 1개 이상 업로드되었는지
-  const fileAnswered = requiredFileItems.every(
-    (_, idx) => Array.isArray(fileAnswers[idx]) && fileAnswers[idx]!.length > 0
-  );
+  let fIdx = 0;
+  const fileAnswered = fileItems.every((it) => {
+    const ok =
+      !it.required ||
+      (Array.isArray(fileAnswers[fIdx]) && fileAnswers[fIdx]!.length > 0);
+    fIdx += 1;
+    return ok;
+  });
 
   const questionsAnswered = textAnswered && fileAnswered;
 
@@ -303,6 +328,29 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   // console.log('additionalFilled', additionalFilled);
   // console.log('questionsAnswered', questionsAnswered);
   // console.log('hasSchedule', hasSchedule);
+
+  // 첫 번째 미완 항목을 찾아 에러 토스트를 띄우기
+  const ensureReadyToSubmit = useMissingFieldToast({
+    needImage: data?.needImage,
+    needGender: data?.needGender,
+    needBirthDate: data?.needBirthDate,
+    needSchool: data?.needSchool,
+    needAcademicStatus: data?.needAcademicStatus,
+    needMajor: data?.needMajor,
+    needAddress: data?.needAddress,
+    needInterview: data?.isInterviewRequired,
+
+    basicInfo: watch('basicInfo'),
+    additionalInfo: watch('additionalInfo'),
+    hasPositions: (data?.positions.length ?? 0) > 0,
+    selectedPartLabel: watch('applicationPart')?.label ?? null,
+
+    detailItems,
+    textAnswers: watch('questionAnswers') ?? [],
+    fileAnswers: (watch('questionFiles') as File[][]) ?? [],
+
+    scheduleList: watch('interviewSchedule.scheduleList') ?? [],
+  });
 
   const canSubmit =
     basicFilled &&
@@ -318,39 +366,41 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
       let textIndex = 0;
       let fileIndex = 0;
 
-      const answers = detailItems.reduce<
-        { questionId: number; answerText: string; fileName: string }[]
-      >((acc, item) => {
-        if (item.type === 'text') {
-          const raw = vals.questionAnswers[textIndex++] ?? '';
-          const limitInfo = item.typeInfo.info;
-          const limit =
-            limitInfo === '제한 없음'
-              ? Infinity
-              : Number(limitInfo.replace('자', ''));
-          const answer = raw.trim().slice(0, limit);
-
-          // 필수가 아니고 빈 문자열이면 스킵
-          // if (!item.required && !answer) return acc;
-
-          acc.push({
-            questionId: item.questionId,
-            answerText: answer,
-            fileName: '',
-          });
-        } else {
-          const filesForQuestion = vals.questionFiles[fileIndex++] || [];
-          filesForQuestion.forEach((f) => {
-            acc.push({
+      // 제출 payload
+      const answers = (() => {
+        let t = 0,
+          f = 0;
+        const out: {
+          questionId: number;
+          answerText: string;
+          fileName: string;
+        }[] = [];
+        detailItems.forEach((item) => {
+          if (item.type === 'text') {
+            const raw = (vals.questionAnswers[t++] ?? '').trim();
+            const limitInfo = item.typeInfo.info;
+            const limit =
+              limitInfo === '제한 없음'
+                ? Infinity
+                : Number(limitInfo.replace('자', ''));
+            out.push({
               questionId: item.questionId,
-              answerText: '',
-              fileName: f.name,
+              answerText: raw.slice(0, limit),
+              fileName: '',
             });
-          });
-        }
-
-        return acc;
-      }, []);
+          } else {
+            const files = vals.questionFiles[f++] || [];
+            files.forEach((file) => {
+              out.push({
+                questionId: item.questionId,
+                answerText: '',
+                fileName: file.name,
+              });
+            });
+          }
+        });
+        return out;
+      })();
 
       const rawTimes = vals.interviewSchedule.scheduleList.flatMap((slot) => {
         const date = slot.date!.replace(/\./g, '-');
@@ -512,6 +562,10 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   const submitForm = handleSubmit(onSubmit);
 
   const handleModalClick = () => {
+    if (isSubmitting) return;
+
+    const ok = ensureReadyToSubmit();
+    if (!ok) return;
     // 데드라인이 지났다면
     if (deadlineEndOfDay !== null && Date.now() > deadlineEndOfDay) {
       confirm({
@@ -641,8 +695,10 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
               variant="main"
               size="40"
               width="10rem"
-              disabled={!canSubmit}
-              onClick={handleModalClick}
+              aria-disabled={!canSubmit || isSubmitting}
+              onClick={() => {
+                handleModalClick();
+              }}
             >
               제출
             </Button>
