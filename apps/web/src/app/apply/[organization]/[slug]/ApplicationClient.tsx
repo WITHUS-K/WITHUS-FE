@@ -594,6 +594,12 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
 
   return (
     <FormFieldStatusProvider>
+      <PartStatusResetter
+        selectedPartLabel={watch('applicationPart')?.label}
+        detailItems={detailItems}
+        commonTextCount={commonTextCount}
+        commonFileCount={commonFileCount}
+      />
       <div className={styles.page} ref={scrollRef}>
         {isSubmitting && (
           <div

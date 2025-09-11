@@ -6,7 +6,7 @@ import {
   SettingContextType,
 } from '@web/app/(main)/application-list/setting/_context/SettingContext';
 import { FormValues, InterviewSchedule } from '@web/types/application';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import * as styles from './PreviewComponent.css';
 import { PreviewHeader } from '@web/app/(main)/application-list/setting/(preview)/_components/PreivewHeader/PreivewHeader';
 import { BasicInfoPreview } from '@web/app/(main)/application-list/setting/(preview)/_components/BasicInfoPreview/BasicInfoPreview';
@@ -61,15 +61,32 @@ export default function PreviewComponent() {
   );
 
   // 실제 파트 옵션 (공통 제외)
+  const hasParts = form.applicationParts?.isSelected === true;
   const parts = form.applicationParts?.parts ?? [];
   const [selectedPartIdx, setSelectedPartIdx] = useState<number>(0);
 
+  useEffect(() => {
+    if (!hasParts) {
+      setSelectedPartIdx(0);
+      return;
+    }
+    if (selectedPartIdx >= parts.length) {
+      setSelectedPartIdx(Math.max(0, parts.length - 1));
+    }
+  }, [hasParts, parts.length, selectedPartIdx]);
+
   const filteredItems = useMemo(() => {
-    return form.detailItems.filter(
-      (item) =>
-        item.responseTarget === 0 || item.responseTarget === selectedPartIdx + 1
+    const items = form.detailItems ?? [];
+    if (!hasParts || parts.length === 0) {
+      return items;
+    }
+    const target = selectedPartIdx + 1;
+    const out = items.filter(
+      (item) => item.responseTarget === 0 || item.responseTarget === target
     );
-  }, [form.detailItems, selectedPartIdx]);
+
+    return out;
+  }, [form.detailItems, hasParts, parts.length, selectedPartIdx]);
 
   const interval = TIME_STEP[form.interviewDuration];
 
