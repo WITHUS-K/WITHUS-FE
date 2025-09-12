@@ -1,4 +1,4 @@
 {
-  "rootDirectory": "apps/web",
-  "buildCommand": "pnpm -w install --frozen-lockfile && pnpm -w -r build"
+  "buildCommand": "pnpm -w install --frozen-lockfile && pnpm -r build && pnpm --filter web build",
+  "outputDirectory": "apps/web/.next"
 }
