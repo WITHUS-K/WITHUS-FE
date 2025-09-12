@@ -1,0 +1,4 @@
+{
+  "rootDirectory": "apps/web",
+  "buildCommand": "pnpm -w install --frozen-lockfile && pnpm -w -r build"
+}
