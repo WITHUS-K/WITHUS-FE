@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { Text } from '../..';
 import clsx from 'clsx';
 import * as styles from '../Dropdown.css';
@@ -37,7 +36,8 @@ export default function CommonDropdownTriggerContent({
     >
       <Text
         variant="md2_text_medium"
-        color={isOpen ? 'primary50' : 'grayscale70'}
+        color={isOpen ? 'primary50' : 'grayscale40'}
+        className={styles.commonText}
       >
         {selected}
       </Text>

@@ -81,7 +81,7 @@ export default function FilterBar() {
         placeholder="공고 선택"
         onSelect={updateRecruitment}
         triggerHeight="4rem"
-        listWidth="27.2rem"
+        listWidth="100%"
         itemSize="large"
       />
 
