@@ -12,6 +12,9 @@ export const listContainer = style({
   height: '32.2rem',
   maxHeight: '32.2rem',
   overflowY: 'scroll',
+  paddingRight: '0.8rem',
+
+  scrollbarGutter: 'stable both-edges',
 
   selectors: {
     '&::-webkit-scrollbar': {
