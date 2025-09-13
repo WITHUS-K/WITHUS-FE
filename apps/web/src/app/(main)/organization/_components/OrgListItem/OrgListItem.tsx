@@ -12,6 +12,7 @@ import { Text } from '@repo/ui/Text';
 import { Flex } from '@repo/ui/Flex';
 import { vars } from '@repo/theme';
 import { IcPlusRole } from '@repo/ui/icons/mono';
+import { HoverCallout } from '@repo/ui/Callout';
 interface Props {
   member: Member;
   isSelected: boolean;
@@ -85,13 +86,20 @@ export default function OrgListItem({
       </Flex>
 
       <Flex align="center" gap="0.8rem" width="31rem" marginRight="4.4rem">
-        <button
-          type="button"
-          onClick={() => onPartClick(Number(member.id))}
-          className={styles.buttonBase}
-        >
-          <IcPlusRole width={11} height={11} />
-        </button>
+        <HoverCallout
+          texts="파트 추가"
+          position="top"
+          //offsetX={0} // 살짝 좌/우 미세조정 필요하면 숫자(px)로 변경
+          trigger={
+            <button
+              type="button"
+              onClick={() => onPartClick(Number(member.id))}
+              className={styles.buttonBase}
+            >
+              <IcPlusRole width={11} height={11} />
+            </button>
+          }
+        />
 
         <div className={styles.tagContainer}>
           {member.roles.map((r) => (
