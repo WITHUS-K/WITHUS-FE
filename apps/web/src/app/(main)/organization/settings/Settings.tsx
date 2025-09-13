@@ -19,6 +19,7 @@ import { useAddOrganizationRoleMutation } from '@web/store/mutation/useAddOrgani
 import { useUpdateOrganizationRoleMutation } from '@web/store/mutation/useUpdateOrganizationRoleMutation';
 import { useAssignOrganizationUsersMutation } from '@web/store/mutation/useAssignOrganizationUsersMutation';
 import { useToast } from '@repo/ui/hooks';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 interface Props {
   organizationId: number;
@@ -52,6 +53,9 @@ export default function Settings({ organizationId }: Props) {
   const selectedRoleName =
     selectedRoleIdx != null ? filteredRoles[selectedRoleIdx]!.roleName : '';
 
+  // 현재 로그인한 사용자 ID
+  const { userId: myUserId } = getClientSideTokens();
+
   // 서버에서 users
   const { data: users } = useOrganizationUsersClientQuery({
     organizationId,
@@ -69,7 +73,9 @@ export default function Settings({ organizationId }: Props) {
   }, [selectedRoleId, users]);
 
   const addedMembers = localUsers.filter((u) => u.isAssigned);
-  const availableMembers = localUsers.filter((u) => !u.isAssigned);
+  const availableMembers = localUsers.filter(
+    (u) => !u.isAssigned && u.userId !== myUserId
+  );
 
   //  즉시 UI 반영
   const handleAdd = (u: UserResult) =>

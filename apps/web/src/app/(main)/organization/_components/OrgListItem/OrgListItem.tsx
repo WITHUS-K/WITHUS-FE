@@ -89,7 +89,6 @@ export default function OrgListItem({
         <HoverCallout
           texts="파트 추가"
           position="top"
-          //offsetX={0} // 살짝 좌/우 미세조정 필요하면 숫자(px)로 변경
           trigger={
             <button
               type="button"
