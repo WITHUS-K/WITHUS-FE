@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css';
+import { style, styleVariants } from '@vanilla-extract/css';
 import { vars } from '@repo/theme';
 
 export const container = style({
@@ -25,4 +25,16 @@ export const content = style({
   display: 'flex',
   alignItems: 'center',
   gap: '0.4rem',
+});
+
+export const variant = styleVariants({
+  solid: {
+    backgroundColor: vars.colors.grayscale70,
+    color: vars.colors.white,
+  },
+  outline: {
+    backgroundColor: vars.colors.white,
+    border: `1px solid ${vars.colors.primary20}`,
+    color: vars.colors.primary50,
+  },
 });

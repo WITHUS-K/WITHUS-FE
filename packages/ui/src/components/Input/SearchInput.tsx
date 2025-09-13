@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, KeyboardEvent } from 'react';
 import InputField from './InputField';
 import { IcInputSearch, IcInputDelete } from '@repo/ui/icons/colored';
 
@@ -8,6 +8,7 @@ export interface SearchInputProps {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   width?: string;
   onClick?: () => void;
+  onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export default function SearchInput({
@@ -16,6 +17,7 @@ export default function SearchInput({
   onChange,
   width = '100%',
   onClick,
+  onKeyDown,
 }: SearchInputProps) {
   const handleClear = () => {
     onChange({ target: { value: '' } } as ChangeEvent<HTMLInputElement>);
@@ -28,6 +30,7 @@ export default function SearchInput({
       value={value}
       onChange={onChange}
       width={width}
+      onKeyDown={onKeyDown}
       icon={
         value ? (
           <button type="button" onClick={handleClear}>

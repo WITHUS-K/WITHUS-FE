@@ -176,6 +176,8 @@ export default function OrganizationPageClient({
           selectedCount={selectedIds.length}
           totalCount={totalCount}
           onDelete={handleDeleteClick}
+          //초대코드 api 값 적용하기!!!
+          code="389461"
         />
         <Flex width="100%" paddingBottom="1.5rem" height="100%">
           <OrgList

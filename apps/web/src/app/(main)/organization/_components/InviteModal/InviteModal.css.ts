@@ -32,3 +32,12 @@ export const listContainer = style({
     },
   },
 });
+
+export const button = style({
+  color: vars.colors.grayscale20,
+  selectors: {
+    [`${item}:hover &`]: {
+      color: vars.colors.grayscale50,
+    },
+  },
+});

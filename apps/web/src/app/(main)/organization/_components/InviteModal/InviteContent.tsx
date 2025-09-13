@@ -1,4 +1,4 @@
-import { InputField } from '@repo/ui/InputField';
+import { InputField, SearchInput } from '@repo/ui/InputField';
 import * as styles from './InviteModal.css';
 import { IcInputSearch } from '@repo/ui/icons/colored';
 import { Flex } from '@repo/ui/Flex';
@@ -24,14 +24,12 @@ export default function InviteContent({
   return (
     <Flex direction="column" gap="1.2rem" width="100%">
       {/* 검색 */}
-      <InputField
-        placeholder="검색"
+      <SearchInput
+        placeholder="초대 코드 전송하려는 이메일 주소 입력해주세요."
         value={search}
-        icon={<IcInputSearch width={24} height={24} />}
         onChange={onSearchChange}
         onKeyDown={onSearchKeyDown}
         width="100%"
-        size="search"
       />
 
       {/* 선택된 계정 리스트 */}

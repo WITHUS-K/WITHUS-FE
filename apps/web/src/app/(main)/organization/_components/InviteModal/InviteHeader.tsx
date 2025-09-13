@@ -4,7 +4,7 @@ import React from 'react';
 import { Button } from '@repo/ui/Button';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
-import { IcLink } from '@repo/ui/icons/mono';
+import { IcCode } from '@repo/ui/icons/mono';
 
 export type InviteHeaderProps = {
   count: number;
@@ -25,11 +25,11 @@ export default function InviteHeader({ count, onCopyLink }: InviteHeaderProps) {
       <Button
         variant="sub"
         size="32"
-        width="9.7rem"
-        leftIcon={<IcLink />}
+        width="12.8rem"
+        leftIcon={<IcCode width={16} height={16} />}
         onClick={onCopyLink}
       >
-        링크복사
+        초대 코드 복사
       </Button>
     </Flex>
   );

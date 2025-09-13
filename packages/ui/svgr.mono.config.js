@@ -17,6 +17,7 @@ module.exports = {
     '#5A5C72': 'currentColor',
     '#5680FF': 'currentColor',
     '#C4C6D4': 'currentColor',
+    '#464859': 'currentColor',
 
     //currentColor 로 변환할 아이콘 색상 유동적으로 추가하면 됨!!
   },
