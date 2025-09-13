@@ -27,7 +27,7 @@ export default function CommonDropdown<T extends string>({
   value,
   onSelect,
   triggerHeight = '4.4rem',
-  listWidth = '16rem',
+  listWidth = '100%',
   itemHeight = '3.2rem',
   itemSize = 'small',
   placeholder,

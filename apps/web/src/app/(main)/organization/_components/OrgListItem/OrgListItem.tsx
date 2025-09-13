@@ -12,6 +12,8 @@ import { Text } from '@repo/ui/Text';
 import { Flex } from '@repo/ui/Flex';
 import { vars } from '@repo/theme';
 import { IcPlusRole } from '@repo/ui/icons/mono';
+import { HoverCallout } from '@repo/ui/Callout';
+import { highlight } from '@web/utils/highlight';
 interface Props {
   member: Member;
   isSelected: boolean;
@@ -63,35 +65,27 @@ export default function OrgListItem({
       {/* 3) 이름+이메일 */}
       <Flex direction="column" width="19rem" marginRight="1.8rem">
         <Text variant="sm_caption_medium" color="grayscale70">
-          {nameParts.map((part, index) =>
-            search && part.toLowerCase() === search.toLowerCase() ? (
-              <span
-                key={index}
-                style={{
-                  color: vars.colors.white,
-                  backgroundColor: vars.colors.primary50,
-                }}
-              >
-                {part}
-              </span>
-            ) : (
-              <React.Fragment key={index}>{part}</React.Fragment>
-            )
-          )}
+          {highlight(member.name, search)}
         </Text>
         <Text variant="xs_caption_medium" color="grayscale50">
-          {member.email}
+          {highlight(member.email ?? '', search)}
         </Text>
       </Flex>
 
       <Flex align="center" gap="0.8rem" width="31rem" marginRight="4.4rem">
-        <button
-          type="button"
-          onClick={() => onPartClick(Number(member.id))}
-          className={styles.buttonBase}
-        >
-          <IcPlusRole width={11} height={11} />
-        </button>
+        <HoverCallout
+          texts="파트 추가"
+          position="top"
+          trigger={
+            <button
+              type="button"
+              onClick={() => onPartClick(Number(member.id))}
+              className={styles.buttonBase}
+            >
+              <IcPlusRole width={11} height={11} />
+            </button>
+          }
+        />
 
         <div className={styles.tagContainer}>
           {member.roles.map((r) => (

@@ -147,3 +147,23 @@ export const highlight = style({
   borderRadius: 2,
   padding: '0 2px',
 });
+
+export const deleteBtn = style({
+  opacity: 0,
+  transition: 'opacity 0.2s ease',
+  cursor: 'pointer',
+  color: vars.colors.grayscale40,
+});
+
+export const showOnHover = style({
+  selectors: {
+    [`${item}:hover &`]: {
+      opacity: 1,
+      color: vars.colors.grayscale20,
+    },
+  },
+});
+
+export const alwaysShow = style({
+  opacity: 1,
+});

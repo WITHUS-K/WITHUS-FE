@@ -5,6 +5,7 @@ import {
   dropdownItemSelected,
   dropdownItemPadding,
   dropdownItemFont,
+  dropdownItemLabel,
 } from './Dropdown.css';
 import clsx from 'clsx';
 
@@ -28,13 +29,11 @@ export default function DropdownItem({
 }: DropdownItemProps) {
   const { close } = useDropdownContext();
 
-  // padding-inline 클래스 선택
   const paddingClass =
     typeof children === 'string'
       ? dropdownItemPadding.text
       : dropdownItemPadding.element;
 
-  // font style 클래스 선택
   const fontClass =
     size === 'large' ? dropdownItemFont.large : dropdownItemFont.small;
 
@@ -45,10 +44,18 @@ export default function DropdownItem({
     isSelected && dropdownItemSelected
   );
 
-  // 높이는 inline 스타일로만 덮어쓰기
   const mergedStyle: CSSProperties | undefined = height
     ? { ...style, height }
     : style;
+
+  const content =
+    typeof children === 'string' ? (
+      <span className={dropdownItemLabel} title={children}>
+        {children}
+      </span>
+    ) : (
+      children
+    );
 
   return (
     <li
@@ -62,7 +69,7 @@ export default function DropdownItem({
       }}
       {...props}
     >
-      {children}
+      {content}
     </li>
   );
 }

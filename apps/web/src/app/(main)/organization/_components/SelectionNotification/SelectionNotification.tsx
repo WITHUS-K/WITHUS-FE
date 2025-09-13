@@ -3,7 +3,7 @@
 import React from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
-import { IcNotice } from '@repo/ui/icons/colored';
+import { IcShowNotice } from '@repo/ui/icons/mono';
 import * as styles from './SelectionNotification.css';
 
 interface Props {
@@ -30,14 +30,16 @@ export default function SelectionNotification({
   return (
     <div className={styles.root}>
       <Flex align="center" gap="0.4rem">
-        <IcNotice width={24} height={24} />
-        <Text variant="sm_caption_medium" color="grayscale80">
+        <span className={styles.icon}>
+          <IcShowNotice width={24} height={24} />
+        </span>
+        <Text variant="sm_caption_medium" color="grayscale10">
           {message}
         </Text>
       </Flex>
       <Text
         variant="sm_caption_semibold"
-        color="primary50"
+        color="white"
         style={{
           cursor: 'pointer',
           textDecoration: 'underline',

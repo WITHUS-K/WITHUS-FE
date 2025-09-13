@@ -57,10 +57,10 @@ export default function InviteModal() {
     setSelected((prev) => prev.filter((u) => u.id !== id));
   };
 
-  // 링크 복사
+  // 초대코드 복사
   const handleCopyLink = () => {
-    toast.success('초대 링크가 복사되었습니다.', 3000);
-    // 링크 복사 로직 추가
+    toast.success('초대코드가 복사되었습니다.', { variant: 'outline' });
+    // 초대코드 복사 로직 추가하기
   };
 
   return (
@@ -82,20 +82,20 @@ export default function InviteModal() {
           <Modal.Footer hasTopBorder>
             <Modal.DoubleCTA
               cancelText="닫기"
-              confirmText="초대"
+              confirmText="초대 코드 전송"
               cancelProps={{ onClick: close }}
               confirmProps={{
+                disabled: selected.length === 0,
                 onClick: () => {
                   const userIds = selected.map((u) => Number(u.id));
                   inviteMutation.mutate(
                     { userIds },
                     {
                       onSuccess: () => {
-                        toast.success('초대 메일을 보냈습니다.', 3000);
+                        toast.success('초대 코드 전송이 완료 되었습니다. ', {
+                          variant: 'outline',
+                        });
                         close();
-                      },
-                      onError: (err) => {
-                        toast.error(`초대 실패: ${err.message}`, 5000);
                       },
                     }
                   );

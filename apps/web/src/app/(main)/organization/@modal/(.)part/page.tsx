@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import { getCookie } from 'cookies-next';
 import { PartContent } from '../../_components/PartModal/PartContent';
 import { useOrganizationRolesQuery } from '@web/store/query/useOrganizationRolesQuery';
+import * as styles from './page.css';
 
 export default function PartModal() {
   const router = useRouter();
@@ -56,11 +57,13 @@ export default function PartModal() {
       <Modal.Layout>
         <Modal.Header text="파트 배정" />
         <Modal.Content>
-          <PartContent
-            allRoles={allRoles}
-            selectedRoleIds={selectedRoleIds}
-            onToggle={toggle}
-          />
+          <div className={styles.tightRight}>
+            <PartContent
+              allRoles={allRoles}
+              selectedRoleIds={selectedRoleIds}
+              onToggle={toggle}
+            />
+          </div>
         </Modal.Content>
         <Modal.Footer hasTopBorder>
           <Modal.DoubleCTA

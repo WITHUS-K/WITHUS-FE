@@ -26,6 +26,20 @@ export const panel = style({
   backgroundColor: vars.colors.white,
   borderRadius: '12px',
   height: '100%',
+  minHeight: 0,
+});
+
+export const controlsRow = style({
+  display: 'flex',
+  alignItems: 'center',
+  width: '100%',
+  gap: '0.8rem',
+  paddingLeft: '0.6rem',
+  height: '3.2rem',
+});
+export const controlsRowHidden = style({
+  visibility: 'hidden',
+  pointerEvents: 'none',
 });
 
 export const list = style({
@@ -35,7 +49,7 @@ export const list = style({
   maxHeight: '34.4rem',
   minHeight: '34.4rem',
   overflowY: 'auto',
-
+  flex: 1,
   scrollbarGutter: 'stable',
   selectors: {
     '&::-webkit-scrollbar': {

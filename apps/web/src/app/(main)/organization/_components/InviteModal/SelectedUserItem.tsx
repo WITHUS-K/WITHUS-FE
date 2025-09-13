@@ -4,7 +4,7 @@ import React from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Profile } from '@repo/ui/Profile';
 import { Text } from '@repo/ui/Text';
-import { IcInviteDelete } from '@repo/ui/icons/colored';
+import { IcDelete } from '@repo/ui/icons/mono';
 import * as styles from './InviteModal.css';
 import { User } from '@web/types/organization';
 
@@ -33,8 +33,8 @@ export default function SelectedUserItem({ user, onRemove }: Props) {
         </Flex>
       </Flex>
 
-      <button onClick={() => onRemove(user.id)}>
-        <IcInviteDelete width={24} height={24} />
+      <button onClick={() => onRemove(user.id)} className={styles.button}>
+        <IcDelete width={24} height={24} />
       </button>
     </Flex>
   );

@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react';
-const SvgIcTriangleDown = (props: SVGProps<SVGSVGElement>) => (
+const SvgIcShowNotice = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="1em"
@@ -9,11 +9,12 @@ const SvgIcTriangleDown = (props: SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      fill="currentColor"
       stroke="currentColor"
+      strokeLinecap="round"
       strokeLinejoin="round"
-      d="M16 10.5a.5.5 0 0 1 .354.854l-4 4a.5.5 0 0 1-.708 0l-4-4A.5.5 0 0 1 8 10.5z"
+      strokeWidth={1.5}
+      d="M12 15.6V12m0-3.6h.009M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"
     />
   </svg>
 );
-export default SvgIcTriangleDown;
+export default SvgIcShowNotice;

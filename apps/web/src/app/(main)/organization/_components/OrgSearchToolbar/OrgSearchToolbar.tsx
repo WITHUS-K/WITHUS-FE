@@ -11,6 +11,9 @@ import {
   IcButtonSetting,
 } from '@repo/ui/icons/mono';
 import { useRouter } from 'next/navigation';
+import { IcCode } from '@repo/ui/icons/mono';
+import * as styles from './OrgSearchToolbar.css';
+import { useToast } from '@repo/ui/hooks';
 
 interface Props {
   search: string;
@@ -18,6 +21,7 @@ interface Props {
   selectedCount: number;
   totalCount: number;
   onDelete: () => void;
+  code?: string;
 }
 
 export default function OrgSearchToolbar({
@@ -26,8 +30,10 @@ export default function OrgSearchToolbar({
   selectedCount,
   totalCount,
   onDelete,
+  code,
 }: Props) {
   const router = useRouter();
+  const toast = useToast();
 
   const openInviteModal = () => {
     router.push('/organization/invite');
@@ -35,6 +41,16 @@ export default function OrgSearchToolbar({
 
   const goSettings = () => {
     router.push('/organization/settings');
+  };
+
+  const handleCopyCode = async () => {
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code);
+      toast?.success('초대코드가 복사되었습니다.');
+    } catch (err) {
+      toast?.error('복사에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   return (
@@ -67,14 +83,24 @@ export default function OrgSearchToolbar({
       </Flex>
 
       <Flex align="center" gap="0.8rem">
+        <button
+          type="button"
+          className={styles.button}
+          onClick={handleCopyCode}
+        >
+          <Text variant="sm_caption_medium" color="grayscale80">
+            초대코드: {code ?? '-'}
+          </Text>
+          <IcCode width={18} height={18} />
+        </button>
         <Button
           variant="sub"
           size="40"
-          width="16.3rem"
+          width="13.2rem"
           leftIcon={<IcButtonSetting />}
           onClick={goSettings}
         >
-          파트 세부 설정
+          세부 설정
         </Button>
         <Button
           variant="main"

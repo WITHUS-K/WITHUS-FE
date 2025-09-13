@@ -41,4 +41,11 @@ export const buttonBase = style({
   border: `1px solid ${vars.colors.primary20}`,
   backgroundColor: vars.colors.white,
   transition: 'all 150ms ease',
+
+  selectors: {
+    '&:hover': {
+      color: vars.colors.primary50,
+      border: `1px solid ${vars.colors.primary30}`,
+    },
+  },
 });

@@ -15,6 +15,7 @@ import { ToastIcon } from './compounds/Icon/Icon';
 import * as styles from './Toast.css';
 
 export type ToastType = 'default' | 'success' | 'error';
+export type ToastVariant = 'solid' | 'outline';
 
 export type ToastProps = {
   /**
@@ -51,6 +52,8 @@ export type ToastProps = {
    * 토스트가 완전히 사라진 후 호출되는 콜백
    */
   onExited?: VoidFunction;
+
+  variant?: ToastVariant;
 } & Omit<HTMLMotionProps<'div'>, 'children'>;
 
 const ToastComponent = forwardRef<HTMLDivElement, ToastProps>(
@@ -65,6 +68,7 @@ const ToastComponent = forwardRef<HTMLDivElement, ToastProps>(
       onClose,
       onExited,
       style: toastStyle,
+      variant = 'solid',
       ...restProps
     },
     ref
@@ -104,7 +108,7 @@ const ToastComponent = forwardRef<HTMLDivElement, ToastProps>(
         {open && (
           <motion.div
             ref={combinedRef}
-            className={styles.container}
+            className={`${styles.container} ${styles.variant[variant]}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -122,9 +126,16 @@ const ToastComponent = forwardRef<HTMLDivElement, ToastProps>(
           >
             <div className={styles.content}>
               {leftAddon ?? (
-                <ToastIcon toastType={toastType} aria-hidden="true" />
+                <ToastIcon
+                  toastType={toastType}
+                  aria-hidden="true"
+                  style={{ color: 'currentColor' }}
+                />
               )}
-              <Text variant="sm_caption_semibold" color="white">
+              <Text
+                variant="sm_caption_semibold"
+                color={variant === 'solid' ? 'white' : 'primary50'}
+              >
                 {children}
               </Text>
             </div>

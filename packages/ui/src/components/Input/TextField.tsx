@@ -75,12 +75,12 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         />
 
         {errorMessage ? (
-          <div className={errorTextStyle}>
+          <div className={errorTextStyle} style={{ height: '2.4rem' }}>
             <IcInputError width={24} height={24} />
             {errorMessage}
           </div>
         ) : success && successMessage ? (
-          <div className={successTextStyle}>
+          <div className={successTextStyle} style={{ height: '2.4rem' }}>
             <IcInputSuccess width={24} height={24} />
             {successMessage}
           </div>

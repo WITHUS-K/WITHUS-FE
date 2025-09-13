@@ -71,6 +71,7 @@ const BaseInput = forwardRef<HTMLInputElement, BaseInputProps>(
             className={iconStyleVariants({ size })}
             onClick={onTogglePassword}
             type="button"
+            style={{ height: '2.4rem' }}
           >
             {inputProps.type === 'password' ? (
               <IcPwDefault width={24} height={24} />
@@ -92,6 +93,7 @@ const BaseInput = forwardRef<HTMLInputElement, BaseInputProps>(
               onClear?.();
             }}
             type="button"
+            style={{ height: '2.4rem' }}
           >
             <IcBaseInputDelete width={24} height={24} />
           </button>

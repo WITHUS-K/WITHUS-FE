@@ -166,8 +166,11 @@ export const triggerBase = style({
   alignItems: 'center',
   justifyContent: 'space-between',
   padding: '1rem 1.6rem',
+  gap: '0.5rem',
   borderRadius: '12px',
   backgroundColor: vars.colors.white,
+  width: '100%',
+  boxSizing: 'border-box',
   cursor: 'pointer',
 });
 
@@ -179,6 +182,13 @@ export const triggerOpen = style({
   border: `1px solid ${vars.colors.primary50}`,
 });
 
+export const commonText = style({
+  maxWidth: '25rem',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+});
+
 export const iconBase = style({
   transition: 'transform 0.2s ease',
 });
@@ -187,7 +197,7 @@ export const iconClosed = style([
   iconBase,
   {
     transform: 'rotate(0deg)',
-    color: vars.colors.grayscale70,
+    color: vars.colors.grayscale40,
   },
 ]);
 
@@ -231,4 +241,12 @@ export const pass = style({
 export const fail = style({
   backgroundColor: '#FFE6E9',
   color: '#FF2A3A',
+});
+
+export const dropdownItemLabel = style({
+  flex: 1,
+  minWidth: '25rem',
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+  textOverflow: 'ellipsis',
 });
