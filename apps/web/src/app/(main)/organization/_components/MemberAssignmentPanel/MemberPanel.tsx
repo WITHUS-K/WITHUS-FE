@@ -19,6 +19,7 @@ interface MemberPanelProps {
   actionIcon: ReactElement;
   onToggleItem: (id: number) => void;
   search: string;
+  showBulkControls?: boolean;
 }
 
 export default function MemberPanel({
@@ -33,6 +34,7 @@ export default function MemberPanel({
   actionIcon,
   onToggleItem,
   search,
+  showBulkControls = false,
 }: MemberPanelProps) {
   return (
     <div className={styles.panel}>
@@ -45,7 +47,11 @@ export default function MemberPanel({
         </Text>
       </Flex>
 
-      <Flex align="center" width="100%" gap="0.8rem" paddingLeft="0.6rem">
+      <div
+        className={`${styles.controlsRow} ${
+          showBulkControls ? '' : styles.controlsRowHidden
+        }`}
+      >
         <div style={{ width: '2rem', height: '2rem' }}>
           <CheckBox size={2} isChecked={allSelected} onChange={onToggleAll} />
         </div>
@@ -58,7 +64,7 @@ export default function MemberPanel({
         >
           {actionLabel}
         </Button>
-      </Flex>
+      </div>
 
       <div className={styles.list}>
         {items.map((u) => (

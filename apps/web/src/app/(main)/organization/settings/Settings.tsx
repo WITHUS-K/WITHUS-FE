@@ -146,6 +146,7 @@ export default function Settings({ organizationId }: Props) {
             availableMembers={availableMembers}
             onAdd={handleAdd}
             onRemove={handleRemove}
+            showBulkControls={selectedRoleIdx !== null}
           />
         </Flex>
       </Flex>

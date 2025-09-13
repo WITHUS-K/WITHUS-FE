@@ -13,6 +13,7 @@ interface Props {
   availableMembers: UserResult[];
   onAdd: (u: UserResult) => void;
   onRemove: (u: UserResult) => void;
+  showBulkControls?: boolean;
 }
 
 export default function MemberAssignmentPanel({
@@ -20,6 +21,7 @@ export default function MemberAssignmentPanel({
   availableMembers,
   onAdd,
   onRemove,
+  showBulkControls = false,
 }: Props) {
   const [search, setSearch] = useState('');
   const [selAdded, setSelAdded] = useState<Set<number>>(new Set());
@@ -73,7 +75,7 @@ export default function MemberAssignmentPanel({
       </div>
       <div className={styles.panels}>
         <MemberPanel
-          title="추가하지 않은 멤버"
+          title="추가되지 않은 멤버"
           count={filteredAvail.length}
           items={filteredAvail}
           selected={selAvail}
@@ -93,6 +95,7 @@ export default function MemberAssignmentPanel({
           actionIcon={<IcDeleteRight />}
           onToggleItem={(id) => toggleSet(selAvail, setSelAvail, id)}
           search={search}
+          showBulkControls={showBulkControls}
         />
 
         <MemberPanel
@@ -116,6 +119,7 @@ export default function MemberAssignmentPanel({
           actionIcon={<IcPlusLeft />}
           onToggleItem={(id) => toggleSet(selAdded, setSelAdded, id)}
           search={search}
+          showBulkControls={showBulkControls}
         />
       </div>
     </div>
