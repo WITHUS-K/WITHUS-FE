@@ -33,11 +33,15 @@ export default function SearchInput({
       onKeyDown={onKeyDown}
       icon={
         value ? (
-          <button type="button" onClick={handleClear}>
+          <button
+            type="button"
+            onClick={handleClear}
+            style={{ height: '2.4rem' }}
+          >
             <IcInputDelete width={24} height={24} />
           </button>
         ) : (
-          <button type="button" onClick={onClick}>
+          <button type="button" onClick={onClick} style={{ height: '2.4rem' }}>
             <IcInputSearch width={24} height={24} />
           </button>
         )

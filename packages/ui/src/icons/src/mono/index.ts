@@ -41,6 +41,7 @@ export { default as IcRefresh } from './IcRefresh';
 export { default as IcRoleBtn } from './IcRoleBtn';
 export { default as IcSave } from './IcSave';
 export { default as IcSendBtn } from './IcSendBtn';
+export { default as IcShowNotice } from './IcShowNotice';
 export { default as IcSidebarCalender } from './IcSidebarCalender';
 export { default as IcSidebarGroup } from './IcSidebarGroup';
 export { default as IcSidebarHome } from './IcSidebarHome';
