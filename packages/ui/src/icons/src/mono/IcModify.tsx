@@ -9,7 +9,7 @@ const SvgIcModify = (props: SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      stroke="#C4C6D4"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={1.5}

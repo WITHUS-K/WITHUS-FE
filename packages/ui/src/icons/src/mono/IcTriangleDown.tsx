@@ -9,8 +9,8 @@ const SvgIcTriangleDown = (props: SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      fill="#C4C6D4"
-      stroke="#C4C6D4"
+      fill="currentColor"
+      stroke="currentColor"
       strokeLinejoin="round"
       d="M16 10.5a.5.5 0 0 1 .354.854l-4 4a.5.5 0 0 1-.708 0l-4-4A.5.5 0 0 1 8 10.5z"
     />

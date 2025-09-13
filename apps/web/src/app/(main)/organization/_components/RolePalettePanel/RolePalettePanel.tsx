@@ -11,6 +11,7 @@ import type { PaletteColor } from '@repo/utils';
 import { RoleEditor } from './RoleEditor';
 import { RoleItem } from './RoleItem';
 import { mapServerColorToTagHex } from '@web/utils/color';
+import { useModal } from '@repo/ui/hooks';
 
 export const COLOR_OPTIONS: PaletteColor[] = [
   '#FF5C6C',
@@ -64,6 +65,8 @@ export default function RolePalettePanel({
   const [editColor, setEditColor] = useState(COLOR_OPTIONS[0]!);
   const [editOpen, setEditOpen] = useState(false);
 
+  const { confirm } = useModal();
+
   const handleAddKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newLabel.trim()) {
       const colorName = colorHexToNameMap[newColor] ?? 'gray';
@@ -79,6 +82,19 @@ export default function RolePalettePanel({
       setEditingIdx(null);
       setEditOpen(false);
     }
+  };
+
+  const handleDelete = (roleIdx: number, label: string) => {
+    confirm({
+      type: 'warning',
+      title: '정말 삭제하시겠습니까?',
+      description: `"${label}" 파트를 삭제하면 복구할 수 없습니다.`,
+      cancelText: '취소',
+      confirmText: '삭제',
+      onConfirm: () => {
+        // 역할 삭제 api 연동
+      },
+    });
   };
 
   return (
@@ -142,6 +158,7 @@ export default function RolePalettePanel({
                   setEditColor(r.color);
                   setEditOpen(false);
                 }}
+                onDelete={() => handleDelete(i, r.label)}
               />
             );
           })}
