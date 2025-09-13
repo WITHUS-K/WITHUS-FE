@@ -25,11 +25,18 @@ export default function MemberAssignmentPanel({
   const [selAdded, setSelAdded] = useState<Set<number>>(new Set());
   const [selAvail, setSelAvail] = useState<Set<number>>(new Set());
 
-  const filteredAdded = addedMembers.filter((u) =>
-    u.name.toLowerCase().includes(search.toLowerCase())
+  const q = search.toLowerCase().trim();
+
+  const filteredAdded = addedMembers.filter(
+    (u) =>
+      u.name.toLowerCase().includes(q) ||
+      (u.email ?? '').toLowerCase().includes(q)
   );
-  const filteredAvail = availableMembers.filter((u) =>
-    u.name.toLowerCase().includes(search.toLowerCase())
+
+  const filteredAvail = availableMembers.filter(
+    (u) =>
+      u.name.toLowerCase().includes(q) ||
+      (u.email ?? '').toLowerCase().includes(q)
   );
 
   const allAdded =

@@ -105,9 +105,14 @@ export default function OrganizationPageClient({
   // 필터링 + 페이징
   const filtered = useMemo(
     () =>
-      members.filter((m) =>
-        m.name.toLowerCase().includes(search.toLowerCase())
-      ),
+      members.filter((m) => {
+        const q = search.toLowerCase().trim();
+        if (!q) return true;
+        return (
+          m.name.toLowerCase().includes(q) ||
+          (m.email ?? '').toLowerCase().includes(q)
+        );
+      }),
     [members, search]
   );
 
