@@ -46,6 +46,7 @@ export default function HoverCallout({
       className={styles.container}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
+      onMouseDown={() => setIsOpen(false)}
     >
       {/* 트리거 */}
       <div ref={triggerRef} className={styles.trigger}>
