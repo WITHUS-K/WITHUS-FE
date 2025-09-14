@@ -86,8 +86,21 @@ export function Option(props: OptionProps) {
       onFocus={onFocus}
       onClick={handleClick}
     >
-      {control}
-      <Text variant="md2_text_medium" color={textColor}>
+      <span style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center' }}>
+        {control}
+      </span>
+      <Text
+        variant="md2_text_medium"
+        color={textColor}
+        style={{
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis',
+          flex: 1,
+          minWidth: 0,
+          overflow: 'hidden',
+          display: 'block',
+        }}
+      >
         {label}
       </Text>
     </Selectable>

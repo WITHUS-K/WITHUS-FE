@@ -32,9 +32,13 @@ export const Selectable = ({
   ...rest
 }: SelectableProps) => {
   const inlineStyles: CSSProperties = {
-    paddingInline: '1.8rem',
-    minWidth: width,
+    paddingLeft: '1.8rem',
+    paddingRight: '1.8rem',
+    width,
+    maxWidth: width,
     height,
+    boxSizing: 'border-box',
+    flexShrink: 0,
     ...style,
   };
 

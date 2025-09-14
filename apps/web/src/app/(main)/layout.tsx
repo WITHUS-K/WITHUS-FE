@@ -12,8 +12,10 @@ import type { Tokens } from '@web/api/types';
 
 export default async function Layout({
   children,
+  modal,
 }: {
   children: React.ReactNode;
+  modal: React.ReactNode;
 }) {
   const tokens: Tokens = await getServerSideTokens();
   const cookieStore = cookies();
@@ -46,6 +48,7 @@ export default async function Layout({
       organizations={organizations}
     >
       {children}
+      {modal}
     </AuthLayout>
   );
 
