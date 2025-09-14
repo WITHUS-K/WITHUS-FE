@@ -63,16 +63,6 @@ export default function SelectDropdown({
     onSelect(domain);
   };
 
-  const commitCustomValue = () => {
-    const v = customValue.trim();
-    if (!v) {
-      setCustomMode(false);
-      return;
-    }
-    onSelect(v);
-    setCustomMode(false);
-  };
-
   const selected = value || defaultValue;
   const isDefault = selected === defaultValue;
 

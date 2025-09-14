@@ -83,8 +83,12 @@ export const dropdownListInner = style({
 
   // 스크롤바 스타일
   selectors: {
+    '&::-webkit-scrollbar:horizontal': {
+      display: 'none',
+    },
     '&::-webkit-scrollbar': {
-      width: '2px',
+      width: '2px',           
+      height: '0',           
     },
     '&::-webkit-scrollbar-thumb': {
       backgroundColor: vars.colors.grayscale10,
