@@ -42,6 +42,7 @@ export default function InfoSection({ role, user }: InfoSectionProps) {
         <OrgField
           label="가입 동아리"
           orgs={user.organizations.map((o) => ({ id: o.id, name: o.name }))}
+          // 가입 동아리 삭제 api
           onDelete={(id) => {}}
         />
       )}

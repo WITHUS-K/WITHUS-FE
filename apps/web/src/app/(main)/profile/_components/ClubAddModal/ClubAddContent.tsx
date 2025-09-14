@@ -3,7 +3,7 @@ import React, { useMemo, useState, ChangeEvent, KeyboardEvent } from 'react';
 import { Flex, Button, Text } from '@repo/ui';
 import { InputField } from '@repo/ui/InputField';
 import { IcClubModalError } from '@repo/ui/icons/colored';
-import ClubItem from './ClubItem';
+import ClubItem from '@web/app/(main)/_components/AffiliationModal/ClubItem';
 
 export type Org = { id: number; name: string; inviteCode: string };
 
@@ -14,7 +14,7 @@ const MOCK_ORGS: Org[] = [
   { id: 3, name: '큐시즘3', inviteCode: '345678' },
 ];
 
-export default function AffiliationContent() {
+export default function ClubAddContent() {
   const [code, setCode] = useState('');
   const [submitted, setSubmitted] = useState('');
   const [selectedId, setSelectedId] = useState<number | null>(null);

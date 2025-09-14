@@ -38,7 +38,6 @@ export default function OrgField({
 
   return (
     <Flex gap="2rem" width="100%" align="flexStart">
-      {/* 좌측 라벨 고정 */}
       <Text
         variant="md1_text_semibold"
         color="grayscale70"
@@ -47,7 +46,6 @@ export default function OrgField({
         {label}
       </Text>
 
-      {/* 우측 영역: 단일이면 그대로, 여러 개면 그리드 */}
       <div
         className={isMulti ? styles.list : undefined}
         style={
