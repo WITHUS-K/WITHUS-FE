@@ -129,6 +129,48 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
           )}
         />
 
+        {/* 핸드폰 번호 */}
+        <Controller
+          control={control}
+          name="phone"
+          rules={{
+            required: '핸드폰 번호를 입력해주세요.',
+            pattern: {
+              value: /^010-?\d{4}-?\d{4}$/,
+              message: '올바른 형식으로 입력해주세요.',
+            },
+          }}
+          render={({ field }) => (
+            <TextField
+              title="핸드폰 번호"
+              inputProps={{
+                placeholder: '핸드폰 번호 -없이 입력',
+                type: 'text',
+                maxLength: 13,
+                name: field.name,
+                onBlur: field.onBlur,
+                value: field.value ?? '',
+                onChange: (e) => {
+                  let v = e.target.value.replace(/\D/g, '');
+                  if (v.length > 3 && v.length <= 7) {
+                    v = v.slice(0, 3) + '-' + v.slice(3);
+                  } else if (v.length > 7) {
+                    v =
+                      v.slice(0, 3) +
+                      '-' +
+                      v.slice(3, 7) +
+                      '-' +
+                      v.slice(7, 11);
+                  }
+                  field.onChange(v);
+                },
+              }}
+              errorMessage={errors.phone?.message}
+              size="auth"
+            />
+          )}
+        />
+
         {/* 동아리명 (Admin) */}
         <Controller
           control={control}
@@ -157,7 +199,7 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
                 required: '이메일을 입력해주세요.',
                 pattern: {
                   value: /^[^\s@]+$/,
-                  message: '올바른 이메일 형식을 입력해주세요.',
+                  message: '올바른 형식이 아닙니다.',
                 },
               }}
               render={({ field }) => (
@@ -185,20 +227,29 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
                 <SelectDropdown
                   value={field.value}
                   onSelect={field.onChange}
-                  style={{ marginTop: '3.3rem' }}
+                  style={{ marginTop: '3.35rem' }}
                 />
               )}
             />
           </Flex>
-
           <Button
             type="button"
             variant="sub"
             size="56"
             disabled={!canCheckEmail}
-            onClick={() => checkEmail(`${emailLocal}@${emailDomain}`)}
+            onClick={() => {
+              const email = `${emailLocal}@${emailDomain}`;
+              checkEmail(email, {
+                onSuccess: (res) => {
+                  if (!res.isDuplicated) {
+                    // TODO: 이메일 인증 코드 요청 api로 수정 필요
+                    sendVerify(email);
+                  }
+                },
+              });
+            }}
           >
-            중복확인
+            인증번호 받기
           </Button>
           {isEmailChecked && (
             <Flex gap="0.8rem" align="center">
@@ -215,6 +266,49 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
                   ? '이미 가입된 이메일입니다.'
                   : '가입 가능한 이메일입니다.'}
               </Text>
+            </Flex>
+          )}
+          {emailCheckData?.isDuplicated === false && isVerifySent && (
+            <Flex gap="1.2rem">
+              <Controller
+                control={control}
+                name="authCode"
+                rules={{ required: '인증번호를 입력해주세요.' }}
+                render={({ field }) => (
+                  <TextField
+                    inputProps={{
+                      ...field,
+                      placeholder: '인증번호',
+                      type: 'text',
+                    }}
+                    errorMessage={
+                      isConfirmError
+                        ? '인증번호 불일치. 다시 입력해주세요.'
+                        : errors.authCode?.message
+                    }
+                    success={isPhoneConfirmed}
+                    successMessage="인증이 완료되었습니다."
+                    size="auth"
+                    width="29.5rem"
+                  />
+                )}
+              />
+              <Button
+                type="button"
+                variant="sub"
+                size="56"
+                width="12.7rem"
+                disabled={!authCode}
+                onClick={() =>
+                  confirmVerify({
+                    // TODO: email로 바꿔야 함
+                    phoneNumber: `${emailLocal}@${emailDomain}`,
+                    code: authCode,
+                  })
+                }
+              >
+                인증번호 확인
+              </Button>
             </Flex>
           )}
         </Flex>
@@ -277,107 +371,6 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
             />
           )}
         />
-
-        {/* 핸드폰 번호 & 인증 */}
-        <Flex direction="column" gap="1.6rem">
-          <Flex gap="1.2rem">
-            <Controller
-              control={control}
-              name="phone"
-              rules={{
-                required: '핸드폰 번호를 입력해주세요.',
-                pattern: {
-                  value: /^010-?\d{4}-?\d{4}$/,
-                  message: '올바른 형식으로 입력해주세요.',
-                },
-              }}
-              render={({ field }) => (
-                <TextField
-                  title="핸드폰 번호"
-                  inputProps={{
-                    placeholder: '핸드폰 번호 -없이 입력',
-                    type: 'text',
-                    maxLength: 13,
-                    name: field.name,
-                    onBlur: field.onBlur,
-                    value: field.value ?? '',
-                    onChange: (e) => {
-                      let v = e.target.value.replace(/\D/g, '');
-                      if (v.length > 3 && v.length <= 7) {
-                        v = v.slice(0, 3) + '-' + v.slice(3);
-                      } else if (v.length > 7) {
-                        v =
-                          v.slice(0, 3) +
-                          '-' +
-                          v.slice(3, 7) +
-                          '-' +
-                          v.slice(7, 11);
-                      }
-                      field.onChange(v);
-                    },
-                  }}
-                  errorMessage={errors.phone?.message}
-                  size="auth"
-                  width="29.5rem"
-                />
-              )}
-            />
-            <Button
-              type="button"
-              variant="sub"
-              size="56"
-              width="12.7rem"
-              style={{ marginTop: '3.4rem' }}
-              disabled={!phone}
-              onClick={() => sendVerify(phone.replace(/-/g, ''))}
-            >
-              인증번호 받기
-            </Button>
-          </Flex>
-
-          {isVerifySent && (
-            <Flex gap="1.2rem">
-              <Controller
-                control={control}
-                name="authCode"
-                rules={{ required: '인증번호를 입력해주세요.' }}
-                render={({ field }) => (
-                  <TextField
-                    inputProps={{
-                      ...field,
-                      placeholder: '인증번호',
-                      type: 'text',
-                    }}
-                    errorMessage={
-                      isConfirmError
-                        ? '인증번호가 일치하지 않습니다. 다시 입력해주세요.'
-                        : errors.authCode?.message
-                    }
-                    success={isPhoneConfirmed}
-                    successMessage="인증이 완료되었습니다."
-                    size="auth"
-                    width="29.5rem"
-                  />
-                )}
-              />
-              <Button
-                type="button"
-                variant="sub"
-                size="56"
-                width="12.7rem"
-                disabled={!authCode}
-                onClick={() =>
-                  confirmVerify({
-                    phoneNumber: phone.replace(/-/g, ''),
-                    code: authCode,
-                  })
-                }
-              >
-                인증번호 확인
-              </Button>
-            </Flex>
-          )}
-        </Flex>
 
         {/* 이전 / 완료 */}
         <Flex gap="2rem" justify="center" marginTop="3.2rem">
