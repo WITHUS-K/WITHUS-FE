@@ -5,6 +5,7 @@ import LabeledField from '../LabeledField/LabeledField';
 import { MyPageData } from '@web/store/query/useGetMyPageQuery';
 import { Controller, useFormContext } from 'react-hook-form';
 import { ProfileFormValues } from '../../ProfilePage';
+import OrgField from '../OrgField/OrgField';
 
 interface InfoSectionProps {
   role: 'ADMIN' | 'USER';
@@ -38,14 +39,11 @@ export default function InfoSection({ role, user }: InfoSectionProps) {
       />
 
       {role === 'USER' && (
-        <LabeledField
+        <OrgField
           label="가입 동아리"
-          readOnly={true}
-          inputProps={{
-            defaultValue: user.organizations.map((o) => o.name).join(', '),
-            type: 'text',
-            width: '100%',
-          }}
+          orgs={user.organizations.map((o) => ({ id: o.id, name: o.name }))}
+          // 가입 동아리 삭제 api
+          onDelete={(id) => {}}
         />
       )}
 
