@@ -19,6 +19,7 @@ export const triggerStyle = style({
   height: '5.6rem',
   width: '19.7rem',
   boxSizing: 'border-box',
+   overflow: 'hidden',    
 });
 
 export const academicStatusTriggerStyle = style({
