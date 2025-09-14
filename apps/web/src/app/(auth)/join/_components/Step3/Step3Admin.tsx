@@ -287,7 +287,7 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
               rules={{
                 required: '핸드폰 번호를 입력해주세요.',
                 pattern: {
-                  value: /^010\d{8}$/,
+                  value: /^010-?\d{4}-?\d{4}$/,
                   message: '올바른 형식으로 입력해주세요.',
                 },
               }}
@@ -295,9 +295,26 @@ export default function Step3Admin({ onBack }: Step3AdminProps) {
                 <TextField
                   title="핸드폰 번호"
                   inputProps={{
-                    ...field,
                     placeholder: '핸드폰 번호 -없이 입력',
                     type: 'text',
+                    maxLength: 13,
+                    name: field.name,
+                    onBlur: field.onBlur,
+                    value: field.value ?? '',
+                    onChange: (e) => {
+                      let v = e.target.value.replace(/\D/g, '');
+                      if (v.length > 3 && v.length <= 7) {
+                        v = v.slice(0, 3) + '-' + v.slice(3);
+                      } else if (v.length > 7) {
+                        v =
+                          v.slice(0, 3) +
+                          '-' +
+                          v.slice(3, 7) +
+                          '-' +
+                          v.slice(7, 11);
+                      }
+                      field.onChange(v);
+                    },
                   }}
                   errorMessage={errors.phone?.message}
                   size="auth"

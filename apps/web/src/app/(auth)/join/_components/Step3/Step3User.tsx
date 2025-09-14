@@ -29,7 +29,7 @@ interface Step3UserProps {
 interface FormValues {
   name: string;
   birth: string;
-  gender: 'female' | 'male';
+  // gender: 'female' | 'male';
   club: string;
   emailLocal: string;
   emailDomain: string;
@@ -54,7 +54,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
     defaultValues: {
       name: '',
       birth: '',
-      gender: undefined,
+      // gender: undefined,
       club: '',
       emailLocal: '',
       emailDomain: '',
@@ -92,7 +92,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
     const payload: UserJoinRequest = {
       name: data.name,
       birthDate: data.birth,
-      gender: data.gender.toUpperCase() as 'MALE' | 'FEMALE' | 'NONE',
+      gender: 'NONE',
       organizationId: club!.id,
       email: `${data.emailLocal}@${data.emailDomain}`,
       password: data.password,
@@ -159,15 +159,32 @@ export default function Step3User({ onBack }: Step3UserProps) {
           render={({ field }) => (
             <TextField
               title="생년월일"
-              inputProps={{ ...field, placeholder: 'YYYY-MM-DD', type: 'text' }}
-              errorMessage={errors.birth?.message}
               size="auth"
+              errorMessage={errors.birth?.message}
+              inputProps={{
+                placeholder: 'YYYY-MM-DD',
+                type: 'text',
+                maxLength: 10,
+                name: field.name,
+                onBlur: field.onBlur,
+                value: field.value ?? '',
+                onChange: (e) => {
+                  let v = e.target.value.replace(/\D/g, '');
+                  if (v.length > 4 && v.length <= 6) {
+                    v = v.slice(0, 4) + '-' + v.slice(4);
+                  } else if (v.length > 6) {
+                    v =
+                      v.slice(0, 4) + '-' + v.slice(4, 6) + '-' + v.slice(6, 8);
+                  }
+                  field.onChange(v);
+                },
+              }}
             />
           )}
         />
 
         {/* 성별 */}
-        <Flex direction="column" gap="0.8rem">
+        {/* <Flex direction="column" gap="0.8rem">
           <Text variant="md1_text_semibold" color="grayscale80">
             성별
           </Text>
@@ -198,7 +215,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
               </Flex>
             )}
           />
-        </Flex>
+        </Flex> */}
 
         {/* 동아리명 (읽기 전용) */}
         <Controller
@@ -371,7 +388,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
               rules={{
                 required: '핸드폰 번호를 입력해주세요.',
                 pattern: {
-                  value: /^010\d{8}$/,
+                  value: /^010-?\d{4}-?\d{4}$/,
                   message: '올바른 형식으로 입력해주세요.',
                 },
               }}
@@ -379,9 +396,26 @@ export default function Step3User({ onBack }: Step3UserProps) {
                 <TextField
                   title="핸드폰 번호"
                   inputProps={{
-                    ...field,
                     placeholder: '핸드폰 번호 -없이 입력',
                     type: 'text',
+                    maxLength: 13,
+                    name: field.name,
+                    onBlur: field.onBlur,
+                    value: field.value ?? '',
+                    onChange: (e) => {
+                      let v = e.target.value.replace(/\D/g, '');
+                      if (v.length > 3 && v.length <= 7) {
+                        v = v.slice(0, 3) + '-' + v.slice(3);
+                      } else if (v.length > 7) {
+                        v =
+                          v.slice(0, 3) +
+                          '-' +
+                          v.slice(3, 7) +
+                          '-' +
+                          v.slice(7, 11);
+                      }
+                      field.onChange(v);
+                    },
                   }}
                   errorMessage={errors.phone?.message}
                   size="auth"
