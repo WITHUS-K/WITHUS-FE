@@ -4,6 +4,7 @@ import { style } from '@vanilla-extract/css';
 export const wrapper = style({
   display: 'flex',
   flexDirection: 'column',
+  alignItems: 'center',
   padding: '4.8rem 4.6rem',
   borderRadius: '24px',
   background: vars.colors.white,

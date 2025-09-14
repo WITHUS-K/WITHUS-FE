@@ -12,6 +12,7 @@ import PasswordSection from './_components/PasswordSection/PasswordSection';
 import { useGetMyPageQuery } from '@web/store/query/useGetMyPageQuery';
 import { useUpdateUserMutation } from '@web/store/mutation/useUpdateUserMutation';
 import { FormProvider, useForm } from 'react-hook-form';
+import { IcPlus } from '@repo/ui/icons/mono';
 
 interface ProfilePageProps {
   role: 'ADMIN' | 'USER';
@@ -42,6 +43,7 @@ export default function ProfilePage({ role }: ProfilePageProps) {
     reValidateMode: 'onBlur',
   });
 
+  console.log('유저 정보', user);
   const {
     handleSubmit,
     formState: { isValid },
@@ -77,16 +79,28 @@ export default function ProfilePage({ role }: ProfilePageProps) {
           <Text variant="xl_title_semibold" color="black">
             {pageTitle}
           </Text>
-          <Button
-            onClick={handleSubmit(handleSave)}
-            disabled={!isValid}
-            variant="main"
-            size="40"
-            leftIcon={<IcSave />}
-            width="13.2rem"
-          >
-            수정 완료
-          </Button>
+          <Flex align="center" gap="0.8rem">
+            {role === 'USER' && (
+              <Button
+                variant="sub"
+                size="40"
+                leftIcon={<IcPlus />}
+                width="17.7rem"
+              >
+                가입 동아리 추가
+              </Button>
+            )}
+            <Button
+              onClick={handleSubmit(handleSave)}
+              disabled={!isValid}
+              variant="main"
+              size="40"
+              leftIcon={<IcSave />}
+              width="13.2rem"
+            >
+              수정 완료
+            </Button>
+          </Flex>
         </Flex>
       </Flex>
 

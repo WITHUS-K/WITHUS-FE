@@ -3,6 +3,7 @@ export { default as IcAlaram } from './IcAlaram';
 export { default as IcArrowDown } from './IcArrowDown';
 export { default as IcArrowLeft } from './IcArrowLeft';
 export { default as IcArrowRight } from './IcArrowRight';
+export { default as IcBin } from './IcBin';
 export { default as IcButtonDelete } from './IcButtonDelete';
 export { default as IcButtonEx } from './IcButtonEx';
 export { default as IcButtonInvite } from './IcButtonInvite';
