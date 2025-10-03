@@ -11,6 +11,7 @@ import { useToast } from '@repo/ui/hooks';
 import { useUserByEmailQuery } from '@web/store/query/useUserByEmailQuery';
 import { useInviteUsersMutation } from '@web/store/mutation/useInviteUsersMutation';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+import { useOrganizationInviteCodeQuery } from '@web/store/query/useOrganizationInviteCodeQuery';
 
 export default function InviteModal() {
   const router = useRouter();
@@ -25,6 +26,9 @@ export default function InviteModal() {
   const { data, refetch, isFetching } = useUserByEmailQuery(search, false);
   const { organizationId } = getClientSideTokens();
   const inviteMutation = useInviteUsersMutation(organizationId);
+
+  const { data: invite } = useOrganizationInviteCodeQuery(organizationId);
+  const inviteCode = invite?.inviteCode ?? '';
 
   // 검색어 변경 핸들러
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -58,9 +62,26 @@ export default function InviteModal() {
   };
 
   // 초대코드 복사
-  const handleCopyLink = () => {
-    toast.success('초대코드가 복사되었습니다.', { variant: 'outline' });
-    // 초대코드 복사 로직 추가하기
+  const handleCopyLink = async () => {
+    if (!inviteCode) {
+      toast.error(
+        '초대코드를 불러오는 중입니다. 잠시 후 다시 시도해주세요.',
+        2500
+      );
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(inviteCode);
+      toast.success('초대코드가 복사되었습니다.', { variant: 'outline' });
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = inviteCode;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      toast.success('초대코드가 복사되었습니다.', { variant: 'outline' });
+    }
   };
 
   return (
