@@ -20,6 +20,7 @@ import PartModal from './@modal/(.)part/page';
 import { usePartModalStore } from '@web/store/state/partModalStore';
 import { useOrganizationUsersClientQuery } from '@web/store/query/useOrganizationUsersQuery';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+import { useOrganizationInviteCodeQuery } from '@web/store/query/useOrganizationInviteCodeQuery';
 
 const PAGE_SIZE = 20;
 
@@ -57,6 +58,9 @@ export default function OrganizationPageClient({
   });
   const members = paged?.content ?? [];
   const totalCount = paged?.totalElements ?? 0;
+
+  const { data: invite } = useOrganizationInviteCodeQuery(organizationId);
+  const inviteCode = invite?.inviteCode ?? '';
 
   const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
   const allRoles =
@@ -247,8 +251,7 @@ export default function OrganizationPageClient({
           }
           totalCount={totalCount}
           onDelete={handleDeleteClick}
-          //초대코드 api 값 적용하기
-          code="389461"
+          code={inviteCode}
         />
 
         <Flex width="100%" paddingBottom="1.5rem" height="100%">

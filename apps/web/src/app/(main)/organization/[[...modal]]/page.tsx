@@ -4,6 +4,7 @@ import { getOrganizationMembersQueryOptions } from '@web/store/query/useOrganiza
 import { ServerFetchBoundary } from '@web/store/query/ServerFetchBoundary';
 import OrganizationPageClient from '../OrganizationPageClient';
 import { notFound } from 'next/navigation';
+import { getOrganizationInviteCodeQueryOptions } from '@web/store/query/useOrganizationInviteCodeQuery';
 
 export default async function Page({
   params,
@@ -29,6 +30,10 @@ export default async function Page({
     size: 20,
     tokens,
   });
+  const inviteCodeFetchOptions = getOrganizationInviteCodeQueryOptions({
+    organizationId,
+    tokens,
+  });
 
   const { modal } = await params;
   const showInvite = modal?.[0] === 'invite';
@@ -36,13 +41,15 @@ export default async function Page({
 
   return (
     <>
-      <ServerFetchBoundary fetchOptions={[roleFetchOptions]}>
-        <ServerFetchBoundary fetchOptions={[membersFetchOptions]}>
-          <OrganizationPageClient
-            organizationId={organizationId}
-            showInvite={showInvite}
-            showPart={showPart}
-          />
+      <ServerFetchBoundary fetchOptions={[inviteCodeFetchOptions]}>
+        <ServerFetchBoundary fetchOptions={[roleFetchOptions]}>
+          <ServerFetchBoundary fetchOptions={[membersFetchOptions]}>
+            <OrganizationPageClient
+              organizationId={organizationId}
+              showInvite={showInvite}
+              showPart={showPart}
+            />
+          </ServerFetchBoundary>
         </ServerFetchBoundary>
       </ServerFetchBoundary>
     </>
