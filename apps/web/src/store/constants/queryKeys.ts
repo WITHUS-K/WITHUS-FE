@@ -2,6 +2,11 @@ export const queryKeys = {
   organization: {
     me: () => ['organization', 'me'] as const,
 
+    inviteCode: {
+      exchange: (inviteCode: string) =>
+        ['organization', 'inviteCode', 'exchange', inviteCode] as const,
+    },
+
     roles: {
       list: (organizationId: number, keyword?: string) =>
         keyword
