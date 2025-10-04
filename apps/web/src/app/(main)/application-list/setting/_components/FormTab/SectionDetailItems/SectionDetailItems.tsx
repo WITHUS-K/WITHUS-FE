@@ -8,7 +8,7 @@ import * as C from '@web/constants/application';
 import * as styles from './SectionDetailItems.css';
 import DetailItemCard from './Item/DetailItemCard';
 import { IcBtnPlusCircle } from '@repo/ui/icons/colored';
-import { required } from '@web/app/apply/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
+import { required } from '@web/app/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
 export default function SectionDetailItems() {
   const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray({

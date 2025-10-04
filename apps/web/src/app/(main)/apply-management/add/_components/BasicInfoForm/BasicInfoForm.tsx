@@ -19,8 +19,8 @@ import * as styles1 from '../../../../application-list/setting/(preview)/_compon
 import {
   FormFieldStatusContext,
   useFormFieldStatus,
-} from '@web/app/apply/[organization]/[slug]/_context/FormFieldStatusContext';
-import { focusableWrapper } from '@web/app/apply/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
+} from '@web/app/[organization]/[slug]/_context/FormFieldStatusContext';
+import { focusableWrapper } from '@web/app/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
 import clsx from 'clsx';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -8,8 +8,8 @@ import {
 } from '@web/components/TimeTable/SelectableTimeTable';
 import type { InterviewScheduleItem } from '@web/types/application';
 import { safeFormatDotDate } from '@web/utils/application';
-import { useFormFieldStatus } from '@web/app/apply/[organization]/[slug]/_context/FormFieldStatusContext';
-import { focusableWrapper } from '@web/app/apply/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
+import { useFormFieldStatus } from '@web/app/[organization]/[slug]/_context/FormFieldStatusContext';
+import { focusableWrapper } from '@web/app/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
 
 interface InterviewScheduleFormProps {
   dates: string[];

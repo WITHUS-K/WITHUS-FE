@@ -11,6 +11,7 @@ import { useRecruitmentsListQuery } from '@web/store/query/useRecruitmentsListQu
 import { useModal, useToast } from '@repo/ui/hooks';
 import { RecruitmentDto } from '@web/types/recruitment';
 import { getDDay } from '@web/utils/date';
+import { buildRecruitUrl } from '@web/utils/url';
 
 export default function ApplicationListClient() {
   const router = useRouter();
@@ -119,7 +120,11 @@ export default function ApplicationListClient() {
               id={item.recruitmentId.toString()}
               recruitTitle={item.title}
               dueDate={item.documentDeadline}
-              recruitLink={`${window.location.origin}/apply/${item.organizationName}/${item.urlSlug}`}
+              recruitLink={buildRecruitUrl(
+                window.location.origin,
+                item.organizationName,
+                item.urlSlug
+              )}
               count={diffDays ?? 0}
               currentApplicantList={item.positionSummaries.map((ps) => ({
                 position: ps.name,
