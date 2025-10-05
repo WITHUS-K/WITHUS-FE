@@ -36,7 +36,7 @@ export default function ApplicationListClient() {
     );
 
     router.push(
-      `/application-list/setting/${item.recruitmentId}?isTemporary=${item.isTemporary}&hasApplicants=${hasApplicants}`
+      `/application-list/setting/${item.recruitmentId}?isTemporary=${item.isTemporary}&hasApplicants=${!hasApplicants}`
     );
   };
 
