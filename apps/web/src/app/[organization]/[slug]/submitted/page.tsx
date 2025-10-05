@@ -6,13 +6,16 @@ import { IcSubmit } from '@repo/ui/icons/colored';
 import { Divider } from '@repo/ui';
 import { useParams, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
+import { fromShareSegment, safeDecodeURIComponent } from '@web/utils/url';
 export default function SubmittedPage() {
   const params = useParams();
   const searchParams = useSearchParams();
 
   const rawOrganization =
     typeof params.organization === 'string' ? params.organization : '';
-  const organization = decodeURIComponent(rawOrganization);
+  const decodedOrg = safeDecodeURIComponent(rawOrganization);
+
+  const organizationName = fromShareSegment(decodedOrg);
   const title = searchParams.get('title');
 
   return (
@@ -26,7 +29,7 @@ export default function SubmittedPage() {
     >
       <Flex direction="column" align="flexStart">
         <Text variant="xl_title_bold" color="grayscale90">
-          [{organization}]
+          [{organizationName}]
         </Text>
         <Text variant="xl_title_bold" color="grayscale90">
           {title}

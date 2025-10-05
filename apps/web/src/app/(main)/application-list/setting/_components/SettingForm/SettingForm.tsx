@@ -22,6 +22,7 @@ import { useToast } from '@repo/ui/hooks';
 import CriteriaDocsTab from '../CriteriaTabs/CriteriaDocsTab/CriteriaDocsTab';
 import CriteriaInterviewTab from '../CriteriaTabs/CriteriaInterviewTab/CriteriaInterviewTab';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+import { buildRecruitUrl } from '@web/utils/url';
 
 type TabKey = 'form' | 'stages' | 'docs' | 'interview';
 const TAB_KEYS: TabKey[] = ['form', 'stages', 'docs', 'interview'];
@@ -252,10 +253,12 @@ export function SettingForm({
 
   const handleCopyLink = useCallback(() => {
     if (!slug || !organization) return;
-    const url = `${window.location.origin}/apply/${organization}/${slug}`;
+
+    const url = buildRecruitUrl(window.location.origin, organization, slug);
+
     navigator.clipboard
       .writeText(url)
-      .then(() => toast.success('응답자에게 보낼 링크가 복제됐습니다.'))
+      .then(() => toast.success('응답자에게 보낼 링크가 복제되었습니다.'))
       .catch(() => toast.error('링크 복사에 실패했습니다.'));
   }, [slug, organization, toast]);
 

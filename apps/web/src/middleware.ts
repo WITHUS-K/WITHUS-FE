@@ -11,19 +11,47 @@ const publicPaths: string[] = [
   ROUTES.PASSWORD.COMPLETE,
 ];
 
+const RESERVED_PREFIXES = [
+  'api',
+  '_next',
+  'application-list',
+  'apply-management',
+  'docs-evaluation',
+  'interview-evaluation',
+  'interview-management',
+  'organization',
+  'profile',
+  'favicon.ico',
+];
+
+const orgSlugBase = new RegExp(
+  `^\\/(?!(${RESERVED_PREFIXES.join('|')}))(?:[^\\/]+)\\/(?:[^\\/]+)$`
+);
+const orgSlugMobileOnly = new RegExp(
+  `^\\/(?!(${RESERVED_PREFIXES.join('|')}))(?:[^\\/]+)\\/(?:[^\\/]+)\\/mobile-only$`
+);
+const orgSlugSubmitted = new RegExp(
+  `^\\/(?!(${RESERVED_PREFIXES.join('|')}))(?:[^\\/]+)\\/(?:[^\\/]+)\\/submitted(?:\\?.*)?$`
+);
+const orgSlugEnd = new RegExp(
+  `^\\/(?!(${RESERVED_PREFIXES.join('|')}))(?:[^\\/]+)\\/(?:[^\\/]+)\\/end$`
+);
+
 const publicPathPatterns = [
+  // 회원가입 스텝들 (type 파라미터 포함)
   /^\/join\/[1-4](\?type=(user|admin))?$/,
   /^\/join\/3\/club-search(\?.*)?$/,
-  /^\/apply\/[^\/]+\/[^\/]+$/,
-  /^\/apply\/[^\/]+\/[^\/]+\/mobile-only$/,
-  /^\/apply\/[^\/]+\/[^\/]+\/submitted(\?.*)?$/,
-  /^\/apply\/[^\/]+\/[^\/]+\/end$/,
+  // 루트 레벨 공개 URL
+  orgSlugBase,
+  orgSlugMobileOnly,
+  orgSlugSubmitted,
+  orgSlugEnd,
 ];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 정적 파일 및 API 요청은 미들웨어 스킵
+  // 정적 파일 및 API 요청은 스킵
   if (
     pathname.startsWith('/_next/') ||
     pathname.includes('/api/') ||
@@ -33,16 +61,16 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 공개 경로 판별
-  const isPublicPath =
+  // 공개 경로 체크
+  const isPublic =
     publicPaths.includes(pathname) ||
-    publicPathPatterns.some((pattern) => pattern.test(pathname));
+    publicPathPatterns.some((re) => re.test(pathname));
 
-  if (isPublicPath) {
+  if (isPublic) {
     return NextResponse.next();
   }
 
-  // 보호된 경로: 토큰 없으면 로그인 페이지로 리다이렉트
+  // 보호 경로 → 토큰 없으면 로그인으로 리다이렉트
   const token = request.cookies.get('accessToken');
   if (!token) {
     const loginUrl = new URL(ROUTES.LOGIN, request.url);

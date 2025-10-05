@@ -43,6 +43,7 @@ import { FormFieldStatusProvider } from './_context/FormFieldStatusContext';
 import { PartStatusResetter } from './_context/PartStatusResetter';
 import { Spinner } from '@repo/ui/Spinner';
 import { useMissingFieldToast } from '@web/hooks/useMissingFieldToast';
+import { buildRecruitUrl } from '@web/utils/url';
 
 interface ApplicationClientProps {
   slug: string;
@@ -77,7 +78,12 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         confirmText: '확인',
         hideCancel: true,
         onConfirm: () => {
-          router.replace(`/apply/${data.organizationName}/${slug}/mobile-only`);
+          const url = buildRecruitUrl(
+            window.location.origin,
+            data.organizationName,
+            `${slug}/mobile-only`
+          );
+          router.replace(url);
         },
       });
     }
@@ -451,10 +457,13 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         { payload, profileImage, answerFiles },
         {
           onSuccess: (res) => {
-            router.replace(
-              `/apply/${data.organizationName}/${slug}/submitted?title=${encodeURIComponent(data.title)}`
+            const submittedUrl = buildRecruitUrl(
+              window.location.origin,
+              data.organizationName,
+              `${slug}/submitted?title=${encodeURIComponent(data.title)}`
             );
-            //console.log('지원서 생성 성공 res:', res);
+
+            router.replace(submittedUrl);
           },
           onError: (err) => {
             //console.error('지원서 생성 에러:', err);
@@ -574,7 +583,12 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         confirmText: '확인',
         hideCancel: true,
         onConfirm: () => {
-          router.replace(`/apply/${data.organizationName}/${slug}/end`);
+          const endUrl = buildRecruitUrl(
+            window.location.origin,
+            data.organizationName,
+            `${slug}/end`
+          );
+          router.replace(endUrl);
         },
       });
       return;
