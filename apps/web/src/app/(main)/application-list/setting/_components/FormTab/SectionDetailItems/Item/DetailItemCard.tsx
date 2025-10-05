@@ -16,13 +16,19 @@ import {
 import { IcFileInfo } from '@repo/ui/icons/colored';
 import * as C from '@web/constants/application';
 import TypeControls from './TypeControls';
+import { vars } from '@repo/theme';
 
 interface Props {
   index: number;
   onRemove: () => void;
+  dragHandleProps?: React.HTMLAttributes<HTMLButtonElement>;
 }
 
-export default function DetailItemCard({ index, onRemove }: Props) {
+export default function DetailItemCard({
+  index,
+  onRemove,
+  dragHandleProps,
+}: Props) {
   const { control, setValue } = useFormContext();
 
   const type = useWatch({
@@ -42,18 +48,39 @@ export default function DetailItemCard({ index, onRemove }: Props) {
         setValue(`detailItems.${index}.typeInfo.info`, C.FILE_COUNTS[0]);
         setValue(`detailItems.${index}.typeInfo.infoDetail`, C.FILE_SIZES[2]);
       }
-
       prevTypeRef.current = type;
     }
   }, [type, index, setValue]);
 
   return (
     <div className={styles.itemWrapper}>
-      {/* 응답 대상 + 드롭다운 컨트롤 */}
+      <Flex width="100%" justify="center">
+        <button
+          type="button"
+          aria-label="항목 순서 이동"
+          className={styles.dragHandle}
+          {...dragHandleProps}
+        >
+          <span
+            style={{
+              fontSize: 20,
+              cursor: 'grab',
+              display: 'inline-block',
+              transform: 'rotate(90deg)',
+              transformOrigin: '50% 50%',
+              color: `${vars.colors.grayscale40}`,
+            }}
+          >
+            ⋮⋮
+          </span>
+        </button>
+      </Flex>
+
       <div className={styles.controlsContainer}>
         <ResponseTargets index={index} />
         <TypeControls index={index} type={type} />
       </div>
+
       {/* 헤더 + input */}
       <div className={styles.headerInputContainer}>
         <Flex align="center" justify="spaceBetween" width="100%">
@@ -79,7 +106,8 @@ export default function DetailItemCard({ index, onRemove }: Props) {
               </Flex>
             )}
           </Flex>
-          <Flex align="center" gap="1.6rem">
+
+          <Flex align="center" gap="1.2rem">
             <button type="button" onClick={onRemove}>
               <Text variant="md1_text_semibold" color="grayscale40">
                 삭제

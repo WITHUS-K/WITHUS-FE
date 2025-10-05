@@ -21,11 +21,12 @@ export const addButton = style({
 export const itemWrapper = style({
   background: vars.colors.grayscale5,
   width: '100%',
-  padding: '2rem',
+  paddingBottom: '2rem',
+  paddingRight: '2rem',
+  paddingLeft: '2rem',
   borderRadius: '12px',
   display: 'flex',
   flexDirection: 'column',
-  gap: '3.2rem',
 });
 
 export const headerInputContainer = style({
@@ -35,6 +36,7 @@ export const headerInputContainer = style({
   display: 'flex',
   flexDirection: 'column',
   gap: '1.6rem',
+  marginTop: '3.2rem',
 });
 
 export const controlsContainer = style({
@@ -65,4 +67,27 @@ export const input = style({
   whiteSpace: 'pre-wrap',
   wordBreak: 'break-word',
   padding: 0,
+});
+
+export const dragHandle = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '2rem',
+  width: '4rem',
+  cursor: 'grab',
+  userSelect: 'none',
+  opacity: 0,
+  pointerEvents: 'none',
+  transition: 'opacity 120ms ease',
+
+  ':active': { cursor: 'grabbing' },
+
+  // 부모(itemWrapper)를 hover하면 보이도록
+  selectors: {
+    [`${itemWrapper}:hover &`]: {
+      opacity: 1,
+      pointerEvents: 'auto',
+    },
+  },
 });

@@ -71,6 +71,7 @@ export default function TypeControls({ index, type }: Props) {
             defaultValue={options[0]}
             render={({ field }) => (
               <CommonDropdown
+                listWidth="16rem"
                 aria-label={ariaLabel}
                 options={options}
                 value={field.value}
