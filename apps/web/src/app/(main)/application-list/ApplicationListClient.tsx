@@ -24,7 +24,6 @@ export default function ApplicationListClient() {
     isFetching,
     refetch,
   } = useRecruitmentsListQuery(search);
-  //console.log('리스트', recruitments);
 
   const deleteMutation = useDeleteRecruitmentMutation();
 
