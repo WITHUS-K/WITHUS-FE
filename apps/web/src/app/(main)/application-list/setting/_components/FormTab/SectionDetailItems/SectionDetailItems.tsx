@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFormContext, useFieldArray } from 'react-hook-form';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
@@ -33,9 +33,15 @@ type SortableDetailItemProps = {
   id: string;
   index: number;
   onRemove: () => void;
+  onDuplicate: () => void;
 };
 
-function SortableDetailItem({ id, index, onRemove }: SortableDetailItemProps) {
+function SortableDetailItem({
+  id,
+  index,
+  onRemove,
+  onDuplicate,
+}: SortableDetailItemProps) {
   const {
     attributes,
     listeners,
@@ -61,14 +67,15 @@ function SortableDetailItem({ id, index, onRemove }: SortableDetailItemProps) {
         index={index}
         onRemove={onRemove}
         dragHandleProps={dragHandleProps}
+        onDuplicate={onDuplicate}
       />
     </div>
   );
 }
 
 export default function SectionDetailItems() {
-  const { control } = useFormContext();
-  const { fields, append, remove, move } = useFieldArray({
+  const { control, getValues } = useFormContext();
+  const { fields, append, remove, move, insert } = useFieldArray({
     name: 'detailItems',
     control,
   });
@@ -76,9 +83,19 @@ export default function SectionDetailItems() {
   // 터치/마우스 입력 모두 안정적으로 잡기 위한 sensor 설정
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 6 }, // 약간 움직여야 드래그 시작 → 오작동 방지
+      activationConstraint: { distance: 6 },
     })
   );
+
+  const handleDuplicate = (index: number) => {
+    const all = getValues('detailItems') || [];
+    const target = all[index];
+    if (!target) return;
+
+    const cloned = JSON.parse(JSON.stringify(target));
+
+    insert(index + 1, cloned);
+  };
 
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -91,6 +108,22 @@ export default function SectionDetailItems() {
       move(oldIndex, newIndex); // RHF 필드 배열과 값이 함께 이동
     }
   };
+
+  useEffect(() => {
+    if (fields.length === 0) {
+      append({
+        required: false,
+        type: 'text',
+        description: '',
+        addDescription: '',
+        responseTarget: 0,
+        typeInfo: {
+          info: C.BLANK_OPTIONS[0],
+          infoDetail: C.CHAR_LIMITS[2],
+        },
+      });
+    }
+  }, [fields.length, append]);
 
   return (
     <Flex direction="column" width="100%" align="flexStart" gap="1.6rem">
@@ -115,6 +148,7 @@ export default function SectionDetailItems() {
                 id={f.id}
                 index={idx}
                 onRemove={() => remove(idx)}
+                onDuplicate={() => handleDuplicate(idx)}
               />
             ))}
 

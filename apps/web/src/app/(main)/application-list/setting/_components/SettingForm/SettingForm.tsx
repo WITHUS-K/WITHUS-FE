@@ -1,7 +1,11 @@
 'use client';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { useForm, FormProvider, useWatch } from 'react-hook-form';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import {
+  useSearchParams,
+  useRouter,
+  useSelectedLayoutSegments,
+} from 'next/navigation';
 import Link from 'next/link';
 import { Breadcrumb } from '@repo/ui/Breadcrumb';
 import { Button } from '@repo/ui/Button';
@@ -39,18 +43,20 @@ export function SettingForm({
   organization,
 }: SettingFormProps) {
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
-
   const didInitCriteria = useRef(false);
 
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeTab = (searchParams.get('tab') as TabKey) || 'form';
 
-  const lastSegment = pathname.split('/').pop();
-  const isNewPage = lastSegment === 'new';
+  const segs = useSelectedLayoutSegments();
+  const leaf = segs.at(-1) ?? 'new';
+  const isNewPage = leaf === 'new';
+  const hasIdParam = !!leaf && leaf !== 'new';
+  const recruitmentId = isNewPage ? null : Number(leaf);
+  const basePath = `/application-list/setting/${leaf}`;
+
   const isTemporaryParam = searchParams.get('isTemporary');
-  const hasIdParam = lastSegment != null && lastSegment !== 'new';
   const isTemporary = isTemporaryParam === 'true';
   const hasApplicantsParam = searchParams.get('hasApplicants');
   const hasApplicants = hasApplicantsParam === 'true';
@@ -59,7 +65,6 @@ export function SettingForm({
   const toast = useToast();
 
   const { organizationId } = getClientSideTokens();
-  //console.log('id', organizationId);
 
   const draftMutation = useDraftRecruitmentMutation();
   const publishMutation = usePublishRecruitmentMutation();
@@ -68,14 +73,13 @@ export function SettingForm({
   const customParts = initial.applicationParts?.isSelected
     ? initial.applicationParts.parts
     : [];
-  // 항상 공통(null) + 사용자 파트 순으로 섹션을 시딩
   const sections = customParts.length > 0 ? [...customParts] : [null];
 
   const seededPaperEvaluateItems =
     initial.paperEvaluateItems && initial.paperEvaluateItems.length > 0
       ? initial.paperEvaluateItems
       : sections.map((partName) => ({
-          positionName: partName, // part가 있으면 문자열들만, 없으면 null 1개
+          positionName: partName,
           items: [{ evaluate: '', evaluateDetail: '' }],
         }));
 
@@ -91,7 +95,6 @@ export function SettingForm({
     ...initial,
     paperEvaluateItems: seededPaperEvaluateItems,
     interviewEvaluateItems: seededInterviewEvaluateItems,
-
     detailItems:
       initial.detailItems && initial.detailItems.length > 0
         ? initial.detailItems
@@ -110,7 +113,7 @@ export function SettingForm({
           ],
   };
 
-  // 1. useForm 초기화 (Context에서 받은 초기값)
+  // 1) useForm 초기화
   const methods = useForm<FormValues>({
     defaultValues: seeded,
     mode: 'onChange',
@@ -118,14 +121,7 @@ export function SettingForm({
     shouldUnregister: false,
   });
 
-  console.log('폼', ctx.form);
-  /*useEffect(() => {
-    if (existentForm) {
-      const next = ctx.form;
-      methods.reset(next);
-    }
-  }, [ctx.form, methods]);*/
-
+  // 컨텍스트 → 폼 동기화
   useEffect(() => {
     methods.reset(ctx.form);
   }, [ctx.form, methods]);
@@ -146,9 +142,7 @@ export function SettingForm({
   // 서류 평가 기준 동기화
   useEffect(() => {
     const sectionNames = parts.length > 0 ? [...parts] : [null];
-
-    if (samePositions(paperItems, sectionNames)) return; // 변동 없으면 스킵
-
+    if (samePositions(paperItems, sectionNames)) return;
     const next = sectionNames.map((p) => {
       const existing = paperItems.find((sec) => sec.positionName === p);
       return {
@@ -158,16 +152,13 @@ export function SettingForm({
           : [{ evaluate: '', evaluateDetail: '' }],
       };
     });
-
     methods.setValue('paperEvaluateItems', next, { shouldValidate: false });
   }, [parts, paperItems, methods]);
 
   // 면접 평가 기준 동기화
   useEffect(() => {
     const sectionNames = parts.length > 0 ? [...parts] : [null];
-
-    if (samePositions(interviewItems, sectionNames)) return; // 변동 없으면 스킵
-
+    if (samePositions(interviewItems, sectionNames)) return;
     const next = sectionNames.map((p) => {
       const existing = interviewItems.find((sec) => sec.positionName === p);
       return {
@@ -177,7 +168,6 @@ export function SettingForm({
           : [{ evaluate: '', evaluateDetail: '' }],
       };
     });
-
     methods.setValue('interviewEvaluateItems', next, { shouldValidate: false });
   }, [parts, interviewItems, methods]);
 
@@ -187,15 +177,9 @@ export function SettingForm({
   const deadline = methods.watch('deadline')!;
   const interviewDuration = methods.watch('interviewDuration')!;
   const finalResultDate = methods.watch('finalResultDate')!;
-  //const paperItems = methods.watch('paperEvaluateItems')!;
-  //const interviewItems = methods.watch('interviewEvaluateItems')!;
-
-  const last = pathname.split('/').pop()!;
-  const recruitmentId = last === 'new' ? null : Number(last);
-
   const hasParts = methods.watch('applicationParts.isSelected') === true;
 
-  // 개별 검증
+  // 검증
   const isTitleOk = !!title.trim();
   const isBasicInfoOk = true;
   const isDetailItemsOk =
@@ -207,9 +191,7 @@ export function SettingForm({
   const isPaperOk =
     paperItems.length > 0 &&
     paperItems.every((section) => {
-      if (section.positionName === null && hasParts) {
-        return true; // 파트가 있으면 공통 무시
-      }
+      if (section.positionName === null && hasParts) return true; // 파트가 있으면 공통 무시
       return (
         section.items.length > 0 &&
         section.items.every((item) => item.evaluate.trim().length > 0)
@@ -218,16 +200,14 @@ export function SettingForm({
   const isInterviewOk =
     interviewItems.length > 0 &&
     interviewItems.every((section) => {
-      if (section.positionName === null && hasParts) {
-        return true; // 파트가 있으면 공통 무시
-      }
+      if (section.positionName === null && hasParts) return true;
       return (
         section.items.length > 0 &&
         section.items.every((item) => item.evaluate.trim().length > 0)
       );
     });
 
-  // 최종 버튼 활성 조건
+  // 최종 버튼 활성
   const canSubmit =
     isTitleOk &&
     isBasicInfoOk &&
@@ -238,24 +218,21 @@ export function SettingForm({
     isPaperOk &&
     isInterviewOk;
 
-  // 탭 & 버튼 핸들러
   const onTabChange = (tab: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', tab);
-    router.replace(`${pathname}?${params.toString()}`);
-  };
-
-  const handlePreview = useCallback(() => {
     ctx.setForm(methods.getValues());
 
-    router.push(`${pathname}/preview`);
-  }, [ctx, methods, router, pathname]);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', tab);
+    router.replace(`${basePath}?${params.toString()}`);
+  };
+  const handlePreview = useCallback(() => {
+    ctx.setForm(methods.getValues());
+    router.push(`${basePath}/preview`);
+  }, [ctx, methods, router, basePath]);
 
   const handleCopyLink = useCallback(() => {
     if (!slug || !organization) return;
-
     const url = buildRecruitUrl(window.location.origin, organization, slug);
-
     navigator.clipboard
       .writeText(url)
       .then(() => toast.success('응답자에게 보낼 링크가 복제되었습니다.'))
@@ -265,31 +242,26 @@ export function SettingForm({
   const handleSave = useCallback(() => {
     const values = methods.getValues();
     const payload = convertFormToRequest(values, recruitmentId, organizationId);
-    //console.log('임시 저장:', payload);
     draftMutation.mutate(payload, {
-      onSuccess: (res) => {
-        /*if (pathname.endsWith('/new')) {
-          router.replace(`/application-list/setting/${res.recruitmentId}`);
-        }*/
+      onSuccess: () => {
         toast.success('임시 저장 되었습니다.');
       },
       onError: (err) => {
         console.error('임시 저장 실패', err);
       },
     });
-  }, [draftMutation, methods, pathname, router, recruitmentId]);
+  }, [draftMutation, methods, recruitmentId, organizationId, toast]);
 
   const onSubmit = useCallback(
     (data: FormValues) => {
       const payload = convertFormToRequest(data, recruitmentId, organizationId);
-      // console.log('최종 저장:', payload);
       publishMutation.mutate(payload, {
         onSuccess: () => {
           router.push('/application-list');
         },
       });
     },
-    [publishMutation, router, recruitmentId]
+    [publishMutation, router, recruitmentId, organizationId]
   );
 
   return (
@@ -370,9 +342,7 @@ export function SettingForm({
             onSubmit={methods.handleSubmit(onSubmit)}
             style={{ display: 'flex', width: '100%' }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-              }
+              if (e.key === 'Enter') e.preventDefault();
             }}
           >
             {activeTab === 'form' && <FormTab />}

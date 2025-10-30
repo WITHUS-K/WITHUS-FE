@@ -43,11 +43,14 @@ export default function Settings({ organizationId }: Props) {
       ),
     [rolesData.roles, roleSearch]
   );
-  const roleSelect: RoleSelectWithCount[] = filteredRoles.map((r) => ({
-    label: r.roleName,
-    color: nameToHex[r.color] as PaletteColor,
-    count: r.assignedUserCount,
-  }));
+  const roleSelect: (RoleSelectWithCount & { id: number })[] =
+    filteredRoles.map((r) => ({
+      id: r.id,
+      label: r.roleName,
+      color: nameToHex[r.color] as PaletteColor,
+      count: r.assignedUserCount,
+    }));
+
   const selectedRoleId =
     selectedRoleIdx != null ? filteredRoles[selectedRoleIdx]!.id : 0;
   const selectedRoleName =
@@ -120,6 +123,7 @@ export default function Settings({ organizationId }: Props) {
         <SettingsHeader onSave={handleSave} />
         <Flex align="center" gap="1.9rem" width="100%" marginTop="1.8rem">
           <RolePalettePanel
+            organizationId={organizationId}
             roles={roleSelect}
             search={roleSearch}
             selectedIdx={selectedRoleIdx}

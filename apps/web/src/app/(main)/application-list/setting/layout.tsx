@@ -28,12 +28,19 @@ const initialForm: FormValues = {
   interviewEvaluateItems: [],
 };
 
-export default function SettingLayout({ children }: { children: ReactNode }) {
+export default function SettingLayout({
+  children,
+  modal,
+}: {
+  children: ReactNode;
+  modal: ReactNode;
+}) {
   const [form, setForm] = useState<FormValues>(initialForm);
 
   return (
     <SettingContext.Provider value={{ form: form, setForm }}>
       {children}
+      {modal}
     </SettingContext.Provider>
   );
 }
