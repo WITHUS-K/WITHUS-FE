@@ -5,7 +5,7 @@ import type { FormValues } from '@web/types/application';
 
 export interface SettingContextType {
   form: FormValues;
-  setForm: (f: FormValues) => void;
+  setForm: React.Dispatch<React.SetStateAction<FormValues>>;
 }
 
 export const SettingContext = createContext<SettingContextType | null>(null);
