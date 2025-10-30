@@ -17,17 +17,20 @@ import { IcFileInfo } from '@repo/ui/icons/colored';
 import * as C from '@web/constants/application';
 import TypeControls from './TypeControls';
 import { vars } from '@repo/theme';
+import { IcCopy } from '@repo/ui/icons/mono';
 
 interface Props {
   index: number;
   onRemove: () => void;
   dragHandleProps?: React.HTMLAttributes<HTMLButtonElement>;
+  onDuplicate: () => void;
 }
 
 export default function DetailItemCard({
   index,
   onRemove,
   dragHandleProps,
+  onDuplicate,
 }: Props) {
   const { control, setValue } = useFormContext();
 
@@ -99,7 +102,7 @@ export default function DetailItemCard({
             />
             {type === 'file' && (
               <Flex align="center" gap="0.2rem">
-                <IcFileInfo width={24} height={24} />
+                <IcFileInfo width={32} height={32} />
                 <Text variant="sm_caption_medium" color="grayscale30">
                   {C.UPLOAD_NOTICE}
                 </Text>
@@ -108,6 +111,15 @@ export default function DetailItemCard({
           </Flex>
 
           <Flex align="center" gap="1.2rem">
+            <button
+              type="button"
+              aria-label="항목 복제"
+              className={styles.iconButton}
+              onClick={onDuplicate}
+            >
+              <IcCopy width={32} height={32} />
+            </button>
+
             <button type="button" onClick={onRemove}>
               <Text variant="md1_text_semibold" color="grayscale40">
                 삭제

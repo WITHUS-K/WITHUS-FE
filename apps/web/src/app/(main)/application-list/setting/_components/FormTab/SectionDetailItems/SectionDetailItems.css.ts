@@ -83,11 +83,24 @@ export const dragHandle = style({
 
   ':active': { cursor: 'grabbing' },
 
-  // 부모(itemWrapper)를 hover하면 보이도록
   selectors: {
     [`${itemWrapper}:hover &`]: {
       opacity: 1,
       pointerEvents: 'auto',
+    },
+  },
+});
+
+export const iconButton = style({
+  color: vars.colors.grayscale20,
+  backgroundColor: 'transparent',
+  borderRadius: '6px',
+  cursor: 'pointer',
+  transition: 'all 0.2s ease-in-out',
+  selectors: {
+    '&:hover': {
+      backgroundColor: vars.colors.grayscale5,
+      color: vars.colors.grayscale40,
     },
   },
 });

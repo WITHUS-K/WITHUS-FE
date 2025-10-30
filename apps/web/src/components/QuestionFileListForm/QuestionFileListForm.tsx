@@ -73,9 +73,41 @@ export const QuestionAndFileListForm = ({
                     </Text>
                   )}
                 </Flex>{' '}
+              </Flex>
+
+              <Flex width="100%" direction="column" gap="1rem">
+                <QuestionInput
+                  title={item.description}
+                  description={item.addDescription}
+                  infoDetail={item.typeInfo.infoDetail}
+                  value={
+                    readOnly
+                      ? ((item as any).answer ?? '')
+                      : (answers[textIndex] ?? '')
+                  }
+                  maxLength={maxLength as number | undefined}
+                  includeWhitespace={item.includeWhitespace}
+                  onFocus={status.setEditing}
+                  onChange={(val) => {
+                    if (readOnly) return;
+                    onAnswerChange(textIndex, val);
+                    status.setEditing();
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.value.trim()
+                      ? status.setCompleted()
+                      : status.setDefault();
+                  }}
+                  readOnly={readOnly}
+                />
+
                 <Text
                   variant="sm_caption_medium"
-                  style={{ whiteSpace: 'nowrap' }}
+                  style={{
+                    whiteSpace: 'nowrap',
+                    textAlign: 'end',
+                    width: '100%',
+                  }}
                 >
                   {maxLength === undefined ? (
                     // 제한 없음인 경우
@@ -105,31 +137,6 @@ export const QuestionAndFileListForm = ({
                   )}
                 </Text>
               </Flex>
-
-              <QuestionInput
-                title={item.description}
-                description={item.addDescription}
-                infoDetail={item.typeInfo.infoDetail}
-                value={
-                  readOnly
-                    ? ((item as any).answer ?? '')
-                    : (answers[textIndex] ?? '')
-                }
-                maxLength={maxLength as number | undefined}
-                includeWhitespace={item.includeWhitespace}
-                onFocus={status.setEditing}
-                onChange={(val) => {
-                  if (readOnly) return;
-                  onAnswerChange(textIndex, val);
-                  status.setEditing();
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.value.trim()
-                    ? status.setCompleted()
-                    : status.setDefault();
-                }}
-                readOnly={readOnly}
-              />
             </div>
           );
         }
