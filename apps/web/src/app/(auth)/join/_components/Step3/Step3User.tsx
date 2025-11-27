@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { TextField } from '@repo/ui/TextField';
@@ -15,7 +15,9 @@ import {
   IcInputSuccess,
 } from '@repo/ui/icons/colored';
 
-import { useEmailCheckMutation } from '@web/store/mutation/useEmailCheckMutation';
+import { useEmailCheckQuery } from '@web/store/query/useEmailCheckQuery';
+import { useEmailVerifyMutation } from '@web/store/mutation/useEmailVerifyMutation';
+import { useEmailConfirmMutation } from '@web/store/mutation/useEmailConfirmMutation';
 import { usePhoneVerifyMutation } from '@web/store/mutation/usePhoneVerifyMutation';
 import { usePhoneConfirmMutation } from '@web/store/mutation/usePhoneConfirmMutation';
 import { useUserJoinMutation } from '@web/store/mutation/useUserJoinMutation';
@@ -74,15 +76,29 @@ export default function Step3User({ onBack }: Step3UserProps) {
   const authCode = watch('authCode');
   const canCheckEmail = Boolean(emailLocal && emailDomain);
 
-  const {
-    mutate: checkEmail,
-    isSuccess: isEmailChecked,
-    data: emailCheckData,
-  } = useEmailCheckMutation();
+  const email = useMemo(
+    () => (canCheckEmail ? `${emailLocal}@${emailDomain}` : ''),
+    [canCheckEmail, emailLocal, emailDomain]
+  );
 
-  // 이메일 인증 api로 변경 필요
-  const { mutate: sendVerify, isSuccess: isVerifySent } =
-    usePhoneVerifyMutation();
+  const {
+    data: emailCheckData,
+    isSuccess: isEmailChecked,
+    isError: isEmailCheckError,
+    refetch: refetchEmailCheck,
+    isFetching: isCheckingEmail,
+  } = useEmailCheckQuery(['user', 'emailCheck', email], email, {
+    enabled: false,
+  });
+
+  const { mutate: sendEmailCode, isSuccess: isVerifySent } =
+    useEmailVerifyMutation(false);
+
+  const {
+    mutate: confirmEmailCode,
+    isSuccess: isEmailConfirmed,
+    isError: isEmailConfirmError,
+  } = useEmailConfirmMutation();
 
   const {
     mutate: confirmVerify,
@@ -361,21 +377,22 @@ export default function Step3User({ onBack }: Step3UserProps) {
             type="button"
             variant="sub"
             size="56"
-            disabled={!canCheckEmail}
-            onClick={() => {
-              const email = `${emailLocal}@${emailDomain}`;
-              checkEmail(email, {
-                onSuccess: (res) => {
-                  if (!res.isDuplicated) {
-                    // TODO: 이메일 인증 코드 요청 api로 수정 필요
-                    sendVerify(email);
-                  }
-                },
-              });
+            disabled={!canCheckEmail || isCheckingEmail}
+            onClick={async () => {
+              if (!canCheckEmail || !email) return;
+
+              const { data } = await refetchEmailCheck();
+
+              if (!data) return;
+
+              if (data.isDuplicated) return;
+
+              sendEmailCode({ name: watch('name'), email });
             }}
           >
             인증번호 받기
           </Button>
+
           {isEmailChecked && (
             <Flex gap="0.8rem" align="center">
               {emailCheckData!.isDuplicated ? (
@@ -393,6 +410,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
               </Text>
             </Flex>
           )}
+
           {emailCheckData?.isDuplicated === false && isVerifySent && (
             <Flex gap="1.2rem">
               <Controller
@@ -403,15 +421,15 @@ export default function Step3User({ onBack }: Step3UserProps) {
                   <TextField
                     inputProps={{
                       ...field,
-                      placeholder: '인증번호',
+                      placeholder: '인증코드 6자리',
                       type: 'text',
                     }}
                     errorMessage={
-                      isConfirmError
-                        ? '인증번호 불일치. 다시 입력해주세요.'
+                      isEmailConfirmError
+                        ? '인증번호가 일치하지 않습니다. 다시 입력해주세요.'
                         : errors.authCode?.message
                     }
-                    success={isPhoneConfirmed}
+                    success={isEmailConfirmed}
                     successMessage="인증이 완료되었습니다."
                     size="auth"
                     width="29.5rem"
@@ -425,9 +443,8 @@ export default function Step3User({ onBack }: Step3UserProps) {
                 width="12.7rem"
                 disabled={!authCode}
                 onClick={() =>
-                  confirmVerify({
-                    // TODO: email로 바꿔야 함
-                    phoneNumber: `${emailLocal}@${emailDomain}`,
+                  confirmEmailCode({
+                    email,
                     code: authCode,
                   })
                 }
