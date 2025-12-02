@@ -10,11 +10,10 @@ import { EmailVerifyRequest } from '@web/types/auth';
  * 이메일 인증번호 요청
  * onSuccess 시 자동으로 /password/verify 로 이동
  */
-export function useEmailVerifyMutation(): UseMutationResult<
-  string,
-  HTTPError,
-  EmailVerifyRequest
-> {
+export function useEmailVerifyMutation(
+  // TODO: 이메일 인증 타입 : 회원가입 / 비밀번호 재설정 타입으로 수정
+  verifyType: boolean = true 
+): UseMutationResult<string, HTTPError, EmailVerifyRequest> {
   const router = useRouter();
   return useMutation<string, HTTPError, EmailVerifyRequest>({
     mutationFn: async ({ name, email }) => {
@@ -27,12 +26,13 @@ export function useEmailVerifyMutation(): UseMutationResult<
       return res.result;
     },
     onSuccess: (result, { name, email }) => {
-      //console.log('[EmailVerify] 성공:', result);
-      router.push(
-        `/password/verify?name=${encodeURIComponent(
-          name
-        )}&email=${encodeURIComponent(email)}`
-      );
+      if (verifyType) {
+        router.push(
+          `/password/verify?name=${encodeURIComponent(
+            name
+          )}&email=${encodeURIComponent(email)}`
+        );
+      }
     },
     onError: (error) => {
       //console.error('[EmailVerify] 실패:', error);
