@@ -2,24 +2,17 @@
 
 import React, { useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
 import { TextField } from '@repo/ui/TextField';
-import { InputField } from '@repo/ui/InputField';
 import { SelectDropdown } from '@repo/ui/DropDown';
 import { Button } from '@repo/ui/Button';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
-import {
-  IcInputSearch,
-  IcInputError,
-  IcInputSuccess,
-} from '@repo/ui/icons/colored';
+import { IcInputError, IcInputSuccess } from '@repo/ui/icons/colored';
 
 import { useEmailCheckQuery } from '@web/store/query/useEmailCheckQuery';
 import { useEmailVerifyMutation } from '@web/store/mutation/useEmailVerifyMutation';
 import { useEmailConfirmMutation } from '@web/store/mutation/useEmailConfirmMutation';
-import { usePhoneVerifyMutation } from '@web/store/mutation/usePhoneVerifyMutation';
-import { usePhoneConfirmMutation } from '@web/store/mutation/usePhoneConfirmMutation';
+import { useOrganizationVerifyQuery } from '@web/store/query/useOrganizationVerifyQuery';
 import { useUserJoinMutation } from '@web/store/mutation/useUserJoinMutation';
 import type { UserJoinRequest } from '@web/types/auth';
 import { useClub } from '../../_context/ClubContext';
@@ -43,10 +36,10 @@ interface FormValues {
 
 export default function Step3User({ onBack }: Step3UserProps) {
   const { club } = useClub();
-  const router = useRouter();
   const { confirm } = useModal();
   const [clubCodeTried, setClubCodeTried] = useState(false);
   const [clubCodeLocked, setClubCodeLocked] = useState(false);
+  const [clubId, setClubId] = useState<number>(0);
 
   const {
     control,
@@ -74,6 +67,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
   const emailDomain = watch('emailDomain');
   const phone = watch('phone');
   const authCode = watch('authCode');
+  const clubCode = watch('clubCode');
   const canCheckEmail = Boolean(emailLocal && emailDomain);
 
   const email = useMemo(
@@ -84,7 +78,6 @@ export default function Step3User({ onBack }: Step3UserProps) {
   const {
     data: emailCheckData,
     isSuccess: isEmailChecked,
-    isError: isEmailCheckError,
     refetch: refetchEmailCheck,
     isFetching: isCheckingEmail,
   } = useEmailCheckQuery(['user', 'emailCheck', email], email, {
@@ -100,20 +93,22 @@ export default function Step3User({ onBack }: Step3UserProps) {
     isError: isEmailConfirmError,
   } = useEmailConfirmMutation();
 
-  const {
-    mutate: confirmVerify,
-    isSuccess: isPhoneConfirmed,
-    isError: isConfirmError,
-  } = usePhoneConfirmMutation();
+  const { refetch: refetchOrganizationVerify } = useOrganizationVerifyQuery(
+    ['organization', 'verify', clubCode],
+    clubCode ?? '',
+    {
+      enabled: false,
+    }
+  );
 
   const { mutate: joinUser } = useUserJoinMutation();
 
   const onSubmit = async (data: FormValues) => {
     const payload: UserJoinRequest = {
       name: data.name,
-      birthDate: data.birth,
+      birthDate: data.birth.replace(/\//g, '-'),
       gender: 'NONE',
-      organizationId: club!.id,
+      organizationId: clubId,
       email: `${data.emailLocal}@${data.emailDomain}`,
       password: data.password,
       phoneNumber: data.phone.replace(/-/g, ''),
@@ -265,11 +260,8 @@ export default function Step3User({ onBack }: Step3UserProps) {
                     ? {}
                     : {
                         maxLength: 6,
-                        inputMode: 'numeric',
-                        onChange: (e) =>
-                          field.onChange(
-                            e.target.value.replace(/\D/g, '').slice(0, 6)
-                          ),
+                        inputMode: 'text',
+                        onChange: field.onChange,
                       }),
                 }}
                 size="auth"
@@ -282,45 +274,42 @@ export default function Step3User({ onBack }: Step3UserProps) {
             variant="sub"
             size="56"
             width="12.7rem"
-            disabled={
-              clubCodeLocked || !/^\d{6}$/.test(watch('clubCode') || '')
-            }
+            disabled={clubCodeLocked || clubCode.length !== 6}
             style={{ marginTop: '3.4rem' }}
-            onClick={() =>
-              // TODO : 단체 코드 확인 api로 수정
-              // confirmVerify({
-              //   phoneNumber: phone.replace(/-/g, ''),
-              //   code: authCode,
-              // })
+            onClick={async () => {
+              const clubCode = watch('clubCode') || '';
+              if (clubCode.length !== 6) return;
 
-              {
-                // 아래는 임시 로직
-                const code = watch('clubCode');
-                const success = code === '123456';
-                setClubCodeTried(true);
-                if (success) {
-                  confirm({
-                    type: 'info',
-                    description: `${club?.name ?? '위더스'} 조직에 추가됩니다.`,
-                    cancelText: '취소',
-                    confirmText: '확인',
-                    onConfirm: () => {
-                      setValue('clubCode', club?.name ?? '위더스', {
-                        shouldValidate: false,
-                      });
-                      setClubCodeLocked(true);
-                    },
-                  });
-                } else {
-                  confirm({
-                    type: 'warning',
-                    description: '해당하는 조직이 존재하지 않습니다',
-                    confirmText: '확인',
-                    hideCancel: true,
-                  });
-                }
+              setClubCodeTried(true);
+
+              const { data, error } = await refetchOrganizationVerify();
+
+              if (!data || error) {
+                confirm({
+                  type: 'warning',
+                  description: '해당하는 조직이 존재하지 않습니다',
+                  confirmText: '확인',
+                  hideCancel: true,
+                });
+                return;
               }
-            }
+
+              confirm({
+                type: 'info',
+                description: `${
+                  data.name ?? club?.name ?? '위더스'
+                } 조직에 추가됩니다.`,
+                cancelText: '취소',
+                confirmText: '확인',
+                onConfirm: () => {
+                  setValue('clubCode', data.name ?? club?.name ?? '위더스', {
+                    shouldValidate: false,
+                  });
+                  setClubId(data.id);
+                  setClubCodeLocked(true);
+                },
+              });
+            }}
           >
             {clubCodeLocked
               ? '인증 완료'
@@ -373,25 +362,26 @@ export default function Step3User({ onBack }: Step3UserProps) {
               )}
             />
           </Flex>
-          <Button
-            type="button"
-            variant="sub"
-            size="56"
-            disabled={!canCheckEmail || isCheckingEmail}
-            onClick={async () => {
-              if (!canCheckEmail || !email) return;
 
-              const { data } = await refetchEmailCheck();
+          {!isVerifySent && (
+            <Button
+              type="button"
+              variant="sub"
+              size="56"
+              disabled={!canCheckEmail || isCheckingEmail}
+              onClick={async () => {
+                if (!canCheckEmail || !email) return;
 
-              if (!data) return;
+                const { data } = await refetchEmailCheck();
+                if (!data) return;
+                if (data.isDuplicated) return;
 
-              if (data.isDuplicated) return;
-
-              sendEmailCode({ name: watch('name'), email });
-            }}
-          >
-            인증번호 받기
-          </Button>
+                sendEmailCode({ name: watch('name'), email });
+              }}
+            >
+              인증번호 받기
+            </Button>
+          )}
 
           {isEmailChecked && (
             <Flex gap="0.8rem" align="center">
@@ -441,7 +431,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
                 variant="sub"
                 size="56"
                 width="12.7rem"
-                disabled={!authCode}
+                disabled={!authCode || isEmailConfirmed}
                 onClick={() =>
                   confirmEmailCode({
                     email,
@@ -530,11 +520,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
             variant="main"
             size="64"
             width="20.7rem"
-            disabled={
-              !isValid ||
-              emailCheckData?.isDuplicated !== false ||
-              !isPhoneConfirmed
-            }
+            disabled={!isValid || emailCheckData?.isDuplicated !== false}
           >
             완료
           </Button>
