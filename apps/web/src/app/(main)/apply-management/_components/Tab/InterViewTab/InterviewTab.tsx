@@ -148,7 +148,7 @@ export default function InterviewTab({
   };
 
   const openAssignManagerModal = () =>
-    router.replace(
+    router.push(
       `/apply-management/${activeTab}/assign-manager?recruitmentId=${recruitmentId}`
     );
   const handleCloseSideTab = () => {
@@ -183,7 +183,7 @@ export default function InterviewTab({
         onMail={() => setModalParam('mail')}
         onDistribute={openAssignManagerModal}
         onAdd={() =>
-          router.replace(`/apply-management/add?recruitmentId=${recruitmentId}`)
+          router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
         }
       />
 

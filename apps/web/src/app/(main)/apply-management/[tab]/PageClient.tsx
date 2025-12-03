@@ -9,7 +9,6 @@ import { TabBar } from '@repo/ui/TabBar';
 import { useRecruitmentsQuery } from '@web/store/query/useRecruitmentsQuery';
 import { useAdminApplicationsQuery } from '@web/store/query/useAdminApplicationsQuery';
 import TabClient from './TabClient';
-import { container } from './layout.css';
 
 const TAB_KEYS = ['documents', 'interviews', 'final', 'rejected'];
 
@@ -27,8 +26,9 @@ export default function PageClient({
   const tab = Array.isArray(params.tab) ? params.tab[0] : params.tab!;
 
   const recIdStr =
-    recId != null ? String(recId) : (search.get('recruitmentId') ?? '');
+  recId != null ? String(recId) : (search.get('recruitmentId') ?? '');
   const recruitmentId = Number(recIdStr);
+  console.log("공고ID", recIdStr)
 
   const { data: recs = [] } = useRecruitmentsQuery();
   const options = recs.map((r) => ({

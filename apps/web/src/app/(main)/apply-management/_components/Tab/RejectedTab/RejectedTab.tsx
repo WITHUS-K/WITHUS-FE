@@ -176,7 +176,7 @@ export default function RejectedTab({
         onMail={() => setModalParam('mail')}
         onDistribute={() => {}}
         onAdd={() =>
-          router.replace(`/apply-management/add?recruitmentId=${recruitmentId}`)
+          router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
         }
         communicationOnly
       />

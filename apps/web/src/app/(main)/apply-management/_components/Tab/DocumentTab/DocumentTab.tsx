@@ -157,7 +157,7 @@ export default function DocumentTab({
   };
 
   const openAssignManagerModal = () =>
-    router.replace(
+    router.push(
       `/apply-management/${activeTab}/assign-manager?recruitmentId=${
         recruitmentId
       }`
@@ -195,7 +195,7 @@ export default function DocumentTab({
         onMail={() => setModalParam('mail')}
         onDistribute={openAssignManagerModal}
         onAdd={() =>
-          router.replace(`/apply-management/add?recruitmentId=${recruitmentId}`)
+          router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
         }
       />
 

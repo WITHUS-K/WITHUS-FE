@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Modal } from '@repo/ui/Modal';
 import {
   ChargeModalContent,
@@ -19,7 +19,7 @@ export default function ChargeModal() {
 
   const close = () => {
     clearSelectedEvaluators();
-    router.back();
+      router.back();
   };
 
   return (
