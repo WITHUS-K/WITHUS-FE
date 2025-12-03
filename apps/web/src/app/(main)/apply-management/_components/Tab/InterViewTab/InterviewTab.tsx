@@ -19,6 +19,7 @@ import {
 } from '@web/store/query/useAdminApplicationsQuery';
 import { mapServerColorToTagHex } from '@web/utils/color';
 import { HeaderMeta } from '../../ApplyListHeader/ApplyListHeader';
+import { TagColor } from '@repo/utils';
 
 // 인터뷰 탭 헤더 정의
 const INT_HEADER: HeaderMeta[] = [
@@ -97,16 +98,23 @@ export default function InterviewTab({
   });
 
   // ─── 테이블 row 생성 ───────────────────────────────────────────────────────────
-  const rows = useMemo(() => {
-    if (!data) return [];
-    return data.data.map((item, idx) => ({
+const rows = useMemo(() => {
+  if (!data) return [];
+
+  return data.data.map((item, idx) => {
+    const positionLabel = item.positionName ?? '공통';
+    const positionColor: TagColor = item.positionName
+      ? mapServerColorToTagHex(posColorMap[item.positionName]!)
+      : '#5A5C72';
+
+    return {
       applicationId: item.id,
       id: String(page * size + idx + 1).padStart(3, '0'),
       name: item.name,
       fieldTags: [
         {
-          label: item.positionName,
-          color: mapServerColorToTagHex(posColorMap[item.positionName]!),
+          label: positionLabel,
+          color: positionColor,
         },
       ],
       evalStatus: `${item.interviewEvaluatedCount}/${item.interviewAssignedCount}`,
@@ -131,8 +139,10 @@ export default function InterviewTab({
         profileImageUrl: e.profileImageUrl,
         profileColor: e.profileColor,
       })),
-    }));
-  }, [data, page, size, posColorMap]);
+    };
+  });
+}, [data, page, size, posColorMap]);
+
 
   // ─── 선택/모달 처리 ───────────────────────────────────────────────────────────
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -192,10 +202,13 @@ export default function InterviewTab({
       }
     };
   
-      const positionOptions = useMemo(
-      () => Object.keys(posColorMap), // ['기획', '디자인', ...]
-      [posColorMap]
-    );
+          const positionOptions = useMemo(() => {
+         const base = Object.keys(posColorMap); 
+         if (data?.data.some((item) => !item.positionName)) {
+           return ['공통', ...base];
+         }
+         return base;
+       }, [posColorMap, data]);
     const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
   
     // TODO: 나중에 서버 연동 시 selectedPosition을 쿼리 파라미터/요청 바디에 반영

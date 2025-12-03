@@ -245,7 +245,7 @@ export const fail = style({
 
 export const dropdownItemLabel = style({
   flex: 1,
-  minWidth: '25rem',
+    minWidth: 0,  
   overflow: 'hidden',
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',

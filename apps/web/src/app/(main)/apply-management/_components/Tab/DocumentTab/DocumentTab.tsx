@@ -19,6 +19,7 @@ import {
 } from '@web/store/query/useAdminApplicationsQuery';
 import { sortByMap, stageMap } from '../../../[tab]/TabClient';
 import { mapServerColorToTagHex } from '@web/utils/color';
+import { TagColor } from '@repo/utils';
 
 // ─── 테이블 헤더 정의 ─────────────────────────────────────────────────────────
 const DOC_HEADER: HeaderMeta[] = [
@@ -98,49 +99,53 @@ export default function DocumentTab({
   // ─── 테이블용 row 생성 ───────────────────────────────────────────────────────────
   const rows = useMemo(() => {
     if (!data) return [];
-    return data.data.map((item, idx) => ({
-      applicationId: item.id,
-      id: String(page * size + idx + 1).padStart(3, '0'),
-      name: item.name,
-      fieldTags: [
-        {
-          label: item.positionName,
-          color: mapServerColorToTagHex(posColorMap[item.positionName]!),
-        },
-      ],
-      evalStatus: `${item.documentEvaluatedCount}/${
-        item.documentAssignedCount
-      }`,
-      score: Number(item.documentAverageScore),
-      status: (() => {
-        switch (item.status) {
-          case 'PENDING':
-            return '선택';
-          case 'DOX_PASS':
-            return '서류 합격';
-          case 'DOX_FAIL':
-            return '서류 불합격';
-          case 'DOX_PENDING':
-            return '보류';
-          case 'INTERVIEW_PASS':
-            return '면접 합격';
-          case 'INTERVIEW_FAIL':
-            return '면접 불합격';
-          case 'INTERVIEW_PENDING':
-            return '면접 보류';
-          default:
-            return '선택';
-        }
-      })(),
-      smsSent: item.isSmsSent,
-      mailSent: item.isMailSent,
-      evaluators: item.documentEvaluators.map((e) => ({
-        userId: e.userId,
-        name: e.name,
-        profileImageUrl: e.profileImageUrl,
-        profileColor: e.profileColor,
-      })),
-    }));
+    return data.data.map((item, idx) => {
+      const positionLabel = item.positionName ?? '공통';
+      const positionColor: TagColor = item.positionName
+        ? mapServerColorToTagHex(posColorMap[item.positionName]!)
+        : '#5A5C72'; 
+      return {
+        applicationId: item.id,
+        id: String(page * size + idx + 1).padStart(3, '0'),
+        name: item.name,
+        fieldTags: [
+          {
+            label: positionLabel,
+            color: positionColor,
+          },
+        ],
+        evalStatus: `${item.documentEvaluatedCount}/${item.documentAssignedCount}`,
+        score: Number(item.documentAverageScore),
+        status: (() => {
+          switch (item.status) {
+            case 'PENDING':
+              return '선택';
+            case 'DOX_PASS':
+              return '서류 합격';
+            case 'DOX_FAIL':
+              return '서류 불합격';
+            case 'DOX_PENDING':
+              return '보류';
+            case 'INTERVIEW_PASS':
+              return '면접 합격';
+            case 'INTERVIEW_FAIL':
+              return '면접 불합격';
+            case 'INTERVIEW_PENDING':
+              return '면접 보류';
+            default:
+              return '선택';
+          }
+        })(),
+        smsSent: item.isSmsSent,
+        mailSent: item.isMailSent,
+        evaluators: item.documentEvaluators.map((e) => ({
+          userId: e.userId,
+          name: e.name,
+          profileImageUrl: e.profileImageUrl,
+          profileColor: e.profileColor,
+        })),
+      };
+    });
   }, [data, page, size, posColorMap]);
 
   // ─── 모달 & 선택 로직 ───────────────────────────────────────────────────────────
@@ -171,10 +176,13 @@ export default function DocumentTab({
     setSelectedIds([]);
   };
 
-    const positionOptions = useMemo(
-    () => Object.keys(posColorMap), // ['기획', '디자인', ...]
-    [posColorMap]
-  );
+     const positionOptions = useMemo(() => {
+    const base = Object.keys(posColorMap); 
+    if (data?.data.some((item) => !item.positionName)) {
+      return ['공통', ...base];
+    }
+    return base;
+  }, [posColorMap, data]);
   const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
 
   // TODO: 나중에 서버 연동 시 selectedPosition을 쿼리 파라미터/요청 바디에 반영
