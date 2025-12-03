@@ -31,46 +31,17 @@ export const QuestionInput = ({
   includeWhitespace = true,
   description,
 }: QuestionInputProps) => {
-  /* const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const currentCount = includeWhitespace
     ? value.length
     : value.replace(/\s/g, '').length;
-  const safeMax = Number.isNaN(maxLength) ? Infinity : maxLength;
-  const hasError = safeMax !== Infinity && currentCount > safeMax;
-
-  const autoResize = () => {
-    const ta = textareaRef.current;
-    if (!ta) return;
-    ta.style.height = 'auto';
-    ta.style.height = ta.scrollHeight + 'px';
-  };
-
-  useLayoutEffect(() => {
-    autoResize();
-  }, [value]);
-
-  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    onChange(e.currentTarget.value);
-    autoResize();
-  };
-  */
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  //console.log('공백', includeWhitespace);
-  const normalized = value.replace(/[\r\n]/g, '');
-
-  // 공백 포함 여부에 따라 글자 수 계산
-  const currentCount = includeWhitespace
-    ? normalized.length
-    : normalized.replace(/\s/g, '').length;
 
   // maxLength <= 0 또는 Infinity면 “제한 없음” 처리
   const safeMax = maxLength > 0 ? maxLength : Infinity;
   // 제한이 있을 때만 에러 판단
   const hasError = safeMax !== Infinity && currentCount > safeMax;
 
-  //내용 전체 보이도록
   const autoResize = () => {
     const ta = textareaRef.current;
     if (!ta) return;
