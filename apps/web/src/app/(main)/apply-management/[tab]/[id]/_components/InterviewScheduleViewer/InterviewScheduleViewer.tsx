@@ -16,12 +16,14 @@ export interface InterviewScheduleViewerProps {
   scheduleMap: Record<string, TimeRange[]>;
   applicantMap: Record<string, InterviewScheduleItem[]>;
   duration: number;
+  interviewDates: string[];
 }
 
 export default function InterviewScheduleViewer({
   scheduleMap,
   applicantMap,
   duration,
+  interviewDates,
 }: InterviewScheduleViewerProps) {
   const dotApplicantMap = useMemo(() => {
     return Object.entries(applicantMap).reduce<
@@ -31,6 +33,11 @@ export default function InterviewScheduleViewer({
       return acc;
     }, {});
   }, [applicantMap]);
+
+  const dateDots = useMemo(
+    () => interviewDates.map((d) => d.replace(/[/-]/g, '.')),
+    [interviewDates]
+  );
 
   return (
     <Flex gap="0.4rem" direction="column" width="100%">
@@ -55,10 +62,9 @@ export default function InterviewScheduleViewer({
 
           const applicant = dotApplicantMap[dateDot] ?? [];
 
-          const title = safeFormatDotDate(
-            dateDot.replace(/\./g, '-'),
-            'yyyy년 MM월 dd일 (EEE)'
-          );
+          const title =
+            safeFormatDotDate(dateDot, 'yyyy년 MM월 dd일 (EEE)') ?? dateDot;
+
           const hours = baseline.flatMap((s) => [
             parseToMin(s.startTime) / 60,
             parseToMin(s.endTime) / 60,

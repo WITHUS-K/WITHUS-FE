@@ -121,7 +121,9 @@ export default function ApplicationDetailClient({
   const scheduleMap = useMemo<Record<string, TimeRange[]>>(() => {
     const map: Record<string, TimeRange[]> = {};
     for (const slot of rec?.availableTimeRanges ?? []) {
-      (map[slot.date] ??= []).push({
+      const dateDot = slot.date.replace(/[/-]/g, '.');
+
+      (map[dateDot] ??= []).push({
         startTime: slot.startTime,
         endTime: slot.endTime,
       });
@@ -135,8 +137,10 @@ export default function ApplicationDetailClient({
 
     for (const dateTime of data.availableTimes ?? []) {
       if (!dateTime) continue;
-      const [date, startTime] = dateTime.split('/');
-      if (!date || !startTime) continue;
+      const [rawDate, startTime] = dateTime.split('/');
+      if (!rawDate || !startTime) continue;
+
+      const dateDot = rawDate.replace(/[/-]/g, '.');
 
       const startMin = parseToMin(startTime);
       const endMin = startMin + rec.interviewDuration;
@@ -144,7 +148,7 @@ export default function ApplicationDetailClient({
       const mm = String(endMin % 60).padStart(2, '0');
       const endTime = `${hh}:${mm}`;
 
-      (map[date] ??= []).push({ date, startTime, endTime });
+      (map[dateDot] ??= []).push({ date: dateDot, startTime, endTime });
     }
     return map;
   }, [data?.availableTimes, rec?.interviewDuration]);

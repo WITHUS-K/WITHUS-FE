@@ -134,13 +134,7 @@ export default function ApplicantDetail({
   ];
 
   return (
-    <Flex
-      direction="column"
-      //paddingLeft="1.9rem"
-      //paddingRight="1.9rem"
-      //paddingBottom="2.4rem"
-      width="100%"
-    >
+    <Flex direction="column" width="100%">
       <div className={styles.container}>
         <Flex direction="column" width="100%" gap="3.2rem">
           <div className={styles.title}>{application.title}</div>
@@ -226,6 +220,7 @@ export default function ApplicantDetail({
                 scheduleMap={scheduleMap}
                 applicantMap={applicantMap!}
                 duration={interviewDuration!}
+                interviewDates={application.interviewDates}
               />
             )}
         </Flex>
