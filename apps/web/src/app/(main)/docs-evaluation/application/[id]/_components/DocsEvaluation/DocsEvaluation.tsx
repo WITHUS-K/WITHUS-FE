@@ -22,6 +22,7 @@ interface DocsEvaluationProps {
   onSave: () => void;
   average: string;
 }
+const FIXED_FOOTER_HEIGHT = '10rem';
 
 export const DocsEvaluation = ({
   evaluationData,
@@ -62,74 +63,83 @@ export const DocsEvaluation = ({
               : '3단계 평가'}
           </Tag>
         </Flex>
-        <Button variant="main" size="40" width="8.4rem" onClick={onSave}>
-          저장
-        </Button>
       </Flex>
 
       <div className={styles.container}>
-        {evaluationData.evaluationList.map((e, idx) => (
-          <div key={idx} className={styles.evaluationItem}>
-            <Flex gap="6.3rem" width="100%" justify="spaceBetween">
-              {/* 평가 항목 제목 + 내용 */}
-              <Flex direction="column" gap="2rem" width="100%">
-                <Text variant="md1_text_semibold" color="grayscale90">
-                  평가 항목 {idx + 1}
-                </Text>
-                <AccordianList
-                  items={[
-                    {
-                      title: e.criteria.content,
-                      content: e.criteria.description,
-                    },
-                  ]}
-                  isNumbering
-                  width="100%"
-                  readOnly
-                />
-              </Flex>
+        {evaluationData.evaluationList.map((e, idx) => {
+          const isLastItem = idx === evaluationData.evaluationList.length - 1;
+          const itemMarginStyle = !isLastItem ? { marginBottom: '4rem' } : {};
 
-              {evaluationData.evaluationType === 'score' ? (
-                // 점수제 평가
-                <Flex direction="column" gap="2rem">
+          return (
+            <div
+              key={idx}
+              className={styles.evaluationItem}
+              style={itemMarginStyle}
+            >
+              <Flex gap="6.3rem" width="100%" justify="spaceBetween">
+                <Flex direction="column" gap="2rem" width="100%">
                   <Text variant="md1_text_semibold" color="grayscale90">
-                    점수
+                    평가 항목 {idx + 1}
                   </Text>
-                  <Stepper
-                    name={`score-${idx}`}
-                    value={scores[idx] ?? 0}
-                    onChange={onScoreChange}
-                    disabled={false}
+                  <AccordianList
+                    items={[
+                      {
+                        title: e.criteria.content,
+                        content: e.criteria.description,
+                      },
+                    ]}
+                    isNumbering
+                    width="100%"
+                    readOnly
                   />
                 </Flex>
-              ) : (
-                // 3단계 평가
-                <Flex direction="column" gap="2rem" width="15%">
-                  <Text variant="md1_text_semibold" color="grayscale90">
-                    점수
-                  </Text>
-                  <div className={styles.levelsWrapper}>
-                    {levels.map((l) => (
-                      <Option
-                        key={l.id}
-                        type="radio"
-                        label={l.name}
-                        isSelected={scores[idx] === l.id}
-                        onChange={() => onScoreChange(`score-${idx}`, l.id)}
-                        width="100%"
-                        height="4.4rem"
-                      />
-                    ))}
-                  </div>
-                </Flex>
+
+                {evaluationData.evaluationType === 'score' ? (
+                  // 점수제 평가
+                  <Flex direction="column" gap="2rem">
+                    <Text variant="md1_text_semibold" color="grayscale90">
+                      점수
+                    </Text>
+                    <Stepper
+                      name={`score-${idx}`}
+                      value={scores[idx] ?? 0}
+                      onChange={onScoreChange}
+                      disabled={false}
+                    />
+                  </Flex>
+                ) : (
+                  // 3단계 평가
+                  <Flex direction="column" gap="2rem" width="15%">
+                    <Text variant="md1_text_semibold" color="grayscale90">
+                      점수
+                    </Text>
+                    <div className={styles.levelsWrapper}>
+                      {levels.map((l) => (
+                        <Option
+                          key={l.id}
+                          type="radio"
+                          label={l.name}
+                          isSelected={scores[idx] === l.id}
+                          onChange={() => onScoreChange(`score-${idx}`, l.id)}
+                          width="100%"
+                          height="4.4rem"
+                        />
+                      ))}
+                    </div>
+                  </Flex>
+                )}
+              </Flex>
+
+              {!isLastItem && (
+                <Divider length="100%" borderColor="grayscale10" />
               )}
-            </Flex>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ height: FIXED_FOOTER_HEIGHT }} />
 
-            <Divider length="100%" borderColor="grayscale10" />
-          </div>
-        ))}
-
-        {/* 최종 점수 */}
+      <div className={styles.finalScoreWrapper}>
         <div className={styles.scoreContainer}>
           <Flex gap="1.2rem" align="center">
             <IcScore width={24} height={24} />
@@ -153,6 +163,9 @@ export const DocsEvaluation = ({
             </div>
           </Flex>
         </div>
+        <Button variant="main" size="48" width="10rem" onClick={onSave}>
+          저장
+        </Button>
       </div>
     </Flex>
   );
