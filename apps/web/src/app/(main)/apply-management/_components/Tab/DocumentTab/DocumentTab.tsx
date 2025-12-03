@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, ChangeEvent, KeyboardEvent } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { HeaderMeta } from '../../ApplyListHeader/ApplyListHeader';
 import ActionToolbar from '../../ActionToolbar/ActionToolbar';
@@ -34,7 +34,7 @@ const DOC_HEADER: HeaderMeta[] = [
   },
   { key: 'score', label: '서류 점수', width: '10.5rem', sortable: true },
   { key: 'evaluators', label: '평가 담당자', width: '27rem' },
-  { key: 'status', label: '상태', width: '11rem', sortable: true },
+  { key: 'status', label: '합불 여부', width: '11rem', sortable: true },
   { key: 'smsSent', label: '문자 발송', width: '10.2rem', sortable: true },
   { key: 'mailSent', label: '메일 발송', sortable: true },
 ];
@@ -56,6 +56,9 @@ export default function DocumentTab({
   const activeTab = params.tab;
   const side = searchParams.get('sideTab');
   const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
+
+  // 최신순
+  const [latestSort, setLatestSort] = useState(false);
 
   // ─── 페이지 번호 관리 ─────────────────────────────────────────────────────────
   const pageParam = Number(searchParams.get('page'));
@@ -168,6 +171,32 @@ export default function DocumentTab({
     setSelectedIds([]);
   };
 
+    const positionOptions = useMemo(
+    () => Object.keys(posColorMap), // ['기획', '디자인', ...]
+    [posColorMap]
+  );
+  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
+
+  // TODO: 나중에 서버 연동 시 selectedPosition을 쿼리 파라미터/요청 바디에 반영
+
+const documentStatusOptions = ['서류 합격', '서류 불합격', '보류'];
+const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+  // TODO: selectedStatus 서버 연동
+  
+  /*검색*/
+    const [searchKeyword, setSearchKeyword] = useState('');
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchKeyword(e.target.value);
+    // TODO: 나중에 서버 연동 시
+  };
+
+  const handleSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      // 지금은 아무 동작 안 하도록 비워둠
+    }
+  };
+
   // ─── 페이지 변경 시 URL 반영 ────────────────────────────────────────────────────
   const onPageChange = (newOneBased: number) => {
     setPage(newOneBased - 1);
@@ -197,6 +226,14 @@ export default function DocumentTab({
         onAdd={() =>
           router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
         }
+           searchValue={searchKeyword}
+        onSearchChange={handleSearchChange}
+        onSearchKeyDown={handleSearchKeyDown}
+         latestSort={latestSort}
+  onLatestSortChange={(next) => {
+    setLatestSort(next);
+    // TODO: 나중에 서버에 정렬 방식 넘기기
+  }}
       />
 
       <TableContainer
@@ -218,6 +255,12 @@ export default function DocumentTab({
         onPageChange={onPageChange}
         isLoading={isLoading}
         isFetching={isFetching}
+          positionOptions={positionOptions}
+        selectedPosition={selectedPosition}
+        onPositionChange={setSelectedPosition}
+          statusOptions={documentStatusOptions}
+  selectedStatus={selectedStatus}
+  onStatusChange={setSelectedStatus}
       />
 
       {sideTab === 'sms' && (

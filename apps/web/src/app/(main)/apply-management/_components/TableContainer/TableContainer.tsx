@@ -38,6 +38,13 @@ export interface TableContainerProps {
   onPageChange: (page: number) => void;
   isLoading: boolean;
   isFetching: boolean;
+   positionOptions?: string[];
+  selectedPosition?: string | null;
+  onPositionChange?: (name: string) => void;
+
+   statusOptions?: string[];
+  selectedStatus?: string | null;
+  onStatusChange?: (value: string) => void;
 }
 
 export default function TableContainer({
@@ -56,6 +63,12 @@ export default function TableContainer({
   onPageChange,
   isLoading,
   isFetching,
+  positionOptions,
+  selectedPosition,
+  onPositionChange,
+   statusOptions,
+  selectedStatus,
+  onStatusChange,
 }: TableContainerProps) {
   return (
     <Flex direction="column" width="100%">
@@ -75,6 +88,12 @@ export default function TableContainer({
         pageSize={pageSize}
         isLoading={isLoading}
         isFetching={isFetching}
+          positionOptions={positionOptions}
+  selectedPosition={selectedPosition}
+        onPositionChange={onPositionChange}
+          statusOptions={statusOptions}
+        selectedStatus={selectedStatus}
+        onStatusChange={onStatusChange}
       />
 
       <div className={styles.pagination}>

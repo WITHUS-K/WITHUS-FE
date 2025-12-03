@@ -21,6 +21,7 @@ export { default as IcDateArrowRight } from './IcDateArrowRight';
 export { default as IcDelete } from './IcDelete';
 export { default as IcDeleteRight } from './IcDeleteRight';
 export { default as IcDocs } from './IcDocs';
+export { default as IcDownloadMono } from './IcDownloadMono';
 export { default as IcFileBtn } from './IcFileBtn';
 export { default as IcFileUpload } from './IcFileUpload';
 export { default as IcHeaderAlarm } from './IcHeaderAlarm';
