@@ -61,52 +61,28 @@ export const QuestionInput = ({
       data-read-only={readOnly ? 'true' : 'false'}
       data-has-error={hasError ? 'true' : 'false'}
     >
-      <Flex justify="spaceBetween" align="center" width="100%" gap="2rem">
-        <Flex
-          width="100%"
-          align="flexStart"
-          direction="column"
-          gap="1rem"
-          style={{
-            wordBreak: 'keep-all',
-            overflowWrap: 'break-word',
-          }}
-        >
-          <Text variant="md1_text_semibold" color="grayscale70">
-            {title}
-          </Text>
-          {description && (
-            <Text
-              variant="md2_text_regular"
-              color="grayscale60"
-              style={{ whiteSpace: 'pre-line' }}
-            >
-              {description}
-            </Text>
-          )}
-        </Flex>
-        <Text variant="sm_caption_medium" style={{ whiteSpace: 'nowrap' }}>
-          {safeMax === Infinity ? (
-            // 제한 없음인 경우
-            <span style={{ color: vars.colors.grayscale40 }}>
-              {currentCount}자
-            </span>
-          ) : (
-            // 제한이 있을 경우
-            <>
-              <span
-                style={{
-                  color: hasError ? vars.colors.error : vars.colors.grayscale40,
-                }}
-              >
-                {currentCount}
-              </span>
-              <span style={{ color: vars.colors.grayscale40 }}>
-                /{safeMax}자 {infoDetail && `(${infoDetail})`}
-              </span>
-            </>
-          )}
+      <Flex
+        width="100%"
+        align="flexStart"
+        direction="column"
+        gap="1rem"
+        style={{
+          wordBreak: 'keep-all',
+          overflowWrap: 'break-word',
+        }}
+      >
+        <Text variant="md1_text_semibold" color="grayscale70">
+          {title}
         </Text>
+        {description && (
+          <Text
+            variant="md2_text_regular"
+            color="grayscale60"
+            style={{ whiteSpace: 'pre-line' }}
+          >
+            {description}
+          </Text>
+        )}
       </Flex>
 
       <div className={styles.commentDivider} />

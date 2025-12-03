@@ -2,7 +2,13 @@
 import React, { useState } from 'react';
 import SidebarList from './SidebarList';
 import SidebarItem from './SidebarItem';
-import { sidebarContainer, sidebarOrgs } from './Sidebar.css';
+import {
+  sidebarContainer,
+  sidebarOrgs,
+  orgPlus,
+  orgItem,
+  sidebarOrgsOuter,
+} from './Sidebar.css';
 import {
   IcSidebarCalender,
   IcSidebarGroup,
@@ -18,6 +24,7 @@ import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Divider } from '@repo/ui/Divider';
 import { cookieOptions } from '@web/api/authCookies';
+import { IcPlus } from '@repo/ui/icons/mono';
 
 interface SidebarProps {
   role: string;
@@ -125,21 +132,34 @@ const Sidebar = ({
       {role === 'USER' && (
         <Flex direction="column" gap="1.2rem" width="100%">
           <Divider direction="row" length="100%" borderColor="grayscale10" />
-          <Text variant="sm_caption_medium" color="grayscale50">
-            소속
-          </Text>
-          <div className={sidebarOrgs}>
-            {organizations.map((org) => (
-              <Option
-                key={org.id}
-                type="radio"
-                label={org.name}
-                isSelected={org.id === currentOrganizationId}
-                onChange={() => onSelectOrg(org.id)}
-                width="100%"
-                height="3.7rem"
-              />
-            ))}
+          <Flex align="center" justify="spaceBetween" width="100%">
+            <Text variant="sm_caption_medium" color="grayscale50">
+              소속
+            </Text>
+            <button
+              type="button"
+              className={orgPlus}
+              onClick={() => router.push('/affiliation-add')}
+            >
+              <IcPlus width={24} height={24} />
+            </button>
+          </Flex>
+          <div className={sidebarOrgsOuter}>
+            <div className={sidebarOrgs}>
+              {organizations.map((org) => (
+                <div key={org.id} className={orgItem}>
+                  <Option
+                    key={org.id}
+                    type="radio"
+                    label={org.name}
+                    isSelected={org.id === currentOrganizationId}
+                    onChange={() => onSelectOrg(org.id)}
+                    width="100%"
+                    height="100%"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </Flex>
       )}

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useMemo, useRef } from 'react';
 import { useRecruitmentDetailQuery } from '@web/store/query/useRecruitmentDetailQuery';
 import type { FormValues } from '@web/types/application';
 import { SettingForm } from '@web/app/(main)/application-list/setting/_components/SettingForm/SettingForm';
@@ -11,19 +11,25 @@ export default function EditSettingClient({
 }: {
   recruitmentId: number;
 }) {
-  const { data: detail } = useRecruitmentDetailQuery({
-    recruitmentId,
-  });
-  //console.log('디테일', detail);
+  const { data: detail } = useRecruitmentDetailQuery({ recruitmentId });
+  const { setForm } = useContext(SettingContext)!;
 
-  const { form, setForm } = useContext(SettingContext)!;
+  const formValues: FormValues | null = useMemo(
+    () => (detail ? convertDetailToForm(detail) : null),
+    [detail]
+  );
 
+  const seededIdRef = useRef<number | null>(null);
   useEffect(() => {
-    if (detail && form.title === '') {
-      const formValues: FormValues = convertDetailToForm(detail);
+    if (!detail || !formValues) return;
+
+    if (seededIdRef.current !== detail.recruitmentId) {
       setForm(formValues);
+      seededIdRef.current = detail.recruitmentId;
     }
-  }, [detail, form.title, setForm]);
+  }, [detail, formValues, setForm]);
+
+  if (!detail) return null;
 
   return (
     <div style={{ overflow: 'hidden' }}>

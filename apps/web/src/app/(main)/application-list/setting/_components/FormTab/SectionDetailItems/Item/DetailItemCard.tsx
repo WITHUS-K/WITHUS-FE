@@ -16,13 +16,22 @@ import {
 import { IcFileInfo } from '@repo/ui/icons/colored';
 import * as C from '@web/constants/application';
 import TypeControls from './TypeControls';
+import { vars } from '@repo/theme';
+import { IcCopy } from '@repo/ui/icons/mono';
 
 interface Props {
   index: number;
   onRemove: () => void;
+  dragHandleProps?: React.HTMLAttributes<HTMLButtonElement>;
+  onDuplicate: () => void;
 }
 
-export default function DetailItemCard({ index, onRemove }: Props) {
+export default function DetailItemCard({
+  index,
+  onRemove,
+  dragHandleProps,
+  onDuplicate,
+}: Props) {
   const { control, setValue } = useFormContext();
 
   const type = useWatch({
@@ -42,18 +51,39 @@ export default function DetailItemCard({ index, onRemove }: Props) {
         setValue(`detailItems.${index}.typeInfo.info`, C.FILE_COUNTS[0]);
         setValue(`detailItems.${index}.typeInfo.infoDetail`, C.FILE_SIZES[2]);
       }
-
       prevTypeRef.current = type;
     }
   }, [type, index, setValue]);
 
   return (
     <div className={styles.itemWrapper}>
-      {/* 응답 대상 + 드롭다운 컨트롤 */}
+      <Flex width="100%" justify="center">
+        <button
+          type="button"
+          aria-label="항목 순서 이동"
+          className={styles.dragHandle}
+          {...dragHandleProps}
+        >
+          <span
+            style={{
+              fontSize: 20,
+              cursor: 'grab',
+              display: 'inline-block',
+              transform: 'rotate(90deg)',
+              transformOrigin: '50% 50%',
+              color: `${vars.colors.grayscale40}`,
+            }}
+          >
+            ⋮⋮
+          </span>
+        </button>
+      </Flex>
+
       <div className={styles.controlsContainer}>
         <ResponseTargets index={index} />
         <TypeControls index={index} type={type} />
       </div>
+
       {/* 헤더 + input */}
       <div className={styles.headerInputContainer}>
         <Flex align="center" justify="spaceBetween" width="100%">
@@ -72,14 +102,24 @@ export default function DetailItemCard({ index, onRemove }: Props) {
             />
             {type === 'file' && (
               <Flex align="center" gap="0.2rem">
-                <IcFileInfo width={24} height={24} />
+                <IcFileInfo width={32} height={32} />
                 <Text variant="sm_caption_medium" color="grayscale30">
                   {C.UPLOAD_NOTICE}
                 </Text>
               </Flex>
             )}
           </Flex>
-          <Flex align="center" gap="1.6rem">
+
+          <Flex align="center" gap="1.2rem">
+            <button
+              type="button"
+              aria-label="항목 복제"
+              className={styles.iconButton}
+              onClick={onDuplicate}
+            >
+              <IcCopy width={32} height={32} />
+            </button>
+
             <button type="button" onClick={onRemove}>
               <Text variant="md1_text_semibold" color="grayscale40">
                 삭제

@@ -1,9 +1,7 @@
-// app/application-list/setting/sections/SectionParts.css.ts
 import { style } from '@vanilla-extract/css';
 import { vars } from '@repo/theme';
 import { fontStyles } from '@repo/theme';
 
-// 파트 태그 기본 스타일
 export const tag = style({
   width: '21.2rem',
   height: '5.6rem',
@@ -19,15 +17,12 @@ export const tag = style({
   ...fontStyles.md2_text_regular,
 });
 
-// 파트 태그 비활성화 스타일
 export const tagDisabled = style({
   background: vars.colors.grayscale5,
   color: vars.colors.grayscale20,
   cursor: 'default',
 });
 
-// 추가 버튼 스타일
-// **비활성화된** 추가 버튼
 export const addButtonDisabled = style({
   display: 'flex',
   alignItems: 'center',
@@ -41,7 +36,6 @@ export const addButtonDisabled = style({
   cursor: 'not-allowed',
 });
 
-// **활성화된** 추가 버튼
 export const addButtonEnabled = style({
   display: 'flex',
   alignItems: 'center',
@@ -55,7 +49,6 @@ export const addButtonEnabled = style({
   cursor: 'pointer',
 });
 
-// 입력 컨테이너 스타일
 export const inputContainer = style({
   width: '21.2rem',
   height: '5.6rem',
@@ -66,7 +59,6 @@ export const inputContainer = style({
   background: vars.colors.white,
 });
 
-// 입력 필드 스타일
 export const input = style({
   display: 'flex',
   alignItems: 'center',

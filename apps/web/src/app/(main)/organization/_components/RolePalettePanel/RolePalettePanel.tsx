@@ -12,6 +12,7 @@ import { RoleEditor } from './RoleEditor';
 import { RoleItem } from './RoleItem';
 import { mapServerColorToTagHex } from '@web/utils/color';
 import { useModal } from '@repo/ui/hooks';
+import { useDeleteOrganizationRoleMutation } from '@web/store/mutation/useDeleteOrganizationRoleMutation';
 
 export const COLOR_OPTIONS: PaletteColor[] = [
   '#FF5C6C',
@@ -40,7 +41,8 @@ export const colorHexToNameMap: Record<string, string> = {
 };
 
 interface Props {
-  roles: RoleSelectWithCount[];
+  organizationId: number;
+  roles: (RoleSelectWithCount & { id: number })[];
   search: string;
   selectedIdx: number | null;
   onSelectRole: (i: number) => void;
@@ -56,6 +58,7 @@ export default function RolePalettePanel({
   onSearchChange,
   onAddRole,
   onUpdateRole,
+  organizationId,
 }: Props) {
   const [isAdding, setIsAdding] = useState(false);
   const [newLabel, setNewLabel] = useState('');
@@ -66,6 +69,10 @@ export default function RolePalettePanel({
   const [editOpen, setEditOpen] = useState(false);
 
   const { confirm } = useModal();
+
+  //역할 삭제
+  const { mutateAsync: deleteRole, isPending: isDeleting } =
+    useDeleteOrganizationRoleMutation(organizationId);
 
   const handleAddKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newLabel.trim()) {
@@ -84,15 +91,20 @@ export default function RolePalettePanel({
     }
   };
 
-  const handleDelete = (roleIdx: number, label: string) => {
+  const handleDelete = (roleId: number, label: string) => {
+    if (isDeleting) return;
     confirm({
       type: 'warning',
       title: '정말 삭제하시겠습니까?',
       description: `"${label}" 파트를 삭제하면 복구할 수 없습니다.`,
       cancelText: '취소',
       confirmText: '삭제',
-      onConfirm: () => {
-        // 역할 삭제 api 연동
+      onConfirm: async () => {
+        try {
+          await deleteRole(roleId);
+        } catch (e) {
+          console.error('역할 삭제 실패:', e);
+        }
       },
     });
   };
@@ -158,7 +170,7 @@ export default function RolePalettePanel({
                   setEditColor(r.color);
                   setEditOpen(false);
                 }}
-                onDelete={() => handleDelete(i, r.label)}
+                onDelete={() => handleDelete(r.id, r.label)}
               />
             );
           })}

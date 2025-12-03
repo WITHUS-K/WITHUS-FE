@@ -7,10 +7,11 @@ import { QuestionInput } from '@repo/ui/InputField';
 import type { DetailItem } from '@web/types/application';
 import * as s from '../../app/(main)/application-list/setting/(preview)/_components/QuestionFileList/QuestionFileList.css';
 import { FileUpload } from '@web/components/FileUpload/FileUpload';
-import { FormFieldStatusContext } from '@web/app/apply/[organization]/[slug]/_context/FormFieldStatusContext';
-import { focusableWrapper } from '@web/app/apply/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
+import { FormFieldStatusContext } from '@web/app/[organization]/[slug]/_context/FormFieldStatusContext';
+import { focusableWrapper } from '@web/app/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
 import clsx from 'clsx';
 import { FileInfo } from '@repo/ui';
+import { vars } from '@repo/theme';
 
 export type AnswerFile = File | FileInfo;
 
@@ -61,41 +62,81 @@ export const QuestionAndFileListForm = ({
               tabIndex={-1}
               className={clsx(s.questionContainer, focusableWrapper)}
             >
-              <Flex gap="0.4rem" align="center" width="100%">
-                <Text variant="md1_text_semibold" color="grayscale70">
-                  질문-{textIndex + 1}
-                </Text>
-                {item.required && (
-                  <Text variant="md2_text_semibold" color="error">
-                    *
+              <Flex width="100%" align="center" justify="spaceBetween">
+                <Flex gap="0.4rem" align="center" width="100%">
+                  <Text variant="md1_text_semibold" color="grayscale70">
+                    질문-{textIndex + 1}
                   </Text>
-                )}
+                  {item.required && (
+                    <Text variant="md2_text_semibold" color="error">
+                      *
+                    </Text>
+                  )}
+                </Flex>{' '}
               </Flex>
 
-              <QuestionInput
-                title={item.description}
-                description={item.addDescription}
-                infoDetail={item.typeInfo.infoDetail}
-                value={
-                  readOnly
-                    ? ((item as any).answer ?? '')
-                    : (answers[textIndex] ?? '')
-                }
-                maxLength={maxLength as number | undefined}
-                includeWhitespace={item.includeWhitespace}
-                onFocus={status.setEditing}
-                onChange={(val) => {
-                  if (readOnly) return;
-                  onAnswerChange(textIndex, val);
-                  status.setEditing();
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.value.trim()
-                    ? status.setCompleted()
-                    : status.setDefault();
-                }}
-                readOnly={readOnly}
-              />
+              <Flex width="100%" direction="column" gap="1rem">
+                <QuestionInput
+                  title={item.description}
+                  description={item.addDescription}
+                  infoDetail={item.typeInfo.infoDetail}
+                  value={
+                    readOnly
+                      ? ((item as any).answer ?? '')
+                      : (answers[textIndex] ?? '')
+                  }
+                  maxLength={maxLength as number | undefined}
+                  includeWhitespace={item.includeWhitespace}
+                  onFocus={status.setEditing}
+                  onChange={(val) => {
+                    if (readOnly) return;
+                    onAnswerChange(textIndex, val);
+                    status.setEditing();
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.value.trim()
+                      ? status.setCompleted()
+                      : status.setDefault();
+                  }}
+                  readOnly={readOnly}
+                />
+
+                <Text
+                  variant="sm_caption_medium"
+                  style={{
+                    whiteSpace: 'nowrap',
+                    textAlign: 'end',
+                    width: '100%',
+                  }}
+                >
+                  {maxLength === undefined ? (
+                    // 제한 없음인 경우
+                    <span style={{ color: vars.colors.grayscale40 }}>
+                      {answers[textIndex]?.replace(/[\r\n]/g, '').length ?? 0}자
+                    </span>
+                  ) : (
+                    // 제한이 있을 경우
+                    <>
+                      <span
+                        style={{
+                          color:
+                            (answers[textIndex]?.replace(/[\r\n]/g, '')
+                              .length ?? 0) > maxLength
+                              ? vars.colors.error
+                              : vars.colors.grayscale40,
+                        }}
+                      >
+                        {answers[textIndex]?.replace(/[\r\n]/g, '').length ?? 0}
+                      </span>
+                      <span style={{ color: vars.colors.grayscale40 }}>
+                        /{maxLength}자{' '}
+                        {item.typeInfo.infoDetail &&
+                          `(${item.typeInfo.infoDetail})`}
+                      </span>
+                    </>
+                  )}
+                </Text>
+              </Flex>
             </div>
           );
         }

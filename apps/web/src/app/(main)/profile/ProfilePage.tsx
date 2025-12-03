@@ -12,9 +12,13 @@ import PasswordSection from './_components/PasswordSection/PasswordSection';
 import { useGetMyPageQuery } from '@web/store/query/useGetMyPageQuery';
 import { useUpdateUserMutation } from '@web/store/mutation/useUpdateUserMutation';
 import { FormProvider, useForm } from 'react-hook-form';
+import { IcPlus } from '@repo/ui/icons/mono';
+import ClubAddModal from './@modal/(.)club-add/page';
+import { useRouter } from 'next/navigation';
 
 interface ProfilePageProps {
   role: 'ADMIN' | 'USER';
+  showModal: boolean;
 }
 
 export interface ProfileFormValues {
@@ -26,7 +30,8 @@ export interface ProfileFormValues {
   profileImageFile?: File;
 }
 
-export default function ProfilePage({ role }: ProfilePageProps) {
+export default function ProfilePage({ role, showModal }: ProfilePageProps) {
+  const router = useRouter();
   const { data: user } = useGetMyPageQuery();
   const updateMut = useUpdateUserMutation();
 
@@ -67,44 +72,60 @@ export default function ProfilePage({ role }: ProfilePageProps) {
   const pageTitle = role === 'ADMIN' ? '관리자 정보' : '사용자 정보';
 
   return (
-    <div className={styles.container}>
-      <Flex width="100%" direction="column" align="flexStart" gap="1.8rem">
-        <Breadcrumb>
-          <Breadcrumb.Item active>{pageTitle}</Breadcrumb.Item>
-        </Breadcrumb>
+    <>
+      {showModal && <ClubAddModal />}
+      <div className={styles.container}>
+        <Flex width="100%" direction="column" align="flexStart" gap="1.8rem">
+          <Breadcrumb>
+            <Breadcrumb.Item active>{pageTitle}</Breadcrumb.Item>
+          </Breadcrumb>
 
-        <Flex width="100%" justify="spaceBetween" align="center">
-          <Text variant="xl_title_semibold" color="black">
-            {pageTitle}
-          </Text>
-          <Button
-            onClick={handleSubmit(handleSave)}
-            disabled={!isValid}
-            variant="main"
-            size="40"
-            leftIcon={<IcSave />}
-            width="13.2rem"
-          >
-            수정 완료
-          </Button>
-        </Flex>
-      </Flex>
-
-      <FormProvider {...methods}>
-        <Flex width="100%" marginTop="4rem" gap="4rem">
-          <AvatarSection
-            role={role}
-            imageUrl={user.imageUrl}
-            email={user.email}
-            organizations={user.organizations}
-          />
-          <Flex direction="column" width="100%" gap="3.2rem">
-            <InfoSection role={role} user={user} />
-            <Divider borderColor="grayscale10" length="100%" />
-            <PasswordSection />
+          <Flex width="100%" justify="spaceBetween" align="center">
+            <Text variant="xl_title_semibold" color="black">
+              {pageTitle}
+            </Text>
+            <Flex align="center" gap="0.8rem">
+              {role === 'USER' && (
+                <Button
+                  variant="sub"
+                  size="40"
+                  leftIcon={<IcPlus />}
+                  width="17.7rem"
+                  onClick={() => router.push('/profile/club-add')}
+                >
+                  가입 동아리 추가
+                </Button>
+              )}
+              <Button
+                onClick={handleSubmit(handleSave)}
+                disabled={!isValid}
+                variant="main"
+                size="40"
+                leftIcon={<IcSave />}
+                width="13.2rem"
+              >
+                수정 완료
+              </Button>
+            </Flex>
           </Flex>
         </Flex>
-      </FormProvider>
-    </div>
+
+        <FormProvider {...methods}>
+          <Flex width="100%" marginTop="4rem" gap="4rem">
+            <AvatarSection
+              role={role}
+              imageUrl={user.imageUrl}
+              email={user.email}
+              organizations={user.organizations}
+            />
+            <Flex direction="column" width="100%" gap="3.2rem">
+              <InfoSection role={role} user={user} />
+              <Divider borderColor="grayscale10" length="100%" />
+              <PasswordSection />
+            </Flex>
+          </Flex>
+        </FormProvider>
+      </div>
+    </>
   );
 }

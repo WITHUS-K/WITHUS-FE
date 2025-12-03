@@ -1,4 +1,4 @@
-// app/apply/[organization]/[slug]/page.tsx
+// app/[organization]/[slug]/page.tsx
 import { ServerFetchBoundary } from '@web/store/query/ServerFetchBoundary';
 import {
   fetchRecruitmentBySlug,
@@ -23,7 +23,7 @@ export default async function Page({ params }: PageProps) {
   const deadlineEndMs = new Date(`${raw}T23:59:59.999+09:00`).getTime();
 
   if (Date.now() >= deadlineEndMs) {
-    redirect(`/apply/${organization}/${slug}/end`);
+    redirect(`/${organization}/${slug}/end`);
   }
 
   const fetchOptions = getRecruitmentBySlugQueryOptions({ slug });

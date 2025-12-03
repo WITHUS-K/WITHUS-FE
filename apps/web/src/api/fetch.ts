@@ -67,16 +67,22 @@ async function fetchWrapperWithTokenHandler<Data>(
           } catch {
             // 재발급 실패 시 토큰 클리어 후 로그인 페이지로
             clearClientSideTokens();
-            if (typeof window !== 'undefined') {
+            if (typeof window === 'undefined') {
+              redirect(ROUTES.LOGIN);
+            } else {
               window.location.replace(ROUTES.LOGIN);
             }
+
             throw new Error('세션이 만료되었습니다. 다시 로그인해주세요.');
           }
         } else {
           // 두 번째 401 → 바로 로그인으로
-          if (typeof window !== 'undefined') {
+          if (typeof window === 'undefined') {
+            redirect(ROUTES.LOGIN);
+          } else {
             window.location.replace(ROUTES.LOGIN);
           }
+
           throw new Error('로그인이 필요해요!');
         }
       }

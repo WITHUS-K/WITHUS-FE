@@ -7,6 +7,7 @@ import { QuestionInput } from '@repo/ui/InputField';
 import { FileUpload } from '../../../../../../../components/FileUpload/FileUpload';
 import * as s from './QuestionFileList.css';
 import { AnswerFile } from '@web/components/QuestionFileListForm/QuestionFileListForm';
+import { vars } from '@repo/theme';
 
 interface Props {
   detailItems: DetailItem[];
@@ -73,24 +74,67 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
       {detailItems.map((item) => {
         if (item.type === 'text') {
           const textIndex = t++;
-          // "제한 없음"이면 undefined를 넘겨서 입력 제한이 없게 처리
+
           const rawMax = parseInt(
             item.typeInfo.infoDetail.replace(/\D/g, ''),
             10
           );
           const maxLengthValue = Number.isNaN(rawMax) ? undefined : rawMax;
 
+          const includeWhitespace =
+            (item as any).includeWhitespace !== undefined
+              ? (item as any).includeWhitespace
+              : true;
+
+          const rawValue = answers[textIndex] ?? '';
+          const normalized = rawValue.replace(/[\r\n]/g, '');
+          const currentCount = includeWhitespace
+            ? normalized.length
+            : normalized.replace(/\s/g, '').length;
+
+          const hasError =
+            maxLengthValue !== undefined && currentCount > maxLengthValue;
+
           return (
             <div key={`t-${textIndex}`} className={s.questionContainer}>
-              <Flex gap="0.4rem" align="center" width="100%">
-                <Text variant="md1_text_semibold" color="grayscale70">
-                  질문-{textIndex + 1}
-                </Text>
-                {item.required && (
-                  <Text variant="md2_text_semibold" color="error">
-                    *
+              <Flex width="100%" align="center" justify="spaceBetween">
+                <Flex gap="0.4rem" align="center" width="100%">
+                  <Text variant="md1_text_semibold" color="grayscale70">
+                    질문-{textIndex + 1}
                   </Text>
-                )}
+                  {item.required && (
+                    <Text variant="md2_text_semibold" color="error">
+                      *
+                    </Text>
+                  )}
+                </Flex>
+                <Text
+                  variant="sm_caption_medium"
+                  style={{ whiteSpace: 'nowrap' }}
+                >
+                  {maxLengthValue === undefined ? (
+                    <span style={{ color: vars.colors.grayscale40 }}>
+                      {currentCount}자
+                    </span>
+                  ) : (
+                    <>
+                      <span
+                        style={{
+                          color: hasError
+                            ? vars.colors.error
+                            : vars.colors.grayscale40,
+                        }}
+                      >
+                        {currentCount}
+                      </span>
+                      <span style={{ color: vars.colors.grayscale40 }}>
+                        /{maxLengthValue}자{' '}
+                        {item.typeInfo.infoDetail &&
+                          `(${item.typeInfo.infoDetail})`}
+                      </span>
+                    </>
+                  )}
+                </Text>
               </Flex>
 
               <QuestionInput

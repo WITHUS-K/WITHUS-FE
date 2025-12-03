@@ -63,6 +63,12 @@ export const sidebarLabel = style({
   paddingTop: '0.2rem',
 });
 
+export const sidebarOrgsOuter = style({
+  width: '100%',
+  overflow: 'hidden',
+  borderRadius: '16px',
+});
+
 export const sidebarOrgs = style({
   display: 'flex',
   flexDirection: 'column',
@@ -71,4 +77,30 @@ export const sidebarOrgs = style({
   padding: '1.2rem',
   gap: '0.8rem',
   width: '100%',
+  overflowX: 'hidden',
+  maxHeight: 'calc((3 * 3.7rem) + (2 * 0.8rem) + (2 * 1.2rem))',
+  overflowY: 'auto',
+  scrollbarGutter: 'stable both-edges',
+  selectors: {
+    '&::-webkit-scrollbar': {
+      width: '2px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: vars.colors.grayscale10,
+      borderRadius: '4px',
+    },
+    '&::-webkit-scrollbar-track': {
+      background: 'transparent',
+    },
+  },
+});
+
+export const orgPlus = style({
+  color: vars.colors.grayscale50,
+});
+
+export const orgItem = style({
+  flex: '0 0 auto',
+  height: '3.7rem',
+  width: '16.8rem',
 });

@@ -1,52 +1,47 @@
-// src/web/app/(main)/application-list/setting/_components/FormTab/SectionParts.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Controller, useFormContext } from 'react-hook-form';
 import { SimpleToggleSwitch } from '@repo/ui/SimpleToggleSwitch';
-import { PartInput } from './Tag/PartInput';
 import { PartTag } from './Tag/PartTag';
 import { AddButton } from './Tag/AddButton';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { SettingContext } from '../../../_context/SettingContext';
 
 export default function SectionParts() {
   const { control, watch, setValue } = useFormContext();
+  const ctx = useContext(SettingContext)!;
   const enabled: boolean = watch('applicationParts.isSelected');
   const parts: string[] = watch('applicationParts.parts') || [];
 
-  const [isAdding, setIsAdding] = useState(false);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const handleConfirm = (newVal: string) => {
-    if (!newVal) return handleCancel();
-
-    if (editingIndex !== null) {
-      const next = [...parts];
-      next[editingIndex] = newVal;
-      setValue('applicationParts.parts', next);
-      setEditingIndex(null);
-    } else {
-      setValue('applicationParts.parts', [...parts, newVal]);
-      setIsAdding(false);
-    }
-  };
-
-  const handleCancel = () => {
-    setIsAdding(false);
-    setEditingIndex(null);
+  const openPartModal = () => {
+    const qs = searchParams.toString();
+    router.push(`/application-list/setting/part${qs ? `?${qs}` : ''}`, {
+      scroll: false,
+    });
   };
 
   const handleRemove = (idx: number) => {
-    setValue(
-      'applicationParts.parts',
-      parts.filter((_, i) => i !== idx)
-    );
+    const next = parts.filter((_, i) => i !== idx);
+
+    setValue('applicationParts.parts', next, { shouldDirty: true });
+    setValue('applicationParts.isSelected', next.length > 0, {
+      shouldDirty: true,
+    });
+
+    ctx.setForm((prev) => ({
+      ...prev,
+      applicationParts: { isSelected: next.length > 0, parts: next },
+    }));
   };
 
   return (
     <Flex direction="column" gap="1.6rem" align="flexStart" width="100%">
-      {/* 토글 스위치 */}
       <Flex align="center" gap="1rem">
         <Text variant="md1_text_semibold" color="grayscale70">
           지원 파트
@@ -60,48 +55,19 @@ export default function SectionParts() {
         />
       </Flex>
 
-      {/* 파트 태그 및 입력, 추가 버튼 */}
+      {/* 파트 태그 + 추가 버튼 (인라인 입력 제거) */}
       <Flex wrap="wrap" gap="2.3rem" width="100%">
-        {/* 기존 파트 태그 */}
-        {parts.map((p, i) =>
-          editingIndex === i ? (
-            <PartInput
-              key={i}
-              defaultValue={p}
-              onConfirm={handleConfirm}
-              onCancel={handleCancel}
-            />
-          ) : (
-            <PartTag
-              key={i}
-              label={p}
-              onRemove={() => handleRemove(i)}
-              onEdit={() => {
-                setEditingIndex(i);
-                setIsAdding(false);
-              }}
-              disabled={!enabled}
-            />
-          )
-        )}
-
-        {/* 입력창: isAdding 상태일 때만 */}
-        {editingIndex === null && isAdding && (
-          <PartInput
-            defaultValue=""
-            onConfirm={handleConfirm}
-            onCancel={handleCancel}
+        {parts.map((p, i) => (
+          <PartTag
+            key={`${p}-${i}`}
+            label={p}
+            onRemove={() => handleRemove(i)}
+            onEdit={openPartModal}
+            disabled={!enabled}
           />
-        )}
+        ))}
 
-        {/* 항상 마지막에 추가 버튼 유지 */}
-        <AddButton
-          onClick={() => {
-            setIsAdding(true);
-            //setEditingIndex(null); // 추가할 땐 편집 아님
-          }}
-          disabled={!enabled}
-        />
+        <AddButton onClick={openPartModal} disabled={!enabled} />
       </Flex>
     </Flex>
   );
