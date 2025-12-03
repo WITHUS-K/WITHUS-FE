@@ -65,7 +65,7 @@ export default function ActionToolbar({
         size="40"
         width="10rem"
         onClick={onSms}
-        disabled={!hasSelection}
+       // disabled={!hasSelection}
         leftIcon={<IcMessageBtn />}
       >
         문자
@@ -75,7 +75,7 @@ export default function ActionToolbar({
         size="40"
         width="10rem"
         onClick={onMail}
-        disabled={!hasSelection}
+       // disabled={!hasSelection}
         leftIcon={<IcMailBtn />}
       >
         메일

@@ -1,7 +1,4 @@
 'use client';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import type { documentEvaluation as DocumentEvaluationType } from '@web/types/document-evaluation';
-import { documentEvaluationDummyData } from '@web/constants/document-evaluation';
 import ApplicantDetail from '@web/app/(main)/apply-management/[tab]/[id]/_components/ApplicantDetail/ApplicantDetail';
 import * as styles from './page.css';
 import { EvaluationScoreCard } from '@web/app/(main)/apply-management/[tab]/[id]/_components/EvaluationScoreCard/EvaluationScoreCard';
