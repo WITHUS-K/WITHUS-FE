@@ -49,6 +49,7 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
   const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
   const latestQuery = useLatestDistributionQuery({ recruitmentId });
   const positionsQuery = useRecruitmentPositionsQuery(recruitmentId);
+  console.log("포지션", positionsQuery.data)
   const distribute = useDistributeEvaluators(recruitmentId);
 
   const toast = useToast();
@@ -58,7 +59,6 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
     label: r.roleName,
     color: mapServerColorToTagHex(r.color),
   }));
-  //console.log('안녕', availableRoles);
 
   /*if (distribute === null) {
     // 404(분배 데이터 없음)인 경우
@@ -70,35 +70,47 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
     activeTab === 'documents' ? 'DOCUMENT' : 'INTERVIEW';
 
   const computeInitial = (): Record<string, PartState> => {
-    const state: Record<string, PartState> = {};
-    const positions = positionsQuery.data;
-    if (!positions) return state;
+  const state: Record<string, PartState> = {};
+  const positions = positionsQuery.data;
 
-    // 1) 모든 포지션 기본 세팅
-    for (const pos of positions) {
-      state[pos.name] = { roles: [], count: 1, positionId: pos.id };
-    }
-
-    // 2) latest 분배 불러왔으면, 현재 탭 타입에 맞는 assignment만 덮어쓰기
-    if (latestQuery.isSuccess && latestQuery.data) {
-      latestQuery.data.assignments
-        .filter((a) => a.evaluationType === currentEvalType)
-        .forEach((a) => {
-          const part = a.positionName;
-          const role = availableRoles.find(
-            (r) => r.label === a.organizationRoleName
-          );
-          if (!role) return;
-          state[part] = {
-            roles: [role],
-            count: a.count,
-            positionId: positions.find((p) => p.name === part)!.id,
-          };
-        });
-    }
-
+  // 포지션이 없거나 length가 0이면 "공통" 하나만 생성
+  if (!positions || positions.length === 0) {
+    state['공통'] = {
+      roles: [],
+      count: 1,
+      // TODO: 백엔드와 약속된 공통용 positionId가 있다면 그 값으로 변경
+      positionId: -1,
+    };
     return state;
+  }
+
+  // 포지션이 있을 때: 기존 로직 유지
+  for (const pos of positions) {
+    state[pos.name] = { roles: [], count: 1, positionId: pos.id };
+  }
+
+  // latest 분배 불러왔으면, 현재 탭 타입에 맞는 assignment만 덮어쓰기
+  if (latestQuery.isSuccess && latestQuery.data) {
+    latestQuery.data.assignments
+      .filter((a) => a.evaluationType === currentEvalType)
+      .forEach((a) => {
+        const part = a.positionName;
+        const role = availableRoles.find(
+          (r) => r.label === a.organizationRoleName
+        );
+        if (!role) return;
+
+        state[part] = {
+          roles: [role],
+          count: a.count,
+          positionId: positions.find((p) => p.name === part)!.id,
+        };
+      });
+  }
+
+  return state;
   };
+  
 
   const [state, setState] = useState<Record<string, PartState> | null>(null);
 

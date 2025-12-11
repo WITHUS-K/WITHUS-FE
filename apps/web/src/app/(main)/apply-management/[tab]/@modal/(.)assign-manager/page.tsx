@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Modal } from '@repo/ui/Modal';
 import AssignModalContent, {
   AssignModalContentRef,
@@ -11,7 +11,10 @@ export default function AssignManagerModal() {
   const router = useRouter();
   const contentRef = useRef<AssignModalContentRef>(null);
 
-  const close = () => router.back();
+  const close = () => {
+   router.back();
+  }
+
 
   return (
     <Modal.Overlay open onClose={close}>

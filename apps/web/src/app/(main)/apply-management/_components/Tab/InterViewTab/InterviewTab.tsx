@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, ChangeEvent, KeyboardEvent } from 'react';
 import TableContainer from '../../TableContainer/TableContainer';
 import ActionToolbar from '../../ActionToolbar/ActionToolbar';
 import { Flex } from '@repo/ui/Flex';
@@ -19,6 +19,7 @@ import {
 } from '@web/store/query/useAdminApplicationsQuery';
 import { mapServerColorToTagHex } from '@web/utils/color';
 import { HeaderMeta } from '../../ApplyListHeader/ApplyListHeader';
+import { TagColor } from '@repo/utils';
 
 // 인터뷰 탭 헤더 정의
 const INT_HEADER: HeaderMeta[] = [
@@ -34,7 +35,7 @@ const INT_HEADER: HeaderMeta[] = [
   },
   { key: 'score', label: '면접 점수', width: '10.5rem', sortable: true },
   { key: 'evaluators', label: '평가 담당자', width: '27rem' },
-  { key: 'status', label: '상태', width: '11rem', sortable: true },
+  { key: 'status', label: '합불 여부', width: '11rem', sortable: true },
   { key: 'smsSent', label: '문자 발송', width: '10.2rem', sortable: true },
   { key: 'mailSent', label: '메일 발송', sortable: true },
 ];
@@ -59,6 +60,9 @@ export default function InterviewTab({
   const side = searchParams.get('sideTab');
   const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
 
+    // 최신순
+  const [latestSort, setLatestSort] = useState(false);
+  
   // ─── 페이지 관리 ───────────────────────────────────────────────────────────────
   const pageParam = Number(searchParams.get('page'));
   const initialPage = !isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
@@ -94,16 +98,23 @@ export default function InterviewTab({
   });
 
   // ─── 테이블 row 생성 ───────────────────────────────────────────────────────────
-  const rows = useMemo(() => {
-    if (!data) return [];
-    return data.data.map((item, idx) => ({
+const rows = useMemo(() => {
+  if (!data) return [];
+
+  return data.data.map((item, idx) => {
+    const positionLabel = item.positionName ?? '공통';
+    const positionColor: TagColor = item.positionName
+      ? mapServerColorToTagHex(posColorMap[item.positionName]!)
+      : '#5A5C72';
+
+    return {
       applicationId: item.id,
       id: String(page * size + idx + 1).padStart(3, '0'),
       name: item.name,
       fieldTags: [
         {
-          label: item.positionName,
-          color: mapServerColorToTagHex(posColorMap[item.positionName]!),
+          label: positionLabel,
+          color: positionColor,
         },
       ],
       evalStatus: `${item.interviewEvaluatedCount}/${item.interviewAssignedCount}`,
@@ -128,8 +139,10 @@ export default function InterviewTab({
         profileImageUrl: e.profileImageUrl,
         profileColor: e.profileColor,
       })),
-    }));
-  }, [data, page, size, posColorMap]);
+    };
+  });
+}, [data, page, size, posColorMap]);
+
 
   // ─── 선택/모달 처리 ───────────────────────────────────────────────────────────
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -148,7 +161,7 @@ export default function InterviewTab({
   };
 
   const openAssignManagerModal = () =>
-    router.replace(
+    router.push(
       `/apply-management/${activeTab}/assign-manager?recruitmentId=${recruitmentId}`
     );
   const handleCloseSideTab = () => {
@@ -175,6 +188,35 @@ export default function InterviewTab({
     router.replace(`${pathname}?${qp.toString()}`);
   };
 
+  /*검색*/
+      const [searchKeyword, setSearchKeyword] = useState('');
+  
+    const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+      setSearchKeyword(e.target.value);
+      // TODO: 나중에 서버 연동 시
+    };
+  
+    const handleSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        // 지금은 아무 동작 안 하도록 비워둠
+      }
+    };
+  
+          const positionOptions = useMemo(() => {
+         const base = Object.keys(posColorMap); 
+         if (data?.data.some((item) => !item.positionName)) {
+           return ['공통', ...base];
+         }
+         return base;
+       }, [posColorMap, data]);
+    const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
+  
+    // TODO: 나중에 서버 연동 시 selectedPosition을 쿼리 파라미터/요청 바디에 반영
+  
+  const interviewStatusOptions = ['면접 합격', '면접 불합격', '보류'];
+const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+// TODO: 나중에 서버 연동 시 selectedStatus 사용
+
   return (
     <Flex direction="column" width="100%" height="100%" gap="1.2rem">
       <ActionToolbar
@@ -183,8 +225,16 @@ export default function InterviewTab({
         onMail={() => setModalParam('mail')}
         onDistribute={openAssignManagerModal}
         onAdd={() =>
-          router.replace(`/apply-management/add?recruitmentId=${recruitmentId}`)
+          router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
         }
+           searchValue={searchKeyword}
+        onSearchChange={handleSearchChange}
+        onSearchKeyDown={handleSearchKeyDown}
+                 latestSort={latestSort}
+  onLatestSortChange={(next) => {
+    setLatestSort(next);
+    // TODO: 나중에 서버에 정렬 방식 넘기기
+  }}
       />
 
       <TableContainer
@@ -206,6 +256,12 @@ export default function InterviewTab({
         onPageChange={onPageChange}
         isLoading={isLoading}
         isFetching={isFetching}
+                  positionOptions={positionOptions}
+        selectedPosition={selectedPosition}
+        onPositionChange={setSelectedPosition}
+          statusOptions={interviewStatusOptions}
+  selectedStatus={selectedStatus}
+  onStatusChange={setSelectedStatus}
       />
 
       {sideTab === 'sms' && (

@@ -66,7 +66,6 @@ export default function ApplyListItem({
   const recruitmentId = recruitmentIdParam ? Number(recruitmentIdParam) : 0;
 
   const [status, setStatus] = useState<Status>(member.status as Status);
-
   const stageEnum = stageMap[activeTab!];
 
   const updateStatus = useUpdateApplicationsStatus(

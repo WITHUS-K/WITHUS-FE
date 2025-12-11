@@ -9,6 +9,7 @@ export interface SearchInputProps {
   width?: string;
   onClick?: () => void;
   onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
+  keepSearchIcon?: boolean;
 }
 
 export default function SearchInput({
@@ -18,9 +19,32 @@ export default function SearchInput({
   width = '100%',
   onClick,
   onKeyDown,
+   keepSearchIcon = false,
 }: SearchInputProps) {
   const handleClear = () => {
     onChange({ target: { value: '' } } as ChangeEvent<HTMLInputElement>);
+  };
+
+    const renderIcon = () => {
+    // --- Search 아이콘 유지 모드 ---
+    if (keepSearchIcon) {
+      return (
+        <button type="button" onClick={onClick} style={{ height: '2.4rem' }}>
+          <IcInputSearch width={24} height={24} />
+        </button>
+      );
+    }
+
+    // --- 기존 behavior ---
+    return value ? (
+      <button type="button" onClick={handleClear} style={{ height: '2.4rem' }}>
+        <IcInputDelete width={24} height={24} />
+      </button>
+    ) : (
+      <button type="button" onClick={onClick} style={{ height: '2.4rem' }}>
+        <IcInputSearch width={24} height={24} />
+      </button>
+    );
   };
 
   return (
@@ -31,21 +55,7 @@ export default function SearchInput({
       onChange={onChange}
       width={width}
       onKeyDown={onKeyDown}
-      icon={
-        value ? (
-          <button
-            type="button"
-            onClick={handleClear}
-            style={{ height: '2.4rem' }}
-          >
-            <IcInputDelete width={24} height={24} />
-          </button>
-        ) : (
-          <button type="button" onClick={onClick} style={{ height: '2.4rem' }}>
-            <IcInputSearch width={24} height={24} />
-          </button>
-        )
-      }
+      icon={renderIcon()}
     />
   );
 }

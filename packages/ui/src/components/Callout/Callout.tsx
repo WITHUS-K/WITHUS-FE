@@ -1,7 +1,7 @@
 'use client';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { useOverlay, useOutsideClick } from '@repo/utils';
+import { useOverlay } from '@repo/utils';
 import * as styles from './Callout.css';
 import { Text } from '..';
 
@@ -10,6 +10,8 @@ export type CalloutProps = {
   texts: string | string[];
   position?: 'top' | 'bottom';
   offsetX?: number | string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export function Callout({
@@ -17,41 +19,85 @@ export function Callout({
   texts,
   position = 'top',
   offsetX = 0,
+  open,
+  onOpenChange,
 }: CalloutProps) {
-  const { isOpen, toggle, close } = useOverlay();
-  const wrapperRef = useOutsideClick<HTMLDivElement>(close);
+  const { isOpen: internalOpen, toggle, close } = useOverlay();
+
+  const isControlled = open !== undefined;
+  const isActuallyOpen = isControlled ? open! : internalOpen;
+
   const triggerRef = useRef<HTMLDivElement>(null);
+  const bubbleRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const items = Array.isArray(texts) ? texts : [texts];
 
-  // 화면 기준으로 찍어줄 좌표
+  const handleClose = useCallback(() => {
+    if (isControlled) {
+      onOpenChange?.(false);
+    } else {
+      close();
+    }
+  }, [isControlled, onOpenChange, close]);
+
+  const handleToggle = useCallback(() => {
+    if (isControlled) {
+      onOpenChange?.(!open);
+    } else {
+      toggle();
+    }
+  }, [isControlled, onOpenChange, open, toggle]);
+
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   useEffect(() => {
-    if (isOpen && triggerRef.current) {
+    if (isActuallyOpen && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
       setCoords({
         top: position === 'top' ? rect.top : rect.bottom,
         left: rect.left + rect.width / 2,
       });
     }
-  }, [isOpen, position]);
+  }, [isActuallyOpen, position]);
+
+  useEffect(() => {
+    if (!isActuallyOpen) return;
+
+    const handleDocumentClick = (e: MouseEvent) => {
+      const target = e.target as Node | null;
+      if (!target) return;
+      if (containerRef.current && containerRef.current.contains(target)) {
+        return;
+      }
+      if (bubbleRef.current && bubbleRef.current.contains(target)) {
+        return;
+      }
+      handleClose();
+    };
+
+    document.addEventListener('mousedown', handleDocumentClick);
+    return () => {
+      document.removeEventListener('mousedown', handleDocumentClick);
+    };
+  }, [isActuallyOpen, handleClose]);
 
   const offsetValue = typeof offsetX === 'number' ? `${offsetX}px` : offsetX;
 
   return (
-    <div ref={wrapperRef} className={styles.container}>
-      <div ref={triggerRef} onClick={toggle} className={styles.trigger}>
+    <div ref={containerRef} className={styles.container}>
+      <div ref={triggerRef} onClick={handleToggle} className={styles.trigger}>
         {trigger}
       </div>
 
-      {isOpen &&
+      {isActuallyOpen &&
         createPortal(
           <div
+            ref={bubbleRef}
             className={styles.bubble}
             style={{
               position: 'fixed',
               top: coords.top,
               left: coords.left,
-              // Y축으로만 옮길 때는 translateY, X축으로만 옮길 때 translateX
               transform:
                 position === 'top'
                   ? 'translate(-50%, calc(-100% - 10px))'

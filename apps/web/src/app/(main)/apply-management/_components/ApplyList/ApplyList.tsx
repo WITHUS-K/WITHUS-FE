@@ -31,6 +31,12 @@ interface Props {
   pageSize: number;
   isLoading: boolean;
   isFetching: boolean;
+   positionOptions?: string[];
+  selectedPosition?: string | null;
+  onPositionChange?: (name: string) => void;
+   statusOptions?: string[];
+  selectedStatus?: string | null;
+  onStatusChange?: (value: string) => void;
 }
 
 export function ApplyList({
@@ -49,6 +55,12 @@ export function ApplyList({
   totalItems,
   onPageChange,
   pageSize,
+  positionOptions,
+  selectedPosition,
+  onPositionChange,
+   statusOptions,
+  selectedStatus,
+  onStatusChange,
 }: Props) {
   const params = useParams();
   const rawTab = params.tab;
@@ -78,6 +90,12 @@ export function ApplyList({
         onToggleAll={onToggleAll}
         sortState={sortState}
         onSortChange={onSortChange}
+         positionOptions={positionOptions}
+  selectedPosition={selectedPosition}
+        onPositionChange={onPositionChange}
+            statusOptions={statusOptions}
+        selectedStatus={selectedStatus}
+        onStatusChange={onStatusChange}
       />
 
       {showEmpty ? (

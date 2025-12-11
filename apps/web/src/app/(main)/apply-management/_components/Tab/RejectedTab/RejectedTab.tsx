@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, ChangeEvent, KeyboardEvent } from 'react';
 import { MemberWithEval } from '../../ApplyListItem/ApplyListItem';
 import { HeaderMeta } from '../../ApplyListHeader/ApplyListHeader';
 import { Flex } from '@repo/ui/Flex';
@@ -40,7 +40,7 @@ const HEADER: HeaderMeta[] = [
     width: '15.5rem',
     sortable: true,
   },
-  { key: 'status', label: '상태', width: '16rem', sortable: true },
+  { key: 'status', label: '합불 여부', width: '16rem'},
   { key: 'smsSent', label: '문자 발송', width: '15rem' },
   { key: 'mailSent', label: '메일 발송' },
 ];
@@ -69,6 +69,9 @@ export default function RejectedTab({
         ? 'mail'
         : null;
 
+    // 최신순
+  const [latestSort, setLatestSort] = useState(false);
+  
   // 페이지 관리 (URL 기반)
   const pageParam = Number(searchParams.get('page'));
   const initialPage = !isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
@@ -102,16 +105,22 @@ export default function RejectedTab({
   });
 
   // 테이블 row 생성 (MemberWithEval 타입 보장)
-  const rows = useMemo<MemberWithEval[]>(() => {
-    if (!data) return [];
-    return data.data.map((item, idx) => ({
+const rows = useMemo<MemberWithEval[]>(() => {
+  if (!data) return [];
+
+  return data.data.map((item, idx) => {
+    const positionLabel = item.positionName ?? '공통';
+    const positionColor = item.positionName
+      ? mapServerColorToTagHex(posColorMap[item.positionName]!)
+      : '#5A5C72'; 
+    return {
       applicationId: item.id,
       id: String(page * size + idx + 1).padStart(3, '0'),
       name: item.name,
       fieldTags: [
         {
-          label: item.positionName,
-          color: mapServerColorToTagHex(posColorMap[item.positionName]!),
+          label: positionLabel,
+          color: positionColor,
         },
       ],
       evalStatus: `${item.documentEvaluatedCount}/${item.documentAssignedCount}`,
@@ -126,8 +135,9 @@ export default function RejectedTab({
         profileImageUrl: e.profileImageUrl,
         profileColor: e.profileColor,
       })),
-    }));
-  }, [data, page, size, posColorMap]);
+    };
+  });
+}, [data, page, size, posColorMap]);
 
   // 선택/모달 처리
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -168,6 +178,32 @@ export default function RejectedTab({
     router.replace(`${pathname}?${qp.toString()}`);
   };
 
+ /*검색*/
+    const [searchKeyword, setSearchKeyword] = useState('');
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchKeyword(e.target.value);
+    // TODO: 나중에 서버 연동 시
+  };
+
+  const handleSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      // 지금은 아무 동작 안 하도록 비워둠
+    }
+  };
+
+           const positionOptions = useMemo(() => {
+          const base = Object.keys(posColorMap); 
+          if (data?.data.some((item) => !item.positionName)) {
+            return ['공통', ...base];
+          }
+          return base;
+        }, [posColorMap, data]);
+    const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
+  
+    // TODO: 나중에 서버 연동 시 selectedPosition을 쿼리 파라미터/요청 바디에 반영
+  
+
   return (
     <Flex direction="column" width="100%" height="100%" gap="1.2rem">
       <ActionToolbar
@@ -176,9 +212,17 @@ export default function RejectedTab({
         onMail={() => setModalParam('mail')}
         onDistribute={() => {}}
         onAdd={() =>
-          router.replace(`/apply-management/add?recruitmentId=${recruitmentId}`)
+          router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
         }
         communicationOnly
+            searchValue={searchKeyword}
+        onSearchChange={handleSearchChange}
+        onSearchKeyDown={handleSearchKeyDown}
+                 latestSort={latestSort}
+  onLatestSortChange={(next) => {
+    setLatestSort(next);
+    // TODO: 나중에 서버에 정렬 방식 넘기기
+  }}
       />
 
       <TableContainer
@@ -199,6 +243,9 @@ export default function RejectedTab({
         }
         isLoading={isLoading}
         isFetching={isFetching}
+          positionOptions={positionOptions}
+        selectedPosition={selectedPosition}
+        onPositionChange={setSelectedPosition}
       />
 
       {sideTab === 'sms' && (
