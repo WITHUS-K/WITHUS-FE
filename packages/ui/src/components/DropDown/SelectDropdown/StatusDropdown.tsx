@@ -19,8 +19,6 @@ const interviewOptions: Status[] = ['면접 합격', '면접 불합격', '보류
 
 export default function StatusDropdown({ status, onChange, tab }: Props) {
   const options = tab === 'documents' ? documentOptions : interviewOptions;
-
-  console.log('[StatusDropdown]', { tab, status, options });
   
   return (
     <Dropdown>
