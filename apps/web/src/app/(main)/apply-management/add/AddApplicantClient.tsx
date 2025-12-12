@@ -142,7 +142,7 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
       const firstPart = data.positions[0];
       setValue('applicationPart', {
         id: firstPart!.id,
-        label: firstPart!.name,
+        label: firstPart!.roleName,
       });
     }
   }, [data?.positions, setValue, watch]);
@@ -154,7 +154,7 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
         // 파트 이름(positionName) 이 선택된 파트 라벨과 같은 것만
         .filter(
           (q) =>
-            q.positionName === '공통' || q.positionName === selectedPartLabel
+            q.organizationRoleName === '공통' || q.organizationRoleName === selectedPartLabel
         )
         .map((q) => {
           console.log(q);
@@ -325,7 +325,7 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
         <ApplicationPartsForm
           parts={data.positions.map((p) => ({
             id: p.id,
-            label: p.name,
+            label: p.roleName,
           }))}
           selectedPartId={watch('applicationPart')?.id}
           onChange={(p: PartOption) => setValue('applicationPart', p)}

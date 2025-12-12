@@ -50,12 +50,12 @@ export const ApplicantInterviewForm = ({
   console.log('공고', recruitmentDetail);
   const positionName = recruitmentDetail?.positions.find(
     (p) => p.id === detail.appliedPosition
-  )?.name;
+  )?.roleName;
 
   // 해당 포지션의 Interview 평가 기준만 추출
   const allCriteria =
     recruitmentDetail?.interviewEvaluationCriteria.filter(
-      (c) => c.type === 'INTERVIEW' && c.positionName === positionName
+      (c) => c.type === 'INTERVIEW' && c.organizationRoleName === positionName
     ) ?? [];
 
   //console.log('타임슬롯', timeSlotId);

@@ -1,10 +1,11 @@
 'use client';
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { useForm, FormProvider, useWatch } from 'react-hook-form';
 import {
   useSearchParams,
   useRouter,
   useSelectedLayoutSegments,
+  useParams,
 } from 'next/navigation';
 import Link from 'next/link';
 import { Breadcrumb } from '@repo/ui/Breadcrumb';
@@ -27,9 +28,11 @@ import CriteriaDocsTab from '../CriteriaTabs/CriteriaDocsTab/CriteriaDocsTab';
 import CriteriaInterviewTab from '../CriteriaTabs/CriteriaInterviewTab/CriteriaInterviewTab';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 import { buildRecruitUrl } from '@web/utils/url';
+import { useOrganizationRolesQuery } from '@web/store/query/useOrganizationRolesQuery';
 
 type TabKey = 'form' | 'stages' | 'docs' | 'interview';
 const TAB_KEYS: TabKey[] = ['form', 'stages', 'docs', 'interview'];
+type Params = { id?: string | string[] };
 
 interface SettingFormProps {
   existentForm?: Boolean;
@@ -51,7 +54,10 @@ export function SettingForm({
 
   const segs = useSelectedLayoutSegments();
   const leaf = segs.at(-1) ?? 'new';
-  const isNewPage = leaf === 'new';
+  const params = useParams<Params>();
+const idRaw = Array.isArray(params.id) ? params.id[0] : params.id;
+
+const isNewPage = !idRaw || idRaw === 'new';
   const hasIdParam = !!leaf && leaf !== 'new';
   const recruitmentId = isNewPage ? null : Number(leaf);
   const basePath = `/application-list/setting/${leaf}`;
@@ -66,31 +72,69 @@ export function SettingForm({
 
   const { organizationId } = getClientSideTokens();
 
+  const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
+
+const roleNameById = useMemo(() => {
+  const m = new Map<number, string>();
+  (rolesData?.roles ?? []).forEach((r) => m.set(r.id, r.roleName));
+  return m;
+}, [rolesData]);
+
+
   const draftMutation = useDraftRecruitmentMutation();
   const publishMutation = usePublishRecruitmentMutation();
 
   const initial = ctx.form;
+  const initialRoleIds = initial.applicationParts?.isSelected
+  ? initial.applicationParts.parts
+  : [];
+
+// ✅ seeded에 쓸 roleNames
+const initialRoleNames = useMemo(() => {
+  return initialRoleIds
+    .map((id) => roleNameById.get(id))
+    .filter(Boolean) as string[];
+}, [initialRoleIds, roleNameById]);
+
+const seededSectionNames: Array<string | null> =
+  initialRoleNames.length > 0 ? [...initialRoleNames] : [null];
+
   const customParts = initial.applicationParts?.isSelected
     ? initial.applicationParts.parts
     : [];
   const sections = customParts.length > 0 ? [...customParts] : [null];
 
   const seededPaperEvaluateItems =
-    initial.paperEvaluateItems && initial.paperEvaluateItems.length > 0
-      ? initial.paperEvaluateItems
-      : sections.map((partName) => ({
-          positionName: partName,
+  initial.paperEvaluateItems?.length
+    ? initial.paperEvaluateItems
+    : initialRoleIds.length > 0
+    ? initialRoleIds.map((roleId) => ({
+        organizationRoleId: roleId,
+        items: [{ evaluate: '', evaluateDetail: '' }],
+      }))
+    : [
+        {
+          organizationRoleId: 0, // 공통
           items: [{ evaluate: '', evaluateDetail: '' }],
-        }));
+        },
+      ];
 
-  const seededInterviewEvaluateItems =
-    initial.interviewEvaluateItems && initial.interviewEvaluateItems.length > 0
-      ? initial.interviewEvaluateItems
-      : sections.map((partName) => ({
-          positionName: partName,
-          items: [{ evaluate: '', evaluateDetail: '' }],
-        }));
 
+      const seededInterviewEvaluateItems =
+      initial.interviewEvaluateItems && initial.interviewEvaluateItems.length > 0
+        ? initial.interviewEvaluateItems
+        : initialRoleIds.length > 0
+        ? initialRoleIds.map((roleId) => ({
+            organizationRoleId: roleId,
+            items: [{ evaluate: '', evaluateDetail: '' }],
+          }))
+        : [
+            {
+              organizationRoleId: 0, // 공통
+              items: [{ evaluate: '', evaluateDetail: '' }],
+            },
+          ];
+          
   const seeded: FormValues = {
     ...initial,
     paperEvaluateItems: seededPaperEvaluateItems,
@@ -126,50 +170,67 @@ export function SettingForm({
     methods.reset(ctx.form);
   }, [ctx.form, methods]);
 
-  const parts = methods.watch('applicationParts.parts') ?? [];
+  const roleIds = methods.watch('applicationParts.parts') ?? [];
 
+  // ✅ criteria 동기화는 "roleName" 배열을 사용
+  const parts = useMemo(
+    () => roleIds.map((id) => roleNameById.get(id)).filter(Boolean) as string[],
+    [roleIds, roleNameById]
+  );
   const paperItems =
     useWatch({ control: methods.control, name: 'paperEvaluateItems' }) || [];
   const interviewItems =
     useWatch({ control: methods.control, name: 'interviewEvaluateItems' }) ||
     [];
 
-  const samePositions = (
-    a: { positionName: string | null }[],
-    b: (string | null)[]
-  ) => a.length === b.length && a.every((sec, i) => sec.positionName === b[i]);
+    const sameRoleIds = (
+      a: { organizationRoleId: number }[],
+      b: number[]
+    ) =>
+      a.length === b.length &&
+      a.every((sec, i) => sec.organizationRoleId === b[i]);
 
   // 서류 평가 기준 동기화
   useEffect(() => {
-    const sectionNames = parts.length > 0 ? [...parts] : [null];
-    if (samePositions(paperItems, sectionNames)) return;
-    const next = sectionNames.map((p) => {
-      const existing = paperItems.find((sec) => sec.positionName === p);
+    const sectionRoleIds = roleIds.length > 0 ? [...roleIds] : [0];
+    if (sameRoleIds(paperItems, sectionRoleIds)) return;
+  
+    const next = sectionRoleIds.map((rid) => {
+      const existing = paperItems.find(
+        (sec) => sec.organizationRoleId === rid
+      );
       return {
-        positionName: p,
+        organizationRoleId: rid,
         items: existing
           ? existing.items
           : [{ evaluate: '', evaluateDetail: '' }],
       };
     });
+  
     methods.setValue('paperEvaluateItems', next, { shouldValidate: false });
-  }, [parts, paperItems, methods]);
+  }, [roleIds, paperItems, methods]);
+
 
   // 면접 평가 기준 동기화
   useEffect(() => {
-    const sectionNames = parts.length > 0 ? [...parts] : [null];
-    if (samePositions(interviewItems, sectionNames)) return;
-    const next = sectionNames.map((p) => {
-      const existing = interviewItems.find((sec) => sec.positionName === p);
+    const sectionRoleIds = roleIds.length > 0 ? [...roleIds] : [0];
+    if (sameRoleIds(interviewItems, sectionRoleIds)) return;
+  
+    const next = sectionRoleIds.map((rid) => {
+      const existing = interviewItems.find(
+        (sec) => sec.organizationRoleId === rid
+      );
       return {
-        positionName: p,
+        organizationRoleId: rid,
         items: existing
           ? existing.items
           : [{ evaluate: '', evaluateDetail: '' }],
       };
     });
+  
     methods.setValue('interviewEvaluateItems', next, { shouldValidate: false });
-  }, [parts, interviewItems, methods]);
+  }, [roleIds, interviewItems, methods]);
+  
 
   const title = methods.watch('title') || '';
   const basicInfo = methods.watch('basicInfo')!;
@@ -191,7 +252,7 @@ export function SettingForm({
   const isPaperOk =
     paperItems.length > 0 &&
     paperItems.every((section) => {
-      if (section.positionName === null && hasParts) return true; // 파트가 있으면 공통 무시
+      if (section.organizationRoleId === null && hasParts) return true; // 파트가 있으면 공통 무시
       return (
         section.items.length > 0 &&
         section.items.every((item) => item.evaluate.trim().length > 0)
@@ -200,7 +261,7 @@ export function SettingForm({
   const isInterviewOk =
     interviewItems.length > 0 &&
     interviewItems.every((section) => {
-      if (section.positionName === null && hasParts) return true;
+      if (section.organizationRoleId === null && hasParts) return true;
       return (
         section.items.length > 0 &&
         section.items.every((item) => item.evaluate.trim().length > 0)

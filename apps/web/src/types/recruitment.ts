@@ -29,7 +29,7 @@ interface BaseQuestionDto {
   title: string;
   description: string;
   required: boolean;
-  positionName: string;
+  organizationRoleName : string;
 }
 
 export interface TextQuestionDto extends BaseQuestionDto {
@@ -49,11 +49,12 @@ export interface CreateTextQuestionRequest {
   title: string;
   description: string;
   required: boolean;
-  positionName: string | null;
+  organizationRoleId : number;
   textLimit: number | null;
   includeWhitespace: boolean | null;
   maxFileCount: null;
   maxFileSizeMb: null;
+  order: number;
 }
 
 export interface CreateFileQuestionRequest {
@@ -61,11 +62,12 @@ export interface CreateFileQuestionRequest {
   title: string;
   description: string;
   required: boolean;
-  positionName: string | null;
+  organizationRoleId : number;
   textLimit: null;
   includeWhitespace: null;
   maxFileCount: number | null;
   maxFileSizeMb: number | null;
+  order: number;
 }
 
 export type CreateQuestionRequest =
@@ -88,7 +90,7 @@ export interface RecruitmentDetailDto {
   needAcademicStatus: boolean;
   positions: {
     id: number;
-    name: string;
+    roleName: string;
     color: string;
   }[];
   documentDeadline: string;
@@ -106,7 +108,7 @@ export interface RecruitmentDetailDto {
     description: string;
     type: 'DOCUMENT' | 'INTERVIEW' | string;
     score: number;
-    positionName: string;
+    organizationRoleName : string;
   }[];
   interviewEvaluationCriteria: {
     id: number;
@@ -114,7 +116,7 @@ export interface RecruitmentDetailDto {
     description: string;
     type: 'DOCUMENT' | 'INTERVIEW' | string;
     score: number;
-    positionName: string;
+    organizationRoleName : string;
   }[];
   applicationQuestions: Array<TextQuestionDto | FileQuestionDto>;
   isInterviewRequired: boolean;
@@ -179,7 +181,7 @@ export interface PublishRecruitmentRequest {
   recruitmentId: number | null;
   title: string;
   content: string;
-  positions: string[];
+  organizationRoleIds: number[]
   applicationQuestions: CreateQuestionRequest[];
   documentDeadline: string;
   isDocumentResultRequired: boolean;
@@ -201,13 +203,13 @@ export interface PublishRecruitmentRequest {
     content: string;
     description: string;
     type: 'DOCUMENT' | 'INTERVIEW' | string;
-    positionName: string | null;
+    organizationRoleId : number;
   }[];
   interviewEvaluationCriteria: {
     content: string;
     description: string;
     type: 'DOCUMENT' | 'INTERVIEW' | string;
-    positionName: string | null;
+    organizationRoleId : number;
   }[];
 
   isInterviewRequired: boolean;
@@ -233,7 +235,7 @@ export interface DraftRecruitmentRequest {
   recruitmentId: number | null;
   title: string;
   content: string;
-  positions: string[];
+  organizationRoleIds: number[]
   applicationQuestions: CreateQuestionRequest[];
   documentDeadline: string;
   documentResultDate: string | null;
@@ -254,13 +256,13 @@ export interface DraftRecruitmentRequest {
     content: string;
     description: string;
     type: 'DOCUMENT' | 'INTERVIEW' | string;
-    positionName: string | null;
+    organizationRoleId : number
   }[];
   interviewEvaluationCriteria: {
     content: string;
     description: string;
     type: 'DOCUMENT' | 'INTERVIEW' | string;
-    positionName: string | null;
+    organizationRoleId : number
   }[];
   availableTimeRanges: {
     date: string;

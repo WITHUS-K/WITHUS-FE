@@ -7,14 +7,16 @@ import type {
 } from '@web/types/recruitment';
 import { format, parseISO } from 'date-fns';
 
-export function normalizeDateStr(s: string) {
+export function normalizeDateStr(s?: string | null) {
+  if (!s) return '';
   return s.replace(/\./g, '-');
 }
 
 export function convertFormToRequest(
   form: FormValues,
   recruitmentId: number | null,
-  organizationId: number
+  organizationId: number,
+  roleNameById?: Map<number, string> 
 ): PublishRecruitmentRequest {
   const interviewDuration =
     form.interviewDuration === '15분'
@@ -23,80 +25,82 @@ export function convertFormToRequest(
         ? 30
         : 60;
 
-  const customParts = form.applicationParts?.isSelected
-    ? form.applicationParts.parts
-    : [];
-  const uiPositions = form.applicationParts?.isSelected
-    ? ['공통', ...customParts]
-    : ['공통'];
+        const roleIds = form.applicationParts?.isSelected
+        ? form.applicationParts.parts
+        : [];
+    
+      // ✅ 2) roleNames (질문 positionName/평가기준 positionName 유지용)
+      // roleNameById를 안 넘기면 fallback으로 null 처리(공통만)하게 할 수도 있음
+      const roleNames = roleNameById
+        ? roleIds.map((id) => roleNameById.get(id)).filter(Boolean) as string[]
+        : [];
 
-  const positions = customParts;
+        const organizationRoleIds = roleIds;
 
-  const applicationQuestions: CreateQuestionRequest[] = form.detailItems.map(
-    (item) => {
-      const idx = item.responseTarget ?? 0;
-      const positionName: string | null =
-        idx > 0 ? (customParts[idx - 1] ?? null) : null;
+        const applicationQuestions: CreateQuestionRequest[] = form.detailItems.map(
+          (item, index) => {
+            const organizationRoleId = item.responseTarget ?? 0;
+      
+            const base = {
+              type: item.type === 'text' ? ('TEXT' as const) : ('FILE' as const),
+              title: item.description,
+              description: item.addDescription || '',
+              required: item.required,
+              organizationRoleId,
+              order: index + 1
+            };
+      
+            if (item.type === 'text') {
+              const textLimit =
+                parseInt(item.typeInfo.infoDetail.replace(/\D/g, ''), 10) || 0;
+              const includeWhitespace = item.typeInfo.info === '공백 포함';
+      
+              return {
+                ...base,
+                type: 'TEXT' as const,
+                textLimit,
+                includeWhitespace,
+                maxFileCount: null,
+                maxFileSizeMb: null,
+              };
+            }
+      
+            const maxFileCount = parseInt(item.typeInfo.info.replace(/\D/g, ''), 10) || 0;
+            const maxFileSizeMb =
+              parseInt(item.typeInfo.infoDetail.replace(/\D/g, ''), 10) || 0;
+      
+            return {
+              ...base,
+              type: 'FILE' as const,
+              textLimit: null,
+              includeWhitespace: null,
+              maxFileCount,
+              maxFileSizeMb,
+            };
+          }
+        );
+      
 
-      // 기본 공통 필드
-      const base = {
-        title: item.description,
-        description: item.addDescription || '',
-        required: item.required,
-        positionName,
-      };
+        const documentEvaluationCriteria = form.paperEvaluateItems.flatMap((section) =>
+        section.items.map((item) => ({
+          content: item.evaluate,
+          description: item.evaluateDetail,
+          type: 'DOCUMENT' as const,
+          organizationRoleId: section.organizationRoleId, // ✅ 필수
+        }))
+      );
+    
 
-      if (item.type === 'text') {
-        const textLimit =
-          parseInt(item.typeInfo.infoDetail.replace(/\D/g, '')) || 0;
-        const includeWhitespace = item.typeInfo.info === '공백 포함';
-
-        return {
-          type: 'TEXT' as const,
-          ...base,
-          textLimit,
-          includeWhitespace,
-          maxFileCount: null,
-          maxFileSizeMb: null,
-        };
-      } else {
-        const maxFileCount = parseInt(item.typeInfo.info) || 0;
-        const maxFileSizeMb =
-          parseInt(item.typeInfo.infoDetail.replace(/\D/g, '')) || 0;
-
-        return {
-          type: 'FILE' as const,
-          ...base,
-          maxFileCount,
-          maxFileSizeMb,
-          textLimit: null,
-          includeWhitespace: null,
-        };
-      }
-    }
-  );
-
-  const documentEvaluationCriteria = form.paperEvaluateItems.flatMap(
-    (section) =>
-      section.items.map((item) => ({
-        content: item.evaluate,
-        description: item.evaluateDetail,
-        type: 'DOCUMENT' as const,
-        // section.positionName이 null이면 공통, 아니면 해당 파트
-        positionName: section.positionName,
-      }))
-  );
-
-  const interviewEvaluationCriteria = form.interviewEvaluateItems.flatMap(
-    (section) =>
-      section.items.map((item) => ({
-        content: item.evaluate,
-        description: item.evaluateDetail,
-        type: 'INTERVIEW' as const,
-        positionName: section.positionName,
-      }))
-  );
-
+      const interviewEvaluationCriteria = form.interviewEvaluateItems.flatMap(
+        (section) =>
+          section.items.map((item) => ({
+            content: item.evaluate,
+            description: item.evaluateDetail,
+            type: 'INTERVIEW' as const,
+            organizationRoleId: section.organizationRoleId, // ✅ 필수
+          }))
+      );
+      
   const availableTimeRanges = form.interviewSchedule?.isSelected
     ? form.interviewSchedule.scheduleList
         .filter(
@@ -136,7 +140,7 @@ export function convertFormToRequest(
     title: form.title,
 
     content: '큐시즘 학회원 모집합니다.',
-    positions,
+    organizationRoleIds,
     applicationQuestions,
     isDocumentResultRequired: form.documentResult?.isSelected as boolean,
     documentDeadline: documentDeadlineStr,

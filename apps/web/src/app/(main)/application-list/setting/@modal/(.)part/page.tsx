@@ -21,7 +21,9 @@ export default function PartModal() {
   const close = () => router.back();
 
   const ctx = useContext(SettingContext)!;
-  const currentParts: string[] = ctx.form.applicationParts?.parts ?? [];
+
+  // ✅ 이제 number[] 입니다 (roleIds)
+  const currentRoleIds: number[] = ctx.form.applicationParts?.parts ?? [];
 
   const { organizationId } = getClientSideTokens();
   const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
@@ -36,12 +38,10 @@ export default function PartModal() {
     [rolesData]
   );
 
+  // ✅ 초기 선택값도 그냥 현재 roleIds 그대로
   const initialSelectedIds = useMemo(
-    () =>
-      allRoles
-        .filter((r) => currentParts.includes(r.roleName))
-        .map((r) => r.id),
-    [allRoles, currentParts]
+    () => currentRoleIds,
+    [currentRoleIds]
   );
 
   const [selectedRoleIds, setSelectedRoleIds] = useState<number[]>(
@@ -63,18 +63,15 @@ export default function PartModal() {
   };
 
   const confirm = () => {
-    const chosenNames = allRoles
-      .filter((r) => selectedRoleIds.includes(r.id))
-      .map((r) => r.roleName);
-
-    const unknown = currentParts.filter(
-      (p) => !allRoles.some((r) => r.roleName === p)
-    );
-    const nextParts = [...unknown, ...chosenNames];
+    // ✅ 서버/폼에 저장할 값은 id 배열 (number[])
+    const nextParts = selectedRoleIds;
 
     ctx.setForm((prev) => ({
       ...prev,
-      applicationParts: { isSelected: nextParts.length > 0, parts: nextParts },
+      applicationParts: {
+        isSelected: nextParts.length > 0,
+        parts: nextParts,
+      },
     }));
 
     close();

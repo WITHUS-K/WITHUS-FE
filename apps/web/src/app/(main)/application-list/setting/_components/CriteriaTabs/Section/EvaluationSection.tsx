@@ -13,13 +13,13 @@ import { useEffect } from 'react';
 interface EvaluationSectionProps {
   //standardName: 'paperEvaluateStandard' | 'interviewEvaluateStandard';
   itemsName: 'paperEvaluateItems' | 'interviewEvaluateItems';
-  positionName: string | null;
+  organizationRoleId: number;
   sectionIndex: number;
 }
 
 export default function EvaluationSection({
   itemsName,
-  positionName,
+  organizationRoleId,
   sectionIndex,
 }: EvaluationSectionProps) {
   const { control } = useFormContext<FormValues>();
@@ -39,13 +39,14 @@ export default function EvaluationSection({
       <Flex direction="column" gap="2.4rem" width="100%" align="center">
         {/* positionName 숨겨주기 */}
         <Controller
-          name={`${itemsName}.${sectionIndex}.positionName` as const}
-          control={control}
-          defaultValue={positionName ?? ''}
-          render={({ field }) => (
-            <input type="hidden" {...field} value={positionName ?? ''} />
-          )}
-        />
+  name={`${itemsName}.${sectionIndex}.organizationRoleId` as const}
+  control={control}
+  defaultValue={organizationRoleId}
+  render={({ field }) => (
+    <input type="hidden" {...field} value={organizationRoleId} />
+  )}
+/>
+
 
         {/* 실제 평가 항목 카드 (itemFields) */}
         {itemFields.map((item, idx) => (

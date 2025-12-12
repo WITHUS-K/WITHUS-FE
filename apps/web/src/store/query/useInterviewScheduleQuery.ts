@@ -22,7 +22,7 @@ export interface TimeSlot {
     applicationId: number;
     name: string;
     email: string;
-    positionName: string;
+    organizationRoleName : string;
   }[];
   interviewers: {
     userId: number;

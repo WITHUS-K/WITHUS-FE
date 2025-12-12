@@ -65,11 +65,11 @@ export default function ApplicantDetailClient() {
 
   const positionName =
     recruitmentDetail?.positions?.find((p) => p.id === app.appliedPosition)
-      ?.name ?? '';
+      ?.roleName ?? '';
 
   const criteriaList =
     recruitmentDetail?.interviewEvaluationCriteria?.filter(
-      (c) => c.type === 'INTERVIEW' && c.positionName === positionName
+      (c) => c.type === 'INTERVIEW' && c.organizationRoleName === positionName
     ) ?? [];
 
   const interviewContent = criteriaList.map((c) => {

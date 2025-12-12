@@ -22,7 +22,7 @@ export interface UpdateApplicationsStatusResponse {
     id: number;
     name: string;
     email: string;
-    positionName: string;
+    organizationRoleName : string;
     status: string;
   }[];
   success: boolean;

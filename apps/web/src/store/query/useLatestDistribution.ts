@@ -9,7 +9,6 @@ import { queryKeys } from '../constants';
 import { Tokens } from '@web/api/types';
 
 export interface AssignmentItem {
-  positionName: string;
   organizationRoleName: string;
   evaluationType: 'DOCUMENT' | 'INTERVIEW';
   count: number;

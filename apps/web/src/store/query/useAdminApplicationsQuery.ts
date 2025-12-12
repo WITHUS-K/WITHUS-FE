@@ -34,7 +34,7 @@ export interface AdminApplicationSummary {
   sequence: string;
   id: number;
   name: string;
-  positionName: string;
+  organizationRoleName : string;
   status:
     | 'PENDING'
     | 'DOX_PASS'

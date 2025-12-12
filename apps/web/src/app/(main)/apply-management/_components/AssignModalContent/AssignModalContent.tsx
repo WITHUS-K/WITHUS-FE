@@ -94,7 +94,7 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
     latestQuery.data.assignments
       .filter((a) => a.evaluationType === currentEvalType)
       .forEach((a) => {
-        const part = a.positionName;
+        const part = a.organizationRoleName;
         const role = availableRoles.find(
           (r) => r.label === a.organizationRoleName
         );

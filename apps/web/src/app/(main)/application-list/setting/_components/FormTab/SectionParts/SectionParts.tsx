@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -9,16 +9,26 @@ import { PartTag } from './Tag/PartTag';
 import { AddButton } from './Tag/AddButton';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SettingContext } from '../../../_context/SettingContext';
+import { useOrganizationRolesQuery } from '@web/store/query/useOrganizationRolesQuery';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 export default function SectionParts() {
   const { control, watch, setValue } = useFormContext();
   const ctx = useContext(SettingContext)!;
   const enabled: boolean = watch('applicationParts.isSelected');
-  const parts: string[] = watch('applicationParts.parts') || [];
+  const parts: number[] = watch('applicationParts.parts') || [];
 
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { organizationId } = getClientSideTokens();
+  const { data } = useOrganizationRolesQuery({ organizationId });
 
+  const roleNameById = useMemo(() => {
+    const m = new Map<number, string>();
+    (data?.roles ?? []).forEach((r) => m.set(r.id, r.roleName));
+    return m;
+  }, [data]);
+  
   const openPartModal = () => {
     const qs = searchParams.toString();
     router.push(`/application-list/setting/part${qs ? `?${qs}` : ''}`, {
@@ -57,16 +67,18 @@ export default function SectionParts() {
 
       {/* 파트 태그 + 추가 버튼 (인라인 입력 제거) */}
       <Flex wrap="wrap" gap="2.3rem" width="100%">
-        {parts.map((p, i) => (
-          <PartTag
-            key={`${p}-${i}`}
-            label={p}
-            onRemove={() => handleRemove(i)}
-            onEdit={openPartModal}
-            disabled={!enabled}
-          />
-        ))}
-
+      {parts.map((id, i) => {
+          const label = roleNameById.get(id) ?? `알 수 없음(#${id})`;
+          return (
+            <PartTag
+              key={`${id}-${i}`}
+              label={label}
+              onRemove={() => handleRemove(i)}
+              onEdit={openPartModal}
+              disabled={!enabled}
+            />
+          );
+        })}
         <AddButton onClick={openPartModal} disabled={!enabled} />
       </Flex>
     </Flex>
