@@ -63,8 +63,7 @@ export default function AuthLayout({
         );
 
         clearUser();
-        router.refresh();
-        router.push('/');
+        router.replace('/');
       },
     });
   };

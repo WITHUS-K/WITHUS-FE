@@ -7,7 +7,6 @@ export const container = style({
   display: 'flex',
   gap: '4rem',
   flexDirection: 'column',
-  paddingBottom: '20rem',
 });
 
 export const rightSection = style({

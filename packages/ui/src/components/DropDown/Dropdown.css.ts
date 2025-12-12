@@ -19,6 +19,7 @@ export const triggerStyle = style({
   height: '5.6rem',
   width: '19.7rem',
   boxSizing: 'border-box',
+   overflow: 'hidden',    
 });
 
 export const academicStatusTriggerStyle = style({
@@ -82,8 +83,12 @@ export const dropdownListInner = style({
 
   // 스크롤바 스타일
   selectors: {
+    '&::-webkit-scrollbar:horizontal': {
+      display: 'none',
+    },
     '&::-webkit-scrollbar': {
-      width: '2px',
+      width: '2px',           
+      height: '0',           
     },
     '&::-webkit-scrollbar-thumb': {
       backgroundColor: vars.colors.grayscale10,

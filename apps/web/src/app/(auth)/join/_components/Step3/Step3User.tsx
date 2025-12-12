@@ -1,26 +1,22 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
 import { TextField } from '@repo/ui/TextField';
-import { InputField } from '@repo/ui/InputField';
 import { SelectDropdown } from '@repo/ui/DropDown';
 import { Button } from '@repo/ui/Button';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
-import {
-  IcInputSearch,
-  IcInputError,
-  IcInputSuccess,
-} from '@repo/ui/icons/colored';
+import { IcInputError, IcInputSuccess } from '@repo/ui/icons/colored';
 
-import { useEmailCheckMutation } from '@web/store/mutation/useEmailCheckMutation';
-import { usePhoneVerifyMutation } from '@web/store/mutation/usePhoneVerifyMutation';
-import { usePhoneConfirmMutation } from '@web/store/mutation/usePhoneConfirmMutation';
+import { useEmailCheckQuery } from '@web/store/query/useEmailCheckQuery';
+import { useEmailVerifyMutation } from '@web/store/mutation/useEmailVerifyMutation';
+import { useEmailConfirmMutation } from '@web/store/mutation/useEmailConfirmMutation';
+import { useOrganizationVerifyQuery } from '@web/store/query/useOrganizationVerifyQuery';
 import { useUserJoinMutation } from '@web/store/mutation/useUserJoinMutation';
 import type { UserJoinRequest } from '@web/types/auth';
 import { useClub } from '../../_context/ClubContext';
+import { useModal } from '@repo/ui/hooks';
 
 interface Step3UserProps {
   onBack: () => void;
@@ -29,8 +25,7 @@ interface Step3UserProps {
 interface FormValues {
   name: string;
   birth: string;
-  gender: 'female' | 'male';
-  club: string;
+  clubCode: string;
   emailLocal: string;
   emailDomain: string;
   password: string;
@@ -41,21 +36,24 @@ interface FormValues {
 
 export default function Step3User({ onBack }: Step3UserProps) {
   const { club } = useClub();
-  const router = useRouter();
+  const { confirm } = useModal();
+  const [clubCodeTried, setClubCodeTried] = useState(false);
+  const [clubCodeLocked, setClubCodeLocked] = useState(false);
+  const [clubId, setClubId] = useState<number>(0);
 
   const {
     control,
     handleSubmit,
     watch,
     setError,
+    setValue,
     formState: { errors, isValid },
   } = useForm<FormValues>({
     mode: 'onBlur',
     defaultValues: {
       name: '',
       birth: '',
-      gender: undefined,
-      club: '',
+      clubCode: '',
       emailLocal: '',
       emailDomain: '',
       password: '',
@@ -69,31 +67,48 @@ export default function Step3User({ onBack }: Step3UserProps) {
   const emailDomain = watch('emailDomain');
   const phone = watch('phone');
   const authCode = watch('authCode');
+  const clubCode = watch('clubCode');
   const canCheckEmail = Boolean(emailLocal && emailDomain);
 
+  const email = useMemo(
+    () => (canCheckEmail ? `${emailLocal}@${emailDomain}` : ''),
+    [canCheckEmail, emailLocal, emailDomain]
+  );
+
   const {
-    mutate: checkEmail,
-    isSuccess: isEmailChecked,
     data: emailCheckData,
-  } = useEmailCheckMutation();
+    isSuccess: isEmailChecked,
+    refetch: refetchEmailCheck,
+    isFetching: isCheckingEmail,
+  } = useEmailCheckQuery(['user', 'emailCheck', email], email, {
+    enabled: false,
+  });
 
-  const { mutate: sendVerify, isSuccess: isVerifySent } =
-    usePhoneVerifyMutation();
+  const { mutate: sendEmailCode, isSuccess: isVerifySent } =
+    useEmailVerifyMutation(false);
 
   const {
-    mutate: confirmVerify,
-    isSuccess: isPhoneConfirmed,
-    isError: isConfirmError,
-  } = usePhoneConfirmMutation();
+    mutate: confirmEmailCode,
+    isSuccess: isEmailConfirmed,
+    isError: isEmailConfirmError,
+  } = useEmailConfirmMutation();
+
+  const { refetch: refetchOrganizationVerify } = useOrganizationVerifyQuery(
+    ['organization', 'verify', clubCode],
+    clubCode ?? '',
+    {
+      enabled: false,
+    }
+  );
 
   const { mutate: joinUser } = useUserJoinMutation();
 
   const onSubmit = async (data: FormValues) => {
     const payload: UserJoinRequest = {
       name: data.name,
-      birthDate: data.birth,
-      gender: data.gender.toUpperCase() as 'MALE' | 'FEMALE' | 'NONE',
-      organizationId: club!.id,
+      birthDate: data.birth.replace(/\//g, '-'),
+      gender: 'NONE',
+      organizationId: clubId,
       email: `${data.emailLocal}@${data.emailDomain}`,
       password: data.password,
       phoneNumber: data.phone.replace(/-/g, ''),
@@ -102,9 +117,9 @@ export default function Step3User({ onBack }: Step3UserProps) {
       onError: async (error) => {
         const errData = (await error.response.json()) as { code: string };
         if (errData.code === 'ORGANIZATION404') {
-          setError('club', {
+          setError('clubCode', {
             type: 'manual',
-            message: '존재하지 않는 조직입니다.',
+            message: '해당하는 조직이 존재하지 않습니다.',
           });
         } else if (errData.code === 'USER400') {
           setError('name', {
@@ -152,85 +167,157 @@ export default function Step3User({ onBack }: Step3UserProps) {
           rules={{
             required: '생년월일을 입력해주세요.',
             pattern: {
-              value: /^\d{4}-\d{2}-\d{2}$/,
-              message: 'YYYY-MM-DD 형식으로 입력해주세요.',
+              value: /^\d{4}\/\d{2}\/\d{2}$/,
+              message: 'YYYY/MM/DD 형식으로 입력해주세요.',
             },
           }}
           render={({ field }) => (
             <TextField
               title="생년월일"
-              inputProps={{ ...field, placeholder: 'YYYY-MM-DD', type: 'text' }}
+              size="auth"
               errorMessage={errors.birth?.message}
+              inputProps={{
+                placeholder: 'YYYY/MM/DD',
+                type: 'text',
+                maxLength: 10,
+                name: field.name,
+                onBlur: field.onBlur,
+                value: field.value ?? '',
+                onChange: (e) => {
+                  let v = e.target.value.replace(/\D/g, '');
+                  if (v.length > 4 && v.length <= 6) {
+                    v = v.slice(0, 4) + '/' + v.slice(4);
+                  } else if (v.length > 6) {
+                    v =
+                      v.slice(0, 4) + '/' + v.slice(4, 6) + '/' + v.slice(6, 8);
+                  }
+                  field.onChange(v);
+                },
+              }}
+            />
+          )}
+        />
+
+        {/* 핸드폰 번호 */}
+        <Controller
+          control={control}
+          name="phone"
+          rules={{
+            required: '핸드폰 번호를 입력해주세요.',
+            pattern: {
+              value: /^010-?\d{4}-?\d{4}$/,
+              message: '올바른 형식으로 입력해주세요.',
+            },
+          }}
+          render={({ field }) => (
+            <TextField
+              title="핸드폰 번호"
+              inputProps={{
+                placeholder: '핸드폰 번호 -없이 입력',
+                type: 'text',
+                maxLength: 13,
+                name: field.name,
+                onBlur: field.onBlur,
+                value: field.value ?? '',
+                onChange: (e) => {
+                  let v = e.target.value.replace(/\D/g, '');
+                  if (v.length > 3 && v.length <= 7) {
+                    v = v.slice(0, 3) + '-' + v.slice(3);
+                  } else if (v.length > 7) {
+                    v =
+                      v.slice(0, 3) +
+                      '-' +
+                      v.slice(3, 7) +
+                      '-' +
+                      v.slice(7, 11);
+                  }
+                  field.onChange(v);
+                },
+              }}
+              errorMessage={errors.phone?.message}
               size="auth"
             />
           )}
         />
 
-        {/* 성별 */}
-        <Flex direction="column" gap="0.8rem">
-          <Text variant="md1_text_semibold" color="grayscale80">
-            성별
-          </Text>
+        {/* 단체 코드 */}
+        <Flex gap="1.2rem">
           <Controller
             control={control}
-            name="gender"
-            rules={{ required: '성별을 선택해주세요.' }}
+            name="clubCode"
+            rules={{ required: '단체 코드를 입력해주세요.' }}
             render={({ field }) => (
-              <Flex gap="1.6rem">
-                <Button
-                  variant="sub"
-                  isPressed={field.value === 'female'}
-                  onClick={() => field.onChange('female')}
-                  size="56"
-                  width="20.9rem"
-                >
-                  여성
-                </Button>
-                <Button
-                  variant="sub"
-                  isPressed={field.value === 'male'}
-                  onClick={() => field.onChange('male')}
-                  size="56"
-                  width="20.9rem"
-                >
-                  남성
-                </Button>
-              </Flex>
+              <TextField
+                title="단체 코드"
+                inputProps={{
+                  ...field,
+                  placeholder: clubCodeLocked
+                    ? (club?.name ?? '조직명')
+                    : '단체 코드 6자리',
+                  type: 'text',
+                  value: field.value ?? '',
+                  ...(clubCodeLocked
+                    ? {}
+                    : {
+                        maxLength: 6,
+                        inputMode: 'text',
+                        onChange: field.onChange,
+                      }),
+                }}
+                size="auth"
+                width="29.5rem"
+              />
             )}
           />
-        </Flex>
+          <Button
+            type="button"
+            variant="sub"
+            size="56"
+            width="12.7rem"
+            disabled={clubCodeLocked || clubCode.length !== 6}
+            style={{ marginTop: '3.4rem' }}
+            onClick={async () => {
+              const clubCode = watch('clubCode') || '';
+              if (clubCode.length !== 6) return;
 
-        {/* 동아리명 (읽기 전용) */}
-        <Controller
-          control={control}
-          name="club"
-          render={({ field }) => (
-            <Flex direction="column" gap="0.8rem" width="100%">
-              <Text variant="md1_text_semibold" color="grayscale80">
-                동아리명
-              </Text>
-              <InputField
-                placeholder="동아리명을 검색해주세요."
-                value={club?.name ?? ''}
-                onChange={(e) => {
-                  /* readOnly 필드라 특별한 로직 없으니 빈 함수로 둡니다 */
-                }}
-                readOnly
-                onClick={() => router.push('/join/3/club-search?type=user')}
-                icon={<IcInputSearch width={24} height={24} />}
-                size="club"
-              />
-              {errors.club && (
-                <Flex gap="0.8rem" align="center">
-                  <IcInputError width={24} height={24} />
-                  <Text variant="sm_caption_regular" color="error">
-                    {errors.club.message}
-                  </Text>
-                </Flex>
-              )}
-            </Flex>
-          )}
-        />
+              setClubCodeTried(true);
+
+              const { data, error } = await refetchOrganizationVerify();
+
+              if (!data || error) {
+                confirm({
+                  type: 'warning',
+                  description: '해당하는 조직이 존재하지 않습니다',
+                  confirmText: '확인',
+                  hideCancel: true,
+                });
+                return;
+              }
+
+              confirm({
+                type: 'info',
+                description: `${
+                  data.name ?? club?.name ?? '위더스'
+                } 조직에 추가됩니다.`,
+                cancelText: '취소',
+                confirmText: '확인',
+                onConfirm: () => {
+                  setValue('clubCode', data.name ?? club?.name ?? '위더스', {
+                    shouldValidate: false,
+                  });
+                  setClubId(data.id);
+                  setClubCodeLocked(true);
+                },
+              });
+            }}
+          >
+            {clubCodeLocked
+              ? '인증 완료'
+              : clubCodeTried
+                ? '코드 재인증'
+                : '확인'}
+          </Button>
+        </Flex>
 
         {/* 이메일 */}
         <Flex direction="column" gap="1.2rem">
@@ -275,15 +362,27 @@ export default function Step3User({ onBack }: Step3UserProps) {
               )}
             />
           </Flex>
-          <Button
-            type="button"
-            variant="sub"
-            size="56"
-            disabled={!canCheckEmail}
-            onClick={() => checkEmail(`${emailLocal}@${emailDomain}`)}
-          >
-            중복확인
-          </Button>
+
+          {!isVerifySent && (
+            <Button
+              type="button"
+              variant="sub"
+              size="56"
+              disabled={!canCheckEmail || isCheckingEmail}
+              onClick={async () => {
+                if (!canCheckEmail || !email) return;
+
+                const { data } = await refetchEmailCheck();
+                if (!data) return;
+                if (data.isDuplicated) return;
+
+                sendEmailCode({ name: watch('name'), email });
+              }}
+            >
+              인증번호 받기
+            </Button>
+          )}
+
           {isEmailChecked && (
             <Flex gap="0.8rem" align="center">
               {emailCheckData!.isDuplicated ? (
@@ -299,6 +398,49 @@ export default function Step3User({ onBack }: Step3UserProps) {
                   ? '이미 가입된 이메일입니다.'
                   : '가입 가능한 이메일입니다.'}
               </Text>
+            </Flex>
+          )}
+
+          {emailCheckData?.isDuplicated === false && isVerifySent && (
+            <Flex gap="1.2rem">
+              <Controller
+                control={control}
+                name="authCode"
+                rules={{ required: '인증번호를 입력해주세요.' }}
+                render={({ field }) => (
+                  <TextField
+                    inputProps={{
+                      ...field,
+                      placeholder: '인증코드 6자리',
+                      type: 'text',
+                    }}
+                    errorMessage={
+                      isEmailConfirmError
+                        ? '인증번호가 일치하지 않습니다. 다시 입력해주세요.'
+                        : errors.authCode?.message
+                    }
+                    success={isEmailConfirmed}
+                    successMessage="인증이 완료되었습니다."
+                    size="auth"
+                    width="29.5rem"
+                  />
+                )}
+              />
+              <Button
+                type="button"
+                variant="sub"
+                size="56"
+                width="12.7rem"
+                disabled={!authCode || isEmailConfirmed}
+                onClick={() =>
+                  confirmEmailCode({
+                    email,
+                    code: authCode,
+                  })
+                }
+              >
+                인증번호 확인
+              </Button>
             </Flex>
           )}
         </Flex>
@@ -362,90 +504,6 @@ export default function Step3User({ onBack }: Step3UserProps) {
           )}
         />
 
-        {/* 전화번호 인증 */}
-        <Flex direction="column" gap="1.6rem">
-          <Flex gap="1.2rem">
-            <Controller
-              control={control}
-              name="phone"
-              rules={{
-                required: '핸드폰 번호를 입력해주세요.',
-                pattern: {
-                  value: /^010-?\d{4}-?\d{4}$/,
-                  message: '올바른 형식으로 입력해주세요.',
-                },
-              }}
-              render={({ field }) => (
-                <TextField
-                  title="핸드폰 번호"
-                  inputProps={{
-                    ...field,
-                    placeholder: '010-1234-5678',
-                    type: 'text',
-                  }}
-                  errorMessage={errors.phone?.message}
-                  size="auth"
-                  width="29.5rem"
-                />
-              )}
-            />
-            <Button
-              type="button"
-              variant="sub"
-              size="56"
-              width="12.7rem"
-              style={{ marginTop: '3.4rem' }}
-              disabled={!phone}
-              onClick={() => sendVerify(phone.replace(/-/g, ''))}
-            >
-              인증번호 받기
-            </Button>
-          </Flex>
-
-          {isVerifySent && (
-            <Flex gap="1.2rem">
-              <Controller
-                control={control}
-                name="authCode"
-                rules={{ required: '인증번호를 입력해주세요.' }}
-                render={({ field }) => (
-                  <TextField
-                    inputProps={{
-                      ...field,
-                      placeholder: '인증번호',
-                      type: 'text',
-                    }}
-                    errorMessage={
-                      isConfirmError
-                        ? '인증번호 불일치. 다시 입력해주세요.'
-                        : errors.authCode?.message
-                    }
-                    success={isPhoneConfirmed}
-                    successMessage="인증이 완료되었습니다."
-                    size="auth"
-                    width="29.5rem"
-                  />
-                )}
-              />
-              <Button
-                type="button"
-                variant="sub"
-                size="56"
-                width="12.7rem"
-                disabled={!authCode}
-                onClick={() =>
-                  confirmVerify({
-                    phoneNumber: phone.replace(/-/g, ''),
-                    code: authCode,
-                  })
-                }
-              >
-                인증번호 확인
-              </Button>
-            </Flex>
-          )}
-        </Flex>
-
         {/* 뒤로/완료 버튼 */}
         <Flex gap="2rem" justify="center" marginTop="3.2rem">
           <Button
@@ -462,11 +520,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
             variant="main"
             size="64"
             width="20.7rem"
-            disabled={
-              !isValid ||
-              emailCheckData?.isDuplicated !== false ||
-              !isPhoneConfirmed
-            }
+            disabled={!isValid || emailCheckData?.isDuplicated !== false}
           >
             완료
           </Button>
