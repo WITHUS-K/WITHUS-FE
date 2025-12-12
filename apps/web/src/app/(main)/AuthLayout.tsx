@@ -32,14 +32,14 @@ export default function AuthLayout({
   position,
   part,
   currentOrganizationId,
-  organizations,
+  //organizations,
 }: AuthLayoutProps) {
   const router = useRouter();
   const clearUser = useUserStore((state) => state.clearUser);
   const { confirm } = useModal();
 
-  console.log('조직', organizations);
-
+  const { data } = useMyOrganizationsQuery();
+  const organizations = data ?? [];
   const handleLogout = () => {
     confirm({
       type: 'logout',
