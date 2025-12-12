@@ -22,6 +22,7 @@ export { default as IcDeleteCircle } from './IcDeleteCircle';
 export { default as IcDeleteLg } from './IcDeleteLg';
 export { default as IcDeleteMenu } from './IcDeleteMenu';
 export { default as IcDocsNon } from './IcDocsNon';
+export { default as IcDots } from './IcDots';
 export { default as IcDotsMenu } from './IcDotsMenu';
 export { default as IcDownload } from './IcDownload';
 export { default as IcDropdwonGray90 } from './IcDropdwonGray90';

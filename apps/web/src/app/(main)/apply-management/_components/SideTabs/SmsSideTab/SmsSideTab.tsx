@@ -32,6 +32,7 @@ import {
 import { deserializeHtml } from '@web/utils/deserializeHtml';
 import { serializeHtml } from '@web/utils/serializers';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+import { useModal } from '@repo/ui/hooks';
 
 interface SmsSideTabProps {
   applicationIds: number[];
@@ -45,8 +46,8 @@ export function SmsSideTab({
   onClose,
 }: SmsSideTabProps) {
   const { organizationId } = getClientSideTokens();
+  const { confirm } = useModal();
 
-  // 1) 기존 템플릿 리스트 불러오기
   const { data: tplSummaries = [] } = useTemplatesQuery('SMS');
   const [templates, setTemplates] = useState<Template[]>([]);
   useEffect(() => {
@@ -54,7 +55,7 @@ export function SmsSideTab({
       tplSummaries.map((t) => ({
         id: String(t.id),
         title: t.name,
-        body: '', // body 는 detail 로 따로 불러오니까 빈 문자열로 둡니다
+        body: '',
       }))
     );
   }, [tplSummaries]);
@@ -64,15 +65,13 @@ export function SmsSideTab({
     setLocalRecipients(recipients);
   }, [recipients]);
 
-  // 2) 선택/생성 상태
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
     null
   );
   const [isCreating, setIsCreating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState('');
 
-  // 3) SMS 본문 및 첨부
-  const [body, setBody] = useState('');
   const [attachment, setAttachment] = useState<File>();
 
   const editor = useMemo(
@@ -83,7 +82,6 @@ export function SmsSideTab({
     { type: 'paragraph', children: [{ text: '' }] },
   ]);
 
-  // 4) 선택된 템플릿 상세 조회
   const tplDetailQ = useTemplateDetailQuery(
     selectedTemplateId ? Number(selectedTemplateId) : -1
   );
@@ -94,16 +92,47 @@ export function SmsSideTab({
     }
   }, [tplDetailQ.data, isCreating]);
 
-  // 5) mutations
   const sendSms = useBulkSms();
   const createTpl = useCreateTemplate();
+  // const updateTpl = useUpdateTemplate(); // TODO
 
-  // === Handlers ===
   const handleCreate = () => {
     setSelectedTemplateId(null);
     setIsCreating(true);
+    setIsEditing(false);
     setNewTitle('');
     setEditorValue([{ type: 'paragraph', children: [{ text: '' }] }]);
+  };
+
+  const handleSelect = (tpl: Template) => {
+    setIsCreating(false);
+    setIsEditing(false);
+    setSelectedTemplateId(tpl.id);
+  };
+
+  const handleEdit = (tpl: Template) => {
+    setSelectedTemplateId(tpl.id);
+    setIsCreating(false);
+    setIsEditing(true);
+  };
+
+  const handleDelete = (tpl: Template) => {
+    confirm({
+      type: 'warning',
+      description: '해당 템플릿을 삭제하시겠습니까?',
+      cancelText: '취소',
+      confirmText: '삭제',
+      onConfirm: () => {
+        // TODO: 삭제 API 연동
+        setTemplates((prev) => prev.filter((t) => t.id !== tpl.id));
+        if (selectedTemplateId === tpl.id) {
+          setSelectedTemplateId(null);
+          setEditorValue([
+            { type: 'paragraph', children: [{ text: '' }] },
+          ]);
+        }
+      },
+    });
   };
 
   const handleSaveTemplate = () => {
@@ -112,7 +141,7 @@ export function SmsSideTab({
         name: newTitle,
         body: serialize(editorValue),
         medium: 'SMS',
-        organizationId: organizationId,
+        organizationId,
       },
       {
         onSuccess: (newTpl: TemplateDetail) => {
@@ -127,17 +156,44 @@ export function SmsSideTab({
     );
   };
 
+  const handleUpdateTemplate = () => {
+    const body = serialize(editorValue);
+
+    if (!selectedTemplateId) return;
+
+    // TODO: 수정 API 연동
+    // updateTpl.mutate({ id: Number(selectedTemplateId), body, ... })
+
+    setTemplates((prev) =>
+      prev.map((t) =>
+        t.id === selectedTemplateId ? { ...t, body } : t
+      )
+    );
+    setIsEditing(false);
+  };
+
   const handleSend = () => {
     sendSms.mutate(
       {
         applicationIds,
         message: serialize(editorValue),
-        attachment: attachment,
+        attachment,
       },
       { onSuccess: () => onClose() }
     );
   };
 
+  const actionLabel = isCreating
+    ? '저장하기'
+    : isEditing
+      ? '수정하기'
+      : '보내기';
+
+  const handleActionClick = () => {
+    if (isCreating) handleSaveTemplate();
+    else if (isEditing) handleUpdateTemplate();
+    else handleSend();
+  };
   return (
     <SideTab
       icon={<IcHeaderSms width={24} height={24} />}
@@ -146,20 +202,20 @@ export function SmsSideTab({
     >
       {/* 1) 템플릿 아코디언 */}
       <TemplatesAccordion
-        templates={templates}
-        selectedTemplateId={selectedTemplateId}
-        isCreating={isCreating}
-        newTitle={newTitle}
-        onNewTitleChange={setNewTitle}
-        onSelect={(tpl) => {
-          setSelectedTemplateId(tpl.id);
-          setIsCreating(false);
-        }}
-        onCreate={handleCreate}
+            templates={templates}
+            selectedTemplateId={selectedTemplateId}
+            isCreating={isCreating}
+            isEditing={isEditing}
+            newTitle={newTitle}
+            onNewTitleChange={setNewTitle}
+            onSelect={handleSelect}
+            onCreate={handleCreate}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
       />
 
       {/* 2) 받는 사람 */}
-      {!isCreating && (
+      {!isCreating && !isEditing &&  (
         <div className={styles.section} style={{ marginTop: '1.2rem' }}>
           <Text
             variant="sm_caption_semibold"
@@ -282,10 +338,10 @@ export function SmsSideTab({
         size="40"
         width="100%"
         leftIcon={<IcSendBtn />}
-        onClick={isCreating ? handleSaveTemplate : handleSend}
-        disabled={isCreating ? !newTitle.trim() : false}
+        onClick={handleActionClick}
+        disabled={isCreating && !newTitle.trim()}
       >
-        {isCreating ? '저장하기' : '보내기'}
+        {actionLabel}
       </Button>
     </SideTab>
   );

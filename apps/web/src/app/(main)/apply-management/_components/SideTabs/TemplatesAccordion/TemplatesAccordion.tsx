@@ -5,6 +5,7 @@ import { IcArrowDropdown } from '@repo/ui/icons/colored';
 import * as styles from './TemplatesAccordion.css';
 import { Button } from '@repo/ui/Button';
 import { Text } from '@repo/ui/Text';
+import { IcDots } from '@repo/ui/icons/mono';
 
 export interface Template {
   id: string;
@@ -16,25 +17,32 @@ interface TemplatesAccordionProps {
   templates: Template[];
   selectedTemplateId: string | null;
   isCreating: boolean;
+  isEditing: boolean;
   newTitle: string;
   onNewTitleChange: (val: string) => void;
   onSelect: (tpl: Template) => void;
   onCreate: () => void;
+  onEdit: (tpl: Template) => void;
+  onDelete: (tpl: Template) => void;
 }
 
 export function TemplatesAccordion({
   templates,
   selectedTemplateId,
   isCreating,
+  isEditing,
   newTitle,
   onNewTitleChange,
   onSelect,
   onCreate,
+  onEdit,
+  onDelete,
 }: TemplatesAccordionProps) {
   const [open, setOpen] = useState(false);
+  const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 생성 모드 진입 시 포커스, 모드 빠져나오면 입력 초기화
+  // 생성 모드 진입 시 포커스
   useEffect(() => {
     if (isCreating) {
       setTimeout(() => inputRef.current?.focus(), 0);
@@ -47,7 +55,13 @@ export function TemplatesAccordion({
 
   return (
     <div className={styles.accordion}>
-      <button className={styles.header} onClick={() => setOpen((o) => !o)}>
+      <button
+        className={styles.header}
+        onClick={() => {
+          setOpen((o) => !o);
+          setMenuOpenId(null);
+        }}
+      >
         <Text variant="md2_text_semibold" color="grayscale70">
           {selectedTitle}
         </Text>
@@ -61,27 +75,86 @@ export function TemplatesAccordion({
             size="32"
             width="100%"
             leftIcon={<IcPlus />}
-            onClick={onCreate}
-            disabled={isCreating}
+            onClick={() => {
+              setMenuOpenId(null);
+              onCreate();
+            }}
+            disabled={isCreating || isEditing}
           >
             새로운 템플릿 만들기
           </Button>
 
           <div className={styles.list}>
             {templates.map((t) => (
-              <Button
+              <div
                 key={t.id}
-                variant="sub"
-                size="32"
-                width="16.667rem"
-                onClick={() => {
-                  onSelect(t);
-                  setOpen(false);
-                }}
-                disabled={isCreating}
+                className={styles.templateItem}
+                onMouseLeave={() => setMenuOpenId((prev) => (prev === t.id ? null : prev))}
               >
-                {t.title}
-              </Button>
+                <Button
+                  variant={
+                    t.id === selectedTemplateId ? 'main' : 'sub'
+                  }
+                  size="32"
+                  width="16.667rem"
+                  onClick={() => {
+                    setMenuOpenId(null);
+                    onSelect(t);
+                  }}
+                  disabled={isCreating || isEditing}
+                >
+                  {t.title}
+                </Button>
+
+                {/* 점 3개 아이콘 (hover 시 노출) */}
+                <button
+                  type="button"
+                  className={`${styles.moreButton} ${
+                    t.id === selectedTemplateId ? styles.moreButtonSelected : ''
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMenuOpenId((prev) => (prev === t.id ? null : t.id));
+                  }}
+                  aria-label="템플릿 메뉴 열기"
+                  disabled={isCreating}
+                >
+                  <IcDots width={10} height={24} />
+                </button>
+
+                {/* 수정 / 삭제 메뉴 */}
+                {menuOpenId === t.id && (
+                  <div className={styles.moreMenu}>
+                    <button
+                      type="button"
+                      className={styles.moreMenuItem}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMenuOpenId(null);
+                        onEdit(t);
+                      }}
+                    >
+                      <Text variant='sm_caption_medium' color='grayscale50'>
+                      수정
+                      </Text>
+                      
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.moreMenuItem}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMenuOpenId(null);
+                        onDelete(t);
+                      }}
+                    >
+                       <Text variant='sm_caption_medium' color='grayscale50'>
+                      삭제
+                      </Text>
+                    </button>
+                  </div>
+                )}
+              </div>
             ))}
 
             {isCreating && (
@@ -91,6 +164,7 @@ export function TemplatesAccordion({
                 type="text"
                 value={newTitle}
                 onChange={(e) => onNewTitleChange(e.target.value)}
+                //placeholder="템플릿 제목을 입력하세요"
               />
             )}
           </div>

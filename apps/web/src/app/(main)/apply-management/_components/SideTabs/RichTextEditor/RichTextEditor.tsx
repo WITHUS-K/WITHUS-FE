@@ -75,17 +75,29 @@ export function RichTextEditor({
   const renderElement = useCallback(
     (props: RenderElementProps) => {
       const { element, attributes, children } = props;
-      if ((element as any).type === 'variable') {
-        const varEl = element as VariableElement;
-        const cls = styles.variableStyles[varEl.varType];
-
+      const renderLeaf = useCallback((props: RenderLeafProps) => {
+        let { children } = props;
+      
+        // 기존 B / I / U 마크
+        if (props.leaf.bold) children = <strong>{children}</strong>;
+        if (props.leaf.italic) children = <em>{children}</em>;
+        if (props.leaf.underline) children = <u>{children}</u>;
+      
+        // 🔹 폰트 사이즈 / 색상 스타일
+        const style: React.CSSProperties = {};
+        if ((props.leaf as any).fontSize) {
+          style.fontSize = (props.leaf as any).fontSize;
+        }
+        if ((props.leaf as any).color) {
+          style.color = (props.leaf as any).color;
+        }
+      
         return (
-          <span {...attributes} contentEditable={false} className={cls}>
-            {DISPLAY_LABEL[varEl.varType]}
+          <span {...props.attributes} style={style}>
             {children}
           </span>
         );
-      }
+      }, []);
       return <p {...attributes}>{children}</p>;
     },
     [editor]
@@ -94,10 +106,26 @@ export function RichTextEditor({
   // 리프 렌더러
   const renderLeaf = useCallback((props: RenderLeafProps) => {
     let { children } = props;
+  
+    // 기존 B / I / U 마크
     if (props.leaf.bold) children = <strong>{children}</strong>;
     if (props.leaf.italic) children = <em>{children}</em>;
     if (props.leaf.underline) children = <u>{children}</u>;
-    return <span {...props.attributes}>{children}</span>;
+  
+    // 🔹 폰트 사이즈 / 색상 스타일
+    const style: React.CSSProperties = {};
+    if ((props.leaf as any).fontSize) {
+      style.fontSize = (props.leaf as any).fontSize;
+    }
+    if ((props.leaf as any).color) {
+      style.color = (props.leaf as any).color;
+    }
+  
+    return (
+      <span {...props.attributes} style={style}>
+        {children}
+      </span>
+    );
   }, []);
 
   const onCompositionStart = useCallback(

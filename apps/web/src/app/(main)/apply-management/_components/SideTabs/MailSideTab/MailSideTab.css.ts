@@ -11,6 +11,12 @@ export const section = style({
   overflowY: 'scroll',
 });
 
+export const sectionText = style({
+  display: 'flex',
+  marginBottom: '1rem',
+  alignItems: 'center',
+});
+
 export const tags = style({
   display: 'flex',
   flexWrap: 'wrap',
