@@ -20,7 +20,7 @@ export default function ItemCard({ item }: Props) {
   const {
     id,
     name,
-    positionName,
+   organizationRoleName,
     tagColor,
     evaluationStatus,
     pass,
@@ -55,7 +55,7 @@ export default function ItemCard({ item }: Props) {
     <div className={styles.card} onClick={handleClick}>
       {/* 제목 영역 */}
       <Flex align="center" gap="1.2rem">
-        <Tag color={tagColor}>{positionName}</Tag>
+        <Tag color={tagColor}>{organizationRoleName}</Tag>
         <Text variant="lg_subtitle_semibold" color="grayscale90">
           {name}
         </Text>

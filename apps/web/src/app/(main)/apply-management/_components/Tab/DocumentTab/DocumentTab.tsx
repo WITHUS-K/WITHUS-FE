@@ -100,9 +100,9 @@ export default function DocumentTab({
   const rows = useMemo(() => {
     if (!data) return [];
     return data.data.map((item, idx) => {
-      const positionLabel = item.positionName ?? '공통';
-      const positionColor: TagColor = item.positionName
-        ? mapServerColorToTagHex(posColorMap[item.positionName]!)
+      const positionLabel = item.organizationRoleName ?? '공통';
+      const positionColor: TagColor = item.organizationRoleName
+        ? mapServerColorToTagHex(posColorMap[item.organizationRoleName]!)
         : '#5A5C72'; 
       return {
         applicationId: item.id,
@@ -178,7 +178,7 @@ export default function DocumentTab({
 
      const positionOptions = useMemo(() => {
     const base = Object.keys(posColorMap); 
-    if (data?.data.some((item) => !item.positionName)) {
+    if (data?.data.some((item) => !item.organizationRoleName)) {
       return ['공통', ...base];
     }
     return base;

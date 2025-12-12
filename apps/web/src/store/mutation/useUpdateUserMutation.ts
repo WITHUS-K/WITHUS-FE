@@ -7,6 +7,9 @@ import { queryKeys } from '../constants/queryKeys';
 import { Tokens } from '@web/api/types';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 import { api } from '@web/api/api';
+import { setCookie } from 'cookies-next';
+import { cookieOptions } from '@web/api/authCookies';
+import { useRouter } from 'next/navigation';
 
 function updateUser(
   formData: FormData,
@@ -29,6 +32,7 @@ function updateUser(
 
 export function useUpdateUserMutation() {
   const qc = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: ({
@@ -48,12 +52,18 @@ export function useUpdateUserMutation() {
       if (profileImageFile) {
         fd.append('profileImage', profileImageFile, profileImageFile.name);
       }
-
       return updateUser(fd);
     },
 
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: queryKeys.user.myPage() });
+      qc.invalidateQueries({ queryKey: queryKeys.organization.me(), });
+
+      setCookie('name', data.name, cookieOptions);
+      setCookie('profileUrl', data.imageUrl ?? '', cookieOptions);
+
+      router.refresh();
+
     },
   });
 }

@@ -11,6 +11,12 @@ export const section = style({
   overflowY: 'scroll',
 });
 
+export const sectionText = style({
+  display: 'flex',
+  marginBottom: '1rem',
+  alignItems: 'center',
+});
+
 export const tags = style({
   display: 'flex',
   flexWrap: 'wrap',
@@ -65,7 +71,6 @@ export const input = style({
       outline: 'none',
       boxShadow: 'none',
     },
-    // 만약 focus-visible 만 타깃하고 싶으면
     '&:focus-visible': {
       outline: 'none',
       boxShadow: 'none',
@@ -82,11 +87,26 @@ export const fileInput = style({
 });
 
 export const iconBtn = style({
-  all: 'unset',
-  cursor: 'pointer',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '2.4rem',
   height: '2.4rem',
+  padding: 0,
+  border: 'none',
+  background: 'transparent',
+  cursor: 'pointer',
+  color: vars.colors.grayscale50,
+  transition: 'color 0.15s ease, transform 0.15s ease',
+
+  selectors: {
+    '&:hover': {
+      color: vars.colors.grayscale70,
+      transform: 'scale(1.05)', 
+    },
+  },
 });
-export const activeIcon = style({ color: vars.colors.grayscale70 }); // 토글된 버튼 색상
+export const activeIcon = style({ color: vars.colors.grayscale90 }); // 토글된 버튼 색상
 
 export const textarea = style({
   width: '100%',
@@ -107,7 +127,6 @@ export const textarea = style({
       outline: 'none',
       boxShadow: 'none',
     },
-    // 만약 focus-visible 만 타깃하고 싶으면
     '&:focus-visible': {
       outline: 'none',
       boxShadow: 'none',
@@ -118,7 +137,6 @@ export const textarea = style({
 const variableCommon = style({
   borderRadius: '4px',
   padding: '0.15rem 0.4rem',
-  //display: 'inline-block',
   ...fontStyles.xs_caption_medium,
   cursor: 'pointer',
 });
@@ -152,4 +170,24 @@ export const variableStyles = styleVariants({
       color: '#F25DEB',
     },
   ],
+});
+
+export const emptyRecipients = style({
+  width: '100%',
+  textAlign: 'left',
+  padding: '0.7rem 0',
+  color: vars.colors.grayscale20,
+  borderBottom: `1px solid ${vars.colors.grayscale20}`,
+  cursor: 'pointer',
+  ...fontStyles.sm_caption_medium
+});
+
+export const addMoreBtn = style({
+  height: '2.4rem',
+  padding: '0 0.8rem',
+  borderRadius: '999px',
+  border: `1px solid ${vars.colors.grayscale20}`,
+  color: vars.colors.grayscale60,
+  background: 'transparent',
+  cursor: 'pointer',
 });

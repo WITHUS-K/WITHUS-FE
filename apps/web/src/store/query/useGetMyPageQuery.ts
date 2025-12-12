@@ -18,6 +18,7 @@ export interface UpdateUserRequestDTO {
   currentPassword?: string;
   newPassword1?: string;
   newPassword2?: string;
+  organizationIds?: number[];
 }
 
 import {

@@ -20,7 +20,7 @@ export interface ApplicationSummary {
   documentResultAnnounced: boolean;
   id: number;
   name: string;
-  positionName: string;
+  organizationRoleName : string;
   status:
     | 'PENDING'
     | 'DOX_PASS'

@@ -17,12 +17,23 @@ import { SelectableTimeTable } from '@web/components/TimeTable/SelectableTimeTab
 import { format, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale/ko';
 import { TIME_STEP } from '@web/utils/application';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+import { useOrganizationRolesQuery } from '@web/store/query/useOrganizationRolesQuery';
 
 export default function PreviewComponent() {
   const ctx = useContext<SettingContextType | null>(SettingContext);
   if (!ctx) return null;
   const form: FormValues = ctx.form;
   console.log('프리뷰', form);
+
+  const { organizationId } = getClientSideTokens();
+const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
+
+const roleNameById = useMemo(() => {
+  const m = new Map<number, string>();
+  (rolesData?.roles ?? []).forEach((r) => m.set(r.id, r.roleName));
+  return m;
+}, [rolesData]);
 
   const applicationSchedule = [
     {
@@ -65,15 +76,22 @@ export default function PreviewComponent() {
   const parts = form.applicationParts?.parts ?? [];
   const [selectedPartIdx, setSelectedPartIdx] = useState<number>(0);
 
-  useEffect(() => {
-    if (!hasParts) {
-      setSelectedPartIdx(0);
-      return;
-    }
-    if (selectedPartIdx >= parts.length) {
-      setSelectedPartIdx(Math.max(0, parts.length - 1));
-    }
-  }, [hasParts, parts.length, selectedPartIdx]);
+  const roleIds = form.applicationParts?.parts ?? []; // number[]
+const partNames = useMemo(() => {
+  return roleIds
+    .map((id) => roleNameById.get(id))
+    .filter(Boolean) as string[];
+}, [roleIds, roleNameById]);
+
+useEffect(() => {
+  if (!hasParts) {
+    setSelectedPartIdx(0);
+    return;
+  }
+  if (selectedPartIdx >= partNames.length) {
+    setSelectedPartIdx(Math.max(0, partNames.length - 1));
+  }
+}, [hasParts, partNames.length, selectedPartIdx]);
 
   const filteredItems = useMemo(() => {
     const items = form.detailItems ?? [];
@@ -152,7 +170,7 @@ export default function PreviewComponent() {
         {/* 지원 파트 */}
         {form.applicationParts?.isSelected && (
           <ApplicationPartsPreview
-            parts={parts}
+          parts={partNames}
             selectedIndex={selectedPartIdx}
             onChange={setSelectedPartIdx}
           />

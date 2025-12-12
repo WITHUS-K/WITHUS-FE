@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import * as styles from '../CriteriaTab.css';
 import { IcInfo } from '@repo/ui/icons/mono';
@@ -9,11 +9,21 @@ import { Text } from '@repo/ui/Text';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { FormValues } from '@web/types/application';
 import StandardSection from '../Section/StandardSection';
+import { useOrganizationRolesQuery } from '@web/store/query/useOrganizationRolesQuery';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 export default function CriteriaDocsTab() {
   const [showHeaderInfo, setShowHeaderInfo] = useState(true);
   const { control } = useFormContext<FormValues>();
-
+  const { organizationId } = getClientSideTokens();
+  const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
+  
+  const roleNameById = useMemo(() => {
+    const m = new Map<number, string>();
+    (rolesData?.roles ?? []).forEach((r) => m.set(r.id, r.roleName));
+    return m;
+  }, [rolesData]);
+  
   const appParts =
     useWatch({
       control,
@@ -63,19 +73,20 @@ export default function CriteriaDocsTab() {
       <Flex direction="column" width="100%" gap="5rem" marginTop="3.2rem">
         {renderIndices.map((idx) => {
           const section = paperSections[idx];
-          const partName =
-            appParts.length > 0 ? (section?.positionName ?? '') : '공통';
+          const roleId = section?.organizationRoleId ?? 0;
 
+          const label =
+            roleId === 0 ? '공통' : roleNameById.get(roleId) ?? '알 수 없음';
           return (
             <Flex key={idx} direction="column" width="100%" gap="1.2rem">
               <Text variant="lg_subtitle_bold" color="primary50">
-                {partName ?? '공통'}
+              {label}
               </Text>
               <Flex direction="column" width="100%" gap="3.8rem">
                 {/* 서류 평가 */}
                 <EvaluationSection
                   itemsName="paperEvaluateItems"
-                  positionName={partName}
+                  organizationRoleId={roleId}
                   sectionIndex={idx}
                 />
               </Flex>

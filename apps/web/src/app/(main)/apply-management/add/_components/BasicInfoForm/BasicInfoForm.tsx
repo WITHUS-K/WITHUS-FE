@@ -23,6 +23,17 @@ import {
 import { focusableWrapper } from '@web/app/[organization]/[slug]/_components/FormNavigator/FormNavigator.css';
 import clsx from 'clsx';
 
+const onlyDigits = (v: string) => v.replace(/\D/g, '');
+
+const formatKoreanPhone = (input: string) => {
+  const digits = onlyDigits(input).slice(0, 11); // 보통 11자리까지만
+  if (digits.length <= 3) return digits;
+
+  // 010xxxxxxxx 형태 기준 (3-4-4)
+  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+};
+
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 interface BasicInfoFormProps {
@@ -279,15 +290,18 @@ export function BasicInfoForm({
                 disabled={readOnly}
                 inputProps={{
                   placeholder: '010-0000-0000',
-                  value: value.phone,
+                  value: readOnly ? formatKoreanPhone(value.phone) : value.phone,
                   onChange: (e) => {
-                    onChange('phone', e.currentTarget.value);
+                    const formatted = formatKoreanPhone(e.currentTarget.value);
+                    onChange('phone', formatted);
                     phoneStatus.setEditing();
                   },
                   onFocus: phoneStatus.setEditing,
                   onBlur: () => {
                     if (/^\d{3}-\d{4}-\d{4}$/.test(value.phone)) {
                       phoneStatus.setCompleted();
+                    } else {
+                      phoneStatus.setDefault();
                     }
                   },
                 }}

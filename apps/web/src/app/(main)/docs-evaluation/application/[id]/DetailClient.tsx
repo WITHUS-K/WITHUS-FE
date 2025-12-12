@@ -76,7 +76,7 @@ export default function DetailClient() {
 
   // 지원자의 포지션과 일치하는 것만 필터
   const criteriaList = allCriteria.filter(
-    (c) => c.positionName === appliedPosition
+    (c) => c.organizationRoleName === appliedPosition
   );
 
   // Evaluation 리스트 생성

@@ -87,10 +87,10 @@ export default function TabPageClient() {
           <div className={styles.scrollContainer}>
             <Flex wrap="wrap" gap="2rem">
               {apps.map((app) => {
-                const displayPositionName = app.positionName ?? '공통';
-                const pos = positions.find((p) => p.name === app.positionName);
+                const displayPositionName = app.organizationRoleName ?? '공통';
+                const pos = positions.find((p) => p.name === app.organizationRoleName);
                 const tagColor =
-                  app.positionName == null
+                  app.organizationRoleName == null
                     ? '#7F82A1'
                     : mapServerColorToTagHex(pos?.color ?? 'GRAY');
                 return (
@@ -99,7 +99,7 @@ export default function TabPageClient() {
                     item={{
                       id: app.id,
                       name: app.name,
-                      positionName: displayPositionName,
+                      organizationRoleName: displayPositionName,
                       tagColor: tagColor,
 
                       evaluationStatus:

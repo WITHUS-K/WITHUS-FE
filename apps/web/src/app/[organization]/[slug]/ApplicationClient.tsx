@@ -54,7 +54,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   const createApp = useCreateApplication();
   const { data } = useRecruitmentBySlugQuery({ slug });
   const { confirm } = useModal();
-  //console.log('슬러그', data);
+  console.log('슬러그', data);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -118,12 +118,12 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
 
   const commonTextCount =
     data?.applicationQuestions.filter(
-      (q) => q.type === 'TEXT' && q.positionName === '공통'
+      (q) => q.type === 'TEXT' && q.organizationRoleName === '공통'
     ).length ?? 0;
 
   const commonFileCount =
     data?.applicationQuestions.filter(
-      (q) => q.type === 'FILE' && q.positionName === '공통'
+      (q) => q.type === 'FILE' && q.organizationRoleName === '공통'
     ).length ?? 0;
 
   const currentScheduleList = watch('interviewSchedule.scheduleList') || [];
@@ -186,7 +186,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
     if (!data?.applicationQuestions) return [];
     return data.applicationQuestions
       .filter(
-        (q) => q.positionName === '공통' || q.positionName === selectedPartLabel
+        (q) => q.organizationRoleName === '공통' || q.organizationRoleName === selectedPartLabel
       )
       .map((q) => {
         if (q.type === 'TEXT') {
@@ -430,7 +430,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
       const payload: CreateApplicationRequest = {
         name: vals.basicInfo.name,
         email: vals.basicInfo.email,
-        phoneNumber: vals.basicInfo.phone,
+        phoneNumber: vals.basicInfo.phone.replace(/\D/g, ''),
         //서버 api 수정되면 바꾸기!!!
         gender: vals.basicInfo.gender
           ? (vals.basicInfo.gender.toUpperCase() as 'MALE' | 'FEMALE')
@@ -679,7 +679,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
             <ApplicationPartsForm
               parts={data.positions.map((p) => ({
                 id: p.id,
-                label: p.name,
+                label: p.roleName,
               }))}
               selectedPartId={watch('applicationPart')?.id}
               onChange={(p: PartOption) => setValue('applicationPart', p)}

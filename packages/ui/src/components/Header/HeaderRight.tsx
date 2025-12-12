@@ -23,9 +23,7 @@ export const HeaderRight = ({
   onLogout,
   onNotificationClick,
 }: HeaderRightProps) => {
-  console.log('헤더 롤', role);
-  console.log('헤더 파트', part);
-  console.log('헤더 포지션', position);
+
   return (
     <div className={styles.headerRightWrapper}>
       <div className={styles.profileWrapper}>

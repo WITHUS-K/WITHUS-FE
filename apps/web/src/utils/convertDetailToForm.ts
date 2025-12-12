@@ -3,7 +3,7 @@ import type {
   TextQuestionDto,
   FileQuestionDto,
 } from '@web/types/recruitment';
-import type { EvaluationItem, FormValues } from '@web/types/application';
+import type { FormValues } from '@web/types/application';
 import { normalizeDateStr } from './convertFormToRequest';
 import {
   CHAR_LIMITS,
@@ -17,48 +17,46 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
     30: '30분',
     60: '1시간',
   };
-  const interviewDuration = DURATION_MAP[detail.interviewDuration] ?? '30분';
 
-  const parts = detail.positions.map((p) => p.name);
+  const interviewDuration =
+    DURATION_MAP[detail.interviewDuration] ?? '30분';
 
-  //'공통' 을 포함한 전체 targets
-  const fullTargets = ['공통', ...parts];
+  /** --------------------------------
+   *  role mapping
+   * -------------------------------- */
+  const roleIds = detail.positions.map((p) => p.id);
 
-  const applicationParts = {
-    isSelected: parts.length > 0,
-    parts,
-  };
-
-  const sectionKeys: Array<string | null> =
-    parts.length > 0 ? [null, ...parts] : [null];
-
-  const toEvalItem = (c: {
-    content: string;
-    description: string;
-  }): EvaluationItem => ({
-    evaluate: c.content,
-    evaluateDetail: c.description,
-    positionName: null, // 실제는 section.level 에서 대입
+  const roleNameToId = new Map<string, number>();
+  detail.positions.forEach((p) => {
+    roleNameToId.set(p.roleName, p.id);
   });
 
-  const detailItems = detail.applicationQuestions.map((q) => {
-    const posName =
-      (q.type === 'TEXT'
-        ? (q as TextQuestionDto).positionName
-        : (q as FileQuestionDto).positionName) || '공통';
+  /** --------------------------------
+   *  application parts (id 기반)
+   * -------------------------------- */
+  const applicationParts = {
+    isSelected: roleIds.length > 0,
+    parts: roleIds,
+  };
 
-    const idx = fullTargets.indexOf(posName);
-    const responseTarget = idx >= 0 ? idx : 0;
+  /** --------------------------------
+   *  questions
+   * -------------------------------- */
+  const detailItems = detail.applicationQuestions.map((q) => {
+    const roleName = q.organizationRoleName ?? null;
+    const organizationRoleId =
+      roleName === null ? 0 : roleNameToId.get(roleName) ?? 0;
 
     if (q.type === 'TEXT') {
       const tq = q as TextQuestionDto;
 
       const typeInfo = {
         info: tq.includeWhitespace ? '공백 포함' : '공백 제외',
-        infoDetail: (CHAR_LIMITS.find((limit) => {
-          const limitValue = parseInt(limit.replace(/\D/g, ''));
-          return limitValue === tq.textLimit;
-        }) ?? '제한 없음') as string,
+        infoDetail:
+          CHAR_LIMITS.find((limit) => {
+            const v = parseInt(limit.replace(/\D/g, ''), 10);
+            return v === tq.textLimit;
+          }) ?? '제한 없음',
       };
 
       return {
@@ -66,53 +64,60 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
         type: 'text' as const,
         description: tq.title,
         addDescription: tq.description,
-        responseTarget,
-        typeInfo,
-      };
-    } else {
-      const fq = q as FileQuestionDto;
-
-      const typeInfo = {
-        info: (FILE_COUNTS.find((count) => {
-          const num = parseInt(count.replace(/\D/g, ''));
-          return num === fq.maxFileCount;
-        }) ?? FILE_COUNTS[0]) as string,
-
-        infoDetail: (FILE_SIZES.find((size) => {
-          const mb = parseInt(size.replace(/\D/g, ''));
-          return mb === fq.maxFileSizeMb;
-        }) ?? FILE_SIZES[0]) as string,
-      };
-
-      return {
-        required: fq.required,
-        type: 'file' as const,
-        description: fq.title,
-        addDescription: fq.description,
-        responseTarget,
+        responseTarget: organizationRoleId, // ✅ id
         typeInfo,
       };
     }
+
+    const fq = q as FileQuestionDto;
+
+    const typeInfo = {
+      info:
+        FILE_COUNTS.find((c) => {
+          const v = parseInt(c.replace(/\D/g, ''), 10);
+          return v === fq.maxFileCount;
+        }) ?? FILE_COUNTS[0]!,
+      infoDetail:
+        FILE_SIZES.find((s) => {
+          const v = parseInt(s.replace(/\D/g, ''), 10);
+          return v === fq.maxFileSizeMb;
+        }) ?? FILE_SIZES[0]!,
+    };
+
+    return {
+      required: fq.required,
+      type: 'file' as const,
+      description: fq.title,
+      addDescription: fq.description,
+      responseTarget: organizationRoleId, // ✅ id
+      typeInfo,
+    };
   });
 
-  /*const documentResult = {
-    isSelected: detail.isDocumentResultRequired,
-    date: detail.documentResultDate,
-  };*/
+  /** --------------------------------
+   *  dates
+   * -------------------------------- */
   const deadline =
-    detail.documentDeadline && detail.documentDeadline !== ''
+    detail.documentDeadline !== ''
       ? normalizeDateStr(detail.documentDeadline)
       : '';
 
-  const rawDocDate = detail.documentResultDate ?? '';
   const documentResult = {
-    isSelected: detail.isDocumentResultRequired && rawDocDate !== '',
-    date: rawDocDate !== '' ? normalizeDateStr(rawDocDate) : '',
+    isSelected:
+      detail.isDocumentResultRequired &&
+      !!detail.documentResultDate,
+    date: detail.documentResultDate
+      ? normalizeDateStr(detail.documentResultDate)
+      : '',
   };
 
-  const rawFinal = detail.finalResultDate ?? '';
-  const finalResultDate = rawFinal !== '' ? normalizeDateStr(rawFinal) : '';
+  const finalResultDate = detail.finalResultDate
+    ? normalizeDateStr(detail.finalResultDate)
+    : '';
 
+  /** --------------------------------
+   *  interview schedule
+   * -------------------------------- */
   const interviewSchedule = {
     isSelected: detail.isInterviewRequired,
     scheduleList: detail.availableTimeRanges.map((r) => ({
@@ -122,12 +127,22 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
     })),
   };
 
+  /** --------------------------------
+   *  evaluation criteria (id 기반)
+   * -------------------------------- */
+  const sectionRoleIds =
+    roleIds.length > 0 ? [0, ...roleIds] : [0];
+
   const paperEvaluateStandard =
     detail.documentScaleType === 'SCORE' ? 'score' : 'level';
-  const paperEvaluateItems = sectionKeys.map((sec) => ({
-    positionName: sec,
+
+  const paperEvaluateItems = sectionRoleIds.map((rid) => ({
+    organizationRoleId: rid,
     items: detail.documentEvaluationCriteria
-      .filter((c) => (c.positionName ?? null) === sec)
+      .filter((c) => {
+        if (rid === 0) return c.organizationRoleName == null;
+        return roleNameToId.get(c.organizationRoleName!) === rid;
+      })
       .map((c) => ({
         evaluate: c.content,
         evaluateDetail: c.description,
@@ -136,16 +151,23 @@ export function convertDetailToForm(detail: RecruitmentDetailDto): FormValues {
 
   const interviewEvaluateStandard =
     detail.interviewScaleType === 'SCORE' ? 'score' : 'level';
-  const interviewEvaluateItems = sectionKeys.map((sec) => ({
-    positionName: sec,
+
+  const interviewEvaluateItems = sectionRoleIds.map((rid) => ({
+    organizationRoleId: rid,
     items: detail.interviewEvaluationCriteria
-      .filter((c) => (c.positionName ?? null) === sec)
+      .filter((c) => {
+        if (rid === 0) return c.organizationRoleName == null;
+        return roleNameToId.get(c.organizationRoleName!) === rid;
+      })
       .map((c) => ({
         evaluate: c.content,
         evaluateDetail: c.description,
       })),
   }));
 
+  /** --------------------------------
+   *  return form
+   * -------------------------------- */
   return {
     title: detail.title,
     basicInfo: {

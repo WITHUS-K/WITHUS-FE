@@ -12,7 +12,7 @@ export interface ApplicationParts {
   // 지원파트
 
   isSelected: boolean;
-  parts: string[];
+  parts: number[]; 
 }
 
 export interface DetailItem {
@@ -57,11 +57,11 @@ export interface EvaluationItem {
   // 평가 항목
   evaluate: string; // 평가 내용
   evaluateDetail: string; // 평가 상세 설명
-  positionName?: string | null;
+  organizationRoleId: number;
 }
 
 export interface EvaluationSectionValues {
-  positionName: string | null;
+  organizationRoleId: number;
   items: { evaluate: string; evaluateDetail: string }[];
 }
 

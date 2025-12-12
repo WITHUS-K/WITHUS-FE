@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-  "dev": "next dev --webpack",
-  "build": "next build --webpack",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint"
   },
@@ -48,7 +48,10 @@
     "eslint-config-next": "15.2.5",
     "framer-motion": "^12.20.5",
     "gsap": "^3.13.0",
+    "lucide-react": "^0.560.0",
     "overlay-kit": "^1.7.0",
+    "quill": "^2.0.3",
+    "react-quill": "^2.0.0",
     "slate": "^0.114.0",
     "slate-history": "^0.113.1",
     "slate-react": "^0.114.2",

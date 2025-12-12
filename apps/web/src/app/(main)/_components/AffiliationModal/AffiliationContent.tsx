@@ -14,12 +14,17 @@ import ClubItem from './ClubItem';
 import { useOrganizationByInviteCodeQuery } from '@web/store/query/useOrganizationByInviteCodeQuery';
 import { vars } from '@repo/theme';
 
-export type Org = { id: number; name: string };
+export type Org = {
+  id: number;
+  name: string;
+};
+
+export type SelectedInvite = { org: Org; code: string };
 
 export default function AffiliationContent({
   onSelectChange,
 }: {
-  onSelectChange?: (org: Org | null) => void;
+  onSelectChange?: (payload: SelectedInvite | null) => void;
 }) {
   const [code, setCode] = useState('');
   const [submitted, setSubmitted] = useState('');
@@ -39,9 +44,12 @@ export default function AffiliationContent({
   }, [submitted, data]);
 
   useEffect(() => {
-    onSelectChange?.(selectedId && result ? result : null);
-  }, [selectedId, result, onSelectChange]);
-
+    if (selectedId && result && submitted) {
+      onSelectChange?.({ org: result, code: submitted });
+    } else {
+      onSelectChange?.(null);
+    }
+  }, [selectedId, result, submitted, onSelectChange]);
   return (
     <Flex direction="column" gap="2rem" marginBottom="2.8rem">
       {/* 입력 */}

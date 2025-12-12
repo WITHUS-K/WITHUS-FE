@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Divider } from '@repo/ui';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
@@ -15,6 +15,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { IcPlus } from '@repo/ui/icons/mono';
 import ClubAddModal from './@modal/(.)club-add/page';
 import { useRouter } from 'next/navigation';
+import { useProfileOrgDraftStore } from '@web/store/state/useProfileOrgDraftStore';
 
 interface ProfilePageProps {
   role: 'ADMIN' | 'USER';
@@ -35,6 +36,13 @@ export default function ProfilePage({ role, showModal }: ProfilePageProps) {
   const { data: user } = useGetMyPageQuery();
   const updateMut = useUpdateUserMutation();
 
+  const { orgs, init, remove } = useProfileOrgDraftStore();
+  
+  useEffect(() => {
+    if (role !== 'USER') return;
+    init(user.organizations.map((o) => ({ id: o.id, name: o.name })));
+  }, [role, user.organizations, init]);
+  
   const methods = useForm<ProfileFormValues>({
     defaultValues: {
       name: user.name,
@@ -53,19 +61,21 @@ export default function ProfilePage({ role, showModal }: ProfilePageProps) {
   } = methods;
 
   const handleSave = (values: ProfileFormValues) => {
-    const data = {
+    const baseData = {
       name: values.name,
       phoneNumber: values.phoneNumber,
       currentPassword: values.currentPassword ?? '',
       newPassword1: values.newPassword1 ?? '',
       newPassword2: values.newPassword2 ?? '',
     };
-
-    const profileImageFile = values.profileImageFile;
+    const data =
+      role === 'USER'
+        ? { ...baseData, organizationIds: orgs.map((o) => o.id) }
+        : baseData;
 
     updateMut.mutate({
       data,
-      profileImageFile,
+      profileImageFile: values.profileImageFile,
     });
   };
 
@@ -116,10 +126,14 @@ export default function ProfilePage({ role, showModal }: ProfilePageProps) {
               role={role}
               imageUrl={user.imageUrl}
               email={user.email}
-              organizations={user.organizations}
+              organizations={
+                role === 'USER'
+                  ? orgs
+                  : user.organizations.map((o) => ({ id: o.id, name: o.name }))
+              }
             />
             <Flex direction="column" width="100%" gap="3.2rem">
-              <InfoSection role={role} user={user} />
+              <InfoSection role={role} user={user} orgs={orgs} onDeleteOrg={(id) => remove(id)}/>
               <Divider borderColor="grayscale10" length="100%" />
               <PasswordSection />
             </Flex>

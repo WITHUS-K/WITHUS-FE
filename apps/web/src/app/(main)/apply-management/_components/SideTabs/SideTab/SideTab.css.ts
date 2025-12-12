@@ -9,7 +9,7 @@ export const panel = style({
   background: vars.colors.white,
   display: 'flex',
   flexDirection: 'column',
-  zIndex: 1000,
+  zIndex: 50,
   boxShadow: 'rgba(0,0,0,0.1) -2px 0 8px',
 });
 

@@ -190,7 +190,7 @@ export default function TimetableClient({
               endHour={Number(schedule.endTime.split(':')[0])}
               interval={schedule.interviewDuration}
               slots={roomsMap[room]!.map((ts) => {
-                const posName = ts.applicants[0]?.positionName;
+                const posName = ts.applicants[0]?.organizationRoleName;
                 const part = positions.find((p) => p.name === posName);
                 const hex = part ? nameToHex1[part.color] : undefined;
                 const bg = hex

@@ -6,13 +6,16 @@ import { MyPageData } from '@web/store/query/useGetMyPageQuery';
 import { Controller, useFormContext } from 'react-hook-form';
 import { ProfileFormValues } from '../../ProfilePage';
 import OrgField from '../OrgField/OrgField';
+import { DraftOrg } from '@web/store/state/useProfileOrgDraftStore';
 
 interface InfoSectionProps {
   role: 'ADMIN' | 'USER';
   user: MyPageData;
+  orgs: DraftOrg[];
+  onDeleteOrg?: (id: number) => void;
 }
 
-export default function InfoSection({ role, user }: InfoSectionProps) {
+export default function InfoSection({ role, user,orgs, onDeleteOrg  }: InfoSectionProps) {
   const {
     control,
     formState: { errors },
@@ -41,9 +44,9 @@ export default function InfoSection({ role, user }: InfoSectionProps) {
       {role === 'USER' && (
         <OrgField
           label="가입 동아리"
-          orgs={user.organizations.map((o) => ({ id: o.id, name: o.name }))}
+          orgs={orgs}
           // 가입 동아리 삭제 api
-          onDelete={(id) => {}}
+          onDelete={(id) => onDeleteOrg?.(Number(id))}
         />
       )}
 

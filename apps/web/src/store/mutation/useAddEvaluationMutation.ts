@@ -16,7 +16,7 @@ export type EvaluationItem = {
     content: string;
     description: string;
     type: 'DOCUMENT' | 'INTERVIEW';
-    positionName: string;
+    organizationRoleName : string;
     score: number;
   };
   score: number;

@@ -34,7 +34,7 @@ export interface CreateApplicationResponse {
     id: number;
     name: string;
     email: string;
-    positionName: string;
+    organizationRoleName : string;
     status: string; // e.g. "PENDING"
   };
   success: boolean;
