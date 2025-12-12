@@ -2,9 +2,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IcSendBtn } from '@repo/ui/icons/mono';
 import {
-  IcBold,
-  IcItalic,
-  IcUnderline,
   IcFilePlus,
   IcHeaderMail,
   IcTagDelete,
@@ -53,6 +50,8 @@ import {
   Palette as PaletteIcon,
 } from 'lucide-react';
 import clsx from 'clsx';
+import { useRecipientsStore } from '@web/store/state/useRecipientsStore';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 interface MailSideTabProps {
   applicationIds: number[];
@@ -65,6 +64,14 @@ export function MailSideTab({
   recipients,
   onClose,
 }: MailSideTabProps) {
+  const router = useRouter();
+  const params = useParams();
+  const search = useSearchParams();
+
+  const tab = Array.isArray(params.tab) ? params.tab[0] : (params.tab as string);
+  const recruitmentId = search.get('recruitmentId');
+  const sideTab = search.get('sideTab') ?? 'mail';
+  
   const { organizationId } = getClientSideTokens();
   const { confirm } = useModal();
 
@@ -83,10 +90,25 @@ export function MailSideTab({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const { recipients: storeRecipients, setRecipients, removeRecipient, clearRecipients , mergeRecipients } = useRecipientsStore();
+
+  
   const [localRecipients, setLocalRecipients] = useState<string[]>(recipients);
   useEffect(() => {
-    setLocalRecipients(recipients);
-  }, [recipients]);
+    const seeds = (recipients ?? []).map((name, idx) => ({
+      id: `seed-${idx}-${name}`,
+      name,
+      email: '', 
+    }));
+  
+    mergeRecipients(seeds, 'name'); 
+  }, [recipients, mergeRecipients]);
+
+
+  const openInviteModal = () => {
+    if (!recruitmentId) return;
+    router.push(`/apply-management/${tab}/invite-recipients?recruitmentId=${recruitmentId}&sideTab=${sideTab}`);
+  };
 
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
     null
@@ -106,7 +128,6 @@ export function MailSideTab({
     { type: 'paragraph', children: [{ text: '' }] },
   ]);
 
-  // 글자 설정 UI 상태(선택값 표시용 — Slate 마크와는 별개, 그냥 UI용)
   const [currentFontSize, setCurrentFontSize] = useState('14px');
   const [currentColor, setCurrentColor] = useState('#333333');
 
@@ -134,6 +155,11 @@ export function MailSideTab({
   const createTpl = useCreateTemplate();
   // TODO: 업데이트용 mutation 준비되면 연결
   // const updateTpl = useUpdateTemplate();
+
+  const handleClose = () => {
+    clearRecipients();   
+    onClose();          
+  };
 
   // 새 템플릿 생성
   const handleCreate = () => {
@@ -238,7 +264,12 @@ export function MailSideTab({
         body: html,
         attachments: attachment ? [attachment] : [],
       },
-      { onSuccess: () => onClose() }
+      {
+        onSuccess: () => {
+          clearRecipients();  
+          onClose();
+        },
+      }
     );
   };
 
@@ -277,7 +308,7 @@ export function MailSideTab({
     <SideTab
     icon={<IcHeaderMail width={24} height={24} />}
       title="메일 전송"
-      onClose={onClose}
+      onClose={handleClose}
     >
       <TemplatesAccordion
         templates={templates}
@@ -292,8 +323,8 @@ export function MailSideTab({
         onDelete={handleDelete}
       />
 
-      {/* 받는 사람 */}
-      {!isCreating && !isEditing && (
+ {/* 받는 사람 */}
+ {!isCreating && !isEditing && (
         <div className={styles.section} style={{ marginTop: '1.2rem' }}>
           <Text
             variant="sm_caption_semibold"
@@ -302,24 +333,31 @@ export function MailSideTab({
           >
             받는 사람
           </Text>
-          <div className={styles.tags}>
-            {localRecipients.map((r) => (
-              <div key={r} className={styles.tag}>
-                {r}
-                <button
-                  onClick={() => {
-                    setLocalRecipients((prev) =>
-                      prev.filter((item) => item !== r)
-                    );
-                  }}
-                  aria-label="삭제"
-                  style={{ height: '1.6rem' }}
-                >
-                  <IcTagDelete width={16} height={16} />
-                </button>
-              </div>
-            ))}
-          </div>
+          {storeRecipients.length === 0 ? (
+            <button
+              type="button"
+              onClick={openInviteModal}
+              className={styles.emptyRecipients}
+            >
+              클릭해서 인원을 추가해주세요.
+            </button>
+          ) : (
+            <div className={styles.tags}>
+              {storeRecipients.map((u) => (
+                <div key={u.id} className={styles.tag}>
+                  {u.name}
+                  <button
+                    type="button"
+                    onClick={() => removeRecipient(u.id)}
+                    aria-label="삭제"
+                    style={{ height: '1.6rem' }}
+                  >
+                    <IcTagDelete width={16} height={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

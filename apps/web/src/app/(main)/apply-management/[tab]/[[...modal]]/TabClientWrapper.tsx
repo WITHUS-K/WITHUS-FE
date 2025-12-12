@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import AssignManagerModal from '../@modal/(.)assign-manager/page';
 import PageClient from '../PageClient';
 import ChargeModal from '../@modal/(.)charge/page';
+import InviteRecipientsModal from '../@modal/(.)invite-recipients/page';
 
 interface WrapperProps {
   modal?: string[];
@@ -18,6 +19,7 @@ export default function TabClientWrapper({ modal }: WrapperProps) {
 
   const showCharge = modal?.[0] === 'charge';
   const showAssign = modal?.[0] === 'assign-manager';
+  const showInvite = modal?.[0] === 'invite-recipients'; 
 
   return (
     <>
@@ -27,6 +29,7 @@ export default function TabClientWrapper({ modal }: WrapperProps) {
       {/* 모달 */}
       {showCharge && <ChargeModal />}
       {showAssign && <AssignManagerModal />}
+      {showInvite && <InviteRecipientsModal />}
     </>
   );
 }

@@ -171,3 +171,23 @@ export const variableStyles = styleVariants({
     },
   ],
 });
+
+export const emptyRecipients = style({
+  width: '100%',
+  textAlign: 'left',
+  padding: '0.7rem 0',
+  color: vars.colors.grayscale20,
+  borderBottom: `1px solid ${vars.colors.grayscale20}`,
+  cursor: 'pointer',
+  ...fontStyles.sm_caption_medium
+});
+
+export const addMoreBtn = style({
+  height: '2.4rem',
+  padding: '0 0.8rem',
+  borderRadius: '999px',
+  border: `1px solid ${vars.colors.grayscale20}`,
+  color: vars.colors.grayscale60,
+  background: 'transparent',
+  cursor: 'pointer',
+});
