@@ -4,16 +4,21 @@ import {
 } from '@web/app/(main)/apply-management/_components/SideTabs/RichTextEditor/RichTextEditor';
 import { Descendant, Element as SlateElement, Text } from 'slate';
 
-// `SlateElement` 기반으로, 판별 가능한 유니언 타입을 만듭니다.
 type VariableElement = SlateElement & {
   type: 'variable';
   varType: VariableType;
   children: Descendant[];
 };
+
 type ParagraphElement = SlateElement & {
   type: 'paragraph';
+  align?: 'left' | 'center' | 'right';
   children: Descendant[];
 };
+
+// ---- 공통: HTML escape ----
+const escapeHtml = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 // 전체 직렬화 진입점
 export function serializeHtml(nodes: Descendant[]): string {
@@ -21,50 +26,85 @@ export function serializeHtml(nodes: Descendant[]): string {
 }
 
 function nodeToHtml(node: Descendant): string {
-  // 1) 텍스트 노드: 마크(굵게/이탤릭/밑줄) + HTML escape
+  // 1) 텍스트 노드
   if (Text.isText(node)) {
-    const escape = (s: string) =>
-      s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    let txt = escape(node.text);
-    const leaf = node as any;
+    const leaf: any = node;
+    let txt = escapeHtml(leaf.text ?? '');
+
     if (leaf.bold) txt = `<strong>${txt}</strong>`;
     if (leaf.italic) txt = `<em>${txt}</em>`;
     if (leaf.underline) txt = `<u>${txt}</u>`;
+
+    const styleParts: string[] = [];
+    if (leaf.fontSize) styleParts.push(`font-size:${leaf.fontSize}`);
+    if (leaf.color) styleParts.push(`color:${leaf.color}`);
+
+    if (styleParts.length > 0) {
+      const styleAttr = styleParts.join(';');
+      txt = `<span style="${styleAttr}">${txt}</span>`;
+    }
+
     return txt;
   }
 
   // 2) 엘리먼트 노드
   if (!SlateElement.isElement(node)) return '';
 
-  // 두 타입의 유니언으로 취급
   const el = node as VariableElement | ParagraphElement | SlateElement;
 
-  // 2-1) variable 타입일 때만 varType 을 꺼내고 토큰 반환
+  // ariable: element 에서 스타일 우선 읽기
   if (el.type === 'variable') {
-    // 이제 TS는 `el` 이 `VariableElement` 라고 알고 varType 에 접근 OK
     const varEl = el as VariableElement;
-    // 실제 토큰
+
+    // element-level 스타일
+    const eb: any = varEl;
+    // 혹시라도 child leaf 에 스타일이 있다면 fallback
+    const leaf: any = (varEl.children[0] as any) ?? {};
+
+    const bold = eb.bold ?? leaf.bold;
+    const italic = eb.italic ?? leaf.italic;
+    const underline = eb.underline ?? leaf.underline;
+    const fontSize = eb.fontSize ?? leaf.fontSize;
+    const color = eb.color ?? leaf.color;
+
     let tokenHtml = VAR_KEY[varEl.varType];
 
-    // 자식의 마크(leaf) 정보 꺼내기
-    const leaf = varEl.children[0] as any;
-    if (leaf.bold) tokenHtml = `<strong>${tokenHtml}</strong>`;
-    if (leaf.italic) tokenHtml = `<em>${tokenHtml}</em>`;
-    if (leaf.underline) tokenHtml = `<u>${tokenHtml}</u>`;
+    if (bold) tokenHtml = `<strong>${tokenHtml}</strong>`;
+    if (italic) tokenHtml = `<em>${tokenHtml}</em>`;
+    if (underline) tokenHtml = `<u>${tokenHtml}</u>`;
+
+    const styleParts: string[] = [];
+    if (fontSize) styleParts.push(`font-size:${fontSize}`);
+    if (color) styleParts.push(`color:${color}`);
+
+    if (styleParts.length > 0) {
+      const styleAttr = styleParts.join(';');
+      tokenHtml = `<span style="${styleAttr}">${tokenHtml}</span>`;
+    }
 
     return tokenHtml;
   }
 
-  // 2-2) paragraph 이거나 다른 element
+  // paragraph + 기타
   const childrenHtml = el.children.map(nodeToHtml).join('');
 
-  // paragraph 면 <p> 래핑, 아니면 그냥 자식만 반환
   if (el.type === 'paragraph') {
-    return `<p>${childrenHtml}</p>`;
-  } else {
-    return childrenHtml;
+    const p = el as ParagraphElement;
+    const styleParts: string[] = [];
+
+    if (p.align && p.align !== 'left') {
+      styleParts.push(`text-align:${p.align}`);
+    }
+
+    const styleAttr =
+      styleParts.length > 0 ? ` style="${styleParts.join(';')}"` : '';
+
+    return `<p${styleAttr}>${childrenHtml}</p>`;
   }
+
+  return childrenHtml;
 }
+
 
 // 파일명에서 공백·콜론·한글 등 제거하고 _ 로 치환
 export function sanitizeFileName(name: string) {

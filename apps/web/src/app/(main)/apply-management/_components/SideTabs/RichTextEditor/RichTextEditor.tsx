@@ -13,7 +13,6 @@ import {
   Editable,
   RenderLeafProps,
   RenderElementProps,
-  ReactEditor,
 } from 'slate-react';
 import * as styles from './RichTextEditor.css';
 
@@ -23,6 +22,7 @@ export type VariableType =
   | 'position'
   | 'interviewRoom'
   | 'interviewDateTime';
+
 export const VAR_KEY: Record<VariableType, string> = {
   name: '{{name}}',
   position: '{{position}}',
@@ -42,9 +42,19 @@ export const DISPLAY_LABEL: Record<VariableType, string> = {
 type VariableElement = {
   type: 'variable';
   varType: VariableType;
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  fontSize?: string;
+  color?: string;
   children: Descendant[];
 };
-type ParagraphElement = { type: 'paragraph'; children: Descendant[] };
+type ParagraphElement = {
+  type: 'paragraph';
+  // 정렬 정보 (left / center / right)
+  align?: 'left' | 'center' | 'right';
+  children: Descendant[];
+};
 
 interface RichTextEditorProps {
   editor: Editor;
@@ -75,54 +85,62 @@ export function RichTextEditor({
   const renderElement = useCallback(
     (props: RenderElementProps) => {
       const { element, attributes, children } = props;
-      const renderLeaf = useCallback((props: RenderLeafProps) => {
-        let { children } = props;
-      
-        // 기존 B / I / U 마크
-        if (props.leaf.bold) children = <strong>{children}</strong>;
-        if (props.leaf.italic) children = <em>{children}</em>;
-        if (props.leaf.underline) children = <u>{children}</u>;
-      
-        // 🔹 폰트 사이즈 / 색상 스타일
+  
+      if ((element as any).type === 'variable') {
+        const varEl = element as VariableElement;
+        const cls = styles.variableStyles[varEl.varType];
+  
+        // element 에서 직접 스타일 읽어오기
         const style: React.CSSProperties = {};
-        if ((props.leaf as any).fontSize) {
-          style.fontSize = (props.leaf as any).fontSize;
-        }
-        if ((props.leaf as any).color) {
-          style.color = (props.leaf as any).color;
-        }
-      
+        if (varEl.bold) style.fontWeight = 'bold';
+        if (varEl.italic) style.fontStyle = 'italic';
+        if (varEl.underline) style.textDecoration = 'underline';
+        if (varEl.fontSize) style.fontSize = varEl.fontSize;
+        if (varEl.color) style.color = varEl.color;
+  
         return (
-          <span {...props.attributes} style={style}>
-            {children}
+          <span
+            {...attributes}
+            contentEditable={false}
+            className={cls}
+            style={style}
+          >
+            {DISPLAY_LABEL[varEl.varType]}
           </span>
         );
-      }, []);
-      return <p {...attributes}>{children}</p>;
+      }
+  
+      // paragraph 정렬 처리
+      const paragraph = element as ParagraphElement;
+  
+      return (
+        <p
+          {...attributes}
+          style={{
+            textAlign: paragraph.align ?? 'left',
+            margin: 0,
+          }}
+        >
+          {children}
+        </p>
+      );
     },
-    [editor]
+    []
   );
-
-  // 리프 렌더러
+  // 리프 렌더러 (bold/italic/underline + fontSize + color)
   const renderLeaf = useCallback((props: RenderLeafProps) => {
-    let { children } = props;
-  
-    // 기존 B / I / U 마크
-    if (props.leaf.bold) children = <strong>{children}</strong>;
-    if (props.leaf.italic) children = <em>{children}</em>;
-    if (props.leaf.underline) children = <u>{children}</u>;
-  
-    // 🔹 폰트 사이즈 / 색상 스타일
+    const { attributes, children, leaf } = props as any;
+
     const style: React.CSSProperties = {};
-    if ((props.leaf as any).fontSize) {
-      style.fontSize = (props.leaf as any).fontSize;
-    }
-    if ((props.leaf as any).color) {
-      style.color = (props.leaf as any).color;
-    }
-  
+
+    if (leaf.bold) style.fontWeight = 'bold';
+    if (leaf.italic) style.fontStyle = 'italic';
+    if (leaf.underline) style.textDecoration = 'underline';
+    if (leaf.fontSize) style.fontSize = leaf.fontSize;
+    if (leaf.color) style.color = leaf.color;
+
     return (
-      <span {...props.attributes} style={style}>
+      <span {...attributes} style={style}>
         {children}
       </span>
     );
@@ -139,7 +157,8 @@ export function RichTextEditor({
           match: (n) =>
             !Editor.isEditor(n) &&
             SlateElement.isElement(n) &&
-            n.type === 'variable',
+            (n as any).type === 'variable',
+            voids: true,
         });
 
         if (match) {
@@ -195,7 +214,8 @@ export function RichTextEditor({
         match: (n) =>
           !Editor.isEditor(n) &&
           SlateElement.isElement(n) &&
-          n.type === 'variable',
+          (n as any).type === 'variable',
+          voids: true,
       });
 
       if (match) {
@@ -216,7 +236,7 @@ export function RichTextEditor({
               Transforms.insertNodes(editor, {
                 type: 'paragraph',
                 children: [{ text: '' }],
-              });
+              } as ParagraphElement);
             } else if (event.key.length === 1) {
               Transforms.insertText(editor, event.key);
             }
@@ -250,6 +270,8 @@ export function RichTextEditor({
   );
 }
 
+// ========================= withVariables =========================
+
 export function withVariables(ed: Editor) {
   const { isInline, isVoid, deleteBackward, deleteForward } = ed;
 
@@ -257,9 +279,10 @@ export function withVariables(ed: Editor) {
     (SlateElement.isElement(element) && (element as any).type === 'variable') ||
     isInline(element);
 
-  ed.isVoid = (element) =>
-    (SlateElement.isElement(element) && element.type === 'variable') ||
-    isVoid(element);
+    ed.isVoid = (element) =>
+    SlateElement.isElement(element) && (element as any).type === 'variable'
+      ? false
+      : isVoid(element);
 
   ed.deleteBackward = (unit) => {
     const { selection } = ed;
@@ -269,7 +292,7 @@ export function withVariables(ed: Editor) {
         match: (n) =>
           !Editor.isEditor(n) &&
           SlateElement.isElement(n) &&
-          n.type === 'variable',
+          (n as any).type === 'variable',
       });
 
       if (match) {
@@ -289,7 +312,10 @@ export function withVariables(ed: Editor) {
       const after = Editor.after(ed, selection);
       if (after) {
         const [node] = Editor.node(ed, after);
-        if (SlateElement.isElement(node) && node.type === 'variable') {
+        if (
+          SlateElement.isElement(node) &&
+          (node as any).type === 'variable'
+        ) {
           const path = Editor.path(ed, after);
           Transforms.removeNodes(ed, { at: path });
           return;
@@ -303,20 +329,24 @@ export function withVariables(ed: Editor) {
   return ed;
 }
 
+// ========================= helpers =========================
+
 export function insertVariable(editor: Editor, varType: VariableType) {
   const node: VariableElement = {
     type: 'variable',
     varType,
-    children: [{ text: '' }],
+    children: [{ text: '\u200B' }],
   };
 
+  // 이하 그대로
   const { selection } = editor;
   if (selection) {
     const [match] = Editor.nodes(editor, {
       match: (n) =>
         !Editor.isEditor(n) &&
         SlateElement.isElement(n) &&
-        n.type === 'variable',
+        (n as any).type === 'variable',
+        voids: true,
     });
 
     if (match) {
@@ -345,24 +375,152 @@ export function insertVariable(editor: Editor, varType: VariableType) {
   }
 }
 
+function applyMarkToVariables(
+  editor: Editor,
+  key: 'bold' | 'italic' | 'underline' | 'fontSize' | 'color',
+  value: boolean | string | undefined
+) {
+  if (!editor.selection) return;
+
+  const isCollapsed = Range.isCollapsed(editor.selection);
+
+  // 커서만 있는 경우 → 현재 paragraph 안을 기준으로
+  let at: any = editor.selection;
+
+  if (isCollapsed) {
+    const paragraphEntry = Editor.above(editor, {
+      match: (n) =>
+        !Editor.isEditor(n) &&
+        SlateElement.isElement(n) &&
+        (n as any).type === 'paragraph',
+      voids: true,          // paragraph 위로 올라갈 때도 void 허용
+    });
+
+    if (paragraphEntry) {
+      const [, paragraphPath] = paragraphEntry;
+      at = paragraphPath;
+    }
+  }
+
+  const newProps: any = {};
+  if (value === undefined) newProps[key] = undefined;
+  else newProps[key] = value;
+
+  // 핵심: voids: true 추가
+  Transforms.setNodes<SlateElement>(editor, newProps, {
+    at,
+    match: (n) =>
+      !Editor.isEditor(n) &&
+      SlateElement.isElement(n) &&
+      (n as any).type === 'variable',
+    voids: true,
+  });
+}
+
+// bold / italic / underline
 export function toggleMark(
   editor: Editor,
   format: 'bold' | 'italic' | 'underline'
 ) {
   const marks = (Editor.marks(editor) as Record<string, boolean>) || {};
   const isActive = marks[format] === true;
-  if (isActive) Editor.removeMark(editor, format);
-  else Editor.addMark(editor, format, true);
+
+  if (isActive) {
+    Editor.removeMark(editor, format);
+  } else {
+    Editor.addMark(editor, format, true);
+  }
+
+  // variable 자식에도 동일하게 적용
+  applyMarkToVariables(editor, format, isActive ? undefined : true);
 }
+
+
+// 폰트 사이즈 설정
+export function setFontSize(editor: Editor, fontSize: string) {
+  if (!fontSize) {
+    Editor.removeMark(editor, 'fontSize');
+    applyMarkToVariables(editor, 'fontSize', undefined);
+    return;
+  }
+
+  Editor.addMark(editor, 'fontSize', fontSize);
+  applyMarkToVariables(editor, 'fontSize', fontSize);
+}
+
+// 글자 색상 설정
+export function setColor(editor: Editor, color: string) {
+  if (!color) {
+    Editor.removeMark(editor, 'color');
+    applyMarkToVariables(editor, 'color', undefined);
+    return;
+  }
+
+  Editor.addMark(editor, 'color', color);
+  applyMarkToVariables(editor, 'color', color);
+}
+
+// 정렬 설정
+export type TextAlign = 'left' | 'center' | 'right';
+
+export function setAlign(editor: Editor, align: TextAlign) {
+  const [match] = Editor.nodes(editor, {
+    match: (n) =>
+      !Editor.isEditor(n) &&
+      SlateElement.isElement(n) &&
+      (n as any).type === 'paragraph' &&
+      (n as any).align === align,
+  });
+
+  const isActive = !!match;
+
+  Transforms.setNodes<SlateElement>(
+    editor,
+    { align: isActive ? undefined : align } as any,
+    {
+      match: (n) =>
+        !Editor.isEditor(n) &&
+        SlateElement.isElement(n) &&
+        (n as any).type === 'paragraph',
+    }
+  );
+}
+
+// ========================= serialize =========================
 
 export function serialize(nodes: Descendant[]): string {
-  return nodes.map((n) => nodeToString(n)).join('\n');
+  if (!Array.isArray(nodes)) return '';
+
+  return nodes
+    .filter((n): n is Descendant => !!n) 
+    .map(nodeToStringSafe)
+    .join('\n');
 }
 
-function nodeToString(node: Descendant): string {
-  if (Text.isText(node)) return node.text;
-  if (!SlateElement.isElement(node)) return '';
-  if (node.type === 'variable')
-    return VAR_KEY[(node as VariableElement).varType];
-  return node.children.map(nodeToString).join('');
+function nodeToStringSafe(node: Descendant): string {
+  if (!node) return '';
+
+  if (Text.isText(node)) {
+    return (node as any).text ?? '';
+  }
+
+  if (!SlateElement.isElement(node)) {
+    return '';
+  }
+
+  // variable → 토큰으로 치환
+  if ((node as any).type === 'variable') {
+    const varEl = node as VariableElement;
+    return VAR_KEY[varEl.varType] ?? '';
+  }
+
+  const children = (node as any).children;
+  if (!Array.isArray(children)) {
+    return '';
+  }
+
+  return children
+    .filter((child: any) => !!child)
+    .map((child: any) => nodeToStringSafe(child as Descendant))
+    .join('');
 }

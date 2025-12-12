@@ -25,20 +25,34 @@ import {
   TemplateDetail,
 } from '@web/store/query/useTemplatesQuery';
 import { useTemplateDetailQuery } from '@web/store/query/useTemplateDetailQuery';
-import { Descendant, Editor, Transforms, createEditor } from 'slate';
+import { Descendant, Editor, Transforms, createEditor,   Element as SlateElement, } from 'slate';
 import {
   RichTextEditor,
   insertVariable,
   toggleMark,
   withVariables,
+  setFontSize,
+  setColor,
+  setAlign,
+  TextAlign,
 } from '../RichTextEditor/RichTextEditor';
 import { withHistory } from 'slate-history';
 import { withReact } from 'slate-react';
 import { serializeHtml } from '@web/utils/serializers';
 import { deserializeHtml } from '@web/utils/deserializeHtml';
-import { getCookie } from 'cookies-next';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 import { useModal } from '@repo/ui/hooks';
+import {
+  Bold as BoldIcon,
+  Italic as ItalicIcon,
+  Underline as UnderlineIcon,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Type as TypeIcon,
+  Palette as PaletteIcon,
+} from 'lucide-react';
+import clsx from 'clsx';
 
 interface MailSideTabProps {
   applicationIds: number[];
@@ -92,6 +106,10 @@ export function MailSideTab({
     { type: 'paragraph', children: [{ text: '' }] },
   ]);
 
+  // 글자 설정 UI 상태(선택값 표시용 — Slate 마크와는 별개, 그냥 UI용)
+  const [currentFontSize, setCurrentFontSize] = useState('14px');
+  const [currentColor, setCurrentColor] = useState('#333333');
+
   // 선택된 템플릿 상세
   const tplDetailQ = useTemplateDetailQuery(
     selectedTemplateId ? Number(selectedTemplateId) : -1
@@ -142,7 +160,7 @@ export function MailSideTab({
     setSelectedTemplateId(tpl.id);
     setIsCreating(false);
     setIsEditing(true);
-    // 제목은 그대로 두고, body/subject 는 tplDetailQ effect 가 채워줍니다.
+    // 제목은 그대로, body/subject는 tplDetailQ effect에서 채움
   };
 
   // 삭제
@@ -154,8 +172,6 @@ export function MailSideTab({
       confirmText: '삭제',
       onConfirm: () => {
         // TODO: 삭제 API 연동
-        // deleteTpl.mutate(tpl.id, { onSuccess: ... })
-
         setTemplates((prev) => prev.filter((item) => item.id !== tpl.id));
 
         if (selectedTemplateId === tpl.id) {
@@ -171,6 +187,7 @@ export function MailSideTab({
 
   const handleSaveTemplate = () => {
     const html = serializeHtml(editorValue);
+    console.log("request", html)
     createTpl.mutate(
       {
         name: newTitle,
@@ -186,6 +203,7 @@ export function MailSideTab({
             title: newTpl.name,
             body: newTpl.body,
           };
+          console.log("response", newTpl)
           setTemplates((prev) => [...prev, added]);
           setSelectedTemplateId(String(newTpl.id));
           setIsCreating(false);
@@ -200,19 +218,9 @@ export function MailSideTab({
     if (!selectedTemplateId) return;
 
     // TODO: 실제 수정 API 나오면 여기서 호출
-    // updateTpl.mutate(
-    //   {
-    //     id: Number(selectedTemplateId),
-    //     name: /* 필요시 제목 */,
-    //     subject,
-    //     body: html,
-    //     medium: 'MAIL',
-    //     organizationId,
-    //   },
-    //   { onSuccess: ... }
-    // );
+    // updateTpl.mutate(...)
 
-    // 지금은 로컬 state 만 갱신
+    // 지금은 로컬 state만 갱신
     setTemplates((prev) =>
       prev.map((t) =>
         t.id === selectedTemplateId ? { ...t, body: html } : t
@@ -246,27 +254,46 @@ export function MailSideTab({
     else handleSend();
   };
 
+  const isMarkActive = (
+    editor: Editor,
+    format: 'bold' | 'italic' | 'underline'
+  ) => {
+    const marks = (Editor.marks(editor) as Record<string, boolean>) || {};
+    return marks[format] === true;
+  };
+  
+  const isAlignActive = (editor: Editor, align: TextAlign) => {
+    const [match] = Editor.nodes(editor, {
+      match: (n) =>
+        !Editor.isEditor(n) &&
+        SlateElement.isElement(n) &&
+        (n as any).type === 'paragraph' &&
+        (n as any).align === align,
+    });
+    return !!match;
+  };
+  
   return (
     <SideTab
-      icon={<IcHeaderMail width={24} height={24} />}
+    icon={<IcHeaderMail width={24} height={24} />}
       title="메일 전송"
       onClose={onClose}
     >
       <TemplatesAccordion
-         templates={templates}
-         selectedTemplateId={selectedTemplateId}
-         isCreating={isCreating}
-         isEditing={isEditing}
-         newTitle={newTitle}
-         onNewTitleChange={setNewTitle}
-         onSelect={handleSelect}
-         onCreate={handleCreate}
-         onEdit={handleEdit}
-         onDelete={handleDelete}
+        templates={templates}
+        selectedTemplateId={selectedTemplateId}
+        isCreating={isCreating}
+        isEditing={isEditing}
+        newTitle={newTitle}
+        onNewTitleChange={setNewTitle}
+        onSelect={handleSelect}
+        onCreate={handleCreate}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
 
       {/* 받는 사람 */}
-      {!isCreating && !isEditing &&  (
+      {!isCreating && !isEditing && (
         <div className={styles.section} style={{ marginTop: '1.2rem' }}>
           <Text
             variant="sm_caption_semibold"
@@ -340,7 +367,7 @@ export function MailSideTab({
               }
             />
             <Flex align="center" gap="0.25rem">
-              <IcFilePlus width={16} height={16} />
+            <IcFilePlus width={16} height={16} />
               <Text variant="sm_caption_medium" color="grayscale20">
                 {attachment?.name ??
                   '파일을 마우스로 끌어 오세요 (최대 3MB, 1개)'}
@@ -350,6 +377,7 @@ export function MailSideTab({
         </div>
       )}
 
+      {/* 글자 설정 */}
       <div className={styles.sectionText}>
         <Text
           variant="sm_caption_semibold"
@@ -358,32 +386,156 @@ export function MailSideTab({
         >
           글자 설정
         </Text>
-        <Flex align="center" gap="0.8rem">
-          <button
-            className={styles.iconBtn}
-            onClick={() => toggleMark(editor, 'bold')}
-            aria-label="굵게"
+
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.8rem',
+    
+          }}
+        >
+        <button
+                className={clsx(
+                  styles.iconBtn,
+                  isMarkActive(editor, 'bold') && styles.activeIcon
+                )}
+              onClick={() => toggleMark(editor, 'bold')}
+              aria-label="굵게"
+            >
+              <BoldIcon width={18} height={18} />
+            </button>
+            <button
+              className={clsx(
+                styles.iconBtn,
+                isMarkActive(editor, 'italic') && styles.activeIcon
+              )}
+              onClick={() => toggleMark(editor, 'italic')}
+              aria-label="이탤릭"
+            >
+              <ItalicIcon width={18} height={18} />
+            </button>
+            <button
+               className={clsx(
+                styles.iconBtn,
+                isMarkActive(editor, 'underline') && styles.activeIcon
+              )}
+              onClick={() => toggleMark(editor, 'underline')}
+              aria-label="밑줄"
+            >
+              <UnderlineIcon width={18} height={18} />
+            </button>
+
+          {/* 폰트 사이즈 */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              marginLeft: '0.4rem',
+            }}
           >
-            <IcBold width={24} height={24} />
-          </button>
-          <button
-            className={styles.iconBtn}
-            onClick={() => toggleMark(editor, 'italic')}
-            aria-label="이탤릭"
+              <button className={styles.iconBtn} aria-hidden="true">
+        <TypeIcon width={18} height={18} />
+      </button>
+            <select
+              value={currentFontSize}
+              onChange={(e) => {
+                const size = e.target.value;
+                setCurrentFontSize(size);
+                setFontSize(editor, size);
+              }}
+              style={{
+                fontSize: '1.2rem',
+                padding: '0.2rem 0.4rem',
+                borderRadius: '4px',
+                border: '1px solid #E0E0E0',
+              }}
+            >
+              <option value="12px">12</option>
+              <option value="14px">14</option>
+              <option value="16px">16</option>
+              <option value="18px">18</option>
+              <option value="20px">20</option>
+            </select>
+          </div>
+
+          {/* 글자 색상 */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              marginLeft: '0.4rem',
+            }}
           >
-            <IcItalic width={24} height={24} />
-          </button>
-          <button
-            className={styles.iconBtn}
-            onClick={() => toggleMark(editor, 'underline')}
-            aria-label="밑줄"
+                <button className={styles.iconBtn} aria-hidden="true">
+        <PaletteIcon width={18} height={18} />
+      </button>
+            <input
+              type="color"
+              value={currentColor}
+              onChange={(e) => {
+                const color = e.target.value;
+                setCurrentColor(color);
+                setColor(editor, color);
+              }}
+              style={{
+                width: '2rem',
+                height: '2rem',
+                padding: 0,
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+              }}
+            />
+          </div>
+
+          {/* 정렬 */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              marginLeft: '0.4rem',
+            }}
           >
-            <IcUnderline width={24} height={24} />
-          </button>
-        </Flex>
+            <button
+              className={clsx(
+                styles.iconBtn,
+                isAlignActive(editor, 'left') && styles.activeIcon
+              )}
+              onClick={() => setAlign(editor, 'left')}
+              aria-label="왼쪽 정렬"
+            >
+              <AlignLeft width={20} height={20} />
+            </button>
+            <button
+              className={clsx(
+                styles.iconBtn,
+                isAlignActive(editor, 'center') && styles.activeIcon
+              )}
+              onClick={() => setAlign(editor, 'center')}
+              aria-label="가운데 정렬"
+            >
+              <AlignCenter width={20} height={20} />
+            </button>
+            <button
+              className={clsx(
+                styles.iconBtn,
+                isAlignActive(editor, 'right') && styles.activeIcon
+              )}
+              onClick={() => setAlign(editor, 'right')}
+              aria-label="오른쪽 정렬"
+            >
+              <AlignRight width={20} height={20} />
+            </button>
+          </div>
+        </div>
       </div>
 
-      {isCreating && (
+      {/* 변수 설정 (새 템플릿 생성일 때만) */}
+      {(isCreating || isEditing) && (
         <div className={styles.section}>
           <Text
             variant="sm_caption_semibold"
@@ -437,7 +589,7 @@ export function MailSideTab({
         onClick={handleActionClick}
         disabled={isCreating && !newTitle.trim()}
       >
-       {actionLabel}
+        {actionLabel}
       </Button>
     </SideTab>
   );
