@@ -1,4 +1,3 @@
-//
 export interface OrganizationSummary {
   id: number;
   name: string;
