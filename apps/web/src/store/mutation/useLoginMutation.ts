@@ -39,10 +39,8 @@ export function useLoginMutation(): UseMutationResult<
         userOrganizationRoles,
       });
 
-      router.replace(ROUTES.HOME);
-      if (typeof window !== 'undefined') {
-        window.location.replace(ROUTES.HOME);
-      }
+      router.push(ROUTES.HOME);
+     
     },
   });
 }
