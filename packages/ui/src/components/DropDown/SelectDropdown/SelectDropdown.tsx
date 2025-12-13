@@ -1,9 +1,10 @@
 'use client';
 
+import clsx from 'clsx';
 import { ComponentPropsWithoutRef, useEffect, useRef, useState } from 'react';
 import SelectDropdownTriggerContent from './SelectDropdownTriggerContent';
 import Dropdown from '../Dropdown';
-import { triggerStyle } from '../Dropdown.css';
+import { triggerStyle , triggerError} from '../Dropdown.css';
 
 const emailDomains = [
   'naver.com',
@@ -21,6 +22,7 @@ export interface SelectDropdownProps
   value?: string;
   onSelect: (val: string) => void;
   customPlaceholder?: string;
+  hasError?: boolean;
 }
 
 export default function SelectDropdown({
@@ -28,6 +30,7 @@ export default function SelectDropdown({
   onSelect,
   style,
   customPlaceholder = 'withus.com',
+  hasError,
   ...rest
 }: SelectDropdownProps) {
   const defaultValue = '선택해주세요';
@@ -69,7 +72,7 @@ export default function SelectDropdown({
   if (customMode) {
     return (
       <div {...rest} style={{ ...style }}>
-        <div className={triggerStyle}>
+        <div className={clsx(triggerStyle, hasError && triggerError)}>
           <input
             ref={inputRef}
             type="text"
@@ -104,6 +107,7 @@ export default function SelectDropdown({
         <SelectDropdownTriggerContent
           selected={selected}
           isDefault={isDefault}
+          hasError={hasError} 
         />
       </Dropdown.Trigger>
 

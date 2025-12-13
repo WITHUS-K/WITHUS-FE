@@ -22,6 +22,10 @@ export const triggerStyle = style({
    overflow: 'hidden',    
 });
 
+export const triggerError = style({
+  border: `1px solid ${vars.colors.error}`,
+});
+
 export const academicStatusTriggerStyle = style({
   display: 'flex',
   alignItems: 'center',

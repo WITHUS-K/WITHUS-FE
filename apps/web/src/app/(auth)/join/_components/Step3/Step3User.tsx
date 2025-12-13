@@ -47,6 +47,7 @@ export default function Step3User({ onBack }: Step3UserProps) {
     watch,
     setError,
     setValue,
+    clearErrors,
     formState: { errors, isValid },
   } = useForm<FormValues>({
     mode: 'onBlur',
@@ -335,7 +336,14 @@ export default function Step3User({ onBack }: Step3UserProps) {
               render={({ field }) => (
                 <TextField
                   title="이메일"
-                  inputProps={{ ...field, placeholder: '이메일' }}
+                  inputProps={{
+                    ...field,
+                    placeholder: '이메일',
+                    onChange: (e) => {
+                      clearErrors('emailLocal');     
+                      field.onChange(e);
+                    },
+                  }}
                   errorMessage={errors.emailLocal?.message}
                   size="auth"
                   width="19.7rem"
@@ -356,8 +364,12 @@ export default function Step3User({ onBack }: Step3UserProps) {
               render={({ field }) => (
                 <SelectDropdown
                   value={field.value}
-                  onSelect={field.onChange}
+                  onSelect={(v) => {
+                    clearErrors('emailLocal');
+                    field.onChange(v);
+                  }}
                   style={{ marginTop: '3.35rem' }}
+                  hasError={!!errors.emailLocal}
                 />
               )}
             />
@@ -371,34 +383,24 @@ export default function Step3User({ onBack }: Step3UserProps) {
               disabled={!canCheckEmail || isCheckingEmail}
               onClick={async () => {
                 if (!canCheckEmail || !email) return;
-
+            
                 const { data } = await refetchEmailCheck();
                 if (!data) return;
-                if (data.isDuplicated) return;
-
+            
+                if (data.isDuplicated) {
+                  setError('emailLocal', {
+                    type: 'manual',
+                    message: '이미 가입된 이메일입니다.',
+                  });
+                  return; 
+                }
+            
+                clearErrors('emailLocal');
                 sendEmailCode({ name: watch('name'), email });
               }}
             >
               인증번호 받기
             </Button>
-          )}
-
-          {isEmailChecked && (
-            <Flex gap="0.8rem" align="center">
-              {emailCheckData!.isDuplicated ? (
-                <IcInputError width={24} height={24} />
-              ) : (
-                <IcInputSuccess width={24} height={24} />
-              )}
-              <Text
-                variant="sm_caption_regular"
-                color={emailCheckData!.isDuplicated ? 'error' : 'success'}
-              >
-                {emailCheckData!.isDuplicated
-                  ? '이미 가입된 이메일입니다.'
-                  : '가입 가능한 이메일입니다.'}
-              </Text>
-            </Flex>
           )}
 
           {emailCheckData?.isDuplicated === false && isVerifySent && (
