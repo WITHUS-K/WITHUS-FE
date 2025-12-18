@@ -9,6 +9,8 @@ import { Tag } from '@repo/ui/Tag';
 import * as styles from './FilterForm.css';
 import { TagHex } from '@web/utils/color';
 import { IcRoomPlus } from '@repo/ui/icons/colored';
+import { Tooltip } from '@repo/ui/Tooltip';
+import { IcInfo } from '@repo/ui/icons/mono';
 
 export interface FilterSettings {
   rooms: string[];
@@ -32,7 +34,11 @@ export default function FilterForm({
   initialSettings,
   disabled = false,
 }: FilterFormProps) {
-  const [rooms, setRooms] = useState<string[]>(initialSettings?.rooms ?? ['']);
+  const [rooms, setRooms] = useState<string[]>(
+    initialSettings?.rooms && initialSettings.rooms.length > 0
+      ? initialSettings.rooms
+      : ['면접실1']
+  );
   const [counts, setCounts] = useState({
     면접관: initialSettings?.interviewerPerSlot ?? 0,
     지원자: initialSettings?.applicantPerSlot ?? 0,
@@ -73,7 +79,10 @@ export default function FilterForm({
 
   const addRoom = () => {
     if (disabled || rooms.length >= 3) return;
-    setRooms((prev) => [...prev, '']);
+    setRooms((prev) => {
+      const nextNum = prev.length + 1;
+      return [...prev, `면접실${nextNum}`];
+    });
   };
 
   const updateRoom = (index: number, value: string) => {
@@ -140,23 +149,33 @@ export default function FilterForm({
           <Text variant="md2_text_medium" color="grayscale6D">
             면접관 수
           </Text>
-          <Stepper
-            name="면접관"
-            value={counts.면접관}
-            onChange={onCountChange}
-            disabled={disabled}
-          />
+          <Flex align="center" gap="1.2rem">
+            <Stepper
+              name="면접관"
+              value={counts.면접관}
+              onChange={onCountChange}
+              disabled={disabled}
+            />
+            <Tooltip message="면접 한 타임에 들어갈 면접관 수를 선택해주세요">
+              <IcInfo width={20} height={20} />
+            </Tooltip>
+          </Flex>
         </Flex>
         <Flex align="center" gap="2rem">
           <Text variant="md2_text_medium" color="grayscale6D">
             지원자 수
           </Text>
-          <Stepper
-            name="지원자"
-            value={counts.지원자}
-            onChange={onCountChange}
-            disabled={disabled}
-          />
+          <Flex align="center" gap="1.2rem">
+            <Stepper
+              name="지원자"
+              value={counts.지원자}
+              onChange={onCountChange}
+              disabled={disabled}
+            />
+            <Tooltip message="면접 한 타임에 들어갈 지원자 수를 선택해주세요">
+              <IcInfo width={20} height={20} />
+            </Tooltip>
+          </Flex>
         </Flex>
         <Flex align="center" gap="2rem">
           <Text variant="md2_text_medium" color="grayscale6D">
