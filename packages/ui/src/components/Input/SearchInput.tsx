@@ -10,6 +10,7 @@ export interface SearchInputProps {
   onClick?: () => void;
   onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
   keepSearchIcon?: boolean;
+  isLoading?: boolean;
 }
 
 export default function SearchInput({
@@ -19,13 +20,47 @@ export default function SearchInput({
   width = '100%',
   onClick,
   onKeyDown,
-   keepSearchIcon = false,
+  keepSearchIcon = false,
+  isLoading = false,
 }: SearchInputProps) {
   const handleClear = () => {
     onChange({ target: { value: '' } } as ChangeEvent<HTMLInputElement>);
   };
 
-    const renderIcon = () => {
+  const renderIcon = () => {
+    if (isLoading) {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '2.4rem',
+            height: '2.4rem',
+            position: 'relative',
+          }}
+        >
+          <div
+            style={{
+              width: '1.8rem',
+              height: '1.8rem',
+              border: '2px solid rgba(0, 0, 0, 0.1)',
+              borderTop: '2px solid #999BB4',
+              borderRadius: '50%',
+              animation: 'spinSearchInput 0.8s linear infinite',
+              boxSizing: 'border-box',
+            }}
+          />
+          <style>{`
+        @keyframes spinSearchInput {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+        </div>
+      );
+    }
+
     // --- Search 아이콘 유지 모드 ---
     if (keepSearchIcon) {
       return (
