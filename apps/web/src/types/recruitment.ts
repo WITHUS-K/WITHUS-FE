@@ -49,7 +49,7 @@ export interface CreateTextQuestionRequest {
   title: string;
   description: string;
   required: boolean;
-  organizationRoleId : number;
+  organizationRoleId: number | null;
   textLimit: number | null;
   includeWhitespace: boolean | null;
   maxFileCount: null;
@@ -62,7 +62,7 @@ export interface CreateFileQuestionRequest {
   title: string;
   description: string;
   required: boolean;
-  organizationRoleId : number;
+  organizationRoleId: number | null;
   textLimit: null;
   includeWhitespace: null;
   maxFileCount: number | null;
@@ -181,7 +181,7 @@ export interface PublishRecruitmentRequest {
   recruitmentId: number | null;
   title: string;
   content: string;
-  organizationRoleIds: number[]
+   organizationRoleIds: number[] | null;
   applicationQuestions: CreateQuestionRequest[];
   documentDeadline: string;
   isDocumentResultRequired: boolean;
@@ -203,13 +203,13 @@ export interface PublishRecruitmentRequest {
     content: string;
     description: string;
     type: 'DOCUMENT' | 'INTERVIEW' | string;
-    organizationRoleId : number;
+    organizationRoleId: number | null;
   }[];
   interviewEvaluationCriteria: {
     content: string;
     description: string;
     type: 'DOCUMENT' | 'INTERVIEW' | string;
-    organizationRoleId : number;
+    organizationRoleId: number | null;
   }[];
 
   isInterviewRequired: boolean;
@@ -235,7 +235,7 @@ export interface DraftRecruitmentRequest {
   recruitmentId: number | null;
   title: string;
   content: string;
-  organizationRoleIds: number[]
+  organizationRoleIds: number[] | null;
   applicationQuestions: CreateQuestionRequest[];
   documentDeadline: string;
   documentResultDate: string | null;
@@ -256,13 +256,13 @@ export interface DraftRecruitmentRequest {
     content: string;
     description: string;
     type: 'DOCUMENT' | 'INTERVIEW' | string;
-    organizationRoleId : number
+    organizationRoleId: number | null; 
   }[];
   interviewEvaluationCriteria: {
     content: string;
     description: string;
     type: 'DOCUMENT' | 'INTERVIEW' | string;
-    organizationRoleId : number
+    organizationRoleId: number | null; 
   }[];
   availableTimeRanges: {
     date: string;
