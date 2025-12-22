@@ -8,6 +8,7 @@ import RejectedTab from '../_components/Tab/RejectedTab/RejectedTab';
 import InterviewTab from '../_components/Tab/InterViewTab/InterviewTab';
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { AdminApplicationStage } from '@web/store/query/useAdminApplicationsQuery';
+import { useRecruitmentDetailQuery } from '@web/store/query/useRecruitmentDetailQuery';
 
 export const stageMap: Record<string, AdminApplicationStage> = {
   documents: 'DOCUMENT',
@@ -75,11 +76,11 @@ export default function TabClient() {
     return <div>잘못된 모집 ID입니다: {recIdStr}</div>;
   }
 
-  // 이제 안전하게 positions 쿼리 호출
-  const { data: positions = [] } = useRecruitmentPositionsQuery(recruitmentId);
+  const { data: detail } = useRecruitmentDetailQuery({ recruitmentId });
+  const positions = detail?.positions ?? [];
 
   const posColorMap = useMemo(
-    () => Object.fromEntries(positions.map((p) => [p.name, p.color])),
+    () => Object.fromEntries(positions.map((p) => [p.roleName, p.color])),
     [positions]
   );
 

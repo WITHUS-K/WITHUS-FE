@@ -16,7 +16,7 @@ export interface OrgRole {
 export interface PartState {
   roles: OrgRole[];
   count: number;
-  positionId: number;
+  positionId: number | null; 
 }
 
 export interface DistributionContainerProps {

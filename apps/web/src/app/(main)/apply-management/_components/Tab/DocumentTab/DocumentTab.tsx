@@ -100,7 +100,9 @@ export default function DocumentTab({
   const rows = useMemo(() => {
     if (!data) return [];
     return data.data.map((item, idx) => {
+      console.log("아이템", item)
       const positionLabel = item.organizationRoleName ?? '공통';
+
       const positionColor: TagColor = item.organizationRoleName
         ? mapServerColorToTagHex(posColorMap[item.organizationRoleName]!)
         : '#5A5C72'; 
