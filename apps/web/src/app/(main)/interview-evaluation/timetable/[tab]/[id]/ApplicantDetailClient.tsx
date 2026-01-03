@@ -2,12 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, Flex } from '@repo/ui';
 import * as styles from './layout.css';
-import {
-  notFound,
-  useParams,
-  useRouter,
-  useSearchParams,
-} from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { ApplicantSliderHeader } from '@web/app/(main)/interview-management/_components/ApplicantHeader/ApplicantHeader';
 import { pageContainer } from '@web/app/(main)/interview-management/timetable/[tab]/[date]/application/[time]/page.css';
 import { ApplicantInterviewForm } from '@web/app/(main)/interview-evaluation/_components/ApplicantInterviewForm/ApplicantInterviewForm';
@@ -22,24 +17,31 @@ export default function ApplicantDetailClient({ timeSlotId }: Props) {
   const params = useParams();
   const tab = params.tab as string;
 
-  //const timeSlotId = Number(params.id);
   const { data: applicants = [], isLoading } = useTimeSlotApplicationsQuery({
     timeSlotId,
   });
 
   const [current, setCurrent] = useState(0);
-  const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   useEffect(() => {
     setCurrent(0);
-    setOpenIdx(null);
   }, [tab, timeSlotId]);
 
-  console.log('지원서', applicants);
+  if (isLoading) return null;
+  if (applicants.length === 0) return null;
 
-  const applicant = applicants[current]!;
+  const applicant = applicants[current];
+  if (!applicant) return null;
+
   const { date, startTime, endTime } = applicant;
   const formattedDate = date.slice(5).replace('.', '/').replace('.', '/');
+
+  const handleSelectApplicant = (id: number) => {
+    const index = applicants.findIndex((a) => a.applicationId === id);
+    if (index !== -1) {
+      setCurrent(index);
+    }
+  };
 
   return (
     <>
@@ -74,14 +76,16 @@ export default function ApplicantDetailClient({ timeSlotId }: Props) {
           >
             <ApplicantSliderHeader
               name={applicant.name}
-              total={applicants.length}
               current={current + 1}
-              onPrev={() => setCurrent((i) => Math.max(i - 1, 0))}
-              onNext={() =>
-                setCurrent((i) => Math.min(i + 1, applicants.length - 1))
-              }
               onViewApplication={() => router.push(`/`)}
               isOtherUser={false}
+              applicants={applicants.map((a) => ({
+                id: a.applicationId,
+                name: a.name,
+                imageUrl: '',
+              }))}
+              currentId={applicant.applicationId}
+              onSelect={handleSelectApplicant}
             />
 
             <ApplicantInterviewForm detail={applicant} />
