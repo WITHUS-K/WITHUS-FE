@@ -20,7 +20,7 @@ export const questionWrapper = style({
 
 export const btn = style({
   display: 'flex',
-  alignItems: 'content',
+  alignItems: 'center',
   gap: '0.4rem',
 });
 

@@ -19,6 +19,7 @@ export { default as IcCheck } from './IcCheck';
 export { default as IcClubModalError } from './IcClubModalError';
 export { default as IcDelete } from './IcDelete';
 export { default as IcDeleteCircle } from './IcDeleteCircle';
+export { default as IcDeleteInt } from './IcDeleteInt';
 export { default as IcDeleteLg } from './IcDeleteLg';
 export { default as IcDeleteMenu } from './IcDeleteMenu';
 export { default as IcDocsNon } from './IcDocsNon';

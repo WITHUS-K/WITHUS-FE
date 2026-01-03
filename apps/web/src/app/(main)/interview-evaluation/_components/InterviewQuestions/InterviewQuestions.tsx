@@ -2,15 +2,15 @@
 import React, { useEffect, useState } from 'react';
 import * as styles from './InterviewQuestions.css';
 import { TextField } from '@repo/ui/InputField';
-import { IcDeleteLg, IcPlusCircle, IcPencil } from '@repo/ui/icons/colored';
+import { IcPlusCircle, IcPencil, IcDeleteInt } from '@repo/ui/icons/colored';
 import { Flex } from '@repo/ui/Flex';
 import { Button } from '@repo/ui/Button';
-import { useParams } from 'next/navigation';
 import { useAddInterviewQuestionMutation } from '@web/store/mutation/useInterviewQuestionMutation';
 import { InterviewQuestion } from '@web/store/query/useTimeSlotApplicationsQuery';
 import { useUpdateInterviewQuestionMutation } from '@web/store/mutation/useUpdateInterviewQuestionMutation';
 import { List } from '@repo/ui/List';
 import { Text } from '@repo/ui/Text';
+import { useDeleteInterviewQuestionMutation } from '@web/store/mutation/useDeleteInterviewQuestionMutation';
 
 interface InterviewQuestionsProps {
   existingQuestions: InterviewQuestion[];
@@ -32,18 +32,14 @@ export const InterviewQuestions = ({
   timeSlotId,
   currentUserId,
 }: InterviewQuestionsProps) => {
-  // 질문 추가/수정 훅
   const addQ = useAddInterviewQuestionMutation(applicationId, timeSlotId);
   const updateQ = useUpdateInterviewQuestionMutation(applicationId, timeSlotId);
+  const deleteQ = useDeleteInterviewQuestionMutation(applicationId, timeSlotId);
 
-  // 다른 사람 질문
   const [otherQs, setOtherQs] = useState<InterviewQuestion[]>([]);
-  // 내 질문 로컬 상태
   const [myRows, setMyRows] = useState<LocalQuestion[]>([]);
-  // 새 질문 입력창
   const [newRows, setNewRows] = useState<string[]>([]);
 
-  // 기존 질문이 바뀔 때마다 분리
   useEffect(() => {
     setOtherQs(
       existingQuestions.filter((q) => q.user.userId !== currentUserId)
@@ -60,7 +56,6 @@ export const InterviewQuestions = ({
     );
   }, [existingQuestions, currentUserId]);
 
-  // — 편집 핸들러들 —
   const startEdit = (id: number) =>
     setMyRows((prev) =>
       prev.map((r) =>
@@ -93,7 +88,19 @@ export const InterviewQuestions = ({
     );
   };
 
-  // — 새 질문 핸들러들 —
+  const handleDelete = (id: number) => {
+    deleteQ.mutate(
+      {
+        questionId: id,
+      },
+      {
+        onSuccess: () => {
+          setMyRows((prev) => prev.filter((r) => r.id !== id));
+        },
+      }
+    );
+  };
+
   const onNewChange = (idx: number, text: string) =>
     setNewRows((prev) => {
       const a = [...prev];
@@ -125,12 +132,9 @@ export const InterviewQuestions = ({
 
   const addNewRow = () => setNewRows((prev) => [...prev, '']);
 
-  const totalExisting = otherQs.length + myRows.length;
-
   return (
     <Flex direction="column" width="100%" gap="1.6rem">
       <div className={styles.listContainer}>
-        {/* — 1) 다른 사람 질문 리스트 — */}
         {otherQs.map((q, i) => (
           <List
             key={q.id}
@@ -142,7 +146,6 @@ export const InterviewQuestions = ({
           />
         ))}
 
-        {/* — 2) 내 질문 리스트 — */}
         {myRows.map((r, idx) => {
           const number = otherQs.length + idx + 1;
           return (
@@ -171,15 +174,27 @@ export const InterviewQuestions = ({
                   <Text variant="md2_text_medium" color="grayscale90">
                     {number}. {r.content}
                   </Text>
-                  <button
-                    onClick={() => startEdit(r.id)}
-                    className={styles.btn}
-                  >
-                    <IcPencil width={20} height={20} />
-                    <Text variant="sm_caption_medium" color="grayscale30">
-                      수정하기
-                    </Text>
-                  </button>
+                  <Flex gap="0.8rem">
+                    <button
+                      onClick={() => startEdit(r.id)}
+                      className={styles.btn}
+                    >
+                      <IcPencil width={20} height={20} />
+                      <Text variant="sm_caption_medium" color="grayscale30">
+                        수정
+                      </Text>
+                    </button>
+
+                    <button
+                      onClick={() => handleDelete(r.id)}
+                      className={styles.btn}
+                    >
+                      <IcDeleteInt width={20} height={20} />
+                      <Text variant="sm_caption_medium" color="grayscale30">
+                        삭제
+                      </Text>
+                    </button>
+                  </Flex>
                 </div>
               )}
             </div>
@@ -188,7 +203,6 @@ export const InterviewQuestions = ({
       </div>
 
       <div className={styles.container}>
-        {/* 입력 행들 */}
         {newRows.map((q, idx) => (
           <div key={idx} className={styles.questionRow}>
             <Flex width="100%" gap="1.6rem" align="center">
@@ -212,7 +226,6 @@ export const InterviewQuestions = ({
           </div>
         ))}
 
-        {/* 질문 추가 버튼 */}
         <button type="button" className={styles.addButton} onClick={addNewRow}>
           <IcPlusCircle width={24} height={24} />
           면접 질문 추가하기
