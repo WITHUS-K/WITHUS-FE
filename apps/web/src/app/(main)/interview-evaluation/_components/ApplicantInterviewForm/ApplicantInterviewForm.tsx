@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import * as styles from './ApplicantInterviewForm.css';
 import { AccordianList, List } from '@repo/ui/List';
+import { ExpandableList } from '@repo/ui/List';
+
 import { Divider } from '@repo/ui/Divider';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
@@ -47,7 +49,7 @@ export const ApplicantInterviewForm = ({
   const { data: recruitmentDetail } = useRecruitmentDetailQuery({
     recruitmentId,
   });
-  console.log('공고', recruitmentDetail);
+
   const positionName = recruitmentDetail?.positions.find(
     (p) => p.id === detail.appliedPosition
   )?.roleName;
@@ -58,18 +60,15 @@ export const ApplicantInterviewForm = ({
       (c) => c.type === 'INTERVIEW' && c.organizationRoleName === positionName
     ) ?? [];
 
-  //console.log('타임슬롯', timeSlotId);
-
   const mergedCriteria = allCriteria.map((c) => {
     const existing = detail.evaluations.find(
-      (e) => e.criteria.id === c.id && e.user.userId === myUserId // ← 여기서 내 userId 로 추가 필터링
+      (e) => e.criteria.id === c.id && e.user.userId === myUserId
     );
 
     return {
       id: c.id,
       content: c.content,
       description: c.description,
-      // 내 평가가 있으면 그 점수, 없으면 null → SelectScoreDropdown 은 빈 값으로 렌더
       score: existing?.score ?? null,
     };
   });
@@ -84,12 +83,6 @@ export const ApplicantInterviewForm = ({
     )
   );
 
-  /*const interviewCriteria =
-    recruitmentDetail?.interviewEvaluationCriteria.filter(
-      (c) => c.type === 'INTERVIEW'
-    ) ?? [];*/
-
-  //console.log('면접', interviewCriteria);
   // Mutations
   const addComment = useAddCommentMutation(detail.applicationId, timeSlotId);
   const updateComment = useUpdateCommentMutation(
@@ -102,16 +95,6 @@ export const ApplicantInterviewForm = ({
     timeSlotId
   );
 
-  /*const [scores, setScores] = useState<Record<number, string>>(() =>
-    detail.evaluations.reduce(
-      (acc, e) => {
-        acc[e.criteria.id] = String(e.score);
-        return acc;
-      },
-      {} as Record<number, string>
-    )
-  );*/
-
   const myDocumentComments = detail.documentComments.filter(
     (c) => c.type === 'DOCUMENT' && c.user.userId === myUserId
   );
@@ -120,7 +103,7 @@ export const ApplicantInterviewForm = ({
   const existingInterviewCommentItem = detail.interviewComments.find(
     (c: CommentItem) => c.user.userId === myUserId
   );
-  // 2) 화면에 보여줄 내용만 추출
+
   const myInterviewComment = existingInterviewCommentItem?.content ?? '';
 
   const [newComment, setNewComment] = useState(myInterviewComment);
@@ -137,7 +120,6 @@ export const ApplicantInterviewForm = ({
   const handleCommentSubmit = () => {
     if (!newComment.trim()) return;
     if (existingInterviewCommentItem) {
-      // 수정: id가 있는 객체를 사용
       updateComment.mutate({
         commentId: existingInterviewCommentItem.id,
         content: newComment,
@@ -183,7 +165,7 @@ export const ApplicantInterviewForm = ({
             질문 항목
           </Text>
 
-          <AccordianList
+          <ExpandableList
             items={detail.documentAnswers
               .filter((q) => q.questionType === 'TEXT')
               .map((q, i) => ({
