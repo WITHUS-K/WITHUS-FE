@@ -52,6 +52,8 @@ import {
 import clsx from 'clsx';
 import { useRecipientsStore } from '@web/store/state/useRecipientsStore';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useUpdateTemplate } from '@web/store/mutation/useUpdateTemplate';
+import { useDeleteTemplate } from '@web/store/mutation/useDeleteTemplate';
 
 interface MailSideTabProps {
   applicationIds: number[];
@@ -137,25 +139,28 @@ export function MailSideTab({
   );
 
   useEffect(() => {
-    if (tplDetailQ.data && !isCreating) {
-      setSubject(tplDetailQ.data.subject ?? tplDetailQ.data.name);
-      const nodes = deserializeHtml(tplDetailQ.data.body);
-
-      Transforms.deselect(editor);
-      for (let i = editor.children.length - 1; i >= 0; i--) {
-        Transforms.removeNodes(editor, { at: [i] });
-      }
-      Transforms.insertNodes(editor, nodes);
-      setEditorValue(nodes);
-      Transforms.deselect(editor);
+    // 선택된 템플릿이 없으면(삭제/생성 초기화 상태) detail을 에디터에 반영하지 않음
+    if (!selectedTemplateId) return;
+    if (!tplDetailQ.data) return;
+    if (isCreating) return;
+  
+    setSubject(tplDetailQ.data.subject ?? tplDetailQ.data.name);
+  
+    const nodes = deserializeHtml(tplDetailQ.data.body);
+  
+    Transforms.deselect(editor);
+    for (let i = editor.children.length - 1; i >= 0; i--) {
+      Transforms.removeNodes(editor, { at: [i] });
     }
-  }, [tplDetailQ.data, isCreating, editor]);
-
+    Transforms.insertNodes(editor, nodes);
+    setEditorValue(nodes);
+    Transforms.deselect(editor);
+  }, [selectedTemplateId, tplDetailQ.data, isCreating, editor]);
   const sendMail = useBulkMail();
   const createTpl = useCreateTemplate();
-  // TODO: 업데이트용 mutation 준비되면 연결
-  // const updateTpl = useUpdateTemplate();
-
+  const updateTpl = useUpdateTemplate();
+  const deleteTpl = useDeleteTemplate();
+  
   const handleClose = () => {
     clearRecipients();   
     onClose();          
@@ -197,16 +202,23 @@ export function MailSideTab({
       cancelText: '취소',
       confirmText: '삭제',
       onConfirm: () => {
-        // TODO: 삭제 API 연동
-        setTemplates((prev) => prev.filter((item) => item.id !== tpl.id));
-
-        if (selectedTemplateId === tpl.id) {
-          setSelectedTemplateId(null);
-          setSubject('');
-          setEditorValue([
-            { type: 'paragraph', children: [{ text: '' }] },
-          ]);
-        }
+        deleteTpl.mutate(
+          {
+            templateId: Number(tpl.id),
+            medium: 'MAIL',
+          },
+          {
+            onSuccess: () => {
+  
+              setTemplates((prev) => prev.filter((item) => item.id !== tpl.id));
+              if (selectedTemplateId === tpl.id) {
+                setSelectedTemplateId(null);
+                setSubject('');
+                setEditorValue([{ type: 'paragraph', children: [{ text: '' }] }]);
+              }
+            }
+          }
+        );
       },
     });
   };
@@ -240,19 +252,32 @@ export function MailSideTab({
 
   const handleUpdateTemplate = () => {
     const html = serializeHtml(editorValue);
-
     if (!selectedTemplateId) return;
-
-    // TODO: 실제 수정 API 나오면 여기서 호출
-    // updateTpl.mutate(...)
-
-    // 지금은 로컬 state만 갱신
-    setTemplates((prev) =>
-      prev.map((t) =>
-        t.id === selectedTemplateId ? { ...t, body: html } : t
-      )
+  
+    updateTpl.mutate(
+      {
+        templateId: Number(selectedTemplateId),
+        name: newTitle.trim() || (tplDetailQ.data?.name ?? ''), // 제목 입력 UI가 별도로 없으면 기존 name 유지
+        subject,
+        body: html,
+        medium: 'MAIL',
+      },
+      {
+        onSuccess: () => {
+          // UI state 정리 (필요 최소)
+          setIsEditing(false);
+  
+          // (선택) 로컬 templates도 즉시 반영하고 싶으면 아래 유지
+          setTemplates((prev) =>
+            prev.map((t) =>
+              t.id === selectedTemplateId
+                ? { ...t, title: newTitle.trim() || t.title, body: html }
+                : t
+            )
+          );
+        },
+      }
     );
-    setIsEditing(false);
   };
 
   const handleSend = () => {
@@ -325,7 +350,7 @@ export function MailSideTab({
 
  {/* 받는 사람 */}
  {!isCreating && !isEditing && (
-        <div className={styles.section} style={{ marginTop: '1.2rem' }}>
+        <div className={styles.section1} style={{ marginTop: '1.2rem' }}>
           <Text
             variant="sm_caption_semibold"
             color="grayscale70"
@@ -361,7 +386,7 @@ export function MailSideTab({
         </div>
       )}
 
-      <div className={styles.section}>
+      <div className={styles.section} style={{ marginTop: '1.2rem' }}>
         <Text
           variant="sm_caption_semibold"
           color="grayscale70"
@@ -376,7 +401,6 @@ export function MailSideTab({
         />
       </div>
 
-      {!isCreating && (
         <div className={styles.section}>
           <Text
             variant="sm_caption_semibold"
@@ -413,7 +437,7 @@ export function MailSideTab({
             </Flex>
           </label>
         </div>
-      )}
+
 
       {/* 글자 설정 */}
       <div className={styles.sectionText}>

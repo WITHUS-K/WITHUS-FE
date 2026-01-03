@@ -11,6 +11,14 @@ export const section = style({
   overflowY: 'scroll',
 });
 
+export const section1 = style({
+  display: 'flex',
+  alignItems: 'center',
+  maxHeight: '24rem',
+  overflowY: 'scroll',
+});
+
+
 export const sectionText = style({
   display: 'flex',
   marginBottom: '1rem',

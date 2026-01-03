@@ -9,38 +9,38 @@ import TabPageClient from './TabPageClient';
 const PER_PAGE = 9;
 
 interface PageProps {
-  params: Promise<Record<string, string | string[] | undefined>>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  params: { tab?: string };
+  searchParams?: {
+    recruitmentId?: string;
+    keyword?: string;
+    page?: string;
+  };
 }
 
 export default async function Page({ params, searchParams }: PageProps) {
-  // await로 풀기
-  const { tab: tabRaw } = await params;
-  const {
-    recruitmentId: recIdStr,
-    keyword: keywordRaw,
-    page: pageRaw,
-  } = await searchParams;
+  const activeTab = params.tab ?? 'all';
+  const keyword = searchParams?.keyword ?? '';
+  const pageNum = searchParams?.page ? Number(searchParams.page) : 1;
 
-  // 탭, 키워드, 페이지 처리
-  const activeTab = Array.isArray(tabRaw) ? tabRaw[0] : (tabRaw ?? 'all');
-  const keyword = typeof keywordRaw === 'string' ? keywordRaw : '';
-  const pageNum = typeof pageRaw === 'string' ? Number(pageRaw) : 1;
-
-  // 토큰 가져오기
+  // 토큰
   const tokens = await getServerSideTokens();
 
-  // recruitmentId 결정
-  let recruitmentId: number | null =
+  // recruitmentId 결정 (없으면 첫 공고로 대체)
+  const recIdStr = searchParams?.recruitmentId;
+  let recruitmentId =
     typeof recIdStr === 'string' ? Number(recIdStr) : NaN;
-  if (!recruitmentId || isNaN(recruitmentId)) {
-    recruitmentId = await fetchFirstRecruitmentId(tokens);
-    if (!recruitmentId) {
+  
+  if (!recruitmentId || Number.isNaN(recruitmentId)) {
+    const firstId = await fetchFirstRecruitmentId(tokens);
+  
+    if (firstId == null) {
       return <div>공고 정보를 불러올 수 없습니다.</div>;
     }
+  
+    recruitmentId = firstId; // 여기서부터 타입은 확정 number
   }
 
-  // 평가 상태 매핑
+  // 탭 → evaluationStatus 매핑
   const evaluationStatus =
     activeTab === 'BEFORE'
       ? 'NOT_EVALUATED'
@@ -48,7 +48,7 @@ export default async function Page({ params, searchParams }: PageProps) {
         ? 'EVALUATED'
         : 'ALL';
 
-  // React Query 옵션 생성
+  // React Query 옵션
   const appsOptions = getApplicationsQueryOptions({
     recruitmentId,
     evaluationStatus,
@@ -66,7 +66,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   return (
     <ServerFetchBoundary fetchOptions={appsOptions}>
       <ServerFetchBoundary fetchOptions={positionsOptions}>
-        <TabPageClient />
+        <TabPageClient recruitmentId={recruitmentId} />
       </ServerFetchBoundary>
     </ServerFetchBoundary>
   );

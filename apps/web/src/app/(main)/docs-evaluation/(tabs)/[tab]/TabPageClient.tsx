@@ -16,14 +16,14 @@ import { Text } from '@repo/ui/Text';
 
 const PER_PAGE = 9;
 
-export default function TabPageClient() {
+export default function TabPageClient({ recruitmentId }: { recruitmentId: number }) {
   const router = useRouter();
   const sp = useSearchParams();
 
   const { tab } = useParams() as { tab?: 'all' | 'BEFORE' | 'COMPLETED' };
   const activeTab = tab ?? 'all';
 
-  const recruitmentId = Number(sp.get('recruitmentId'));
+  //const recruitmentId = Number(sp.get('recruitmentId'));
   const keyword = sp.get('keyword') ?? '';
   const page = sp.get('page') ? Number(sp.get('page')) : 1;
 
