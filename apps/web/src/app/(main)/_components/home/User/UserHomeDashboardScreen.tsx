@@ -1,38 +1,73 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Flex } from '@repo/ui/Flex';
-import { TimelineEvent } from '@web/app/(main)/_components/admin/DocTimeline/DocTimeline';
+import { UserHomeHeader } from '@web/app/(main)/_components/user/UserHomeHeader/UserHomeHeader';
+import { Spinner } from '@repo/ui/Spinner';
 import {
-  ReviewItem,
   UserDocReviewList,
+  ReviewItem,
 } from '@web/app/(main)/_components/user/UserDocReviewList/UserDocReviewList';
+import {
+  UserAnnouncementProgress,
+  AnnouncementEvent,
+} from '@web/app/(main)/_components/user/UserAnnouncementProgress/UserAnnouncementProgress';
 import {
   InterviewSlot,
   ReviewerRole,
   UserInterviewReview,
 } from '@web/app/(main)/_components/user/UserInterviewReview/UserInterviewReview';
-import { UserAnnouncementProgress } from '@web/app/(main)/_components/user/UserAnnouncementProgress/UserAnnouncementProgress';
-import { UserHomeHeader } from '@web/app/(main)/_components/user/UserHomeHeader/UserHomeHeader';
+
+import { useCurrentRecruitmentSummaryByOrgQuery } from '@web/store/query/useCurrentRecruitmentSummaryByOrgQuery';
+import { useMyDocumentEvaluationsQuery } from '@web/store/query/useMyDocumentEvaluationsQuery';
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 export const UserHomeDashboardScreen = () => {
-  const announcementTitle = '[한국대학생IT경영학회] 큐시즘 32기 학회원 모집';
-  const timelineEvents: TimelineEvent[] = [
-    { date: '2025-05-04', label: '서류 평가 마감', daysBefore: 3 },
-    { date: '2025-04-07', label: '면접 평가 시작', daysBefore: 30 },
-    { date: '2025-02-21', label: '최종 발표 시작', daysBefore: 70 },
-  ];
+  const { organizationId } = getClientSideTokens();
+  const orgId = Number(organizationId);
 
-  const itemsBefore: ReviewItem[] = [
-    { id: '1', part: '기획', name: '장지원' },
-    { id: '2', part: '디자인', name: '김하나' },
-    { id: '3', part: '백엔드', name: '이영희' },
-  ];
-  const itemsAfter: ReviewItem[] = [
-    { id: '4', part: '기획', name: '박철수' },
-    { id: '5', part: '디자인', name: '최민준' },
-    { id: '6', part: '백엔드', name: '최수진' },
-  ];
+  const { data: summaryData, isLoading: isSummaryLoading } =
+    useCurrentRecruitmentSummaryByOrgQuery(orgId);
+
+  const currentRecruitment = summaryData?.[0];
+  const recruitmentId = currentRecruitment?.recruitmentId;
+
+  const { data: myEvalData, isLoading: isEvalLoading } =
+    useMyDocumentEvaluationsQuery(recruitmentId!);
+
+  const announcementProps = useMemo(() => {
+    if (!currentRecruitment) return null;
+
+    const sortedEvents: AnnouncementEvent[] = currentRecruitment.dDays.map(
+      (d) => ({
+        label: d.label,
+        daysBefore: d.daysRemaining,
+      })
+    );
+
+    return {
+      title: currentRecruitment.title,
+      events: sortedEvents,
+    };
+  }, [currentRecruitment]);
+
+  const docReviewProps = useMemo(() => {
+    if (!myEvalData) return { itemsBefore: [], itemsAfter: [] };
+
+    const itemsBefore: ReviewItem[] = myEvalData.pending.map((item) => ({
+      id: String(item.id),
+      part: item.positionName,
+      name: item.name,
+    }));
+
+    const itemsAfter: ReviewItem[] = myEvalData.done.map((item) => ({
+      id: String(item.id),
+      part: item.positionName,
+      name: item.name,
+    }));
+
+    return { itemsBefore, itemsAfter };
+  }, [myEvalData]);
 
   const initialDate = new Date(2025, 4, 12);
   const slotsByRole: Record<ReviewerRole, InterviewSlot[]> = {
@@ -56,55 +91,31 @@ export const UserHomeDashboardScreen = () => {
           },
         ],
       },
-      {
-        start: '13:30',
-        end: '14:00',
-        applicants: ['박지민', '이수연'],
-        interviewers: [
-          {
-            id: 'i4',
-            avatarUrl: 'https://randomuser.me/api/portraits/men/12.jpg',
-          },
-          {
-            id: 'i5',
-            avatarUrl: 'https://randomuser.me/api/portraits/women/55.jpg',
-          },
-          {
-            id: 'i6',
-            avatarUrl: 'https://randomuser.me/api/portraits/men/76.jpg',
-          },
-        ],
-      },
     ],
-    guide: [
-      {
-        start: '13:00',
-        end: '13:30',
-        applicants: ['김현호', '윤지원'],
-        interviewers: [
-          {
-            id: 'g1',
-            avatarUrl: 'https://randomuser.me/api/portraits/men/22.jpg',
-          },
-          {
-            id: 'g2',
-            avatarUrl: 'https://randomuser.me/api/portraits/women/23.jpg',
-          },
-        ],
-      },
-      {
-        start: '13:30',
-        end: '14:00',
-        applicants: ['박지민', '이수연'],
-        interviewers: [
-          {
-            id: 'g3',
-            avatarUrl: 'https://randomuser.me/api/portraits/men/34.jpg',
-          },
-        ],
-      },
-    ],
+    guide: [],
   };
+
+  if (isSummaryLoading) {
+    return (
+      <Flex
+        width="100%"
+        height="100vh"
+        justify="center"
+        align="center"
+        paddingBottom="2.4rem"
+      >
+        <Spinner />
+      </Flex>
+    );
+  }
+
+  if (!currentRecruitment) {
+    return (
+      <Flex padding="2.4rem">
+        <div>진행 중인 공고가 없습니다.</div>
+      </Flex>
+    );
+  }
 
   return (
     <Flex
@@ -118,15 +129,17 @@ export const UserHomeDashboardScreen = () => {
     >
       <UserHomeHeader />
       <Flex direction="column" gap="2rem" width="100%">
-        <UserAnnouncementProgress
-          title={announcementTitle}
-          events={timelineEvents}
-        />
+        {announcementProps && (
+          <UserAnnouncementProgress
+            title={announcementProps.title}
+            events={announcementProps.events}
+          />
+        )}
 
         <Flex gap="2rem" width="100%">
           <UserDocReviewList
-            itemsBefore={itemsBefore}
-            itemsAfter={itemsAfter}
+            itemsBefore={docReviewProps.itemsBefore}
+            itemsAfter={docReviewProps.itemsAfter}
           />
 
           <UserInterviewReview

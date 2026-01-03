@@ -6,7 +6,7 @@ import { Text } from '@repo/ui/Text';
 import { Tag } from '@repo/ui/Tag';
 import { Button } from '@repo/ui/Button';
 import { IcArrowRight } from '@repo/ui/icons/mono';
-import { allTagColors, TagColor } from '@repo/utils';
+import { getPositionTagColor } from 'node_modules/@repo/utils/src/util/tag';
 
 export interface ReviewItem {
   id: string;
@@ -26,6 +26,7 @@ export const UserDocReviewList: React.FC<UserDocReviewListProps> = ({
   itemsAfter,
 }) => {
   const [tab, setTab] = useState<ReviewTab>('before');
+
   const items = useMemo(
     () => (tab === 'before' ? itemsBefore : itemsAfter),
     [tab, itemsBefore, itemsAfter]
@@ -46,7 +47,7 @@ export const UserDocReviewList: React.FC<UserDocReviewListProps> = ({
           variant="sub"
           size="32"
           width="15.2rem"
-          onClick={() => {}}
+          onClick={() => console.log('서류 평가 페이지 이동')}
           rightIcon={<IcArrowRight width={16} height={16} />}
         >
           서류 평가 바로가기
@@ -62,19 +63,28 @@ export const UserDocReviewList: React.FC<UserDocReviewListProps> = ({
         />
       </div>
 
-      <div className={styles.grid}>
-        {items.map((it, idx) => {
-          const color = allTagColors[idx % allTagColors.length] as TagColor;
-          return (
-            <div key={it.id} className={styles.card}>
-              <Tag color={color}>{it.part}</Tag>
-              <Text variant="md2_text_medium" color="grayscale90">
-                {it.name}
-              </Text>
-            </div>
-          );
-        })}
-      </div>
+      {items.length === 0 ? (
+        <div style={{ padding: '2rem', textAlign: 'center' }}>
+          <Text variant="sm_caption_medium" color="grayscale50">
+            평가할 항목이 없습니다.
+          </Text>
+        </div>
+      ) : (
+        <div className={styles.grid}>
+          {items.map((it, idx) => {
+            const color = getPositionTagColor(idx);
+
+            return (
+              <div key={it.id} className={styles.card}>
+                <Tag color={color}>{it.part}</Tag>
+                <Text variant="md2_text_medium" color="grayscale90">
+                  {it.name}
+                </Text>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 };

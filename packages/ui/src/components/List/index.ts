@@ -4,3 +4,4 @@ export { AccordionContent } from './Accordion/AccordionContent';
 export { AccordionItem} from './Accordion/AccordionItem';
 export { AccordionTrigger } from './Accordion/AccordionTrigger';
 export { AccordianList } from './AccordianList/AccordianList';
+export { ExpandableList } from './ExpandableList/ExpandableList';

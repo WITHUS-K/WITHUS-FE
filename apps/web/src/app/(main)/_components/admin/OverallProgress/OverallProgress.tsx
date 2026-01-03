@@ -4,13 +4,19 @@ import { Button } from '@repo/ui/Button';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import { Tag } from '@repo/ui/Tag';
-import { allTagColors, TagColor } from '@repo/utils';
 import {
   IcHomeDocsColored,
   IcHomeInterviewColored,
 } from '@repo/ui/icons/colored';
+import { RecruitmentProgressItem } from '@web/store/query/useRecruitmentProgressQuery';
+import { getPositionTagColor } from 'node_modules/@repo/utils/src/util/tag';
 
-export interface Task {
+export interface OverallProgressProps {
+  docData?: RecruitmentProgressItem[];
+  interviewData?: RecruitmentProgressItem[];
+}
+
+interface TaskDisplay {
   id: string;
   type: '서류' | '면접';
   title: string;
@@ -20,17 +26,41 @@ export interface Task {
   partLabel: string;
 }
 
-export interface OverallProgressProps {
-  tasks: Task[];
-}
-
-export const OverallProgress = ({ tasks }: OverallProgressProps) => {
+export const OverallProgress = ({
+  docData,
+  interviewData,
+}: OverallProgressProps) => {
   const [tab, setTab] = useState<'서류' | '면접'>('서류');
-  const filtered = tasks.filter((t) => t.type === tab);
 
-  function getRandomTagColor(idx: number): TagColor {
-    return allTagColors[idx]!;
+  const tasks: TaskDisplay[] = [];
+
+  const docSummary = docData?.[0];
+  if (docSummary) {
+    tasks.push({
+      id: 'doc',
+      type: '서류',
+      title: '서류 평가',
+      daysBefore: docSummary.daysToDeadline,
+      total: docSummary.totalToEvaluate,
+      completed: docSummary.evaluatedCount,
+      partLabel: '전체',
+    });
   }
+
+  const interviewSummary = interviewData?.[0];
+  if (interviewSummary) {
+    tasks.push({
+      id: 'interview',
+      type: '면접',
+      title: '면접 평가',
+      daysBefore: interviewSummary.daysToDeadline,
+      total: interviewSummary.totalToEvaluate,
+      completed: interviewSummary.evaluatedCount,
+      partLabel: '전체',
+    });
+  }
+
+  const filtered = tasks.filter((t) => t.type === tab);
 
   return (
     <section className={styles.root}>
@@ -55,61 +85,72 @@ export const OverallProgress = ({ tasks }: OverallProgressProps) => {
       </header>
 
       <div className={styles.list}>
-        {filtered.map((t, idx) => {
-          const tagColor = getRandomTagColor(idx);
-          const pct = Math.round((t.completed / t.total) * 100);
-          const Icon =
-            t.type === '면접' ? IcHomeInterviewColored : IcHomeDocsColored;
-          return (
-            <div key={t.id} className={styles.card}>
-              <Flex gap="1.2rem" align="center">
-                <div className={styles.icon}>
-                  <Icon width={24} height={24} />
-                </div>
-                <div className={styles.meta}>
-                  <Flex direction="column" gap="0" align="flexStart">
-                    <Flex gap="0.5rem" align="center">
-                      <Text variant="sm_caption_semibold" color="error">
-                        D-{t.daysBefore}
-                      </Text>
-                      <Text variant="sm_caption_semibold" color="grayscale70">
-                        {t.title}
+        {filtered.length === 0 ? (
+          <Flex padding="2rem" justify="center">
+            <Text variant="sm_caption_medium" color="grayscale50">
+              진행 중인 {tab} 평가가 없습니다.
+            </Text>
+          </Flex>
+        ) : (
+          filtered.map((t, idx) => {
+            const tagColor = getPositionTagColor(idx);
+
+            const pct =
+              t.total === 0 ? 0 : Math.round((t.completed / t.total) * 100);
+            const Icon =
+              t.type === '면접' ? IcHomeInterviewColored : IcHomeDocsColored;
+
+            return (
+              <div key={t.id} className={styles.card}>
+                <Flex gap="1.2rem" align="center">
+                  <div className={styles.icon}>
+                    <Icon width={24} height={24} />
+                  </div>
+                  <div className={styles.meta}>
+                    <Flex direction="column" gap="0" align="flexStart">
+                      <Flex gap="0.5rem" align="center">
+                        <Text variant="sm_caption_semibold" color="error">
+                          D-{t.daysBefore}
+                        </Text>
+                        <Text variant="sm_caption_semibold" color="grayscale70">
+                          {t.title}
+                        </Text>
+                      </Flex>
+                      <Text variant="xs_caption_regular" color="grayscale70">
+                        평가해야 될 서류: {t.total - t.completed}개
                       </Text>
                     </Flex>
-                    <Text variant="xs_caption_regular" color="grayscale70">
-                      평가해야 될 서류: {t.total - t.completed}개
-                    </Text>
-                  </Flex>
-                  <Tag isDotBaseStyle withCircle color={tagColor}>
-                    {t.partLabel}
-                  </Tag>
-                </div>
-              </Flex>
+                    <Tag isDotBaseStyle withCircle color={tagColor}>
+                      {t.partLabel}
+                    </Tag>
+                  </div>
+                </Flex>
 
-              <div className={styles.progressContainer}>
-                <div className={styles.progressInfo}>
-                  <Flex gap="0.4rem" align="center">
+                <div className={styles.progressContainer}>
+                  <div className={styles.progressInfo}>
+                    <Flex gap="0.4rem" align="center">
+                      <Text variant="xs_caption_medium" color="grayscale70">
+                        진행률
+                      </Text>
+                      <Text variant="xs_caption_medium" color="primary50">
+                        {pct}%
+                      </Text>
+                    </Flex>
                     <Text variant="xs_caption_medium" color="grayscale70">
-                      진행률
+                      {t.completed}/{t.total}개
                     </Text>
-                    <Text variant="xs_caption_medium" color="primary50">
-                      {pct}%
-                    </Text>
-                  </Flex>
-                  <Text variant="xs_caption_medium" color="grayscale70">
-                    {t.completed}/{t.total}개
-                  </Text>
-                </div>
-                <div className={styles.barBackground}>
-                  <div
-                    className={styles.barFill}
-                    style={{ width: `${pct}%` }}
-                  />
+                  </div>
+                  <div className={styles.barBackground}>
+                    <div
+                      className={styles.barFill}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </section>
   );

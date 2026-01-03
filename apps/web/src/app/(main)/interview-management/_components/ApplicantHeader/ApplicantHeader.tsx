@@ -3,28 +3,30 @@ import React from 'react';
 import { Text } from '@repo/ui/Text';
 import { Flex } from '@repo/ui/Flex';
 import { Divider } from '@repo/ui/Divider';
-import * as styles from './ApplicantHeader.css';
-import { DataController } from '@web/app/(main)/interview-management/_components/DataController/DataController';
 import { Button } from '@repo/ui/Button';
+import * as styles from './ApplicantHeader.css';
+import ApplicantToggle, {
+  ApplicantItem,
+} from '@web/app/(main)/interview-management/_components/ApplicantToggle/ApplicantToggle';
 
 export interface ApplicantSliderHeaderProps {
   name: string;
-  total: number;
   current: number;
-  onPrev: () => void;
-  onNext: () => void;
   onViewApplication: () => void;
   isOtherUser?: boolean;
+  applicants: ApplicantItem[];
+  currentId: number;
+  onSelect: (id: number) => void;
 }
 
 export const ApplicantSliderHeader = ({
   name,
-  total,
   current,
-  onPrev,
-  onNext,
   onViewApplication,
   isOtherUser = true,
+  applicants,
+  currentId,
+  onSelect,
 }: ApplicantSliderHeaderProps) => {
   return (
     <div className={styles.container}>
@@ -63,12 +65,13 @@ export const ApplicantSliderHeader = ({
         )}
       </Flex>
 
-      <DataController
-        current={current - 1}
-        total={total}
-        onPrev={onPrev}
-        onNext={onNext}
-      />
+      <div style={{ minWidth: '99px', width: 'auto' }}>
+        <ApplicantToggle
+          applicants={applicants}
+          currentId={currentId}
+          onSelect={onSelect}
+        />
+      </div>
     </div>
   );
 };

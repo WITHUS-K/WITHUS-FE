@@ -105,6 +105,11 @@ export const iconStyleVariants = recipe({
     cursor: 'pointer',
     border: 'none',
     background: 'none',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   variants: {
     size: {

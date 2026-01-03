@@ -20,18 +20,19 @@ export const InputChip: React.FC<InputChipProps> = ({
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!disabled) onChange(e.target.value);
   };
-  const width = `${Math.max(value.length, 1) + 1}ch`;
 
   return (
     <div className={styles.inputChipWrapper}>
+      <span className={styles.ghostText}>{value || ' '}</span>
+
       <input
         className={styles.inputStyle}
         value={value}
         onChange={handleChange}
         onKeyDown={onKeyDown}
-        style={{ width }}
         disabled={disabled}
       />
+
       <button
         type="button"
         className={styles.buttonStyle}

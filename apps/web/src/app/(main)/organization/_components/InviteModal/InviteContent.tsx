@@ -12,31 +12,48 @@ export type InviteContentProps = {
   onSearchKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
   selected: User[];
   onRemove: (id: string) => void;
+  searchResult: User | null;
+  onToggle: (user: User) => void;
+  isSearching: boolean;
+  isLoading: boolean;
 };
 
 export default function InviteContent({
   search,
   onSearchChange,
+  onSearchKeyDown,
   selected,
   onRemove,
-  onSearchKeyDown,
+  searchResult,
+  onToggle,
+  isSearching,
+  isLoading,
 }: InviteContentProps) {
   return (
     <Flex direction="column" gap="1.2rem" width="100%">
-      {/* 검색 */}
       <SearchInput
         placeholder="초대 코드 전송하려는 이메일 주소 입력해주세요."
         value={search}
         onChange={onSearchChange}
         onKeyDown={onSearchKeyDown}
         width="100%"
+        isLoading={isLoading}
       />
 
-      {/* 선택된 계정 리스트 */}
       <div className={styles.listContainer}>
-        {selected.map((user) => (
-          <SelectedUserItem key={user.id} user={user} onRemove={onRemove} />
-        ))}
+        {isSearching
+          ? searchResult && (
+              <SelectedUserItem
+                user={searchResult}
+                onRemove={onRemove}
+                showCheckbox={true}
+                isChecked={selected.some((u) => u.email === searchResult.email)}
+                onToggle={() => onToggle(searchResult)}
+              />
+            )
+          : selected.map((user) => (
+              <SelectedUserItem key={user.id} user={user} onRemove={onRemove} />
+            ))}
       </div>
     </Flex>
   );

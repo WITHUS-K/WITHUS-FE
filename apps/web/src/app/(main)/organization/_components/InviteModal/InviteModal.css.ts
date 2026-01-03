@@ -5,9 +5,6 @@ export const item = style({
   backgroundColor: vars.colors.white,
   borderRadius: '8px',
   padding: '0.4rem 0.8rem',
-  selectors: {
-    '&:hover': { backgroundColor: vars.colors.grayscale5 },
-  },
 });
 
 export const listContainer = style({
@@ -18,17 +15,10 @@ export const listContainer = style({
   height: '32.2rem',
   maxHeight: '32.2rem',
   overflowY: 'scroll',
-
+  alignItems: 'center',
   selectors: {
     '&::-webkit-scrollbar': {
       width: '4px',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: vars.colors.grayscale10,
-      borderRadius: '4px',
-    },
-    '&::-webkit-scrollbar-track': {
-      background: 'transparent',
     },
   },
 });

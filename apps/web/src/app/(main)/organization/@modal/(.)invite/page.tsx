@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { Modal } from '@repo/ui/Modal';
 import InviteContent from '../../_components/InviteModal/InviteContent';
-import { ChangeEvent, useState, KeyboardEvent } from 'react';
+import { ChangeEvent, useState, KeyboardEvent, useMemo } from 'react';
 import { INITIAL_SELECTED } from '@web/constants/organization';
 import { User } from '@web/types/organization';
 import InviteHeader from '../../_components/InviteModal/InviteHeader';
@@ -20,6 +20,9 @@ export default function InviteModal() {
   // 상태: 검색어 & 선택된 유저 목록
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<User[]>([]);
+  const [searchResult, setSearchResult] = useState<User | null>(null);
+  const [isSearched, setIsSearched] = useState(false);
+  const [isLocalLoading, setIsLocalLoading] = useState(false);
   const toast = useToast();
 
   // 이메일로 유저 조회
@@ -32,28 +35,51 @@ export default function InviteModal() {
 
   // 검색어 변경 핸들러
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
+    const v = e.target.value;
+    setSearch(v);
+    if (v === '') {
+      setIsSearched(false);
+      setSearchResult(null);
+    }
   };
 
   const handleSearchKeyDown = async (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && search.trim()) {
-      const res = await refetch();
-      if (res.data) {
-        const u = res.data;
-        const ui: User = {
-          id: String(u.userId),
-          name: u.name,
-          email: u.email,
-          profileUrl: u.imageUrl ?? '',
-        };
-        setSelected((prev) =>
-          prev.some((x) => x.id === ui.id) ? prev : [...prev, ui]
-        );
-        setSearch('');
-      } else {
-        toast.error('해당 이메일의 사용자를 찾을 수 없습니다.', 3000);
+      setIsLocalLoading(true);
+      setIsSearched(false);
+
+      try {
+        const res = await refetch();
+        const currentSearchEmail = search.trim();
+
+        if (res.data && res.data.userId) {
+          setSearchResult({
+            id: String(res.data.userId),
+            name: res.data.name,
+            email: res.data.email,
+            profileUrl: res.data.imageUrl ?? '',
+          });
+        } else {
+          setSearchResult({
+            id: `temp-${currentSearchEmail}`,
+            name: '',
+            email: currentSearchEmail,
+            profileUrl: '',
+          });
+        }
+        setIsSearched(true);
+      } finally {
+        setIsLocalLoading(false);
       }
     }
+  };
+
+  const handleToggleUser = (user: User) => {
+    setSelected((prev) => {
+      const isAlreadySelected = prev.some((u) => u.email === user.email);
+      if (isAlreadySelected) return prev.filter((u) => u.email !== user.email);
+      return [...prev, user];
+    });
   };
 
   // 선택 해제 핸들러
@@ -98,6 +124,10 @@ export default function InviteModal() {
               selected={selected}
               onRemove={handleRemove}
               onSearchKeyDown={handleSearchKeyDown}
+              searchResult={searchResult}
+              onToggle={handleToggleUser}
+              isSearching={search.length > 0}
+              isLoading={isLocalLoading}
             />
           </Modal.Content>
           <Modal.Footer hasTopBorder>
