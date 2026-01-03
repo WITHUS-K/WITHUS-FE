@@ -19,18 +19,24 @@ export const UserAnnouncementProgress: React.FC<
 > = ({ title, events }) => {
   const count = events.length;
 
-  const lastActiveIndex = events.reduce<number>(
-    (max, e, i) => (e.daysBefore <= 0 && i > max ? i : max),
+  const lastCompletedIndex = events.reduce<number>(
+    (max, e, i) => (e.daysBefore <= 0 ? i : max),
     -1
   );
 
   const ratioActive =
-    lastActiveIndex >= 0 && count > 1 ? lastActiveIndex / (count - 1) : 0;
+    lastCompletedIndex >= 0 && count > 1 ? lastCompletedIndex / (count - 1) : 0;
 
   const getBadgeColor = (days: number) => {
-    if (days === 0) return '#2C60FF';
+    if (days <= 0) return '#2C60FF';
     if (days <= 3) return '#FF2A3A';
     return '#7F82A1';
+  };
+
+  const getBadgeText = (days: number) => {
+    if (days < 0) return '완료';
+    if (days === 0) return 'D-Day';
+    return `D-${days}`;
   };
 
   const START_OFFSET = 178;
@@ -60,8 +66,10 @@ export const UserAnnouncementProgress: React.FC<
               + (100% - ${START_OFFSET + END_OFFSET}px) * ${ratio}
             )
           `;
-          const isActive = e.daysBefore <= 0;
-          const badgeText = e.daysBefore === 0 ? '완료' : `D-${e.daysBefore}`;
+
+          const isActive = i <= lastCompletedIndex;
+
+          const badgeText = getBadgeText(e.daysBefore);
           const badgeColor = getBadgeColor(e.daysBefore);
 
           return (
@@ -69,7 +77,7 @@ export const UserAnnouncementProgress: React.FC<
               <div
                 className={styles.marker}
                 style={{ left: leftCalc.trim() }}
-                data-active={isActive || i === 0}
+                data-active={isActive}
               />
               <div
                 className={styles.labelItem}

@@ -114,3 +114,13 @@ export const profileBackgroundMap: Record<ProfileHex, { background: string }> =
     '#7F82A1': { background: '#C4C6D4' },
     '#747693': { background: '#A9ABC0' },
   };
+
+  const safeTagColors: TagColor[] = allTagColors.filter(
+  (color) => color !== '#FFFFFF' && color !== '#FFE6E9' && color !== '#EAEFFF'
+);
+
+export function getPositionTagColor(index: number): TagColor {
+  const length = safeTagColors.length;
+  
+  return safeTagColors[index % length] ?? '#7F82A1';
+}
