@@ -6,8 +6,8 @@ export interface DistributeRequest {
   recruitmentId: number;
   evaluationType: 'DOCUMENT' | 'INTERVIEW';
   assignments: Array<{
-    positionId: number;
-    organizationRoleId: number;
+    organizationRoleId: number | null;
+    evaluatorRoleId: number;
     evaluationType: 'DOCUMENT' | 'INTERVIEW';
     count: number;
   }>;

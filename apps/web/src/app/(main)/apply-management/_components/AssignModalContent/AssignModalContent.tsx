@@ -2,31 +2,35 @@
 
 import React, {
   forwardRef,
-  useImperativeHandle,
-  useState,
   useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
 } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { TabBar } from '@repo/ui/TabBar';
 import { useParams, useSearchParams } from 'next/navigation';
+import { useToast } from '@repo/ui/hooks';
+import { HTTPError } from 'ky';
+
+import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+import { mapServerColorToTagHex } from '@web/utils/color';
+
 import { useOrganizationRolesQuery } from '@web/store/query/useOrganizationRolesQuery';
-import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { useLatestDistributionQuery } from '@web/store/query/useLatestDistribution';
 import { useDistributeEvaluators } from '@web/store/mutation/useDistributeEvaluators';
-import { mapServerColorToTagHex } from '@web/utils/color';
+import { useRecruitmentDetailQuery } from '@web/store/query/useRecruitmentDetailQuery';
+
 import DistributionContainer, {
   OrgRole,
   PartState,
 } from './DistributionContainer/DistributionContainer';
-import { getClientSideTokens } from '@web/utils/getClientSideTokens';
-import { useToast } from '@repo/ui/hooks';
-import { HTTPError } from 'ky';
 
 export interface AssignModalContentRef {
   handleConfirm: () => Promise<boolean>;
 }
 
-const TABS = ['documents', 'interviews'];
+const TABS = ['documents', 'interviews'] as const;
 
 const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
   const searchParams = useSearchParams();
@@ -43,98 +47,126 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
   }, [tab]);
 
   const recruitmentId = Number(searchParams.get('recruitmentId'));
-
   const { organizationId } = getClientSideTokens();
 
-  const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
-  const latestQuery = useLatestDistributionQuery({ recruitmentId });
-  const positionsQuery = useRecruitmentPositionsQuery(recruitmentId);
-  console.log("포지션", positionsQuery.data)
-  const distribute = useDistributeEvaluators(recruitmentId);
-
   const toast = useToast();
-
-  const availableRoles: OrgRole[] = (rolesData?.roles ?? []).map((r) => ({
-    id: r.id,
-    label: r.roleName,
-    color: mapServerColorToTagHex(r.color),
-  }));
-
-  /*if (distribute === null) {
-    // 404(분배 데이터 없음)인 경우
-    return <div>아직 최신 분배 정보가 없습니다.</div>;
-  }*/
 
   // 현재 탭에 맞춰 DOCUMENT/INTERVIEW 로 매핑
   const currentEvalType: 'DOCUMENT' | 'INTERVIEW' =
     activeTab === 'documents' ? 'DOCUMENT' : 'INTERVIEW';
 
+  // 조직 역할(평가자 역할 옵션)
+  const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
+
+  const availableRoles: OrgRole[] = useMemo(
+    () =>
+      (rolesData?.roles ?? []).map((r) => ({
+        id: r.id,
+        label: r.roleName,
+        color: mapServerColorToTagHex(r.color),
+      })),
+    [rolesData]
+  );
+
+  // 최신 분배
+  const latestQuery = useLatestDistributionQuery({ recruitmentId });
+
+  // ✅ 모집 상세에서 positions 사용
+  const { data: detail } = useRecruitmentDetailQuery({ recruitmentId });
+
+  // 분배 mutation
+  const distribute = useDistributeEvaluators(recruitmentId);
+
+  /**
+   * ✅ 초기 state 생성
+   * - positions가 비어있으면 "공통" 하나만 생성 (positionId: null)
+   * - positions가 있으면 roleName 기준 파트 생성 (positionId: pos.id)
+   * - latest 분배가 있으면 해당 evalType만 반영하여 덮어쓰기
+   */
   const computeInitial = (): Record<string, PartState> => {
-  const state: Record<string, PartState> = {};
-  const positions = positionsQuery.data;
+    const state: Record<string, PartState> = {};
+    const positions = detail?.positions ?? [];
 
-  // 포지션이 없거나 length가 0이면 "공통" 하나만 생성
-  if (!positions || positions.length === 0) {
-    state['공통'] = {
-      roles: [],
-      count: 1,
-      // TODO: 백엔드와 약속된 공통용 positionId가 있다면 그 값으로 변경
-      positionId: -1,
-    };
+    // ✅ 공통 케이스
+    if (positions.length === 0) {
+      state['공통'] = {
+        roles: [],
+        count: 1,
+        positionId: null, // ✅ 공통이면 null로 전송
+      };
+
+      // latest 분배가 있으면 공통에 반영 (있으면 마지막 값으로 덮어씀)
+      if (latestQuery.isSuccess && latestQuery.data) {
+        latestQuery.data.assignments
+          .filter((a) => a.evaluationType === currentEvalType)
+          .forEach((a) => {
+            const role = availableRoles.find((r) => r.label === a.organizationRoleName);
+            if (!role) return;
+
+            state['공통'] = {
+              roles: [role],
+              count: a.count,
+              positionId: null,
+            };
+          });
+      }
+
+      return state;
+    }
+
+    // ✅ 포지션 존재 케이스: roleName으로 파트 구성
+    for (const pos of positions) {
+      state[pos.roleName] = { roles: [], count: 1, positionId: pos.id };
+    }
+
+    // latest 분배 덮어쓰기
+    if (latestQuery.isSuccess && latestQuery.data) {
+      latestQuery.data.assignments
+        .filter((a) => a.evaluationType === currentEvalType)
+        .forEach((a) => {
+          const part = a.organizationRoleName;
+
+          // 파트명이 positions의 roleName과 매칭되는지 확인
+          const matchedPos = positions.find((p) => p.roleName === part);
+          if (!matchedPos) return;
+
+          // 선택된 역할(평가자 역할)
+          const role = availableRoles.find((r) => r.label === a.organizationRoleName);
+          if (!role) return;
+
+          state[part] = {
+            roles: [role],
+            count: a.count,
+            positionId: matchedPos.id,
+          };
+        });
+    }
+
     return state;
-  }
-
-  // 포지션이 있을 때: 기존 로직 유지
-  for (const pos of positions) {
-    state[pos.name] = { roles: [], count: 1, positionId: pos.id };
-  }
-
-  // latest 분배 불러왔으면, 현재 탭 타입에 맞는 assignment만 덮어쓰기
-  if (latestQuery.isSuccess && latestQuery.data) {
-    latestQuery.data.assignments
-      .filter((a) => a.evaluationType === currentEvalType)
-      .forEach((a) => {
-        const part = a.organizationRoleName;
-        const role = availableRoles.find(
-          (r) => r.label === a.organizationRoleName
-        );
-        if (!role) return;
-
-        state[part] = {
-          roles: [role],
-          count: a.count,
-          positionId: positions.find((p) => p.name === part)!.id,
-        };
-      });
-  }
-
-  return state;
   };
-  
 
   const [state, setState] = useState<Record<string, PartState> | null>(null);
 
-  // positions/latest 완료 시 초기화
+  // ✅ latest 결과(성공/실패) 뜨면 초기화
   useEffect(() => {
-    if (
-      !positionsQuery.isLoading &&
-      (latestQuery.isSuccess || latestQuery.isError)
-    ) {
+    if (latestQuery.isSuccess || latestQuery.isError) {
       setState(computeInitial());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    positionsQuery.isLoading,
     latestQuery.isSuccess,
     latestQuery.isError,
-    positionsQuery.data,
     latestQuery.data,
+    detail?.recruitmentId,
+    detail?.positions?.length,
+    currentEvalType,
     JSON.stringify(availableRoles),
-    currentEvalType, // 탭 바뀌면 재계산
   ]);
 
-  // 탭 바뀔 때도 초기화
+  // ✅ 탭 바뀌면 재계산
   useEffect(() => {
     setState(computeInitial());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const handleConfirm = async (): Promise<boolean> => {
@@ -142,8 +174,8 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
 
     const assignments = Object.values(state).flatMap((ps) =>
       ps.roles.map((role) => ({
-        positionId: ps.positionId,
-        organizationRoleId: role.id,
+        organizationRoleId: ps.positionId, 
+        evaluatorRoleId: role.id,
         evaluationType: currentEvalType,
         count: ps.count,
       }))
@@ -198,10 +230,11 @@ const AssignModalContent = forwardRef<AssignModalContentRef>((_, ref) => {
   return (
     <Flex direction="column" gap="4rem" width="100%">
       <TabBar
-        tabs={TABS}
+        tabs={[...TABS]}
         active={activeTab}
-        onChange={(t) => setActiveTab(t as any)}
+        onChange={(t) => setActiveTab(t as 'documents' | 'interviews')}
       />
+
       <DistributionContainer
         parts={Object.keys(state)}
         availableRoles={availableRoles}

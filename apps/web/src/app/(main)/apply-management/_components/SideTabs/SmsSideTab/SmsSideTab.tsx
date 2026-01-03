@@ -1,6 +1,6 @@
 'use client';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IcSendBtn } from '@repo/ui/icons/mono';
 import { IcHeaderSms, IcFilePlus, IcTagDelete } from '@repo/ui/icons/colored';
 import * as styles from '../MailSideTab/MailSideTab.css';
@@ -34,6 +34,20 @@ import { deserializeHtml } from '@web/utils/deserializeHtml';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 import { useModal } from '@repo/ui/hooks';
 import { useRecipientsStore } from '@web/store/state/useRecipientsStore';
+import { useUpdateTemplate } from '@web/store/mutation/useUpdateTemplate';
+import { useDeleteTemplate } from '@web/store/mutation/useDeleteTemplate';
+
+function ensureParagraph(html: string) {
+  const trimmed = html.trim();
+  if (!trimmed) return '<p></p>';
+
+  // 이미 <p>로 시작/끝나면 그대로
+  if (trimmed.startsWith('<p') && trimmed.endsWith('</p>')) {
+    return trimmed;
+  }
+
+  return `<p>${trimmed}</p>`;
+}
 
 interface SmsSideTabProps {
   applicationIds: number[];
@@ -79,6 +93,8 @@ export function SmsSideTab({ applicationIds, recipients, onClose }: SmsSideTabPr
     mergeRecipients(seeds, 'name');
   }, [recipients, mergeRecipients]);
 
+  
+
   const handleClose = () => {
     clearRecipients();
     onClose();
@@ -96,6 +112,8 @@ export function SmsSideTab({ applicationIds, recipients, onClose }: SmsSideTabPr
     );
   }, [tplSummaries]);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -110,15 +128,19 @@ export function SmsSideTab({ applicationIds, recipients, onClose }: SmsSideTabPr
 
   const tplDetailQ = useTemplateDetailQuery(selectedTemplateId ? Number(selectedTemplateId) : -1);
   useEffect(() => {
-    if (tplDetailQ.data && !isCreating) {
-      const nodes = deserializeHtml(tplDetailQ.data.body);
-      setEditorValue(nodes);
-    }
-  }, [tplDetailQ.data, isCreating]);
+    if (!selectedTemplateId) return;
+    if (!tplDetailQ.data) return;
+    if (isCreating) return;
+  
+    const nodes = deserializeHtml(tplDetailQ.data.body);
+    setEditorValue(nodes);
+  }, [selectedTemplateId, tplDetailQ.data, isCreating]);
 
   const sendSms = useBulkSms();
   const createTpl = useCreateTemplate();
-
+  const updateTpl = useUpdateTemplate();
+  const deleteTpl = useDeleteTemplate();
+  
   const handleCreate = () => {
     setSelectedTemplateId(null);
     setIsCreating(true);
@@ -146,20 +168,33 @@ export function SmsSideTab({ applicationIds, recipients, onClose }: SmsSideTabPr
       cancelText: '취소',
       confirmText: '삭제',
       onConfirm: () => {
-        setTemplates((prev) => prev.filter((t) => t.id !== tpl.id));
-        if (selectedTemplateId === tpl.id) {
-          setSelectedTemplateId(null);
-          setEditorValue([{ type: 'paragraph', children: [{ text: '' }] }]);
-        }
+        deleteTpl.mutate(
+          {
+            templateId: Number(tpl.id),
+            medium: 'SMS',
+          },
+          {
+            onSuccess: () => {
+              setTemplates((prev) => prev.filter((t) => t.id !== tpl.id));
+  
+              if (selectedTemplateId === tpl.id) {
+                setSelectedTemplateId(null);
+                setEditorValue([{ type: 'paragraph', children: [{ text: '' }] }]);
+              }
+            },
+          }
+        );
       },
     });
   };
 
   const handleSaveTemplate = () => {
+    const body = ensureParagraph(serialize(editorValue));
+
     createTpl.mutate(
       {
         name: newTitle,
-        body: serialize(editorValue),
+        body,
         medium: 'SMS',
         organizationId,
       },
@@ -177,20 +212,41 @@ export function SmsSideTab({ applicationIds, recipients, onClose }: SmsSideTabPr
   };
 
   const handleUpdateTemplate = () => {
-    const body = serialize(editorValue);
+    const body = ensureParagraph(serialize(editorValue));
     if (!selectedTemplateId) return;
-
-    setTemplates((prev) =>
-      prev.map((t) => (t.id === selectedTemplateId ? { ...t, body } : t))
+  
+    updateTpl.mutate(
+      {
+        templateId: Number(selectedTemplateId),
+        name: newTitle.trim() || tplSummaries.find((t) => String(t.id) === selectedTemplateId)?.name || '',
+        body,
+        medium: 'SMS',
+        subject: undefined,
+      },
+      {
+        onSuccess: () => {
+          setIsEditing(false);
+  
+          setTemplates((prev) =>
+            prev.map((t) =>
+              t.id === selectedTemplateId
+                ? { ...t, title: newTitle.trim() || t.title, body }
+                : t
+            )
+          );
+        },
+      }
     );
-    setIsEditing(false);
   };
 
   const handleSend = () => {
+    const rawHtml = serialize(editorValue);
+    const message = ensureParagraph(rawHtml);
+  
     sendSms.mutate(
       {
         applicationIds,
-        message: serialize(editorValue),
+        message,
         attachment,
       },
       {
@@ -264,16 +320,16 @@ export function SmsSideTab({ applicationIds, recipients, onClose }: SmsSideTabPr
         </div>
       )}
 
-      {!isCreating && (
-        <div className={styles.section}>
+        <div className={styles.section} style={{ marginTop: '1.2rem' }}>
           <Text variant="sm_caption_semibold" color="grayscale70" style={{ width: '7.6rem' }}>
             파일 첨부
           </Text>
           <label htmlFor="sms-file-upload" className={styles.fileInputWrapper}>
-            <Button variant="white" size="32" width="8.5rem" leftIcon={<IcFileBtn />}>
+            <Button variant="white" size="32" width="8.5rem" leftIcon={<IcFileBtn />} onClick={() => fileInputRef.current?.click()}>
               업로드
             </Button>
             <input
+             ref={fileInputRef}
               id="sms-file-upload"
               type="file"
               style={{ display: 'none' }}
@@ -287,16 +343,17 @@ export function SmsSideTab({ applicationIds, recipients, onClose }: SmsSideTabPr
             </Flex>
           </label>
         </div>
-      )}
+  
 
-      {isCreating && (
-        <div className={styles.section} style={{ marginTop: '1.2rem' }}>
+      {(isCreating || isEditing) && (
+        <div className={styles.section} >
           <Text variant="sm_caption_semibold" color="grayscale70" style={{ width: '7.6rem' }}>
             변수 설정
           </Text>
-          <Flex align="center" gap="0.8rem">
+          <Flex align="center" gap="0.8rem" width='100%'>
             {(['name', 'position', 'interviewRoom', 'interviewDateTime'] as const).map((v) => (
               <button
+              type="button"
                 key={v}
                 onClick={() => insertVariable(editor, v)}
                 style={{ cursor: 'pointer' }}

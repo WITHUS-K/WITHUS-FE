@@ -29,17 +29,23 @@ export function convertFormToRequest(
         ? form.applicationParts.parts
         : [];
     
-      // ✅ 2) roleNames (질문 positionName/평가기준 positionName 유지용)
+      // roleNames (질문 positionName/평가기준 positionName 유지용)
       // roleNameById를 안 넘기면 fallback으로 null 처리(공통만)하게 할 수도 있음
       const roleNames = roleNameById
         ? roleIds.map((id) => roleNameById.get(id)).filter(Boolean) as string[]
         : [];
 
-        const organizationRoleIds = roleIds;
+        const organizationRoleIds =
+  roleIds.length > 0 ? roleIds : [];
 
         const applicationQuestions: CreateQuestionRequest[] = form.detailItems.map(
           (item, index) => {
-            const organizationRoleId = item.responseTarget ?? 0;
+            const organizationRoleId =
+            item.responseTarget === 0 ||
+            item.responseTarget === null ||
+            item.responseTarget === undefined
+              ? null
+              : item.responseTarget;
       
             const base = {
               type: item.type === 'text' ? ('TEXT' as const) : ('FILE' as const),
@@ -86,7 +92,12 @@ export function convertFormToRequest(
           content: item.evaluate,
           description: item.evaluateDetail,
           type: 'DOCUMENT' as const,
-          organizationRoleId: section.organizationRoleId, // ✅ 필수
+          organizationRoleId:
+          section.organizationRoleId === 0 ||
+          section.organizationRoleId === null ||
+          section.organizationRoleId === undefined
+            ? null
+            : section.organizationRoleId
         }))
       );
     
@@ -97,7 +108,12 @@ export function convertFormToRequest(
             content: item.evaluate,
             description: item.evaluateDetail,
             type: 'INTERVIEW' as const,
-            organizationRoleId: section.organizationRoleId, // ✅ 필수
+            organizationRoleId:
+  section.organizationRoleId === 0 ||
+  section.organizationRoleId === null ||
+  section.organizationRoleId === undefined
+    ? null
+    : section.organizationRoleId
           }))
       );
       

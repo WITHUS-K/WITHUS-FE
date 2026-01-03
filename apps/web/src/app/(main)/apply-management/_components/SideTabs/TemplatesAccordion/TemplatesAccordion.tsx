@@ -41,6 +41,7 @@ export function TemplatesAccordion({
   const [open, setOpen] = useState(false);
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // 생성 모드 진입 시 포커스
   useEffect(() => {
@@ -49,6 +50,24 @@ export function TemplatesAccordion({
     }
   }, [isCreating]);
 
+  useEffect(() => {
+    const onPointerDown = (e: PointerEvent) => {
+      if (!menuOpenId) return;
+
+      const el = itemRefs.current[menuOpenId];
+      if (!el) return;
+
+      // 현재 열린 템플릿 영역 밖을 클릭하면 닫기
+      if (!el.contains(e.target as Node)) {
+        setMenuOpenId(null);
+      }
+    };
+
+    window.addEventListener('pointerdown', onPointerDown);
+    return () => window.removeEventListener('pointerdown', onPointerDown);
+  }, [menuOpenId]);
+
+
   const selectedTitle =
     templates.find((t) => t.id === selectedTemplateId)?.title ||
     '저장된 템플릿 불러오기';
@@ -56,6 +75,7 @@ export function TemplatesAccordion({
   return (
     <div className={styles.accordion}>
       <button
+       type="button"
         className={styles.header}
         onClick={() => {
           setOpen((o) => !o);
@@ -88,8 +108,11 @@ export function TemplatesAccordion({
             {templates.map((t) => (
               <div
                 key={t.id}
+                ref={(node) => {
+                  itemRefs.current[t.id] = node;
+                }}
                 className={styles.templateItem}
-                onMouseLeave={() => setMenuOpenId((prev) => (prev === t.id ? null : prev))}
+                //onMouseLeave={() => setMenuOpenId((prev) => (prev === t.id ? null : prev))}
               >
                 <Button
                   variant={
@@ -124,7 +147,7 @@ export function TemplatesAccordion({
 
                 {/* 수정 / 삭제 메뉴 */}
                 {menuOpenId === t.id && (
-                  <div className={styles.moreMenu}>
+                  <div className={styles.moreMenu} onClick={(e) => e.stopPropagation()}>
                     <button
                       type="button"
                       className={styles.moreMenuItem}

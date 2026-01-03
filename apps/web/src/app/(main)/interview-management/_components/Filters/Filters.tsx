@@ -24,6 +24,7 @@ import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 import { useAutoAssignInterviewersMutation } from '@web/store/mutation/useAutoAssignInterviewersMutation';
 import { useResetInterviewScheduleMutation } from '@web/store/mutation/useResetInterviewScheduleMutation';
 import { IcRe } from '@repo/ui/icons/mono';
+import { RecruitmentDetailResponse } from '@web/types/recruitment';
 
 export default function Filters() {
   const qc = useQueryClient();
@@ -47,7 +48,6 @@ export default function Filters() {
   const { data: recruitments = [] } = useRecruitmentsQuery();
   const { data: orgInterviews = [] } =
     useOrganizationInterviewsQuery(organizationId);
-  const { data: positions = [] } = useRecruitmentPositionsQuery(urlRid ?? 0);
   const { data: config } = useInterviewConfigQuery(iv ?? 0);
   const resetSchedule = useResetInterviewScheduleMutation(iv!);
 
@@ -72,13 +72,6 @@ export default function Filters() {
     applicantPerSlot: 0,
     assistantPerSlot: 0,
   });
-
-  //파트 가져오깅!
-  const parts = positions.map((p) => p.name);
-  const partColorMap = positions.reduce<Record<string, TagHex>>((acc, p) => {
-    acc[p.name] = mapServerColorToTagHex(p.color);
-    return acc;
-  }, {});
 
   // URL param 변경 감지
   useEffect(() => {
@@ -137,6 +130,17 @@ export default function Filters() {
   const { data: recruitmentDetail } = useRecruitmentDetailQuery({
     recruitmentId,
   });
+
+  //파트 가져오깅!
+  const positions = recruitmentDetail?.positions ?? [];
+
+  // 파트명/색상 매핑
+  const parts = positions.map((p) => p.roleName);
+  
+  const partColorMap = positions.reduce<Record<string, TagHex>>((acc, p) => {
+    acc[p.roleName] = mapServerColorToTagHex(p.color);
+    return acc;
+  }, {});
 
   const didAutoRedirect = useRef(false);
   useEffect(() => {
@@ -320,13 +324,16 @@ export default function Filters() {
                 const detail = await queryClient.fetchQuery({
                   queryKey: queryKeys.recruitment.detail(found.recruitmentId),
                   queryFn: () =>
-                    GET<{ availableTimeRanges: { date: string }[] }>(
+                    GET<RecruitmentDetailResponse['result']>(
                       `api/v1/recruitments/${found.recruitmentId}`,
+                      undefined,
                       { accessToken, refreshToken }
-                    ),
+                    ).then((res) => res.result),
                 });
+                
+                // 이제 detail.availableTimeRanges 로 바로 접근
+                const ranges = detail?.availableTimeRanges;
 
-                const ranges = detail?.result.availableTimeRanges;
                 if (interview?.interviewId && ranges?.length > 0) {
                   const firstDate = ranges[0]!.date.replace(/-/g, '.');
                   router.replace(

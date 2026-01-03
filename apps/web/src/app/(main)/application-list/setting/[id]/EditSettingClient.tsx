@@ -12,6 +12,7 @@ export default function EditSettingClient({
   recruitmentId: number;
 }) {
   const { data: detail } = useRecruitmentDetailQuery({ recruitmentId });
+  console.log("response", detail)
   const { setForm } = useContext(SettingContext)!;
 
   const formValues: FormValues | null = useMemo(

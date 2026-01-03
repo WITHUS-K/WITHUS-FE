@@ -5,6 +5,7 @@ import { getRecruitmentsListQueryOptions } from '@web/store/query/useRecruitment
 import { getAdminApplicationsQueryOptions } from '@web/store/query/useAdminApplicationsQuery';
 import { getRecruitmentPositionsQueryOptions } from '@web/store/query/useRecruitmentPositionsQuery';
 import TabClientWrapper from './TabClientWrapper';
+import { getRecruitmentDetailQueryOptions } from '@web/store/query/useRecruitmentDetailQuery';
 
 interface PageProps {
   params: Promise<{
@@ -35,7 +36,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     size: 1,
     tokens,
   });
-  const positionsOptions = getRecruitmentPositionsQueryOptions({
+  const detailOptions = getRecruitmentDetailQueryOptions({
     recruitmentId: recId,
     tokens,
   });
@@ -43,7 +44,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   return (
     <ServerFetchBoundary fetchOptions={recsOptions}>
       <ServerFetchBoundary fetchOptions={countsOptions}>
-        <ServerFetchBoundary fetchOptions={positionsOptions}>
+        <ServerFetchBoundary fetchOptions={detailOptions}>
           <TabClientWrapper modal={modal} />
         </ServerFetchBoundary>
       </ServerFetchBoundary>
