@@ -9,38 +9,37 @@ import TabPageClient from './TabPageClient';
 const PER_PAGE = 9;
 
 interface PageProps {
-  params: { tab?: string };
-  searchParams?: {
+  params: Promise<{ tab?: string }>;
+  searchParams: Promise<{
     recruitmentId?: string;
     keyword?: string;
     page?: string;
-  };
+  }>;
 }
 
 export default async function Page({ params, searchParams }: PageProps) {
-  const activeTab = params.tab ?? 'all';
-  const keyword = searchParams?.keyword ?? '';
-  const pageNum = searchParams?.page ? Number(searchParams.page) : 1;
+  const { tab } = await params;
+  const { recruitmentId: recIdStr, keyword, page } = await searchParams;
 
-  // 토큰
+  const activeTab = tab ?? 'all';
+  const safeKeyword = keyword ?? '';
+  const pageNum = page ? Number(page) : 1;
+
   const tokens = await getServerSideTokens();
 
-  // recruitmentId 결정 (없으면 첫 공고로 대체)
-  const recIdStr = searchParams?.recruitmentId;
-  let recruitmentId =
-    typeof recIdStr === 'string' ? Number(recIdStr) : NaN;
-  
+  // recruitmentId 결정
+  let recruitmentId = recIdStr ? Number(recIdStr) : NaN;
+
   if (!recruitmentId || Number.isNaN(recruitmentId)) {
     const firstId = await fetchFirstRecruitmentId(tokens);
-  
+
     if (firstId == null) {
       return <div>공고 정보를 불러올 수 없습니다.</div>;
     }
-  
-    recruitmentId = firstId; // 여기서부터 타입은 확정 number
+
+    recruitmentId = firstId; // ✅ 여기서부터 number 확정
   }
 
-  // 탭 → evaluationStatus 매핑
   const evaluationStatus =
     activeTab === 'BEFORE'
       ? 'NOT_EVALUATED'
@@ -48,11 +47,10 @@ export default async function Page({ params, searchParams }: PageProps) {
         ? 'EVALUATED'
         : 'ALL';
 
-  // React Query 옵션
   const appsOptions = getApplicationsQueryOptions({
     recruitmentId,
     evaluationStatus,
-    keyword,
+    keyword: safeKeyword,
     page: pageNum - 1,
     size: PER_PAGE,
     tokens,
