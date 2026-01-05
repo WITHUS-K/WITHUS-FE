@@ -1,34 +1,48 @@
-'use client';
-
-import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { RecipientUser } from '../state/useRecipientsStore';
+import { GET } from '@web/api/fetch';
+import { queryKeys } from '../constants/queryKeys';
 
-const MOCK: RecipientUser[] = [
-  { id: '1', name: '김현호', email: 'rable8264@gmail.com' },
-  { id: '2', name: '아현', email: 'babymonster@gmail.com' },
-  { id: '3', name: '민지', email: 'njz@gmail.com' },
-  { id: '4', name: '이서', email: 'ive@gmail.com' },
-  { id: '5', name: '로라', email: 'babymonster@gmail.com' },
-  { id: '6', name: '지은', email: 'jieun0116@gmail.com' },
-];
+export interface ApplicantSearchItem {
+  id: string; 
+  name: string;
+  email: string;
+  profileUrl?: string;
+}
 
-export function useApplicantsSearchQuery(keyword: string) {
-  return useQuery({
-    queryKey: ['applicants-search', keyword],
+export interface ApplicantsSearchResponse {
+  code: number;
+  message: string;
+  result: Array<{
+    applicationId: number;
+    name: string;
+    email: string;
+    profileImageUrl: string;
+  }>;
+  success: boolean;
+}
+
+export function useApplicantsSearchQuery(
+  recruitmentId: number,
+  keyword: string
+) {
+  const trimmed = keyword.trim();
+
+  return useQuery<ApplicantSearchItem[], Error>({
+    queryKey: queryKeys.applications.applicantsSearch(recruitmentId, trimmed),
     queryFn: async () => {
-      // 나중에 API 나오면 여기서 GET 호출로 교체하면 됨
-      // ex) return GET<{items: User[]}>('api/v1/...', { searchParams: { keyword } })
-
-      const k = keyword.trim().toLowerCase();
-      if (!k) return MOCK;
-
-      return MOCK.filter(
-        (u) =>
-          u.name.toLowerCase().includes(k) ||
-          u.email.toLowerCase().includes(k)
+      const res = await GET<ApplicantsSearchResponse['result']>(
+        `api/v1/admin/applications/recruitment/${recruitmentId}/search`,
+        trimmed ? { keyword: trimmed } : undefined
       );
+      console.log("받는자 검색", res)
+      return res.result.map((u) => ({
+        id: String(u.applicationId),
+        name: u.name,
+        email: u.email,
+        profileUrl: u.profileImageUrl ?? '',
+      }));
     },
-    staleTime: 5_000,
+    enabled: !!recruitmentId && trimmed.length > 0,
+    staleTime: 5_000, // 검색은 짧게
   });
 }

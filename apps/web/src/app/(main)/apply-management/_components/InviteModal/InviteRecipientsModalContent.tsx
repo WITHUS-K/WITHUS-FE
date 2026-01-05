@@ -11,12 +11,15 @@ import { SearchInput } from '@repo/ui/InputField';
 import { useApplicantsSearchQuery } from '@web/store/query/useApplicantsSearchQuery';
 import { IcTagDelete } from '@repo/ui/icons/colored';
 import SelectedUserItem from './SelectedUserItem';
+import { useSearchParams } from 'next/navigation';
 
 export default function InviteRecipientsModalContent() {
   const { recipients, addRecipient, removeRecipient } = useRecipientsStore();
+  const searchParams = useSearchParams();
+  const recruitmentId = Number(searchParams.get('recruitmentId') ?? 0);
 
   const [keyword, setKeyword] = useState('');
-  const { data: items = [] } = useApplicantsSearchQuery(keyword);
+  const { data: items = [] } = useApplicantsSearchQuery(recruitmentId, keyword);
 
   const filtered = useMemo(() => {
     const k = keyword.trim().toLowerCase();

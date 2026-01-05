@@ -1,6 +1,7 @@
 import {
   queryOptions,
   useSuspenseQuery,
+  useQuery,
   type UseSuspenseQueryOptions,
 } from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
@@ -47,7 +48,19 @@ export function useRecruitmentPositionsQuery(
   recruitmentId: number,
   tokens?: Tokens
 ) {
-  return useSuspenseQuery(
+  return useQuery(
     getRecruitmentPositionsQueryOptions({ recruitmentId, tokens })
+  );
+}
+
+export function useRecruitmentPositionsSuspenseQuery(
+  recruitmentId: number,
+  tokens?: Tokens
+) {
+  return useSuspenseQuery(
+    getRecruitmentPositionsQueryOptions({ recruitmentId, tokens }) as UseSuspenseQueryOptions<
+      Position[],
+      Error
+    >
   );
 }

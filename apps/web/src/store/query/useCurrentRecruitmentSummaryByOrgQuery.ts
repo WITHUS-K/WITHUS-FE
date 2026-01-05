@@ -35,7 +35,7 @@ export function useCurrentRecruitmentSummaryByOrgQuery(organizationId: number) {
     queryKey: ['recruitments', organizationId, 'current', 'summary'],
     queryFn: async () => {
       const res = await GET<OrganizationRecruitmentSummaryResponse['result']>(
-        `/api/v1/recruitments/${organizationId}/current/summary`
+        `api/v1/recruitments/${organizationId}/current/summary`
       );
       return res.result;
     },

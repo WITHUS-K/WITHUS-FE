@@ -5,7 +5,7 @@ import {
   SettingContext,
   SettingContextType,
 } from '@web/app/(main)/application-list/setting/_context/SettingContext';
-import { FormValues, InterviewSchedule } from '@web/types/application';
+import { FormValues } from '@web/types/application';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import * as styles from './PreviewComponent.css';
 import { PreviewHeader } from '@web/app/(main)/application-list/setting/(preview)/_components/PreivewHeader/PreivewHeader';
@@ -24,16 +24,15 @@ export default function PreviewComponent() {
   const ctx = useContext<SettingContextType | null>(SettingContext);
   if (!ctx) return null;
   const form: FormValues = ctx.form;
-  console.log('프리뷰', form);
 
   const { organizationId } = getClientSideTokens();
-const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
+  const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
 
-const roleNameById = useMemo(() => {
-  const m = new Map<number, string>();
-  (rolesData?.roles ?? []).forEach((r) => m.set(r.id, r.roleName));
-  return m;
-}, [rolesData]);
+  const roleNameById = useMemo(() => {
+    const m = new Map<number, string>();
+    (rolesData?.roles ?? []).forEach((r) => m.set(r.id, r.roleName));
+    return m;
+  }, [rolesData]);
 
   const applicationSchedule = [
     {
@@ -62,55 +61,52 @@ const roleNameById = useMemo(() => {
     },
   ];
 
-  const timetableDates = Array.from(
-    new Set(
-      form.interviewSchedule?.scheduleList.map((s) => s.date) ?? [
-        '2025-04-29',
-        '2025-04-30',
-      ]
-    )
-  );
-
-  // 실제 파트 옵션 (공통 제외)
   const hasParts = form.applicationParts?.isSelected === true;
-  const parts = form.applicationParts?.parts ?? [];
   const [selectedPartIdx, setSelectedPartIdx] = useState<number>(0);
 
-  const roleIds = form.applicationParts?.parts ?? []; // number[]
-const partNames = useMemo(() => {
-  return roleIds
-    .map((id) => roleNameById.get(id))
-    .filter(Boolean) as string[];
-}, [roleIds, roleNameById]);
+  const roleIds = form.applicationParts?.parts ?? [];
 
-useEffect(() => {
-  if (!hasParts) {
-    setSelectedPartIdx(0);
-    return;
-  }
-  if (selectedPartIdx >= partNames.length) {
-    setSelectedPartIdx(Math.max(0, partNames.length - 1));
-  }
-}, [hasParts, partNames.length, selectedPartIdx]);
+  const partNames = useMemo(() => {
+    return roleIds.map((id) => roleNameById.get(id) ?? `파트(${id})`);
+  }, [roleIds, roleNameById]);
+
+  useEffect(() => {
+    if (!hasParts) {
+      setSelectedPartIdx(0);
+      return;
+    }
+    if (partNames.length > 0 && selectedPartIdx >= partNames.length) {
+      setSelectedPartIdx(Math.max(0, partNames.length - 1));
+    }
+  }, [hasParts, partNames.length, selectedPartIdx]);
 
   const filteredItems = useMemo(() => {
     const items = form.detailItems ?? [];
-    if (!hasParts || parts.length === 0) {
-      return items;
+    
+    if (!hasParts || roleIds.length === 0) {
+      return items.filter((item) => Number(item.responseTarget) === 0);
     }
-    const target = selectedPartIdx + 1;
-    const out = items.filter(
-      (item) => item.responseTarget === 0 || item.responseTarget === target
-    );
+
+    const targetIndex = selectedPartIdx + 1;
+    const targetRoleId = roleIds[selectedPartIdx];
+
+    const out = items.filter((item) => {
+      const target = Number(item.responseTarget);
+
+      if (target === 0) return true;
+
+      if (target === targetIndex) return true;
+
+      if (targetRoleId !== undefined && target === targetRoleId) return true;
+
+      return false;
+    });
 
     return out;
-  }, [form.detailItems, hasParts, parts.length, selectedPartIdx]);
+  }, [form.detailItems, hasParts, roleIds, selectedPartIdx]);
 
   const interval = TIME_STEP[form.interviewDuration];
-
   const allSlots = form.interviewSchedule?.scheduleList ?? [];
-
-  //console.log('시간', allSlots);
 
   const dates = useMemo(
     () => Array.from(new Set(allSlots.map((s) => s.date))),
@@ -126,12 +122,9 @@ useEffect(() => {
       paddingBottom="2.4rem"
       width="100%"
     >
-      {/* 헤더 */}
       <PreviewHeader />
 
-      {/* 미리보기 폼 */}
       <div className={styles.container}>
-        {/* 공고 제목 및 지원 일정 */}
         <Flex direction="column" width="100%" gap="5rem">
           <div className={styles.title}>
             {form.title || '[한국대학생IT경영학회] 큐시즘 32기 학회원 모집'}
@@ -150,15 +143,12 @@ useEffect(() => {
           </div>
         </Flex>
 
-        {/* 기본 정보 */}
         <Flex direction="column" width="100%" gap="4rem">
           <BasicInfoPreview
             profile={form.basicInfo.profile}
             gender={form.basicInfo.gender}
             birthDate={form.basicInfo.birthDate}
           />
-
-          {/* 아래 기본 추가 정보 */}
           <AdditionalInfoPreview
             school={form.basicInfo.school}
             academicStatus={form.basicInfo.academicStatus}
@@ -167,19 +157,16 @@ useEffect(() => {
           />
         </Flex>
 
-        {/* 지원 파트 */}
-        {form.applicationParts?.isSelected && (
+        {form.applicationParts?.isSelected && partNames.length > 0 && (
           <ApplicationPartsPreview
-          parts={partNames}
+            parts={partNames}
             selectedIndex={selectedPartIdx}
             onChange={setSelectedPartIdx}
           />
         )}
 
-        {/* 질문 리스트 및 첨부 파일 */}
         <QuestionAndFileList detailItems={filteredItems} />
 
-        {/* 면접 시간대 */}
         {form.interviewSchedule?.scheduleList.length! > 0 && (
           <div style={{ width: '100%' }}>
             <Flex gap="0.4rem" direction="column">
@@ -204,12 +191,10 @@ useEffect(() => {
                   locale: ko,
                 });
 
-                // 해당 날짜 슬롯만 필터링
                 const scheduleListForDate = allSlots.filter(
                   (s) => s.date === isoDate
                 );
 
-                // 해당 날짜의 시작/종료 시간 계산
                 const hours = scheduleListForDate.flatMap((s) => [
                   parseInt(s.startTime.split(':')[0]!, 10),
                   parseInt(s.endTime.split(':')[0]!, 10),

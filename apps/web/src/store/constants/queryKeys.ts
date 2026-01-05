@@ -95,6 +95,64 @@ export const queryKeys = {
   },
 
   applications: {
+    excel: (params: {
+      recruitmentId: number;
+      stage: string;
+      sortBy: string;
+      direction: string;
+      organizationRoleIds?: number[];
+      statuses?: string[];
+      keyword?: string;
+    }) =>
+      [
+        'admin',
+        'applications',
+        'recruitment',
+        params.recruitmentId,
+        'excel',
+        params.stage,
+        params.sortBy,
+        params.direction,
+        (params.organizationRoleIds ?? []).join(','),
+        (params.statuses ?? []).join(','),
+        params.keyword?.trim() ?? '',
+      ] as const,
+    adminList: (params: {
+      recruitmentId: number;
+      stage: string;
+      sortBy: string;
+      direction: string;
+      page: number;
+      size: number;
+      organizationRoleIds?: number[];
+      statuses?: string[];
+      keyword?: string;
+    }) =>
+      [
+        'admin',
+        'applications',
+        'recruitment',
+        params.recruitmentId,
+        'list',
+        params.stage,
+        params.sortBy,
+        params.direction,
+        params.page,
+        params.size,
+        (params.organizationRoleIds ?? []).join(','),
+        params.statuses ?? [],
+        params.keyword?.trim() ?? '',
+      ] as const,
+    applicantsSearch: (recruitmentId: number, keyword?: string) =>
+    [
+      'admin',
+      'applications',
+      'recruitment',
+      recruitmentId,
+      'search',
+      keyword ?? '',
+    ] as const,
+    
     userList: (
       recruitmentId: number,
       evaluationStatus: string,

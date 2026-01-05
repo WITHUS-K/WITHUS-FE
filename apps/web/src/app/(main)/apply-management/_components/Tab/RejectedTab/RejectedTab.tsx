@@ -1,27 +1,40 @@
 'use client';
 
-import React, { useEffect, useMemo, useState, ChangeEvent, KeyboardEvent } from 'react';
-import { MemberWithEval } from '../../ApplyListItem/ApplyListItem';
-import { HeaderMeta } from '../../ApplyListHeader/ApplyListHeader';
-import { Flex } from '@repo/ui/Flex';
-import ActionToolbar from '../../ActionToolbar/ActionToolbar';
-import TableContainer from '../../TableContainer/TableContainer';
+import React, {
+  ChangeEvent,
+  KeyboardEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   useRouter,
   useParams,
   useSearchParams,
   usePathname,
 } from 'next/navigation';
-import { Template } from '../../SideTabs/TemplatesAccordion/TemplatesAccordion';
+
+import { Flex } from '@repo/ui/Flex';
+import { TagColor } from '@repo/utils';
+
+import ActionToolbar from '../../ActionToolbar/ActionToolbar';
+import TableContainer from '../../TableContainer/TableContainer';
+import { MemberWithEval } from '../../ApplyListItem/ApplyListItem';
+import { HeaderMeta } from '../../ApplyListHeader/ApplyListHeader';
+
 import { SmsSideTab } from '../../SideTabs/SmsSideTab/SmsSideTab';
 import { MailSideTab } from '../../SideTabs/MailSideTab/MailSideTab';
+
 import {
   AdminApplicationSortBy,
   useAdminApplicationsClientQuery,
-  useAdminApplicationsQuery,
 } from '@web/store/query/useAdminApplicationsQuery';
 import { sortByMap, stageMap } from '../../../[tab]/TabClient';
 import { mapServerColorToTagHex } from '@web/utils/color';
+
+import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
+import { useUpdateQuery } from '@web/store/query/useUpdateQuery';
+import { useAdminApplicationsExcelDownload } from '@web/store/query/useAdminApplicationsExcelDownload';
 
 const HEADER: HeaderMeta[] = [
   { key: 'checkbox', label: '', width: '4.7rem' },
@@ -40,118 +53,37 @@ const HEADER: HeaderMeta[] = [
     width: '15.5rem',
     sortable: true,
   },
-  { key: 'status', label: '합불 여부', width: '16rem'},
+  { key: 'status', label: '합불 여부', width: '16rem' },
   { key: 'smsSent', label: '문자 발송', width: '15rem' },
   { key: 'mailSent', label: '메일 발송' },
 ];
 
-interface RejectedTabProps {
-  recruitmentId: number;
-  posColorMap: Record<string, string>;
-}
-
 type RejectedSortKey = keyof (typeof sortByMap)['rejected'];
 
-export default function RejectedTab({
-  recruitmentId,
-  posColorMap,
-}: RejectedTabProps) {
+interface RejectedTabProps {
+  recruitmentId: number;
+}
+
+export default function RejectedTab({ recruitmentId }: RejectedTabProps) {
   const router = useRouter();
   const params = useParams() as { tab: string };
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const updateQuery = useUpdateQuery();
 
   const activeTab = params.tab;
-  const sideTab =
-    searchParams.get('sideTab') === 'sms'
-      ? 'sms'
-      : searchParams.get('sideTab') === 'mail'
-        ? 'mail'
-        : null;
 
-    // 최신순
-  const [latestSort, setLatestSort] = useState(false);
-  
-  // 페이지 관리 (URL 기반)
-  const pageParam = Number(searchParams.get('page'));
-  const initialPage = !isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
-  const [page, setPage] = useState<number>(initialPage);
-  useEffect(() => {
-    if (page !== initialPage) setPage(initialPage);
-  }, [initialPage]);
-  const size = 20;
-
-  // 정렬 키·방향 관리 (URL 동기화)
-  const urlSortKey = (searchParams.get('sortKey') as RejectedSortKey) ?? 'name';
-  const urlDirection =
-    (searchParams.get('direction')?.toUpperCase() as 'ASC' | 'DESC') ?? 'ASC';
-  const [sortKey, setSortKey] = useState<RejectedSortKey>(urlSortKey);
-  const [direction, setDirection] = useState<'ASC' | 'DESC'>(urlDirection);
-  useEffect(() => {
-    setSortKey(urlSortKey);
-    setDirection(urlDirection);
-  }, [urlSortKey, urlDirection]);
-
-  const apiSortBy = sortByMap['rejected']![sortKey] as AdminApplicationSortBy;
-
-  // 데이터 패칭
-  const { data, isLoading, isFetching } = useAdminApplicationsClientQuery({
-    recruitmentId,
-    stage: stageMap[activeTab],
-    sortBy: apiSortBy,
-    direction,
-    page,
-    size,
-  });
-
-  // 테이블 row 생성 (MemberWithEval 타입 보장)
-const rows = useMemo<MemberWithEval[]>(() => {
-  if (!data) return [];
-
-  return data.data.map((item, idx) => {
-    const positionLabel = item.organizationRoleName ?? '공통';
-    const positionColor = item.organizationRoleName
-      ? mapServerColorToTagHex(posColorMap[item.organizationRoleName]!)
-      : '#5A5C72'; 
-    return {
-      applicationId: item.id,
-      id: String(page * size + idx + 1).padStart(3, '0'),
-      name: item.name,
-      fieldTags: [
-        {
-          label: positionLabel,
-          color: positionColor,
-        },
-      ],
-      evalStatus: `${item.documentEvaluatedCount}/${item.documentAssignedCount}`,
-      documentScore: Number(item.documentAverageScore),
-      interviewScore: Number(item.interviewAverageScore),
-      status: '불합격',
-      smsSent: item.isSmsSent,
-      mailSent: item.isMailSent,
-      evaluators: item.documentEvaluators.map((e) => ({
-        userId: e.userId,
-        name: e.name,
-        profileImageUrl: e.profileImageUrl,
-        profileColor: e.profileColor,
-      })),
-    };
-  });
-}, [data, page, size, posColorMap]);
-
-  // 선택/모달 처리
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const selectedRows = rows.filter((r) => selectedIds.includes(r.id));
-  const applicationIds = selectedRows
-    .map((r) => r.applicationId)
-    .filter((id): id is number => id !== undefined);
-  const recipientNames = selectedRows.map((r) => r.name);
+  // ----------------------------
+  // SideTab (sms/mail) URL 연동
+  // ----------------------------
+  const side = searchParams.get('sideTab');
+  const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
 
   const setModalParam = (value: string | null) => {
-    const qp = new URLSearchParams(Array.from(searchParams.entries()));
+    const qp = new URLSearchParams(searchParams.toString());
     if (value) qp.set('sideTab', value);
     else qp.delete('sideTab');
-    router.replace(`${pathname}?${qp.toString()}`);
+    router.replace(`${pathname}?${qp.toString()}`, { scroll: false });
   };
 
   const handleCloseSideTab = () => {
@@ -159,50 +91,192 @@ const rows = useMemo<MemberWithEval[]>(() => {
     setSelectedIds([]);
   };
 
-  // 페이지 변경 시 URL 동기화
-  const onPageChange = (newOneBased: number) => {
-    setPage(newOneBased - 1);
-    const qp = new URLSearchParams(Array.from(searchParams.entries()));
-    qp.set('page', String(newOneBased));
-    qp.set('sortKey', sortKey);
-    qp.set('direction', direction.toLowerCase());
-    router.replace(`${pathname}?${qp.toString()}`);
-  };
+  // ----------------------------
+  // ✅ positions API로 지원분야 옵션 + map 생성
+  // ----------------------------
+  const { data: positions = [] } = useRecruitmentPositionsQuery(recruitmentId);
 
-  // 정렬 변경 시 URL 동기화
-  const handleSortChange = (key: string, dir: 'asc' | 'desc') => {
-    const qp = new URLSearchParams(Array.from(searchParams.entries()));
-    qp.set('sortKey', key as string);
-    qp.set('direction', dir);
-    qp.set('page', '1');
-    router.replace(`${pathname}?${qp.toString()}`);
-  };
+  const positionOptions = useMemo(() => positions.map((p) => p.name), [positions]);
 
- /*검색*/
-    const [searchKeyword, setSearchKeyword] = useState('');
+  const posIdMap = useMemo(() => {
+    const map: Record<string, number> = {};
+    positions.forEach((p) => (map[p.name] = p.id));
+    return map;
+  }, [positions]);
+
+  const posColorMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    positions.forEach((p) => (map[p.name] = p.color));
+    return map;
+  }, [positions]);
+
+  // ----------------------------
+  // ✅ URL → 필터/검색/페이지/정렬 파싱
+  // ----------------------------
+  const pageParam = Number(searchParams.get('page'));
+  const page = !isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
+  const size = 20;
+
+  const keywordParam = (searchParams.get('keyword') ?? '').trim();
+
+  // 지원분야: roleId 하나로 URL 관리 → API엔 organizationRoleIds 배열로 전달
+  const roleIdParam = searchParams.get('roleId');
+  const selectedRoleId = roleIdParam ? Number(roleIdParam) : null;
+  const organizationRoleIds = selectedRoleId ? [selectedRoleId] : undefined;
+
+  const latestSort = searchParams.get('latest') === '1';
+
+  const urlSortKey = (searchParams.get('sortKey') as RejectedSortKey) ?? 'name';
+  const urlDirection =
+    (searchParams.get('direction')?.toUpperCase() as 'ASC' | 'DESC') ?? 'ASC';
+
+  const apiSortBy: AdminApplicationSortBy = latestSort
+    ? 'LATEST'
+    : (sortByMap['rejected']![urlSortKey] as AdminApplicationSortBy);
+
+  const apiDirection: 'ASC' | 'DESC' = latestSort ? 'DESC' : urlDirection;
+
+  // 라벨 표시용 (id -> name)
+  const selectedPositionLabel = useMemo(() => {
+    if (!selectedRoleId) return null;
+    const found = Object.entries(posIdMap).find(([, id]) => id === selectedRoleId);
+    return found ? found[0] : null;
+  }, [selectedRoleId, posIdMap]);
+
+  // ----------------------------
+  // ✅ 검색 입력 (URL 동기화)
+  // ----------------------------
+  const [searchKeyword, setSearchKeyword] = useState(keywordParam);
+
+  useEffect(() => {
+    setSearchKeyword(keywordParam);
+  }, [keywordParam]);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchKeyword(e.target.value);
-    // TODO: 나중에 서버 연동 시
+  };
+
+  const applySearch = () => {
+    updateQuery({
+      keyword: searchKeyword.trim() || null,
+      page: '1',
+    });
   };
 
   const handleSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      // 지금은 아무 동작 안 하도록 비워둠
-    }
+    if (e.key === 'Enter') applySearch();
   };
 
-           const positionOptions = useMemo(() => {
-          const base = Object.keys(posColorMap); 
-          if (data?.data.some((item) => !item.organizationRoleName)) {
-            return ['공통', ...base];
-          }
-          return base;
-        }, [posColorMap, data]);
-    const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
-  
-    // TODO: 나중에 서버 연동 시 selectedPosition을 쿼리 파라미터/요청 바디에 반영
-  
+  // ----------------------------
+  // ✅ 지원 분야 필터 핸들러 (URL 반영 → API 재호출)
+  // ----------------------------
+  const onPositionChange = (name: string) => {
+    const id = posIdMap[name];
+    updateQuery({
+      roleId: id != null ? String(id) : null,
+      page: '1',
+    });
+  };
+
+  const onLatestSortChange = (next: boolean) => {
+    updateQuery({
+      latest: next ? '1' : null,
+      page: '1',
+    });
+  };
+
+  // ----------------------------
+  // ✅ 정렬/페이지 변경 (URL 반영)
+  // ----------------------------
+  const onPageChange = (newOneBased: number) => {
+    updateQuery({
+      page: String(newOneBased),
+      sortKey: urlSortKey,
+      direction: urlDirection.toLowerCase(),
+    });
+  };
+
+  const handleSortChange = (key: string, dir: 'asc' | 'desc') => {
+    updateQuery({
+      sortKey: key,
+      direction: dir,
+      page: '1',
+      latest: null, // 최신순 on이면 테이블 정렬 클릭 시 최신순 해제
+    });
+  };
+
+  // ----------------------------
+  // ✅ 데이터 패칭 (Rejected 탭도 Final과 동일하게 필터/검색/정렬 반영)
+  // ----------------------------
+  const { data, isLoading, isFetching } = useAdminApplicationsClientQuery({
+    recruitmentId,
+    stage: stageMap[activeTab],
+    sortBy: apiSortBy,
+    direction: apiDirection,
+    page,
+    size,
+    organizationRoleIds,
+    keyword: keywordParam || undefined,
+  });
+
+  // ----------------------------
+  // ✅ rows 생성
+  // ----------------------------
+  const rows = useMemo<MemberWithEval[]>(() => {
+    if (!data) return [];
+
+    return data.data.map((item, idx) => {
+      const positionLabel = item.organizationRoleName ?? '공통';
+
+      const positionColor: TagColor = item.organizationRoleName
+        ? mapServerColorToTagHex(posColorMap[item.organizationRoleName]!)
+        : '#5A5C72';
+
+      return {
+        applicationId: item.id,
+        id: String(page * size + idx + 1).padStart(3, '0'),
+        name: item.name,
+        fieldTags: [{ label: positionLabel, color: positionColor }],
+        evalStatus: `${item.documentEvaluatedCount}/${item.documentAssignedCount}`,
+        documentScore: Number(item.documentAverageScore),
+        interviewScore: Number(item.interviewAverageScore),
+        status: '불합격',
+        smsSent: item.isSmsSent,
+        mailSent: item.isMailSent,
+        evaluators: item.documentEvaluators.map((e) => ({
+          userId: e.userId,
+          name: e.name,
+          profileImageUrl: e.profileImageUrl,
+          profileColor: e.profileColor,
+        })),
+      };
+    });
+  }, [data, page, size, posColorMap]);
+
+  // ----------------------------
+  // ✅ 선택/발송 대상
+  // ----------------------------
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const selectedRows = rows.filter((r) => selectedIds.includes(r.id));
+  const applicationIds = selectedRows
+    .map((r) => r.applicationId)
+    .filter((id): id is number => id !== undefined);
+  const recipientNames = selectedRows.map((r) => r.name);
+
+  const { mutate: downloadExcel, isPending: excelDownloading } =
+  useAdminApplicationsExcelDownload();
+
+const handleExcelDownload = () => {
+  downloadExcel({
+    recruitmentId,
+    stage: stageMap[activeTab],      // FAIL이어야 함
+    sortBy: apiSortBy,
+    direction: apiDirection,
+    organizationRoleIds,
+    keyword: keywordParam || undefined,
+  });
+};
+
 
   return (
     <Flex direction="column" width="100%" height="100%" gap="1.2rem">
@@ -215,21 +289,18 @@ const rows = useMemo<MemberWithEval[]>(() => {
           router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
         }
         communicationOnly
-            searchValue={searchKeyword}
+        searchValue={searchKeyword}
         onSearchChange={handleSearchChange}
         onSearchKeyDown={handleSearchKeyDown}
-                 latestSort={latestSort}
-  onLatestSortChange={(next) => {
-    setLatestSort(next);
-    // TODO: 나중에 서버에 정렬 방식 넘기기
-  }}
+        latestSort={latestSort}
+        onLatestSortChange={onLatestSortChange}
       />
 
       <TableContainer
         headerMeta={HEADER}
         data={rows}
         selectedIds={selectedIds}
-        sortState={{ [sortKey]: direction.toLowerCase() as any }}
+        sortState={{ [urlSortKey]: urlDirection.toLowerCase() as any }}
         onSortChange={handleSortChange}
         currentPage={page + 1}
         totalItems={data?.pagination.totalElements ?? 0}
@@ -243,9 +314,9 @@ const rows = useMemo<MemberWithEval[]>(() => {
         }
         isLoading={isLoading}
         isFetching={isFetching}
-          positionOptions={positionOptions}
-        selectedPosition={selectedPosition}
-        onPositionChange={setSelectedPosition}
+        positionOptions={positionOptions}
+        selectedPosition={selectedPositionLabel}
+        onPositionChange={onPositionChange}
       />
 
       {sideTab === 'sms' && (
@@ -255,6 +326,7 @@ const rows = useMemo<MemberWithEval[]>(() => {
           onClose={handleCloseSideTab}
         />
       )}
+
       {sideTab === 'mail' && (
         <MailSideTab
           applicationIds={applicationIds}
