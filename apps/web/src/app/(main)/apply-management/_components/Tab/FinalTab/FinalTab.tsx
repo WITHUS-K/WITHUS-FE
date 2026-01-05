@@ -25,6 +25,7 @@ import { mapServerColorToTagHex } from '@web/utils/color';
 import { TagColor } from '@repo/utils';
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { useUpdateQuery } from '@web/store/query/useUpdateQuery';
+import { useAdminApplicationsExcelDownload } from '@web/store/query/useAdminApplicationsExcelDownload';
 
 const HEADER: HeaderMeta[] = [
   { key: 'checkbox', label: '', width: '4.7rem' },
@@ -252,6 +253,21 @@ export default function FinalTab({ recruitmentId }: FinalTabProps) {
   const applicationIds = selectedRows.map((r) => r.applicationId);
   const recipientNames = selectedRows.map((r) => r.name);
 
+  const { mutate: downloadExcel, isPending: excelDownloading } =
+  useAdminApplicationsExcelDownload();
+
+const handleExcelDownload = () => {
+  downloadExcel({
+    recruitmentId,
+    stage: stageMap[activeTab],      // FINAL_PASS여야 함
+    sortBy: apiSortBy,
+    direction: apiDirection,
+    organizationRoleIds,
+    keyword: keywordParam || undefined,
+    // Final 탭은 statuses 없음
+  });
+};
+
   return (
     <Flex direction="column" width="100%" height="100%" gap="1.2rem">
       <ActionToolbar
@@ -268,6 +284,7 @@ export default function FinalTab({ recruitmentId }: FinalTabProps) {
         onSearchKeyDown={handleSearchKeyDown}
         latestSort={latestSort}
         onLatestSortChange={onLatestSortChange}
+        onExcelDownload={handleExcelDownload}
       />
 
       <TableContainer

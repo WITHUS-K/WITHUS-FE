@@ -23,6 +23,7 @@ import { HeaderMeta } from '../../ApplyListHeader/ApplyListHeader';
 import { TagColor } from '@repo/utils';
 import { useUpdateQuery } from '@web/store/query/useUpdateQuery';
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
+import { useAdminApplicationsExcelDownload } from '@web/store/query/useAdminApplicationsExcelDownload';
 
 // 인터뷰 탭 헤더 정의
 const INT_HEADER: HeaderMeta[] = [
@@ -259,6 +260,21 @@ export default function InterviewTab({ recruitmentId }: InterviewTabProps) {
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
+  const { mutate: downloadExcel, isPending: excelDownloading } =
+  useAdminApplicationsExcelDownload();
+
+const handleExcelDownload = () => {
+  downloadExcel({
+    recruitmentId,
+    stage: stageMap[activeTab],           // DOCUMENT/INTERVIEW/FINAL_PASS/FAIL
+    sortBy: apiSortBy,                    // 최신순 토글 포함한 서버 정렬 값
+    direction: apiDirection,
+    organizationRoleIds,                 // roleId 있으면 [id]
+    statuses,                            // status 필터 있으면 ['DOX_PASS'...] 등
+    keyword: keywordParam?.trim() || undefined,
+  });
+};
+
   return (
     <Flex direction="column" width="100%" height="100%" gap="1.2rem">
       <ActionToolbar
@@ -272,6 +288,7 @@ export default function InterviewTab({ recruitmentId }: InterviewTabProps) {
         onSearchKeyDown={handleSearchKeyDown}
         latestSort={latestSort}
         onLatestSortChange={onLatestSortChange}
+        onExcelDownload={handleExcelDownload}
       />
 
       <TableContainer

@@ -47,7 +47,6 @@ const DOC_HEADER: HeaderMeta[] = [
 interface DocumentTabProps {
   recruitmentId: number;
   posColorMap: Record<string, string>;
-  posIdMap: Record<string, number>;
 }
 
 const DOCUMENT_STATUS_OPTIONS = ['서류 합격', '서류 불합격', '보류'] as const;
@@ -66,7 +65,7 @@ function statusLabelToEnum(selected: string | null): AdminApplicationStatus[] | 
   }
 }
 
-export default function DocumentTab({ recruitmentId, posColorMap, posIdMap }: DocumentTabProps) {
+export default function DocumentTab({ recruitmentId, posColorMap}: DocumentTabProps) {
   const router = useRouter();
   const params = useParams() as { tab: string };
   const pathname = usePathname();
@@ -99,7 +98,7 @@ export default function DocumentTab({ recruitmentId, posColorMap, posIdMap }: Do
 
   const keywordParam = searchParams.get('keyword') ?? '';
 
-  posIdMap = useMemo(() => {
+  const posIdMap = useMemo(() => {
     const map: Record<string, number> = {};
     positions.forEach((p) => {
       map[p.name] = p.id;

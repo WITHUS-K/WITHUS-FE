@@ -34,6 +34,7 @@ import { mapServerColorToTagHex } from '@web/utils/color';
 
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { useUpdateQuery } from '@web/store/query/useUpdateQuery';
+import { useAdminApplicationsExcelDownload } from '@web/store/query/useAdminApplicationsExcelDownload';
 
 const HEADER: HeaderMeta[] = [
   { key: 'checkbox', label: '', width: '4.7rem' },
@@ -261,6 +262,21 @@ export default function RejectedTab({ recruitmentId }: RejectedTabProps) {
     .map((r) => r.applicationId)
     .filter((id): id is number => id !== undefined);
   const recipientNames = selectedRows.map((r) => r.name);
+
+  const { mutate: downloadExcel, isPending: excelDownloading } =
+  useAdminApplicationsExcelDownload();
+
+const handleExcelDownload = () => {
+  downloadExcel({
+    recruitmentId,
+    stage: stageMap[activeTab],      // FAIL이어야 함
+    sortBy: apiSortBy,
+    direction: apiDirection,
+    organizationRoleIds,
+    keyword: keywordParam || undefined,
+  });
+};
+
 
   return (
     <Flex direction="column" width="100%" height="100%" gap="1.2rem">
