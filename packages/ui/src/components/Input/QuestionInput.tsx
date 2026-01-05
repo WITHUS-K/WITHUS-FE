@@ -51,7 +51,27 @@ export const QuestionInput = ({
   useLayoutEffect(autoResize, [value]);
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    onChange(e.currentTarget.value);
+    let next = e.currentTarget.value;
+  
+    if (safeMax !== Infinity) {
+      if (includeWhitespace) {
+        if (next.length > safeMax) next = next.slice(0, safeMax);
+      } else {
+        // ✅ 공백 기준을 \s로 통일 (스페이스/개행/탭 포함)
+        let count = 0;
+        let result = '';
+  
+        for (const ch of next) {
+          if (!/\s/.test(ch)) count++;
+          if (count > safeMax) break;
+          result += ch;
+        }
+  
+        next = result;
+      }
+    }
+  
+    onChange(next);
     autoResize();
   };
 
@@ -97,6 +117,7 @@ export const QuestionInput = ({
           disabled={readOnly}
           onFocus={onFocus}
           onBlur={onBlur}
+          maxLength={includeWhitespace && safeMax !== Infinity ? safeMax : undefined}
         />
       </div>
 

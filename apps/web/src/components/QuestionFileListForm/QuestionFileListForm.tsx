@@ -160,7 +160,13 @@ export const QuestionAndFileListForm = ({
               readOnly={readOnly}
               onChange={(newFiles) => {
                 onFileChange(fileIndex, newFiles);
-                newFiles.length ? status.setCompleted() : status.setDefault();
+              }}
+              onValidityChange={(ok) => {
+                const hasAny = (files[fileIndex]?.length ?? 0) > 0;
+
+                if (!hasAny) status.setDefault();
+                else if (ok) status.setCompleted();
+                else status.setEditing(); //  invalid면 미완료(연필)
               }}
             />
           </div>
