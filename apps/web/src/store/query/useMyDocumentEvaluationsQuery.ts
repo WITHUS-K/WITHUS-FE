@@ -26,7 +26,7 @@ export function useMyDocumentEvaluationsQuery(recruitmentId: number) {
     queryKey: ['recruitments', recruitmentId, 'my', 'evaluations', 'documents'],
     queryFn: async () => {
       const res = await GET<MyDocumentEvaluationsResponse['result']>(
-        `/api/v1/recruitments/${recruitmentId}/my/evaluations/documents`
+        `api/v1/recruitments/${recruitmentId}/my/evaluations/documents`
       );
       return res.result;
     },

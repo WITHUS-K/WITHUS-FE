@@ -21,6 +21,8 @@ export interface ActionToolbarProps {
   onAdd?: () => void;
   onSms: () => void;
   onMail: () => void;
+  onExcelDownload?: () => void;
+  excelDownloading?: boolean;
   /** true일 때, 문자·메일 버튼만 렌더링*/
   communicationOnly?: boolean;
     searchValue?: string;
@@ -43,6 +45,8 @@ export default function ActionToolbar({
   onSearchKeyDown,
     latestSort,
   onLatestSortChange,
+  onExcelDownload,
+  excelDownloading = false,
 }: ActionToolbarProps) {
   return (
     <Flex
@@ -96,6 +100,7 @@ export default function ActionToolbar({
             size="40"
             width="14.6rem"
             leftIcon={<IcDownloadMono />}
+            onClick={onExcelDownload}
           >
             엑셀로 다운
           </Button>
@@ -166,6 +171,7 @@ export default function ActionToolbar({
             size="40"
             width="14.6rem"
             leftIcon={<IcDownloadMono />}
+            onClick={onExcelDownload}
           >
             엑셀로 다운
           </Button>

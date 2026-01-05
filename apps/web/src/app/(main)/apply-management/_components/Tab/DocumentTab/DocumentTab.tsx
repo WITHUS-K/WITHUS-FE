@@ -16,10 +16,13 @@ import { SmsSideTab } from '../../SideTabs/SmsSideTab/SmsSideTab';
 import {
   useAdminApplicationsClientQuery,
   type AdminApplicationSortBy,
+  AdminApplicationStatus,
 } from '@web/store/query/useAdminApplicationsQuery';
 import { sortByMap, stageMap } from '../../../[tab]/TabClient';
 import { mapServerColorToTagHex } from '@web/utils/color';
 import { TagColor } from '@repo/utils';
+import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
+import { useAdminApplicationsExcelDownload } from '@web/store/query/useAdminApplicationsExcelDownload';
 
 // ─── 테이블 헤더 정의 ─────────────────────────────────────────────────────────
 const DOC_HEADER: HeaderMeta[] = [
@@ -40,100 +43,187 @@ const DOC_HEADER: HeaderMeta[] = [
   { key: 'mailSent', label: '메일 발송', sortable: true },
 ];
 
+
 interface DocumentTabProps {
   recruitmentId: number;
   posColorMap: Record<string, string>;
+  posIdMap: Record<string, number>;
 }
 
-export default function DocumentTab({
-  recruitmentId,
-  posColorMap,
-}: DocumentTabProps) {
+const DOCUMENT_STATUS_OPTIONS = ['서류 합격', '서류 불합격', '보류'] as const;
+
+function statusLabelToEnum(selected: string | null): AdminApplicationStatus[] | undefined {
+  if (!selected) return undefined;
+  switch (selected) {
+    case '서류 합격':
+      return ['DOX_PASS'];
+    case '서류 불합격':
+      return ['DOX_FAIL'];
+    case '보류':
+      return ['DOX_PENDING'];
+    default:
+      return undefined;
+  }
+}
+
+export default function DocumentTab({ recruitmentId, posColorMap, posIdMap }: DocumentTabProps) {
   const router = useRouter();
   const params = useParams() as { tab: string };
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const activeTab = params.tab;
-  const side = searchParams.get('sideTab');
-  const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
 
-  // 최신순
-  const [latestSort, setLatestSort] = useState(false);
+  // ✅ URL patch helper
+  const updateQuery = (patch: Record<string, string | null>) => {
+    const qp = new URLSearchParams(Array.from(searchParams.entries()));
+    Object.entries(patch).forEach(([k, v]) => {
+      if (!v) qp.delete(k);
+      else qp.set(k, v);
+    });
+    router.replace(`${pathname}?${qp.toString()}`);
+  };
 
-  // ─── 페이지 번호 관리 ─────────────────────────────────────────────────────────
+  const { data: positions = [] } = useRecruitmentPositionsQuery(recruitmentId);
+  // ── URL -> 상태 (단일 소스)
   const pageParam = Number(searchParams.get('page'));
-  const initialPage = !isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0;
-  const [page, setPage] = useState(initialPage);
-  useEffect(() => {
-    if (page !== initialPage) setPage(initialPage);
-  }, [initialPage]);
+  const page = !isNaN(pageParam) && pageParam > 0 ? pageParam - 1 : 0; // 0-based
 
-  const size = 20;
+  const latestSort = searchParams.get('latest') === '1';
 
-  // ─── 정렬 키 · 방향 관리 (URL 동기화) ────────────────────────────────────────────
+  const roleIdParam = searchParams.get('roleId');
+  const selectedRoleId = roleIdParam ? Number(roleIdParam) : null;
+
+  const statusParam = searchParams.get('status'); // ex) DOX_PASS
+  const statuses = statusParam ? ([statusParam] as AdminApplicationStatus[]) : undefined;
+
+  const keywordParam = searchParams.get('keyword') ?? '';
+
+  posIdMap = useMemo(() => {
+    const map: Record<string, number> = {};
+    positions.forEach((p) => {
+      map[p.name] = p.id;
+    });
+    return map;
+  }, [positions]);
+
+  // 정렬(기존 유지)
   const urlSortKey =
-    (searchParams.get('sortKey') as keyof (typeof sortByMap)['documents']) ??
-    'name';
+    (searchParams.get('sortKey') as keyof (typeof sortByMap)['documents']) ?? 'name';
   const urlDirection =
     (searchParams.get('direction')?.toUpperCase() as 'ASC' | 'DESC') ?? 'ASC';
-  const [sortKey, setSortKey] =
-    useState<keyof (typeof sortByMap)['documents']>(urlSortKey);
-  const [direction, setDirection] = useState<'ASC' | 'DESC'>(urlDirection);
-  useEffect(() => {
-    setSortKey(urlSortKey);
-    setDirection(urlDirection);
-  }, [urlSortKey, urlDirection]);
 
-  const apiSortBy = sortByMap['documents']![sortKey] as AdminApplicationSortBy;
+  // ✅ 최신순이면 서버 정렬 강제
+  const apiSortBy: AdminApplicationSortBy = latestSort
+    ? 'LATEST'
+    : (sortByMap['documents']![urlSortKey] as AdminApplicationSortBy);
+
+  const apiDirection: 'ASC' | 'DESC' = latestSort ? 'DESC' : urlDirection;
+
+  // ── UI 표시용(라벨) 상태는 URL 기반으로 계산
+  const selectedPositionLabel = useMemo(() => {
+    if (!selectedRoleId) return null;
+    const entry = Object.entries(posIdMap).find(([, id]) => id === selectedRoleId);
+    return entry ? entry[0] : null;
+  }, [selectedRoleId, posIdMap]);
+
+  const selectedStatusLabel = useMemo(() => {
+    if (!statusParam) return null;
+    switch (statusParam) {
+      case 'DOX_PASS':
+        return '서류 합격';
+      case 'DOX_FAIL':
+        return '서류 불합격';
+      case 'DOX_PENDING':
+        return '보류';
+      default:
+        return null;
+    }
+  }, [statusParam]);
+
+  // ── 검색 입력(입력값만 state, 적용값은 URL)
+  const [searchInput, setSearchInput] = useState(keywordParam);
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
+
+  const applySearch = () => {
+    updateQuery({
+      keyword: searchInput.trim() || null,
+      page: '1', // ✅ 검색 시 1페이지로
+    });
+  };
+
+  const handleSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') applySearch();
+  };
+
+  // ── 필터 옵션
+  const positionOptions = useMemo(
+    () => positions.map((p) => p.name),
+    [positions]
+  );
+  const onPositionChange = (name: string) => {
+    const id = posIdMap?.[name];
+    updateQuery({ roleId: id != null ? String(id) : null, page: '1' });
+  };
+  const onStatusChange = (label: string) => {
+    const enums = statusLabelToEnum(label);
+    updateQuery({
+      status: enums?.[0] ?? null,
+      page: '1',
+    });
+  };
+
+  const onLatestSortChange = (v: boolean) => {
+    updateQuery({
+      latest: v ? '1' : null,
+      page: '1',
+    });
+  };
+
+  // ── API 파라미터
+  const organizationRoleIds = selectedRoleId ? [selectedRoleId] : undefined;
+
+  const size = 20;
 
   const { data, isLoading, isFetching } = useAdminApplicationsClientQuery({
     recruitmentId,
     stage: stageMap[activeTab],
     sortBy: apiSortBy,
-    direction,
+    direction: apiDirection,
     page,
     size,
+    organizationRoleIds,
+    statuses,
+    keyword: keywordParam,
   });
 
-  // ─── 테이블용 row 생성 ───────────────────────────────────────────────────────────
+  // ── rows 변환(기존 로직 유지)
   const rows = useMemo(() => {
     if (!data) return [];
     return data.data.map((item, idx) => {
-      console.log("아이템", item)
       const positionLabel = item.organizationRoleName ?? '공통';
-
       const positionColor: TagColor = item.organizationRoleName
         ? mapServerColorToTagHex(posColorMap[item.organizationRoleName]!)
-        : '#5A5C72'; 
+        : '#5A5C72';
+
       return {
         applicationId: item.id,
         id: String(page * size + idx + 1).padStart(3, '0'),
         name: item.name,
-        fieldTags: [
-          {
-            label: positionLabel,
-            color: positionColor,
-          },
-        ],
+        fieldTags: [{ label: positionLabel, color: positionColor }],
         evalStatus: `${item.documentEvaluatedCount}/${item.documentAssignedCount}`,
         score: Number(item.documentAverageScore),
         status: (() => {
           switch (item.status) {
-            case 'PENDING':
-              return '선택';
             case 'DOX_PASS':
               return '서류 합격';
             case 'DOX_FAIL':
               return '서류 불합격';
             case 'DOX_PENDING':
               return '보류';
-            case 'INTERVIEW_PASS':
-              return '면접 합격';
-            case 'INTERVIEW_FAIL':
-              return '면접 불합격';
-            case 'INTERVIEW_PENDING':
-              return '면접 보류';
             default:
               return '선택';
           }
@@ -150,100 +240,56 @@ export default function DocumentTab({
     });
   }, [data, page, size, posColorMap]);
 
-  // ─── 모달 & 선택 로직 ───────────────────────────────────────────────────────────
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const applicationIds = rows
-    .filter((r) => selectedIds.includes(r.id))
-    .map((r) => r.applicationId);
-  const recipientNames = rows
-    .filter((r) => selectedIds.includes(r.id))
-    .map((r) => r.name);
-
-  const setModalParam = (value: string | null) => {
-    const qp = new URLSearchParams(Array.from(searchParams.entries()));
-    if (value) qp.set('sideTab', value);
-    else qp.delete('sideTab');
-    router.replace(`${pathname}?${qp.toString()}`);
-  };
-
-  const openAssignManagerModal = () =>
-    router.push(
-      `/apply-management/${activeTab}/assign-manager?recruitmentId=${
-        recruitmentId
-      }`
-    );
-
-  const handleCloseSideTab = () => {
-    setModalParam(null);
-    setSelectedIds([]);
-  };
-
-     const positionOptions = useMemo(() => {
-    const base = Object.keys(posColorMap); 
-    if (data?.data.some((item) => !item.organizationRoleName)) {
-      return ['공통', ...base];
-    }
-    return base;
-  }, [posColorMap, data]);
-  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
-
-  // TODO: 나중에 서버 연동 시 selectedPosition을 쿼리 파라미터/요청 바디에 반영
-
-const documentStatusOptions = ['서류 합격', '서류 불합격', '보류'];
-const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-  // TODO: selectedStatus 서버 연동
-  
-  /*검색*/
-    const [searchKeyword, setSearchKeyword] = useState('');
-
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchKeyword(e.target.value);
-    // TODO: 나중에 서버 연동 시
-  };
-
-  const handleSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      // 지금은 아무 동작 안 하도록 비워둠
-    }
-  };
-
-  // ─── 페이지 변경 시 URL 반영 ────────────────────────────────────────────────────
+  // ── 페이지네이션/정렬 → URL 저장
   const onPageChange = (newOneBased: number) => {
-    setPage(newOneBased - 1);
-    const qp = new URLSearchParams(Array.from(searchParams.entries()));
-    qp.set('page', String(newOneBased));
-    qp.set('sortKey', sortKey);
-    qp.set('direction', direction.toLowerCase());
-    router.replace(`${pathname}?${qp.toString()}`);
+    updateQuery({
+      page: String(newOneBased),
+      sortKey: urlSortKey,
+      direction: urlDirection.toLowerCase(),
+    });
   };
 
-  // ─── 정렬 변경 시 URL 반영 ────────────────────────────────────────────────────
   const handleSortChange = (key: string, dir: 'asc' | 'desc') => {
-    const qp = new URLSearchParams(Array.from(searchParams.entries()));
-    qp.set('sortKey', key);
-    qp.set('direction', dir);
-    qp.set('page', '1');
-    router.replace(`${pathname}?${qp.toString()}`);
+    // 최신순이 켜져 있으면 최신순이 우선이라 sort 변경해도 서버는 latest로 강제됨.
+    updateQuery({
+      sortKey: key,
+      direction: dir,
+      page: '1',
+    });
   };
+
+  // 선택 로직은 기존대로 (필터/검색과 무관)
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const { mutate: downloadExcel, isPending: excelDownloading } =
+  useAdminApplicationsExcelDownload();
+
+const handleExcelDownload = () => {
+  downloadExcel({
+    recruitmentId,
+    stage: stageMap[activeTab],           // DOCUMENT/INTERVIEW/FINAL_PASS/FAIL
+    sortBy: apiSortBy,                    // 최신순 토글 포함한 서버 정렬 값
+    direction: apiDirection,
+    organizationRoleIds,                 // roleId 있으면 [id]
+    statuses,                            // status 필터 있으면 ['DOX_PASS'...] 등
+    keyword: keywordParam?.trim() || undefined,
+  });
+};
 
   return (
     <Flex direction="column" width="100%" gap="1.2rem">
       <ActionToolbar
         hasSelection={selectedIds.length > 0}
-        onSms={() => setModalParam('sms')}
-        onMail={() => setModalParam('mail')}
-        onDistribute={openAssignManagerModal}
-        onAdd={() =>
-          router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
-        }
-           searchValue={searchKeyword}
+        onSms={() => {}}
+        onMail={() => {}}
+        onDistribute={() => {}}
+        onAdd={() => {}}
+        searchValue={searchInput}
         onSearchChange={handleSearchChange}
         onSearchKeyDown={handleSearchKeyDown}
-         latestSort={latestSort}
-  onLatestSortChange={(next) => {
-    setLatestSort(next);
-    // TODO: 나중에 서버에 정렬 방식 넘기기
-  }}
+        latestSort={latestSort}
+        onLatestSortChange={onLatestSortChange}
+        onExcelDownload={handleExcelDownload}
       />
 
       <TableContainer
@@ -257,7 +303,7 @@ const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
             checked ? [...prev, id] : prev.filter((x) => x !== id)
           )
         }
-        sortState={{ [sortKey]: direction.toLowerCase() as any }}
+        sortState={{ [urlSortKey]: urlDirection.toLowerCase() as any }}
         onSortChange={handleSortChange}
         currentPage={page + 1}
         totalItems={data?.pagination.totalElements ?? 0}
@@ -265,28 +311,13 @@ const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
         onPageChange={onPageChange}
         isLoading={isLoading}
         isFetching={isFetching}
-          positionOptions={positionOptions}
-        selectedPosition={selectedPosition}
-        onPositionChange={setSelectedPosition}
-          statusOptions={documentStatusOptions}
-  selectedStatus={selectedStatus}
-  onStatusChange={setSelectedStatus}
+        positionOptions={positionOptions}
+        selectedPosition={selectedPositionLabel}
+        onPositionChange={onPositionChange}
+        statusOptions={[...DOCUMENT_STATUS_OPTIONS]}
+        selectedStatus={selectedStatusLabel}
+        onStatusChange={onStatusChange}
       />
-
-      {sideTab === 'sms' && (
-        <SmsSideTab
-          applicationIds={applicationIds}
-          recipients={recipientNames}
-          onClose={handleCloseSideTab}
-        />
-      )}
-      {sideTab === 'mail' && (
-        <MailSideTab
-          applicationIds={applicationIds}
-          recipients={recipientNames}
-          onClose={handleCloseSideTab}
-        />
-      )}
     </Flex>
   );
 }
