@@ -167,8 +167,28 @@ const seededSectionNames: Array<string | null> =
 
   // 컨텍스트 → 폼 동기화
   useEffect(() => {
-    methods.reset(ctx.form);
+    methods.reset(ctx.form, {
+      keepDirtyValues: true,
+      keepTouched: true,
+      keepErrors: true,
+    });
+  
+    // ✅ ctx 변경 중에서도 "applicationParts"는 강제로 반영
+    const ap = ctx.form.applicationParts;
+  
+    methods.setValue('applicationParts.parts', ap?.parts ?? [], {
+      shouldDirty: true,
+      shouldTouch: false,
+      shouldValidate: false,
+    });
+  
+    methods.setValue('applicationParts.isSelected', !!ap?.isSelected, {
+      shouldDirty: true,
+      shouldTouch: false,
+      shouldValidate: false,
+    });
   }, [ctx.form, methods]);
+  
 
   const roleIds = methods.watch('applicationParts.parts') ?? [];
 
