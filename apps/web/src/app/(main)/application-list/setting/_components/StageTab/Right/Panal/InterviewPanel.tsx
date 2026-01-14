@@ -169,6 +169,36 @@ export default function InterviewPanel({ minDate }: InterviewPanelProps) {
     [currentGroup!.slots, localSlots, isNewGroup]
   );
 
+  const toMinutes = (time: string) => {
+    const [h, m] = time.split(':');
+  
+    const hh = Number(h);
+    const mm = Number(m);
+  
+    if (Number.isNaN(hh) || Number.isNaN(mm)) return null;
+  
+    return hh * 60 + mm;
+  };
+
+  const isValidTimeRange = (startTime?: string, endTime?: string) => {
+    if (!startTime || !endTime) return false;
+  
+    const s = toMinutes(startTime);
+    const e = toMinutes(endTime);
+  
+    if (s === null || e === null) return false;
+  
+    return s < e;
+  };
+
+  const canSubmit = useMemo(() => {
+    if (localSlots.length === 0) return false;
+    return localSlots.every((s) => isValidTimeRange(s.startTime, s.endTime));
+  }, [localSlots]);
+
+  
+
+
   return (
     <Flex direction="column" width="100%" gap="1.6rem">
       {/* 헤더 영역 */}
@@ -267,7 +297,7 @@ export default function InterviewPanel({ minDate }: InterviewPanelProps) {
               type="button"
               variant="main"
               size="40"
-              disabled={localSlots.length === 0}
+              disabled={!canSubmit} 
               onClick={onSubmit}
             >
               등록

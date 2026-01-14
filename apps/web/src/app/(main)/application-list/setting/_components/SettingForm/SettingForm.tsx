@@ -264,8 +264,9 @@ const seededSectionNames: Array<string | null> =
   const isTitleOk = !!title.trim();
   const isBasicInfoOk = true;
   const isDetailItemsOk =
-    detailItems.length > 0 &&
-    detailItems.every((d) => d.description.trim().length > 0);
+  (detailItems?.length ?? 0) > 0 &&
+  detailItems.every((d) => (d?.description ?? '').trim().length > 0);
+
   const isDeadlineOk = !!deadline;
   const isDurationOk = !!interviewDuration;
   const isFinalOk = !!finalResultDate;
