@@ -85,7 +85,7 @@ export function TemplatesAccordion({
         <Text variant="md2_text_semibold" color="grayscale70">
           {selectedTitle}
         </Text>
-        <IcArrowDropdown className={open ? '' : styles.rotated} />
+        <IcArrowDropdown className={open ? styles.rotated : ''} />
       </button>
 
       {open && (
@@ -126,7 +126,7 @@ export function TemplatesAccordion({
                   }}
                   disabled={isCreating || isEditing}
                 >
-                  {t.title}
+                 <span className={styles.templateTitle}>{t.title}</span>
                 </Button>
 
                 {/* 점 3개 아이콘 (hover 시 노출) */}

@@ -597,7 +597,7 @@ export function MailSideTab({
       </div>
 
       {/* 변수 설정 (새 템플릿 생성일 때만) */}
-      {(isCreating || isEditing) && (
+
         <div className={styles.section}>
           <Text
             variant="sm_caption_semibold"
@@ -632,7 +632,7 @@ export function MailSideTab({
             ))}
           </Flex>
         </div>
-      )}
+
 
       <div className={styles.section} style={{ marginTop: '1.2rem' }}>
         <RichTextEditor

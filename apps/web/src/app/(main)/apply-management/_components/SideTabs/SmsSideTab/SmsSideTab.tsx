@@ -345,7 +345,6 @@ export function SmsSideTab({ applicationIds, recipients, onClose }: SmsSideTabPr
         </div>
   
 
-      {(isCreating || isEditing) && (
         <div className={styles.section} >
           <Text variant="sm_caption_semibold" color="grayscale70" style={{ width: '7.6rem' }}>
             변수 설정
@@ -370,7 +369,6 @@ export function SmsSideTab({ applicationIds, recipients, onClose }: SmsSideTabPr
             ))}
           </Flex>
         </div>
-      )}
 
       <div className={styles.section} style={{ marginTop: '1.2rem' }}>
         <RichTextEditor

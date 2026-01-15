@@ -48,10 +48,13 @@ export default function PreviewComponent() {
     {
       label: '면접 일정',
       date: form.interviewSchedule?.scheduleList.length
-        ? form.interviewSchedule.scheduleList
-            .map((s) => format(parseISO(s.date!), 'yyyy/MM/dd'))
-            .join(', ')
-        : '',
+      ? Array.from(
+          new Set(form.interviewSchedule.scheduleList.map((s) => s.date))
+        )
+          .filter(Boolean)
+          .map((d) => format(parseISO(d as string), 'yyyy/MM/dd'))
+          .join(', ')
+      : '',
     },
     {
       label: '최종 합격 발표',
@@ -127,7 +130,7 @@ export default function PreviewComponent() {
       <div className={styles.container}>
         <Flex direction="column" width="100%" gap="5rem">
           <div className={styles.title}>
-            {form.title || '[한국대학생IT경영학회] 큐시즘 32기 학회원 모집'}
+            {form.title || '[한국대학생IT경영학회] 큐시즘 33기 학회원 모집'}
           </div>
           <div className={styles.headerWrapper}>
             {applicationSchedule.map((s, i) => (

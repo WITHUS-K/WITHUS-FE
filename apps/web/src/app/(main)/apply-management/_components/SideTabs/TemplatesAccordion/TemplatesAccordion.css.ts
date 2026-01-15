@@ -113,3 +113,13 @@ export const list = style({
 export const moreButtonSelected = style({
   color: vars.colors.white,
 });
+
+export const templateTitle = style({
+  display: 'block',
+  maxWidth: '14rem',
+  textAlign:'center',
+  minWidth: 0,               // ✅ 핵심 (ellipsis가 먹게)
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+});

@@ -23,27 +23,14 @@ export interface FileUploadProps {
   files: AnswerFile[];
   onChange: (files: AnswerFile[]) => void;
   readOnly?: boolean;
+
+  /** ✅ 추가: 유효성(제한 만족 여부)만 부모에게 알림 */
+  onValidityChange?: (isValid: boolean, message?: string) => void;
 }
 
 function formatMB(bytes: number, decimals = 2) {
   return (bytes / (1024 * 1024)).toFixed(decimals) + ' MB';
 }
-
-/**
- * 이름에서 UUID prefix와 중복된 suffix를 제거하고,
- * 첫 번째 확장자 이후로만 포함하여 순수한 원본 파일명만 추출
- */
-/*function extractOriginalName(name: string): string {
-  const idx = name.indexOf('_');
-  const raw = idx >= 0 ? name.slice(idx + 1) : name;
-  const match = raw.match(/\.(?:pdf|png|jpg|jpeg)/i);
-  if (match) {
-    const ext = match[0];
-    const pos = raw.indexOf(ext);
-    return raw.slice(0, pos + ext.length);
-  }
-  return raw;
-}*/
 
 // 업로드 시: 이름 그대로 사용
 function extractOriginalNameAsIs(name: string): string {
@@ -102,48 +89,62 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   files,
   onChange,
   readOnly = false,
+  onValidityChange,
 }) => {
   const {
     typeInfo: { info, infoDetail },
   } = item;
+
   const maxCount = Number(info);
   const maxMB = Number(infoDetail);
+
   const download = useFileDownload();
   const inputRef = useRef<HTMLInputElement>(null);
+
   const [dragActive, setDragActive] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const handleSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = Array.from(e.target.files ?? []);
-    if (!selected.length) return;
 
-    const combined = [...files, ...selected];
+  /** ✅ 공통: nextFiles 만들고, 유효성만 계산해서 에러/콜백 갱신 */
+  const applyNext = (incoming: AnswerFile[]) => {
+    const combined = [...files, ...incoming];
+
+    // 기존 로직 유지: name 기준 중복 제거
     const unique = combined.filter(
       (f, i) => combined.findIndex((g) => g.name === f.name) === i
     );
 
-    if (unique.length > maxCount) {
-      setHasError(true);
-      setErrorMessage(`최대 ${maxCount}개까지 업로드할 수 있습니다.`);
-      e.target.value = '';
-      return;
-    }
+    // ✅ 유효성 계산 (막지 않고 메시지만)
+    const overCount = unique.length > maxCount;
 
-    const overSized = unique.filter((f) => f.size > maxMB * 1024 * 1024);
-    if (overSized.length) {
-      setHasError(true);
-      setErrorMessage(
+    const overSized = unique.filter(
+      (f) => (f as any).size > maxMB * 1024 * 1024
+    );
+
+    let message = '';
+    if (overCount) {
+      message = `최대 ${maxCount}개까지 업로드할 수 있습니다.`;
+    } else if (overSized.length) {
+      message =
         `다음 파일이 ${maxMB}MB를 초과했습니다: ` +
-          overSized.map((f) => f.name).join(', ')
-      );
-      e.target.value = '';
-      return;
+        overSized.map((f) => (f as any).name).join(', ');
     }
 
-    setHasError(false);
-    setErrorMessage('');
+    const isValid = !overCount && overSized.length === 0;
 
+    setHasError(!isValid);
+    setErrorMessage(message);
+    onValidityChange?.(isValid, message);
+
+    // ✅ 여기서 "항상 반영" → 리스트에 추가됨
     onChange(unique);
+  };
+
+  const handleSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = Array.from(e.target.files ?? []);
+    if (!selected.length) return;
+
+    applyNext(selected);
     e.target.value = '';
   };
 
@@ -151,6 +152,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     e.preventDefault();
     setDragActive(true);
   };
+
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     setDragActive(false);
@@ -159,37 +161,35 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     setDragActive(false);
+
     if (!e.dataTransfer.files.length) return;
     const dtFiles = Array.from(e.dataTransfer.files);
-    const combined = [...files, ...dtFiles];
-    const unique = combined.filter(
-      (f, i) => combined.findIndex((g) => g.name === f.name) === i
-    );
-    if (unique.length > maxCount) {
-      setHasError(true);
-      setErrorMessage(`최대 ${maxCount}개까지 업로드할 수 있습니다.`);
-      return;
-    }
-    const overSized = unique.filter((f) => f.size > maxMB * 1024 * 1024);
-    if (overSized.length) {
-      setHasError(true);
-      setErrorMessage(
-        `다음 파일이 ${maxMB}MB를 초과했습니다: ` +
-          overSized.map((f) => f.name).join(', ')
-      );
-      return;
-    }
 
-    setHasError(false);
-    setErrorMessage('');
-
-    onChange(unique);
+    applyNext(dtFiles);
   };
 
   const handleRemove = (idx: number) => {
     const next = files.filter((_, i) => i !== idx);
-    setHasError(false);
-    setErrorMessage('');
+
+    // ✅ 삭제 후에도 현재 next 상태 기준으로 유효성 다시 계산
+    const overCount = next.length > maxCount;
+    const overSized = next.filter((f) => (f as any).size > maxMB * 1024 * 1024);
+
+    let message = '';
+    if (overCount) {
+      message = `최대 ${maxCount}개까지 업로드할 수 있습니다.`;
+    } else if (overSized.length) {
+      message =
+        `다음 파일이 ${maxMB}MB를 초과했습니다: ` +
+        overSized.map((f) => (f as any).name).join(', ');
+    }
+
+    const isValid = !overCount && overSized.length === 0;
+
+    setHasError(!isValid);
+    setErrorMessage(message);
+    onValidityChange?.(isValid, message);
+
     onChange(next);
   };
 
@@ -243,7 +243,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               (최대 파일 수: {info}개 / 최대 파일 용량: {infoDetail}MB)
             </Text>
           </Flex>
+
           <div className={styles.commentDivider} />
+
           <Text
             variant="md2_text_regular"
             color="grayscale70"
@@ -327,6 +329,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             </Button>
           </label>
         )}
+
         {hasError && (
           <div className={styles.errorTextStyle}>
             <IcInputError width={24} height={24} />

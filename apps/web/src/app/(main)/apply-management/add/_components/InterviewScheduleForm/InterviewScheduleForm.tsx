@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { Text } from '@repo/ui/Text';
 import {
@@ -31,6 +31,14 @@ export function InterviewScheduleForm({
   if (!isRequired) return null;
 
   const scheduleStatus = useFormFieldStatus('interview-schedule');
+
+  // ✅ 전체 선택 상태를 기준으로 네비게이션 체크 동기화 (부모 상태 변화에도 안전)
+  useEffect(() => {
+    selectedScheduleList.length
+      ? scheduleStatus.setCompleted()
+      : scheduleStatus.setDefault();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedScheduleList.length]);
 
   return (
     <div
@@ -71,13 +79,25 @@ export function InterviewScheduleForm({
           const title = safeFormatDotDate(dateStr, 'yyyy년 MM월 dd일 (EEE)');
 
           const handleChange = (trs: TimeRange[]) => {
-            const items: InterviewScheduleItem[] = trs.map((r) => ({
+            // ✅ 이번 date에 대한 선택값
+            const itemsForThisDate: InterviewScheduleItem[] = trs.map((r) => ({
               date: dateStr,
               startTime: r.startTime,
               endTime: r.endTime,
             }));
-            onScheduleChange(dateStr, items);
-            items.length
+
+            // ✅ "전체 선택 리스트" 기준으로 다음 상태를 계산
+            // (부모에서 others + itemsForDate로 합치는 방식과 동일)
+            const others = selectedScheduleList.filter(
+              (item) => item.date !== dateStr
+            );
+            const nextAll = [...others, ...itemsForThisDate];
+
+            // 부모 폼 값 업데이트
+            onScheduleChange(dateStr, itemsForThisDate);
+
+            // ✅ 전체(nextAll) 기준으로 completed/default 결정
+            nextAll.length
               ? scheduleStatus.setCompleted()
               : scheduleStatus.setDefault();
           };
