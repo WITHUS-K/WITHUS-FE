@@ -73,6 +73,9 @@ export default function DocumentTab({ recruitmentId, posColorMap}: DocumentTabPr
 
   const activeTab = params.tab;
 
+  const side = searchParams.get('sideTab');
+  const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
+  
   // ✅ URL patch helper
   const updateQuery = (patch: Record<string, string | null>) => {
     const qp = new URLSearchParams(Array.from(searchParams.entries()));
@@ -275,13 +278,41 @@ const handleExcelDownload = () => {
   });
 };
 
+  // ─── 모달 & 선택 로직 ───────────────────────────────────────────────────────────
+  //const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const applicationIds = rows
+    .filter((r) => selectedIds.includes(r.id))
+    .map((r) => r.applicationId);
+  const recipientNames = rows
+    .filter((r) => selectedIds.includes(r.id))
+    .map((r) => r.name);
+
+  const setModalParam = (value: string | null) => {
+    const qp = new URLSearchParams(Array.from(searchParams.entries()));
+    if (value) qp.set('sideTab', value);
+    else qp.delete('sideTab');
+    router.replace(`${pathname}?${qp.toString()}`);
+  };
+
+  const openAssignManagerModal = () =>
+    router.push(
+      `/apply-management/${activeTab}/assign-manager?recruitmentId=${
+        recruitmentId
+      }`
+    );
+
+  const handleCloseSideTab = () => {
+    setModalParam(null);
+    setSelectedIds([]);
+  }
+
   return (
     <Flex direction="column" width="100%" gap="1.2rem">
       <ActionToolbar
         hasSelection={selectedIds.length > 0}
-        onSms={() => {}}
-        onMail={() => {}}
-        onDistribute={() => {}}
+        onSms={() => setModalParam('sms')}
+        onMail={() => setModalParam('mail')}
+        onDistribute={openAssignManagerModal}
         onAdd={() => {}}
         searchValue={searchInput}
         onSearchChange={handleSearchChange}
@@ -317,6 +348,22 @@ const handleExcelDownload = () => {
         selectedStatus={selectedStatusLabel}
         onStatusChange={onStatusChange}
       />
+
+{sideTab === 'sms' && (
+        <SmsSideTab
+          applicationIds={applicationIds}
+          recipients={recipientNames}
+          onClose={handleCloseSideTab}
+        />
+      )}
+
+      {sideTab === 'mail' && (
+        <MailSideTab
+          applicationIds={applicationIds}
+          recipients={recipientNames}
+          onClose={handleCloseSideTab}
+        />
+      )}
     </Flex>
   );
 }
