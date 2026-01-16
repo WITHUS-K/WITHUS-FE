@@ -39,23 +39,34 @@ export function useDuplicateRecruitmentMutation() {
       const defaultRoleId =
         organizationRoleIds.length > 0 ? organizationRoleIds[0] : null;
 
-      const transformChildItem = (item: any) => {
-        const { id, questionId, organizationRoleName, ...rest } = item;
-
-        let targetRoleId = item.organizationRoleId;
-
-        if (!targetRoleId && organizationRoleName) {
-          targetRoleId = roleNameMap.get(organizationRoleName);
-        }
-        if (!targetRoleId) {
-          targetRoleId = defaultRoleId;
-        }
-
-        return {
-          ...rest,
-          organizationRoleId: targetRoleId,
+        const transformChildItem = (item: any) => {
+          const { id, questionId, organizationRoleName, ...rest } = item;
+        
+          // ✅ 공통이면 null로 고정
+          if (organizationRoleName === '공통' || organizationRoleName == null) {
+            return {
+              ...rest,
+              organizationRoleId: null,
+            };
+          }
+        
+          let targetRoleId = item.organizationRoleId;
+        
+          if (!targetRoleId && organizationRoleName) {
+            targetRoleId = roleNameMap.get(organizationRoleName);
+          }
+        
+          // ✅ 공통이 아닌데도 못 찾으면 defaultRoleId로 fallback (원하는 정책이면 유지)
+          if (!targetRoleId) {
+            targetRoleId = defaultRoleId;
+          }
+        
+          return {
+            ...rest,
+            organizationRoleId: targetRoleId,
+          };
         };
-      };
+        
 
       const transformTimeRanges = (item: any) => {
         const { id, recruitmentId, date, ...rest } = item;
