@@ -251,7 +251,8 @@ export interface DraftRecruitmentRequest {
   needAcademicStatus: boolean;
   documentScaleType: 'SCORE' | 'LEVEL' | string;
   interviewScaleType: 'SCORE' | 'LEVEL' | string;
-
+  isDocumentResultRequired: boolean;
+  isInterviewRequired: boolean;
   documentEvaluationCriteria: {
     content: string;
     description: string;

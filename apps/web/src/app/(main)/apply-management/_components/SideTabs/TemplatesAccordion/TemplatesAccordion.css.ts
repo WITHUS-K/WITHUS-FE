@@ -41,6 +41,7 @@ export const newInput = style({
   textAlign: 'center',
   border: 'none',
   outline: 'none',
+  paddingRight: '2rem',
 });
 
 
@@ -118,8 +119,26 @@ export const templateTitle = style({
   display: 'block',
   maxWidth: '14rem',
   textAlign:'center',
-  minWidth: 0,               // ✅ 핵심 (ellipsis가 먹게)
+  minWidth: 0,              
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
+});
+
+export const newInputRow = style({
+  position: 'relative',
+  width: '100%',
+});
+
+export const newInputCancel = style({
+  position: 'absolute',
+  top: '65%',
+  right: '0',
+  
+
+  transform: 'translateY(-50%)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  cursor: 'pointer',
 });

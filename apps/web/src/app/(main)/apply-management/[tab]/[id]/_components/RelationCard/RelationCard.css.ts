@@ -17,7 +17,8 @@ export const titleWrap = style({
     display:'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    alignSelf: 'stretch'
+    alignSelf: 'stretch',
+    width: '100%'
 })
 
 export const listContainer = style({
@@ -27,4 +28,9 @@ export const listContainer = style({
     padding: '1.6rem',
     backgroundColor: vars.colors.white,
     borderRadius: '16px'
+})
+
+export const iconColor = style({
+    color: vars.colors.grayscale40,
+
 })

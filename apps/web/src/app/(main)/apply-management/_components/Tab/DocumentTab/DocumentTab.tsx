@@ -23,6 +23,7 @@ import { mapServerColorToTagHex } from '@web/utils/color';
 import { TagColor } from '@repo/utils';
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { useAdminApplicationsExcelDownload } from '@web/store/query/useAdminApplicationsExcelDownload';
+import { toFixed1 } from '@web/utils/number';
 
 // ─── 테이블 헤더 정의 ─────────────────────────────────────────────────────────
 const DOC_HEADER: HeaderMeta[] = [
@@ -51,11 +52,19 @@ interface DocumentTabProps {
 
 const DOCUMENT_STATUS_OPTIONS = ['서류 합격', '서류 불합격', '보류'] as const;
 
-function statusLabelToEnum(selected: string | null): AdminApplicationStatus[] | undefined {
+function statusLabelToEnum(
+  selected: string | null
+): AdminApplicationStatus[] | undefined {
   if (!selected) return undefined;
+
   switch (selected) {
     case '서류 합격':
-      return ['DOX_PASS'];
+      return [
+        'DOX_PASS',
+        'INTERVIEW_PASS',
+        'INTERVIEW_FAIL',
+        'INTERVIEW_PENDING',
+      ];
     case '서류 불합격':
       return ['DOX_FAIL'];
     case '보류':
@@ -76,7 +85,6 @@ export default function DocumentTab({ recruitmentId, posColorMap}: DocumentTabPr
   const side = searchParams.get('sideTab');
   const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
   
-  // ✅ URL patch helper
   const updateQuery = (patch: Record<string, string | null>) => {
     const qp = new URLSearchParams(Array.from(searchParams.entries()));
     Object.entries(patch).forEach(([k, v]) => {
@@ -97,7 +105,9 @@ export default function DocumentTab({ recruitmentId, posColorMap}: DocumentTabPr
   const selectedRoleId = roleIdParam ? Number(roleIdParam) : null;
 
   const statusParam = searchParams.get('status'); // ex) DOX_PASS
-  const statuses = statusParam ? ([statusParam] as AdminApplicationStatus[]) : undefined;
+  const statuses = statusParam
+  ? (statusParam.split(',') as AdminApplicationStatus[])
+  : undefined;
 
   const keywordParam = searchParams.get('keyword') ?? '';
 
@@ -115,7 +125,7 @@ export default function DocumentTab({ recruitmentId, posColorMap}: DocumentTabPr
   const urlDirection =
     (searchParams.get('direction')?.toUpperCase() as 'ASC' | 'DESC') ?? 'ASC';
 
-  // ✅ 최신순이면 서버 정렬 강제
+  // 최신순이면 서버 정렬 강제
   const apiSortBy: AdminApplicationSortBy = latestSort
     ? 'LATEST'
     : (sortByMap['documents']![urlSortKey] as AdminApplicationSortBy);
@@ -130,18 +140,22 @@ export default function DocumentTab({ recruitmentId, posColorMap}: DocumentTabPr
   }, [selectedRoleId, posIdMap]);
 
   const selectedStatusLabel = useMemo(() => {
-    if (!statusParam) return null;
-    switch (statusParam) {
-      case 'DOX_PASS':
-        return '서류 합격';
-      case 'DOX_FAIL':
-        return '서류 불합격';
-      case 'DOX_PENDING':
-        return '보류';
-      default:
-        return null;
-    }
-  }, [statusParam]);
+    if (!statuses?.length) return null;
+  
+    const set = new Set(statuses);
+  
+    const isDocPassLike =
+      set.has('DOX_PASS') ||
+      set.has('INTERVIEW_PASS') ||
+      set.has('INTERVIEW_FAIL') ||
+      set.has('INTERVIEW_PENDING');
+  
+    if (isDocPassLike) return '서류 합격';
+    if (set.has('DOX_FAIL')) return '서류 불합격';
+    if (set.has('DOX_PENDING')) return '보류';
+  
+    return null;
+  }, [statuses]);
 
   // ── 검색 입력(입력값만 state, 적용값은 URL)
   const [searchInput, setSearchInput] = useState(keywordParam);
@@ -153,7 +167,7 @@ export default function DocumentTab({ recruitmentId, posColorMap}: DocumentTabPr
   const applySearch = () => {
     updateQuery({
       keyword: searchInput.trim() || null,
-      page: '1', // ✅ 검색 시 1페이지로
+      page: '1', 
     });
   };
 
@@ -171,9 +185,10 @@ export default function DocumentTab({ recruitmentId, posColorMap}: DocumentTabPr
     updateQuery({ roleId: id != null ? String(id) : null, page: '1' });
   };
   const onStatusChange = (label: string) => {
+    console.log("statuses", statuses)
     const enums = statusLabelToEnum(label);
     updateQuery({
-      status: enums?.[0] ?? null,
+      status: enums?.length ? enums.join(',') : null, 
       page: '1',
     });
   };
@@ -202,6 +217,8 @@ export default function DocumentTab({ recruitmentId, posColorMap}: DocumentTabPr
     keyword: keywordParam,
   });
 
+  console.log("지원자리스트", data)
+
   // ── rows 변환(기존 로직 유지)
   const rows = useMemo(() => {
     if (!data) return [];
@@ -217,8 +234,12 @@ export default function DocumentTab({ recruitmentId, posColorMap}: DocumentTabPr
         name: item.name,
         fieldTags: [{ label: positionLabel, color: positionColor }],
         evalStatus: `${item.documentEvaluatedCount}/${item.documentAssignedCount}`,
-        score: Number(item.documentAverageScore),
+        documentScore: toFixed1(item.documentAverageScore),
         status: (() => {
+          if (typeof item.status === 'string' && item.status.startsWith('INTERVIEW_')) {
+            return '서류 합격';
+          }
+        
           switch (item.status) {
             case 'DOX_PASS':
               return '서류 합격';
@@ -313,7 +334,9 @@ const handleExcelDownload = () => {
         onSms={() => setModalParam('sms')}
         onMail={() => setModalParam('mail')}
         onDistribute={openAssignManagerModal}
-        onAdd={() => {}}
+        onAdd={() =>
+          router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
+        }
         searchValue={searchInput}
         onSearchChange={handleSearchChange}
         onSearchKeyDown={handleSearchKeyDown}

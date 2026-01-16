@@ -1,11 +1,13 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { IcPlus } from '@repo/ui/icons/mono';
-import { IcArrowDropdown } from '@repo/ui/icons/colored';
+import { IcArrowDropdown, IcTagDelete } from '@repo/ui/icons/colored';
 import * as styles from './TemplatesAccordion.css';
 import { Button } from '@repo/ui/Button';
 import { Text } from '@repo/ui/Text';
 import { IcDots } from '@repo/ui/icons/mono';
+import { IcDelete } from '@repo/ui/icons/mono';
+
 
 export interface Template {
   id: string;
@@ -24,6 +26,7 @@ interface TemplatesAccordionProps {
   onCreate: () => void;
   onEdit: (tpl: Template) => void;
   onDelete: (tpl: Template) => void;
+  onCancelCreate: () => void;
 }
 
 export function TemplatesAccordion({
@@ -37,6 +40,7 @@ export function TemplatesAccordion({
   onCreate,
   onEdit,
   onDelete,
+  onCancelCreate,
 }: TemplatesAccordionProps) {
   const [open, setOpen] = useState(false);
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
@@ -181,14 +185,27 @@ export function TemplatesAccordion({
             ))}
 
             {isCreating && (
+              <div className={styles.newInputRow}>
               <input
                 ref={inputRef}
                 className={styles.newInput}
                 type="text"
                 value={newTitle}
                 onChange={(e) => onNewTitleChange(e.target.value)}
-                //placeholder="템플릿 제목을 입력하세요"
               />
+          
+              <button
+               className={styles.newInputCancel}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCancelCreate();     
+                }}
+                aria-label="템플릿 생성 취소"
+              >
+                <IcTagDelete width={24} height={24} />
+              </button>
+            </div>
             )}
           </div>
         </div>

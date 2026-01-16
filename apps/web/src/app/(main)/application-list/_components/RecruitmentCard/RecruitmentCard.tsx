@@ -45,7 +45,7 @@ export const RecruitmentCard = ({
   //console.log("임시저장", isTemporary)
   const toast = useToast();
 
-  console.log("공통리스트", currentApplicantList)
+  //console.log("공통리스트", currentApplicantList)
 
   const handleCopyLink = () => {
     navigator.clipboard

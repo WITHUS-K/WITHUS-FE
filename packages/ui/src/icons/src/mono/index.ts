@@ -43,6 +43,7 @@ export { default as IcRe } from './IcRe';
 export { default as IcRefresh } from './IcRefresh';
 export { default as IcRoleBtn } from './IcRoleBtn';
 export { default as IcSave } from './IcSave';
+export { default as IcSearch } from './IcSearch';
 export { default as IcSendBtn } from './IcSendBtn';
 export { default as IcShowNotice } from './IcShowNotice';
 export { default as IcSidebarCalender } from './IcSidebarCalender';

@@ -158,7 +158,8 @@ export function convertFormToRequest(
     content: '큐시즘 학회원 모집합니다.',
     organizationRoleIds,
     applicationQuestions,
-    isDocumentResultRequired: form.documentResult?.isSelected as boolean,
+    isDocumentResultRequired:
+  form.documentResult?.isSelected ?? true,
     documentDeadline: documentDeadlineStr,
     documentResultDate: documentResultDateStr,
     finalResultDate: finalResultDateStr,

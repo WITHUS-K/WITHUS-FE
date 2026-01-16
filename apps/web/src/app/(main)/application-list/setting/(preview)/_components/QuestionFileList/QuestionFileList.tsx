@@ -85,7 +85,7 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
             (item as any).includeWhitespace !== undefined
               ? (item as any).includeWhitespace
               : true;
-
+              
           const rawValue = answers[textIndex] ?? '';
           const normalized = rawValue.replace(/[\r\n]/g, '');
           const currentCount = includeWhitespace
@@ -97,8 +97,8 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
 
           return (
             <div key={`t-${textIndex}`} className={s.questionContainer}>
-              <Flex width="100%" align="center" justify="spaceBetween">
-                <Flex gap="0.4rem" align="center" width="100%">
+          
+                <Flex gap="0.4rem" align="center" width="100%" marginBottom="0.6rem">
                   <Text variant="md1_text_semibold" color="grayscale70">
                     질문-{textIndex + 1}
                   </Text>
@@ -108,7 +108,20 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
                     </Text>
                   )}
                 </Flex>
-                <Text
+        
+
+              <QuestionInput
+                title={item.description}
+                maxLength={maxLengthValue as number | undefined}
+                infoDetail={item.typeInfo.infoDetail}
+                value={answers[textIndex] ?? ''}
+                onChange={(val) => handleAnswerChange(textIndex, val)}
+                description={item.addDescription}
+                // 프리뷰이므로 실제 입력은 막혀 있음(pointer-events: none)
+              />
+
+<Flex width='100%' justify='flexEnd'>
+<Text
                   variant="sm_caption_medium"
                   style={{ whiteSpace: 'nowrap' }}
                 >
@@ -129,23 +142,13 @@ export const QuestionAndFileList: React.FC<Props> = ({ detailItems }) => {
                       </span>
                       <span style={{ color: vars.colors.grayscale40 }}>
                         /{maxLengthValue}자{' '}
-                        {item.typeInfo.infoDetail &&
-                          `(${item.typeInfo.infoDetail})`}
+                        {includeWhitespace ? '(공백 포함)' : '(공백 제외)'}
                       </span>
                     </>
                   )}
                 </Text>
-              </Flex>
+</Flex>
 
-              <QuestionInput
-                title={item.description}
-                maxLength={maxLengthValue as number | undefined}
-                infoDetail={item.typeInfo.infoDetail}
-                value={answers[textIndex] ?? ''}
-                onChange={(val) => handleAnswerChange(textIndex, val)}
-                description={item.addDescription}
-                // 프리뷰이므로 실제 입력은 막혀 있음(pointer-events: none)
-              />
             </div>
           );
         }

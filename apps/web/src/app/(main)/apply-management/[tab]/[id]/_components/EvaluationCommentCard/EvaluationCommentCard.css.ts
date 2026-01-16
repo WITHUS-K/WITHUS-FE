@@ -36,6 +36,7 @@ export const titleWrap = style({
   alignItems: 'center',
   alignSelf: 'stretch',
   paddingInline: '3.2rem',
+  width: '100%'
 });
 
 export const scroll = style({
@@ -56,3 +57,9 @@ export const scroll = style({
     },
   },
 });
+
+
+export const iconColor = style({
+  color: vars.colors.grayscale40,
+
+})

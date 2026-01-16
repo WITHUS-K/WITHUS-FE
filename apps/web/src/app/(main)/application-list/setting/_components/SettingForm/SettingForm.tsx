@@ -52,16 +52,29 @@ export function SettingForm({
   const searchParams = useSearchParams();
   const activeTab = (searchParams.get('tab') as TabKey) || 'form';
 
+  const recruitmentIdFromQuery = searchParams.get('recruitmentId');
+  const recruitmentIdFromQueryNum =
+    recruitmentIdFromQuery && !Number.isNaN(Number(recruitmentIdFromQuery))
+      ? Number(recruitmentIdFromQuery)
+      : null;
+  
+  // 기존 로직(segments leaf)로 계산한 id
   const segs = useSelectedLayoutSegments();
   const leaf = segs.at(-1) ?? 'new';
-  const params = useParams<Params>();
-const idRaw = Array.isArray(params.id) ? params.id[0] : params.id;
+  const params = useParams<{ id?: string | string[] }>();
+  const idRaw = Array.isArray(params.id) ? params.id[0] : params.id;
+  
+  const isNewPage = !idRaw || idRaw === 'new';
+  const recruitmentIdFromPath = isNewPage ? null : Number(leaf);
+  
 
-const isNewPage = !idRaw || idRaw === 'new';
+
   const hasIdParam = !!leaf && leaf !== 'new';
-  const recruitmentId = isNewPage ? null : Number(leaf);
-  const basePath = `/application-list/setting/${leaf}`;
-
+  const currentId = idRaw ?? 'new';
+  //const recruitmentId = isNewPage ? null : Number(leaf);
+  const basePath = `/application-list/setting/${currentId}`;
+  const recruitmentId =
+  currentId === 'new' ? null : Number(currentId);
   const isTemporaryParam = searchParams.get('isTemporary');
   const isTemporary = isTemporaryParam === 'true';
   const hasApplicantsParam = searchParams.get('hasApplicants');
@@ -325,8 +338,20 @@ const seededSectionNames: Array<string | null> =
     const values = methods.getValues();
     const payload = convertFormToRequest(values, recruitmentId, organizationId);
     draftMutation.mutate(payload, {
-      onSuccess: () => {
+      onSuccess: (result) => {
         toast.success('임시 저장 되었습니다.');
+         // ✅ new 페이지에서 임시저장 성공하면 URL을 /setting/{id}로 교체
+      if (currentId === 'new') {
+        const params = new URLSearchParams(searchParams.toString());
+
+        // ✅ isTemporary/hasApplicants 같은 플래그도 유지하고 싶으면 그대로 두고
+        // 필요하면 isTemporary를 true로 강제해도 됨
+        params.set('isTemporary', 'true');
+
+        router.replace(
+          `/application-list/setting/${result.recruitmentId}?${params.toString()}`
+        );
+      }
       },
       onError: (err) => {
         console.error('임시 저장 실패', err);

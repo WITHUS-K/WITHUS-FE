@@ -55,6 +55,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useUpdateTemplate } from '@web/store/mutation/useUpdateTemplate';
 import { useDeleteTemplate } from '@web/store/mutation/useDeleteTemplate';
 
+
 interface MailSideTabProps {
   applicationIds: number[];
   recipients: string[];
@@ -166,17 +167,41 @@ export function MailSideTab({
     onClose();          
   };
 
+  const EMPTY_NODES: Descendant[] = [
+    { type: 'paragraph', children: [{ text: '' }] },
+  ];
+  
+  const resetEditorTo = (nodes: Descendant[]) => {
+    Transforms.deselect(editor);
+    for (let i = editor.children.length - 1; i >= 0; i--) {
+      Transforms.removeNodes(editor, { at: [i] });
+    }
+    Transforms.insertNodes(editor, nodes);
+    Transforms.deselect(editor);
+    setEditorValue(nodes);
+  };
+  
+  const resetCreateDraft = () => {
+    setSelectedTemplateId(null);
+    setSubject('');
+    setAttachment(undefined);
+    setNewTitle('');
+    setCurrentFontSize('14px');
+    setCurrentColor('#333333');
+    resetEditorTo(EMPTY_NODES);
+  };
+
+  
   // 새 템플릿 생성
   const handleCreate = () => {
-    setSelectedTemplateId(null);
+
     setIsCreating(true);
     setIsEditing(false);
-    setNewTitle('');
-    setSubject('');
-    const empty: Descendant[] = [
+    resetCreateDraft();
+    /*const empty: Descendant[] = [
       { type: 'paragraph', children: [{ text: '' }] },
     ];
-    setEditorValue(empty);
+    setEditorValue(empty);*/
   };
 
   // 템플릿 선택 (보기 모드)
@@ -329,6 +354,11 @@ export function MailSideTab({
     return !!match;
   };
   
+  const handleCancelCreate = () => {
+    setIsCreating(false);
+    resetCreateDraft();
+  };
+
   return (
     <SideTab
     icon={<IcHeaderMail width={24} height={24} />}
@@ -346,6 +376,7 @@ export function MailSideTab({
         onCreate={handleCreate}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onCancelCreate={handleCancelCreate} 
       />
 
  {/* 받는 사람 */}
