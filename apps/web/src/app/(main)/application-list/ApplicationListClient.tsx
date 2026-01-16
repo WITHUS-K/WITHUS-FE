@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { RecruitmentCard } from './_components/RecruitmentCard/RecruitmentCard';
 import { useDeleteRecruitmentMutation } from '@web/store/mutation/useDeleteRecruitmentMutation';
 import { useRecruitmentsListQuery } from '@web/store/query/useRecruitmentsListQuery';
+import { useDuplicateRecruitmentMutation } from '@web/store/mutation/useDuplicateRecruitmentMutation';
 import { useModal, useToast } from '@repo/ui/hooks';
 import { RecruitmentDto } from '@web/types/recruitment';
 import { getDDay } from '@web/utils/date';
@@ -26,6 +27,7 @@ export default function ApplicationListClient() {
   } = useRecruitmentsListQuery(search);
 
   const deleteMutation = useDeleteRecruitmentMutation();
+  const duplicateMutation = useDuplicateRecruitmentMutation();
 
   const onSearchChange = (e: ChangeEvent<HTMLInputElement>) =>
     setSearch(e.target.value);
@@ -40,8 +42,16 @@ export default function ApplicationListClient() {
     );
   };
 
-  const handleCopy = (slug: string, organization: string) => {
-    //템플릿 복제 로직으로 전환하기
+  const handleCopy = (item: RecruitmentDto) => {
+    duplicateMutation.mutate(item.recruitmentId, {
+      onSuccess: () => {
+        toast.success(`'${item.title}' 공고가 복제되었습니다.`);
+      },
+      onError: (err) => {
+        toast.error('공고 복제에 실패했습니다.');
+        console.error(err);
+      },
+    });
   };
 
   return (
@@ -131,7 +141,7 @@ export default function ApplicationListClient() {
               }))}
               isTemporary={item.isTemporary}
               onModify={() => handleModify(item)}
-              onCopy={() => handleCopy(item.urlSlug, item.organizationName)}
+              onCopy={() => handleCopy(item)}
               onDelete={handleDelete}
             />
           );
