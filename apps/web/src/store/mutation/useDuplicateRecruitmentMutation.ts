@@ -9,7 +9,7 @@ import type {
 
 const formatDate = (dateString: string | null | undefined) => {
   if (!dateString) return null;
-  return dateString.replace(/\./g, '-');
+  return dateString.replace(/\./g, '-');  
 };
 
 export function useDuplicateRecruitmentMutation() {
@@ -53,11 +53,19 @@ export function useDuplicateRecruitmentMutation() {
 
         return {
           ...rest,
-          organizationRoleId: targetRoleId, 
+          organizationRoleId: targetRoleId,
         };
       };
 
-      const payload: PublishRecruitmentRequest = {
+      const transformTimeRanges = (item: any) => {
+        const { id, recruitmentId, date, ...rest } = item;
+        return {
+          ...rest,
+          date: formatDate(date), 
+        };
+      };
+
+     const payload: PublishRecruitmentRequest = {
         recruitmentId: null, 
         title: `${sourceData.title} 복사본`,
         content: sourceData.content,
@@ -87,7 +95,9 @@ export function useDuplicateRecruitmentMutation() {
         documentEvaluationCriteria: sourceData.documentEvaluationCriteria?.map(transformChildItem),
         interviewEvaluationCriteria: sourceData.interviewEvaluationCriteria?.map(transformChildItem),
 
-        availableTimeRanges: [],
+        availableTimeRanges: sourceData.availableTimeRanges
+          ? sourceData.availableTimeRanges.map(transformTimeRanges)
+          : [],
       };
 
       console.log('▶ 최종 가공된 복제 요청 바디:', payload);
