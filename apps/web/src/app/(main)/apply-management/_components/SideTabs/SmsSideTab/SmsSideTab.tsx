@@ -141,12 +141,25 @@ export function SmsSideTab({ applicationIds, recipients, onClose }: SmsSideTabPr
   const updateTpl = useUpdateTemplate();
   const deleteTpl = useDeleteTemplate();
   
-  const handleCreate = () => {
+  const EMPTY_NODES: Descendant[] = [
+    { type: 'paragraph', children: [{ text: '' }] },
+  ];
+
+  const resetEditorTo = (nodes: Descendant[]) => {
+    setEditorValue(nodes);
+  };
+
+  const resetCreateDraft = () => {
     setSelectedTemplateId(null);
+    setAttachment(undefined);
+    setNewTitle('');
+    resetEditorTo(EMPTY_NODES);
+  };
+
+  const handleCreate = () => {
     setIsCreating(true);
     setIsEditing(false);
-    setNewTitle('');
-    setEditorValue([{ type: 'paragraph', children: [{ text: '' }] }]);
+    resetCreateDraft();
   };
 
   const handleSelect = (tpl: Template) => {
@@ -266,6 +279,11 @@ export function SmsSideTab({ applicationIds, recipients, onClose }: SmsSideTabPr
     else handleSend();
   };
 
+  const handleCancelCreate = () => {
+    setIsCreating(false);
+    resetCreateDraft();
+  };
+
   return (
     <SideTab
       icon={<IcHeaderSms width={24} height={24} />}
@@ -283,6 +301,7 @@ export function SmsSideTab({ applicationIds, recipients, onClose }: SmsSideTabPr
         onCreate={handleCreate}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onCancelCreate={handleCancelCreate} 
       />
 
   

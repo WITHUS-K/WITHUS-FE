@@ -43,6 +43,7 @@ export const QuestionAndFileListForm = ({
   let t = 0;
   let f = 0;
 
+  
   return (
     <div className={s.wrapper}>
       {detailItems.map((item) => {
@@ -54,6 +55,15 @@ export const QuestionAndFileListForm = ({
             item.typeInfo.info === '제한 없음'
               ? undefined
               : Number(item.typeInfo.info.replace('자', ''));
+
+              const valueText = readOnly
+  ? ((item as any).answer ?? '')
+  : (answers[textIndex] ?? '');
+
+  const count = item.includeWhitespace
+  ? valueText.replace(/[\r\n]/g, '').length
+  : valueText.replace(/\s/g, '').length;
+
 
           return (
             <div
@@ -109,32 +119,36 @@ export const QuestionAndFileListForm = ({
                     width: '100%',
                   }}
                 >
-                  {maxLength === undefined ? (
-                    // 제한 없음인 경우
-                    <span style={{ color: vars.colors.grayscale40 }}>
-                      {answers[textIndex]?.replace(/[\r\n]/g, '').length ?? 0}자
-                    </span>
-                  ) : (
-                    // 제한이 있을 경우
-                    <>
-                      <span
-                        style={{
-                          color:
-                            (answers[textIndex]?.replace(/[\r\n]/g, '')
-                              .length ?? 0) > maxLength
-                              ? vars.colors.error
-                              : vars.colors.grayscale40,
-                        }}
-                      >
-                        {answers[textIndex]?.replace(/[\r\n]/g, '').length ?? 0}
-                      </span>
-                      <span style={{ color: vars.colors.grayscale40 }}>
-                        /{maxLength}자{' '}
-                        {item.typeInfo.infoDetail &&
-                          `(${item.typeInfo.infoDetail})`}
-                      </span>
-                    </>
-                  )}
+                   {readOnly ? (
+    // readOnly: 전체 글자수만 표시
+    <span style={{ color: vars.colors.grayscale40 }}>
+      {count}자 {item.includeWhitespace ? '(공백 포함)' : '(공백 제외)'}
+    </span>
+  ) : maxLength === undefined ? (
+    // editable + 제한 없음
+    <span style={{ color: vars.colors.grayscale40 }}>
+      {count}자
+    </span>
+  ) : (
+    // editable + 제한 있음
+    <>
+      <span
+        style={{
+          color:
+            count > maxLength
+              ? vars.colors.error
+              : vars.colors.grayscale40,
+        }}
+      >
+        {count}
+      </span>
+      <span style={{ color: vars.colors.grayscale40 }}>
+        /{maxLength}자{' '}
+        {item.typeInfo.infoDetail &&
+          `(${item.typeInfo.infoDetail})`}
+      </span>
+    </>
+  )}
                 </Text>
               </Flex>
             </div>

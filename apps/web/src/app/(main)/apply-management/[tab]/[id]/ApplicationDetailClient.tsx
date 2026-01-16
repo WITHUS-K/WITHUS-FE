@@ -16,6 +16,7 @@ import { TimeRange } from '@web/components/TimeTable/SelectableTimeTable';
 import { InterviewScheduleItem } from '@web/types/application';
 import { parseToMin } from '@web/utils/time';
 import { useMemo } from 'react';
+import { profile } from '../../../../../../../../packages/ui/src/components/Header/Header.css';
 
 interface Props {
   tab: string;
@@ -196,19 +197,42 @@ export default function ApplicationDetailClient({
             evaluation={buildEvalByUser(data.evaluations, 'INTERVIEW')}
           />
 
-          <RelationCard relations={data.acquaintances.map((a) => a.name)} />
+<EvaluationCommentCard
+  type="DOCUMENT_COMMENT"
+  comments={data.documentComments.map((c) => ({
+    evaluator: c.user.name,
+    comment: c.content,
+    profileColor: c.user.profileColor,
+    profileUrl: c.user.profileImageUrl,
+  }))}
+/>
 
-          <EvaluationCommentCard
-            comments={(tab === 'documents'
-              ? data.documentComments
-              : data.interviewComments
-            ).map((c) => ({
-              evaluator: c.user.name,
-              comment: c.content,
-              profileColor: c.user.profileColor,
-              profileUrl: c.user.profileImageUrl,
-            }))}
-          />
+<EvaluationCommentCard
+  type="INTERVIEW_COMMENT"
+  comments={data.interviewComments.map((c) => ({
+    evaluator: c.user.name,
+    comment: c.content,
+    profileColor: c.user.profileColor,
+    profileUrl: c.user.profileImageUrl,
+  }))}
+/>
+
+<EvaluationCommentCard
+  type="INTERVIEW_QUESTION"
+  comments={data.interviewQuestions.map((q) => ({
+    evaluator: q.user.name,
+    comment: q.content,
+    profileColor: q.user.profileColor,
+    profileUrl: q.user.profileImageUrl,
+  }))}
+/>
+          
+          <RelationCard relations={data.acquaintances.map((a) => ({
+    name: a.name,
+    profileColor: a.profileColor,
+    profileUrl: a.profileImageUrl ?? null
+  }))} />
+
         </div>
       </Flex>
     </div>

@@ -12,3 +12,9 @@ export const container = style({
     gap: '2.4rem',
     alignContent: 'start'
 })
+
+export const iconColor = style({
+    color : vars.colors.grayscale30,
+    cursor:'pointer',
+    marginTop: '0.1rem'
+})

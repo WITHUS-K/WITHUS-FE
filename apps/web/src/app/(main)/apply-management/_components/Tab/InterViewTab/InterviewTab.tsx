@@ -24,6 +24,7 @@ import { TagColor } from '@repo/utils';
 import { useUpdateQuery } from '@web/store/query/useUpdateQuery';
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { useAdminApplicationsExcelDownload } from '@web/store/query/useAdminApplicationsExcelDownload';
+import { toFixed1 } from '@web/utils/number';
 
 // 인터뷰 탭 헤더 정의
 const INT_HEADER: HeaderMeta[] = [
@@ -83,11 +84,8 @@ export default function InterviewTab({ recruitmentId }: InterviewTabProps) {
   const side = searchParams.get('sideTab');
   const sideTab = side === 'sms' ? 'sms' : side === 'mail' ? 'mail' : null;
   
-
-  // ✅ 1) positions API로 지원분야 목록 가져오기
   const { data: positions = [] } = useRecruitmentPositionsQuery(recruitmentId);
 
-  // ✅ 2) name -> id / name -> color 맵 생성
   const posIdMap = useMemo(() => {
     const map: Record<string, number> = {};
     positions.forEach((p) => {
@@ -104,7 +102,6 @@ export default function InterviewTab({ recruitmentId }: InterviewTabProps) {
     return map;
   }, [positions]);
 
-  // ✅ 3) 필터 메뉴 옵션도 서버 기준으로 생성
   const positionOptions = useMemo(
     () => positions.map((p) => p.name),
     [positions]
@@ -225,7 +222,7 @@ export default function InterviewTab({ recruitmentId }: InterviewTabProps) {
         name: item.name,
         fieldTags: [{ label: positionLabel, color: positionColor }],
         evalStatus: `${item.interviewEvaluatedCount}/${item.interviewAssignedCount}`,
-        score: Number(item.interviewAverageScore),
+        interviewScore: toFixed1(item.interviewAverageScore),
         status: (() => {
           switch (item.status) {
             case 'INTERVIEW_PASS':
@@ -317,7 +314,9 @@ const applicationIds = rows
         onSms={() => setModalParam('sms')}
         onMail={() => setModalParam('mail')}
         onDistribute={openAssignManagerModal}
-        onAdd={() => {}}
+        onAdd={() =>
+          router.push(`/apply-management/add?recruitmentId=${recruitmentId}`)
+        }
         searchValue={searchInput}
         onSearchChange={handleSearchChange}
         onSearchKeyDown={handleSearchKeyDown}

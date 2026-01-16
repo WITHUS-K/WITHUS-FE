@@ -35,6 +35,7 @@ import { mapServerColorToTagHex } from '@web/utils/color';
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { useUpdateQuery } from '@web/store/query/useUpdateQuery';
 import { useAdminApplicationsExcelDownload } from '@web/store/query/useAdminApplicationsExcelDownload';
+import { toFixed1 } from '@web/utils/number';
 
 const HEADER: HeaderMeta[] = [
   { key: 'checkbox', label: '', width: '4.7rem' },
@@ -238,8 +239,8 @@ export default function RejectedTab({ recruitmentId }: RejectedTabProps) {
         name: item.name,
         fieldTags: [{ label: positionLabel, color: positionColor }],
         evalStatus: `${item.documentEvaluatedCount}/${item.documentAssignedCount}`,
-        documentScore: Number(item.documentAverageScore),
-        interviewScore: Number(item.interviewAverageScore),
+        documentScore: toFixed1(item.documentAverageScore),
+        interviewScore: toFixed1(item.interviewAverageScore),
         status: '불합격',
         smsSent: item.isSmsSent,
         mailSent: item.isMailSent,

@@ -194,92 +194,105 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
   const onSubmit = useCallback(
     (vals: ApplicantForm) => {
       if (!data) return;
-
+  
+      type AnswerPayloadItem = CreateApplicationRequest['answers'][number];
+  
       let textIndex = 0;
       let fileIndex = 0;
-
-      const answers = detailItems.map((item) => {
+  
+      const uploadedFiles: File[] = [];
+  
+      const answers = detailItems.flatMap<AnswerPayloadItem>((item) => {
         if (item.type === 'text') {
           const answer = vals.questionAnswers[textIndex++] ?? '';
-          return {
-            questionId: item.questionId,
-            answerText: answer,
-            fileName: null,
-          };
-        } else {
-          const file = vals.questionFiles[fileIndex++];
-          return {
-            questionId: item.questionId,
-            answerText: '',
-            fileName: file instanceof File ? file.name : '',
-          };
+          return [
+            {
+              questionId: item.questionId,
+              answerText: answer,
+              fileName: null,
+            },
+          ];
         }
-      });
 
+        const raw = vals.questionFiles[fileIndex++];
+  
+        // raw: File | File[] | null | undefined → 배열로 정규화
+        const files = Array.isArray(raw) ? raw : raw ? [raw] : [];
+  
+        // 실제 File 인스턴스만 추림
+        const realFiles = files.filter((f): f is File => f instanceof File);
+  
+        // 업로드 목록에도 동일하게 추가 (answers에 적힌 파일명과 1:1로 맞추기 위함)
+        uploadedFiles.push(...realFiles);
+  
+        // 파일이 없으면 fileName은 null
+        if (realFiles.length === 0) {
+          return [
+            {
+              questionId: item.questionId,
+              answerText: '',
+              fileName: null,
+            },
+          ];
+        }
+  
+        // 서버가 질문당 1개만 받는다면 여기서 realFiles[0]만 쓰면 됨
+        return realFiles.map((f) => ({
+          questionId: item.questionId,
+          answerText: '',
+          fileName: f.name,
+        }));
+      });
+  
+      // 면접 가능 시간 처리(기존 그대로)
       const rawTimes = vals.interviewSchedule.scheduleList.flatMap((slot) => {
         const date = slot.date!.replace(/\./g, '-');
         const start = new Date(`${date}T${slot.startTime}:00`);
         const end = new Date(`${date}T${slot.endTime}:00`);
         const interval = data.interviewDuration;
-
+  
         const result: string[] = [];
         let current = start;
-
+  
         while (current < end) {
           result.push(formatDate(current, "yyyy-MM-dd'T'HH:mm:ss"));
           current = addMinutes(current, interval);
         }
-
+  
         return result;
       });
-
-      // Set 으로 중복 제거
+  
       const availableTimes = Array.from(new Set(rawTimes));
-
+  
       const payload: CreateApplicationRequest = {
         name: vals.basicInfo.name,
         email: vals.basicInfo.email,
-        phoneNumber: vals.basicInfo.phone,
-        gender: (vals.basicInfo.gender || 'MALE').toUpperCase() as
-          | 'MALE'
-          | 'FEMALE',
+        phoneNumber: vals.basicInfo.phone.replace(/\D/g, ''),
+        gender: (vals.basicInfo.gender || 'MALE').toUpperCase() as 'MALE' | 'FEMALE',
         recruitmentId,
         positionId: vals.applicationPart!.id,
-        answers,
+        answers, 
         availableTimes,
         university: vals.additionalInfo.school ?? '',
         major: vals.additionalInfo.major ?? '',
         academicStatus: vals.additionalInfo.academicStatus ?? undefined,
-        birthDate: vals.basicInfo.birthDate
-          ? vals.basicInfo.birthDate.slice(0, 10)
-          : '',
+        birthDate: vals.basicInfo.birthDate ? vals.basicInfo.birthDate.slice(0, 10) : '',
         address: vals.additionalInfo.address ?? '',
       };
-
+  
       const profileImage = vals.additionalInfo.profileImage ?? undefined;
-      const flatFiles: AnswerFile[] = vals.questionFiles.flat();
-
-      // 2) AnswerFile 중에서 실제 File 인스턴스만 골라낸 뒤
-      const answerFiles: File[] = flatFiles.filter(
-        (f): f is File => f instanceof File
-      );
-
-      console.log(payload);
+  
       createApp.mutate(
-        { payload, profileImage, answerFiles },
+        { payload, profileImage, answerFiles: uploadedFiles },
         {
-          onSuccess: (res) => {
-            console.log('지원서 생성 성공 res:', res);
-            router.back();
-          },
-          onError: (err) => {
-            console.error('지원서 생성 에러:', err);
-          },
+          onSuccess: () => router.back(),
+          onError: (err) => console.error(err),
         }
       );
     },
     [createApp, data, detailItems, recruitmentId, router]
   );
+  
 
   // — 실제 폼 렌더링 —
   return (

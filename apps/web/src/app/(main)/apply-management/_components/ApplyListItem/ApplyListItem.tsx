@@ -73,7 +73,6 @@ export default function ApplyListItem({
     activeTab as AdminApplicationStage
   );
 
-  console.log("파트 태그", member.fieldTags)
   const isInterviewStatus =
     status === '면접 보류' ||
     status === '면접 합격' ||

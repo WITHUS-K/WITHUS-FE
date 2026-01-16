@@ -10,6 +10,6 @@ export const wrapper = style({
 export const questionContainer = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: '1.6rem',
+  gap: '1rem',
   width: '100%',
 });
