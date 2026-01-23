@@ -208,7 +208,7 @@ export default function FinalTab({ recruitmentId }: FinalTabProps) {
     stage: stageMap[activeTab],
     sortBy: apiSortBy,
     direction: apiDirection,
-    page,
+    page : page+1,
     size,
     organizationRoleIds,
     keyword: keywordParam || undefined,
