@@ -210,7 +210,7 @@ export default function DocumentTab({ recruitmentId, posColorMap}: DocumentTabPr
     stage: stageMap[activeTab],
     sortBy: apiSortBy,
     direction: apiDirection,
-    page,
+    page : page+1,
     size,
     organizationRoleIds,
     statuses,
