@@ -97,7 +97,12 @@ export function useBulkEvaluationsMutation({
           size
         ),
       });
+
+      qc.invalidateQueries({
+        queryKey: queryKeys.recruitments.myDocumentEvaluations(recruitmentId),
+      });
     },
+    
 
     onError: (error: any) => {
       console.error('[BulkEvaluations] mutation error:', error);

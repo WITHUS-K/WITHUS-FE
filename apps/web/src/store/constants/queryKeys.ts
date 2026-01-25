@@ -51,6 +51,14 @@ export const queryKeys = {
     },
   },
   recruitments: {
+    myDocumentEvaluations: (recruitmentId: number) =>
+    [
+      'recruitments',
+      recruitmentId,
+      'my',
+      'evaluations',
+      'documents',
+    ] as const,
     list: (keyword?: string) => ['recruitments', keyword ?? ''] as const,
     slug: (slug: string) => ['recruitments', 'slug', slug] as const,
     listByOrganization: (organizationId: number) =>
