@@ -37,6 +37,7 @@ export function useCurrentRecruitmentSummaryByOrgQuery(organizationId: number) {
       const res = await GET<OrganizationRecruitmentSummaryResponse['result']>(
         `api/v1/recruitments/${organizationId}/current/summary`
       );
+      console.log("홈", res.result)
       return res.result;
     },
     enabled: !!organizationId, 

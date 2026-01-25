@@ -18,6 +18,7 @@ import {
 import { useBulkEvaluationsMutation } from '@web/store/mutation/useBulkEvaluations';
 import { useToggleAcquaintanceMutation } from '@web/store/mutation/useToggleAcquaintanceMutation';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+import { useToast } from '@repo/ui/hooks';
 
 export default function DetailClient() {
   const router = useRouter();
@@ -35,7 +36,7 @@ export default function DetailClient() {
   const { userId: myUserId } = getClientSideTokens();
   console.log('사용자', application);
   const [isRelation, setIsRelation] = useState(false);
-
+  const toast = useToast();
   useEffect(() => {
     if (application) {
       const rel = application.acquaintances.some((a) => a.userId === myUserId);
@@ -112,7 +113,11 @@ export default function DetailClient() {
 
     console.log('[DocsEvaluation] handleSave payload:', payload);
 
-    mutation.mutate(payload);
+    mutation.mutate(payload, {
+      onSuccess: () => {
+        toast.success('평가가 완료되었습니다.');
+      },
+    });
   };
 
   //console.log('지원서 디테일', application);

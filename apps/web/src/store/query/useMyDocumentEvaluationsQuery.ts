@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
+import { queryKeys } from '../constants/queryKeys';
 
 export interface MyEvaluationItem {
   id: number; 
@@ -23,11 +24,12 @@ export interface MyDocumentEvaluationsResponse {
 
 export function useMyDocumentEvaluationsQuery(recruitmentId: number) {
   return useQuery<MyDocumentEvaluationsResult, Error>({
-    queryKey: ['recruitments', recruitmentId, 'my', 'evaluations', 'documents'],
+    queryKey: queryKeys.recruitments.myDocumentEvaluations(recruitmentId),
     queryFn: async () => {
       const res = await GET<MyDocumentEvaluationsResponse['result']>(
         `api/v1/recruitments/${recruitmentId}/my/evaluations/documents`
       );
+      console.log("서류평가리스트", res.result)
       return res.result;
     },
     enabled: !!recruitmentId,
