@@ -89,14 +89,10 @@ export function useBulkEvaluationsMutation({
       });
 
       qc.invalidateQueries({
-        queryKey: queryKeys.applications.userList(
-          recruitmentId,
-          evaluationStatus,
-          keyword,
-          page,
-          size
-        ),
+        queryKey: ['applications', 'recruitment', recruitmentId, 'list'],
+        exact: false,
       });
+    
 
       qc.invalidateQueries({
         queryKey: queryKeys.recruitments.myDocumentEvaluations(recruitmentId),

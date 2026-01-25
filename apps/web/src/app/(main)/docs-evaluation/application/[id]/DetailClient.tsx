@@ -115,7 +115,7 @@ export default function DetailClient() {
 
     mutation.mutate(payload, {
       onSuccess: () => {
-        toast.success('평가가 완료되었습니다.');
+        toast.success('점수가 저장되었습니다.');
       },
     });
   };
