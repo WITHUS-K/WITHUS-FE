@@ -114,10 +114,15 @@ export const QuestionInput = ({
           placeholder="답변을 입력해주세요"
           value={value}
           onChange={handleChange}
-          disabled={readOnly}
+          readOnly={readOnly}    
+          disabled={false}
           onFocus={onFocus}
           onBlur={onBlur}
-          maxLength={includeWhitespace && safeMax !== Infinity ? safeMax : undefined}
+          maxLength={
+            !readOnly && includeWhitespace && safeMax !== Infinity 
+              ? safeMax 
+              : undefined
+          }
         />
       </div>
 
