@@ -17,6 +17,8 @@ import { InterviewScheduleItem } from '@web/types/application';
 import { parseToMin } from '@web/utils/time';
 import { useMemo } from 'react';
 import { profile } from '../../../../../../../../packages/ui/src/components/Header/Header.css';
+import { Evaluation } from './_components/EvaluationStatusCard/EvaluationStatusCard';
+import { CompletedEvaluator } from '@web/constants/document';
 
 interface Props {
   tab: string;
@@ -116,6 +118,58 @@ export default function ApplicationDetailClient({
 
   console.log('지원자 디테일', data);
 
+  const documentEvalStatus: Evaluation[] = [
+    ...(data.documentPending ?? []).map((p) => ({
+      evaluator: p.name,
+      status: 'pending' as const,
+      score: null,
+      color: p.profileColor,
+    })),
+    ...(data.documentCompleted ?? []).map((p) => ({
+      evaluator: p.evaluator.name,
+      status: 'complete' as const,
+      score: null,
+      color: p.evaluator.profileColor
+    })),
+    
+  ];
+  
+  const interviewEvalStatus: Evaluation[] = [
+    ...(data.interviewPending ?? []).map((p) => ({
+      evaluator: p.name,
+      status: 'pending' as const,
+      score: null,
+      color: p.profileColor,
+    })),
+    ...(data.interviewCompleted ?? []).map((p) => ({
+      evaluator: p.evaluator.name,
+      status: 'complete' as const,
+      score: null,
+      color: p.evaluator.profileColor
+    })),
+    
+  ];
+
+  const documentCompletedForCard: CompletedEvaluator[] = (data.documentCompleted ?? []).map((c) => ({
+    evaluator: {
+      userId: c.evaluator.userId,
+      name: c.evaluator.name,
+      profileColor: c.evaluator.profileColor,
+      profileImageUrl: c.evaluator.profileImageUrl ?? null, // ✅ 핵심
+    },
+    totalScore: c.totalScore, // 서버 필드명이 다르면 여기 수정
+  }));
+  
+  const interviewCompletedForCard: CompletedEvaluator[] = (data.interviewCompleted ?? []).map((c) => ({
+    evaluator: {
+      userId: c.evaluator.userId,
+      name: c.evaluator.name,
+      profileColor: c.evaluator.profileColor,
+      profileImageUrl: c.evaluator.profileImageUrl ?? null,
+    },
+    totalScore: c.totalScore,
+  }));
+  
   const scheduleMap = useMemo<Record<string, TimeRange[]>>(() => {
     const map: Record<string, TimeRange[]> = {};
     for (const slot of rec?.availableTimeRanges ?? []) {
@@ -188,13 +242,17 @@ export default function ApplicationDetailClient({
 
         <div className={styles.rightSection}>
           <EvaluationScoreCard
-            evaluationType="document"
-            evaluation={buildEvalByUser(data.evaluations, 'DOCUMENT')}
+             evaluationType="document"
+             averageScore={data.documentAverageScore}
+             evaluation={documentEvalStatus}
+             completed={documentCompletedForCard}
           />
 
           <EvaluationScoreCard
             evaluationType="interview"
-            evaluation={buildEvalByUser(data.evaluations, 'INTERVIEW')}
+  averageScore={data.interviewAverageScore}
+  evaluation={interviewEvalStatus}
+  completed={interviewCompletedForCard}
           />
 
 <EvaluationCommentCard

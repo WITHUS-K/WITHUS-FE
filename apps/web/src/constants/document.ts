@@ -21,5 +21,23 @@ export interface Item {
   interviewDate?: string;
   /** 평가 완료 · 합격일 때만 면접 시간 (ex. "10:00 - 10:30") */
   interviewTime?: string;
+  /** 총 점수 */
+  maxScore? : number;
 }
 
+export type PendingEvaluator = {
+  userId: number;
+  name: string;
+  profileColor: string;
+  profileImageUrl: string | null;
+};
+
+export type CompletedEvaluator = {
+  evaluator: {
+    userId: number;
+    name: string;
+    profileColor: string;
+    profileImageUrl: string | null;
+  };
+  totalScore: number; // <-- 상세 점수에 사용할 값
+};
