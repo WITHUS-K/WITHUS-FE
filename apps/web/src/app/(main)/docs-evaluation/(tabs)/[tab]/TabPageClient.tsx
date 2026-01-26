@@ -113,17 +113,19 @@ export default function TabPageClient({ recruitmentId }: { recruitmentId: number
                         app.status === 'DOX_PENDING' ||
                         app.status === 'INTERVIEW_PENDING',
                       evaluationScore:
-                        app.myScoreTotal != null && app.documentMaxScore
+                        app.myScoreTotal != null
                           ? Number(
-                              (
-                                (app.myScoreTotal / app.documentMaxScore) *
-                                100
-                              ).toFixed(2)
+                              
+                                app.myScoreTotal
+                                
+                            
                             )
                           : 0,
                       interviewDate: app.interviewSchedule?.split('T')[0] ?? '',
                       interviewTime:
                         app.interviewSchedule?.split('T')[1]?.slice(0, 5) ?? '',
+                        maxScore : app.documentMaxScore != null ? Number(app.documentMaxScore) : 0
+                        
                     }}
                   />
                 );

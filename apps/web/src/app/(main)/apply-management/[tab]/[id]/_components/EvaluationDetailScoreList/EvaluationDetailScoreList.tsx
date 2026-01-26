@@ -8,13 +8,14 @@ import { AvatarChip } from '@repo/ui/Avatar';
 import { Evaluation } from '../EvaluationStatusCard/EvaluationStatusCard';
 import { IcSearch } from '@repo/ui/icons/mono';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
+import { CompletedEvaluator } from '@web/constants/document';
 
 type Props = {
-  evaluations: Evaluation[];
+  evaluationType: 'document' | 'interview';
+  completed: CompletedEvaluator[];
 };
 
-export function EvaluationDetailScoreList({ evaluations }: Props) {
-  const complete = evaluations.filter((e) => e.status === 'complete');
+export function EvaluationDetailScoreList({ evaluationType, completed }: Props) {
 
   const router = useRouter();
   const params = useParams<{ tab: string; id: string }>();
@@ -34,23 +35,33 @@ export function EvaluationDetailScoreList({ evaluations }: Props) {
       title: '상세 점수 보기',
       content: (
         <Flex direction="column" gap="1.6rem" align="flexStart">
-          {complete.map((d, i) => (
-            <Flex key={d.evaluator} direction="row" align="center" gap="0.8rem">
+          {completed.map((d, i) => (
+            <Flex
+              key={d.evaluator.userId}
+              direction="row"
+              align="center"
+              gap="0.8rem"
+            >
               <AvatarChip
-                label={d.evaluator}
-                serverColor={d.color}
-                zIndex={complete.length - i}
+                label={d.evaluator.name}
+                serverColor={d.evaluator.profileColor}
+                zIndex={completed.length - i}
               />
               <Text variant="md2_text_medium" color="grayscale70">
-                {d.evaluator}
+                {d.evaluator.name}
               </Text>
               <Text variant="md2_text_medium" color="primary50">
-                {d.score}점
+                {d.totalScore}점
               </Text>
-              <button type='button' className={styles.iconColor} onClick={openDetailScoreModal}>
-              <IcSearch width={18} height={18}/>
+
+              <button
+                type="button"
+                className={styles.iconColor}
+                onClick={openDetailScoreModal}
+                aria-label={`${evaluationType}-detail-score`}
+              >
+                <IcSearch width={18} height={18} />
               </button>
-             
             </Flex>
           ))}
         </Flex>

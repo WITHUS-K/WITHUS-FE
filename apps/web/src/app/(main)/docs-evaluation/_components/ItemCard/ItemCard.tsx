@@ -27,15 +27,16 @@ export default function ItemCard({ item }: Props) {
     evaluationScore,
     interviewDate,
     interviewTime,
+    maxScore
   } = item;
 
   let label: string;
   let variant: 'default' | 'success' | 'danger';
   if (evaluationStatus === 'BEFORE') {
-    label = `-점/100점`;
+    label = `-점/${maxScore}점`;
     variant = 'default';
   } else if (pass) {
-    label = `${evaluationScore}점/100점`;
+    label = `${evaluationScore}점/${maxScore}점`;
     variant = 'success';
   } else {
     label = `불합격`;
