@@ -45,23 +45,19 @@ if (!applicant) return null;
 
 const applicationId = applicant.applicationId;
 
-// 2️⃣ 지원서 상세
+// 2지원서 상세
 const {
   data: data,
   isLoading: detailLoading,
   isError,
 } = useApplicationDetailQuery({ applicationId });
 
-// 3️⃣ 모집 정보
+// 모집 정보
 const { data: rec, isLoading: recLoading } =
   useRecruitmentDetailQuery({ recruitmentId });
 
 if (listLoading || detailLoading || recLoading) return null;
 if (!data || !rec || isError) return null;
-
-// ======================
-// ✅ 카드 데이터 (ApplicationDetailClient와 동일)
-// ======================
 
 const documentCompletedForCard: CompletedEvaluator[] =
   (data.documentCompleted ?? []).map((c) => ({
