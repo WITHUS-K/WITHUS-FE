@@ -65,7 +65,7 @@ export const ApplicantSliderHeader = ({
         )}
       </Flex>
 
-      <div style={{ minWidth: '99px', width: 'auto' }}>
+      <div style={{ width: '99px', minWidth: 'auto' }}>
         <ApplicantToggle
           applicants={applicants}
           currentId={currentId}

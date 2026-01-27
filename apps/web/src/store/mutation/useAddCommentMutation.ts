@@ -5,7 +5,7 @@ import type { CommentItem } from '@web/store/query/useTimeSlotApplicationsQuery'
 
 export interface AddCommentRequest {
   content: string;
-  type: 'INTERVIEW';
+  type: 'INTERVIEW' | 'DOCUMENT';
 }
 export interface AddCommentResponse {
   result: CommentItem;

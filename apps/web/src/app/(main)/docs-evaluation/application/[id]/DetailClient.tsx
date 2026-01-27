@@ -18,6 +18,7 @@ import {
 import { useBulkEvaluationsMutation } from '@web/store/mutation/useBulkEvaluations';
 import { useToggleAcquaintanceMutation } from '@web/store/mutation/useToggleAcquaintanceMutation';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
+import { useToast } from '@repo/ui/hooks';
 
 export default function DetailClient() {
   const router = useRouter();
@@ -35,7 +36,8 @@ export default function DetailClient() {
   const { userId: myUserId } = getClientSideTokens();
   console.log('사용자', application);
   const [isRelation, setIsRelation] = useState(false);
-
+  const toast = useToast();
+  
   useEffect(() => {
     if (application) {
       const rel = application.acquaintances.some((a) => a.userId === myUserId);
@@ -112,7 +114,14 @@ export default function DetailClient() {
 
     console.log('[DocsEvaluation] handleSave payload:', payload);
 
-    mutation.mutate(payload);
+    mutation.mutate(payload, {
+      onSuccess: () => {
+        toast.success('점수가 저장되었습니다.');
+      },
+      onError: () => {
+        toast.error('점수 저장에 실패했습니다.');
+      },
+    });
   };
 
   //console.log('지원서 디테일', application);
@@ -146,12 +155,14 @@ export default function DetailClient() {
       <Flex gap="2rem">
         <ApplicantDetail application={application} />
         <div className={styles.rightSection}>
-          <EvaluationAddCommentCard comments={myComments!} />
+          <EvaluationAddCommentCard commentType="DOCUMENT" comments={myComments!} myUserId={myUserId}
+  onlyMine/>
         </div>
       </Flex>
 
       {/* 문서 평가 스코어링 */}
       <DocsEvaluation
+       kind="DOCUMENT"
         average={average!}
         evaluationData={documentEvaluationData}
         scores={scores}

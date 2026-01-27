@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Flex } from '@repo/ui/Flex';
 import { IcArrowDropdown, IcPlusCircle } from '@repo/ui/icons/colored';
 import { Memo } from '@repo/ui/Memo';
@@ -24,6 +24,10 @@ export const EvaluationCommentCard = ({
 }: EvaluationCommentCardProps) => {
   const [commentList, setCommentList] = useState<Comment[]>(comments);
   const [open, setOpen] = useState(false);
+  
+  useEffect(() => {
+    setCommentList(comments);
+  }, [comments]);
   
   const title =
     type === 'DOCUMENT_COMMENT'

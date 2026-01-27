@@ -36,6 +36,8 @@ export const EvaluationScoreCard = ({
   //const average =
     //completed.length > 0 ? parseFloat((sum / completed.length).toFixed(1)) : 0;
 
+    const showStatus = evaluationType === 'interview';
+
   return (
     <div className={styles.container}>
       <Flex gap="1.2rem" align="center">
@@ -48,7 +50,7 @@ export const EvaluationScoreCard = ({
         >{`평균: ${avgText}점`}</Text>
       </Flex>
       <Flex direction="column" align="center" gap="1rem">
-        <EvaluationStatusCard evaluation={evaluation} />
+      {showStatus && <EvaluationStatusCard evaluation={evaluation} />}
         <EvaluationDetailScoreList evaluationType={evaluationType} completed={completed}/>
       </Flex>
     </div>
