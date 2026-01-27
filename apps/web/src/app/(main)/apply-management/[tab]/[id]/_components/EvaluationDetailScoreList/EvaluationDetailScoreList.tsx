@@ -13,9 +13,10 @@ import { CompletedEvaluator } from '@web/constants/document';
 type Props = {
   evaluationType: 'document' | 'interview';
   completed: CompletedEvaluator[];
+  showStatus?: boolean;
 };
 
-export function EvaluationDetailScoreList({ evaluationType, completed }: Props) {
+export function EvaluationDetailScoreList({ evaluationType, completed, showStatus=true }: Props) {
 
   const router = useRouter();
   const params = useParams<{ tab: string; id: string }>();
@@ -53,15 +54,15 @@ export function EvaluationDetailScoreList({ evaluationType, completed }: Props) 
               <Text variant="md2_text_medium" color="primary50">
                 {d.totalScore}점
               </Text>
-
-              <button
+              {showStatus && <button
                 type="button"
                 className={styles.iconColor}
                 onClick={openDetailScoreModal}
                 aria-label={`${evaluationType}-detail-score`}
               >
                 <IcSearch width={18} height={18} />
-              </button>
+              </button> }
+             
             </Flex>
           ))}
         </Flex>

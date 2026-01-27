@@ -20,6 +20,7 @@ interface EvaluationScoreCardProps {
 
   /** 상세 점수(완료자 리스트, totalScore 사용)용 */
   completed: CompletedEvaluator[];
+  showStatus? : boolean
 }
 
 export const EvaluationScoreCard = ({
@@ -27,16 +28,19 @@ export const EvaluationScoreCard = ({
   evaluation,
   averageScore,
   completed,
+  showStatus = true
+
 }: EvaluationScoreCardProps) => {
   const avgText = Number.isNaN(Number(averageScore))
   ? String(averageScore)
-  : Number(averageScore);
+  : Number(Number(averageScore).toFixed(2));
   //const sum = completed.reduce((acc, cur) => acc + (cur.score ?? 0), 0);
 
   //const average =
     //completed.length > 0 ? parseFloat((sum / completed.length).toFixed(1)) : 0;
 
-    const showStatus = evaluationType === 'interview';
+
+    //const showStatus = evaluationType === 'interview';
 
   return (
     <div className={styles.container}>
@@ -51,7 +55,7 @@ export const EvaluationScoreCard = ({
       </Flex>
       <Flex direction="column" align="center" gap="1rem">
       {showStatus && <EvaluationStatusCard evaluation={evaluation} />}
-        <EvaluationDetailScoreList evaluationType={evaluationType} completed={completed}/>
+        <EvaluationDetailScoreList evaluationType={evaluationType} completed={completed} showStatus={showStatus}/>
       </Flex>
     </div>
   );
