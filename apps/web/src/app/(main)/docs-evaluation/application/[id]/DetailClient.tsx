@@ -37,6 +37,7 @@ export default function DetailClient() {
   console.log('사용자', application);
   const [isRelation, setIsRelation] = useState(false);
   const toast = useToast();
+
   useEffect(() => {
     if (application) {
       const rel = application.acquaintances.some((a) => a.userId === myUserId);
@@ -117,6 +118,10 @@ export default function DetailClient() {
       onSuccess: () => {
         toast.success('점수가 저장되었습니다.');
       },
+
+      onError: () => {
+        toast.error('점수 저장에 실패했습니다.');
+      },
     });
   };
 
@@ -151,12 +156,14 @@ export default function DetailClient() {
       <Flex gap="2rem">
         <ApplicantDetail application={application} />
         <div className={styles.rightSection}>
-          <EvaluationAddCommentCard comments={myComments!} />
+          <EvaluationAddCommentCard commentType="DOCUMENT" comments={myComments!} myUserId={myUserId}
+  onlyMine/>
         </div>
       </Flex>
 
       {/* 문서 평가 스코어링 */}
       <DocsEvaluation
+       kind="DOCUMENT"
         average={average!}
         evaluationData={documentEvaluationData}
         scores={scores}

@@ -21,6 +21,7 @@ interface DocsEvaluationProps {
   onScoreChange: (name: string, next: number) => void;
   onSave: () => void;
   average: string;
+  kind?: 'DOCUMENT' | 'INTERVIEW';
 }
 const FIXED_FOOTER_HEIGHT = '10rem';
 
@@ -30,7 +31,9 @@ export const DocsEvaluation = ({
   onScoreChange,
   onSave,
   average,
+  kind
 }: DocsEvaluationProps) => {
+  console.log("평가방식", evaluationData)
   const levels = [
     { id: 10, name: '만족' },
     { id: 5, name: '보통' },
@@ -48,13 +51,15 @@ export const DocsEvaluation = ({
     ? ((total / maxTotal) * 100).toFixed(2)
     : averageScore;
 
+    const title = kind === 'INTERVIEW' ? '면접 평가' : '서류 평가';
+
   return (
     <Flex direction="column" gap="3.2rem" width="100%">
       {/* 서류 평가 헤더 */}
       <Flex align="center" justify="spaceBetween" width="100%">
         <Flex align="center" gap="1.6rem">
           <Text variant="xl_title_semibold" color="black">
-            서류 평가
+           {title}
           </Text>
           <Tag color="#2C60FF">
             평가방식 :{' '}

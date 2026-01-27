@@ -73,6 +73,9 @@ export default function ApplyListItem({
     activeTab as AdminApplicationStage
   );
 
+  const scoreText =
+  activeTab === 'interviews' ? member.interviewScore : member.documentScore;
+
   const isInterviewStatus =
     status === '면접 보류' ||
     status === '면접 합격' ||
@@ -177,7 +180,7 @@ export default function ApplyListItem({
         color="grayscale70"
         style={{ marginRight: '4rem', width: '6.3rem' }}
       >
-        {member.documentScore}
+        {scoreText ?? '-'}
       </Text>
 
       <Flex
