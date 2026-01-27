@@ -309,6 +309,7 @@ export default function ApplicantDetailClient({ timeSlotId }: Props) {
             averageScore={application.documentAverageScore}
             evaluation={documentEvalStatus}
             completed={documentCompletedForCard}
+            showStatus={false}
           />
 
           <EvaluationCommentCard
