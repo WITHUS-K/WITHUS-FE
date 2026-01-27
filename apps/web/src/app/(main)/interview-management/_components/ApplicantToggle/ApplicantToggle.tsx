@@ -3,6 +3,7 @@ import * as styles from './ApplicantToggle.css';
 import { Profile } from '@repo/ui/Profile';
 import { Divider, Flex, Text } from '@repo/ui';
 import { IcArrowDown } from '@repo/ui/icons/mono';
+import { style } from '@vanilla-extract/css';
 
 export interface ApplicantItem {
   id: number;
@@ -75,11 +76,14 @@ const ApplicantToggle: React.FC<ApplicantToggleProps> = ({
       >
         <div className={styles.headerContent}>
           <div className={styles.avatarWrapper}>
+            <div style={{zIndex: 2}}>
             <Profile
               size={32}
               src={displayTarget.imageUrl}
               alt={displayTarget.name}
             />
+            </div>
+
 
             {otherCount > 0 && (
               <div className={styles.countBadge}>+{otherCount}</div>

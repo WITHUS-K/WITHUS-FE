@@ -12,7 +12,7 @@ import ApplicantToggle, {
 export interface ApplicantSliderHeaderProps {
   name: string;
   current: number;
-  onViewApplication: () => void;
+  onViewApplication?: () => void;
   isOtherUser?: boolean;
   applicants: ApplicantItem[];
   currentId: number;
