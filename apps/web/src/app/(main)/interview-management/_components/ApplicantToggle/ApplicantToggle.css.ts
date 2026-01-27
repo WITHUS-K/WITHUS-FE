@@ -57,7 +57,7 @@ export const countBadge = style({
   justifyContent: 'center',
   border: `1px solid ${vars.colors.grayscale20}`,
   marginLeft: '-12px',
-  zIndex: 1,
+  //zIndex: 1,
   flexShrink: 0,
   ...fontStyles.md2_text_medium
 });
