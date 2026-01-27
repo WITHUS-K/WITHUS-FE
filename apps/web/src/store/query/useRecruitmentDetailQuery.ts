@@ -28,12 +28,23 @@ export function getRecruitmentDetailQueryOptions({
 > {
   return queryOptions<RecruitmentDetailDto>({
     queryKey: queryKeys.recruitment.detail(recruitmentId),
-    queryFn: () =>
-      GET<RecruitmentDetailResponse['result']>(
+    queryFn: async () => {
+      console.log(
+        '[getRecruitmentDetailQuery] request recruitmentId:',
+        recruitmentId
+      );
+
+      const res = await GET<RecruitmentDetailResponse['result']>(
         `api/v1/recruitments/${recruitmentId}`,
         undefined,
         tokens
-      ).then((res) => res.result),
+      );
+
+      console.log('[getRecruitmentDetailQuery] full response:', res);
+      console.log('[getRecruitmentDetailQuery] result:', res.result);
+
+      return res.result;
+    },
 
     staleTime: STALE_TIME,
     gcTime: GC_TIME,

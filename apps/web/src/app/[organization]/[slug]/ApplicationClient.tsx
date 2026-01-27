@@ -199,6 +199,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
             type: 'text',
             description: tq.title,
             addDescription: tq.description,
+           includeWhitespace: tq.includeWhitespace ?? true,
             typeInfo: {
               info: infoText,
               infoDetail: tq.includeWhitespace ? '공백 포함' : '공백 제외',
@@ -523,6 +524,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
           id: `question-text-${idx}`,
           label: d.description,
           required: d.required,
+
         });
       });
 

@@ -17,12 +17,12 @@ export function useEmailVerifyMutation(
   const router = useRouter();
   return useMutation<string, HTTPError, EmailVerifyRequest>({
     mutationFn: async ({ name, email }) => {
-      //console.log('[EmailVerify] 요청 →', { name, email });
+      console.log('[EmailVerify] 요청 →', { name, email });
       const res = await POST_PUBLIC<string>('api/v1/auth/email/verify', {
         name,
         email,
       });
-      //console.log('[EmailVerify] 응답 →', res);
+      console.log('[EmailVerify] 응답 →', res);
       return res.result;
     },
     onSuccess: (result, { name, email }) => {
@@ -35,7 +35,7 @@ export function useEmailVerifyMutation(
       }
     },
     onError: (error) => {
-      //console.error('[EmailVerify] 실패:', error);
+      console.error('[EmailVerify] 실패:', error);
     },
   });
 }

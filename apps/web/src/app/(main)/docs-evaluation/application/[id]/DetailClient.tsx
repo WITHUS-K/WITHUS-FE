@@ -37,7 +37,7 @@ export default function DetailClient() {
   console.log('사용자', application);
   const [isRelation, setIsRelation] = useState(false);
   const toast = useToast();
-  
+
   useEffect(() => {
     if (application) {
       const rel = application.acquaintances.some((a) => a.userId === myUserId);
@@ -118,6 +118,7 @@ export default function DetailClient() {
       onSuccess: () => {
         toast.success('점수가 저장되었습니다.');
       },
+
       onError: () => {
         toast.error('점수 저장에 실패했습니다.');
       },
