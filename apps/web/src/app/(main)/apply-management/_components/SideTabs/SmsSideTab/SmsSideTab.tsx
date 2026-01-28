@@ -45,10 +45,34 @@ import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 import { useModal } from '@repo/ui/hooks';
 import { useRecipientsStore } from '@web/store/state/useRecipientsStore';
 
-/**
- * SMS는 본문이 텍스트 위주라서, 서버가 HTML(<p>...</p>) 형태를 기대하는 경우가 많습니다.
- * serialize 결과가 이미 <p>로 감싸져 있지 않으면 감싸줍니다.
- */
+function htmlToPlainText(html: string) {
+  if (!html) return '';
+
+  // <br> / <br/> → \n
+  let text = html.replace(/<br\s*\/?>/gi, '\n');
+
+  // </p>, </div>, </li> 등 블록 끝 → \n
+  text = text.replace(/<\/(p|div|li|h[1-6])>/gi, '\n');
+
+  // 모든 태그 제거
+  text = text.replace(/<[^>]+>/g, '');
+
+  // HTML 엔티티 일부 처리 (필요한 만큼만)
+  text = text
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+
+  // 공백/줄바꿈 정리
+  text = text.replace(/\n{3,}/g, '\n\n').trim();
+
+  return text;
+}
+
+
 function ensureParagraph(html: string) {
   const trimmed = html.trim();
   if (!trimmed) return '<p></p>';
@@ -314,7 +338,7 @@ export function SmsSideTab({
 
   const handleSend = () => {
     const rawHtml = serialize(editorValue);
-    const message = ensureParagraph(rawHtml);
+    const message = htmlToPlainText(rawHtml);
 
     sendSms.mutate(
       {
