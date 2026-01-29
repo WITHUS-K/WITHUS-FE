@@ -24,11 +24,11 @@ export default function ScheduleClient({ organizationId }: Props) {
   const router = useRouter();
   const sp = useSearchParams();
   const { confirm } = useModal();
+
   const recruitmentIdParam = sp.get('recruitmentId');
   const recruitmentId = recruitmentIdParam
     ? Number(recruitmentIdParam)
     : undefined;
-  // const { organizationId } = getClientSideTokens();
 
   const interviewIdParam = sp.get('interviewId');
   const interviewId = interviewIdParam ? Number(interviewIdParam) : undefined;
@@ -36,12 +36,12 @@ export default function ScheduleClient({ organizationId }: Props) {
   const { data: orgs = [], isLoading } = useOrganizationInterviewsQuery(
     organizationId!
   );
-  console.log('면접', orgs);
+
+  if (isLoading) return <Text>로딩 중...</Text>;
   if (!orgs.length) return <Text>등록된 면접이 없습니다.</Text>;
 
   // 선택된 인터뷰 결정 (쿼리에 없으면 첫 번째)
   const current = (orgs.find((o) => o.interviewId === interviewId) ?? orgs[0])!;
-
   const { availableTimeRanges, interviewDuration } = current;
 
   const dates = React.useMemo(
@@ -58,19 +58,33 @@ export default function ScheduleClient({ organizationId }: Props) {
     return map;
   }, [availableTimeRanges]);
 
-  // 선택된 시간 범위 상태
-  const [selectedRanges, setSelectedRanges] = useState<TimeRange[]>([]);
+  // ✅ 날짜별 선택 상태: { [date]: TimeRange[] }
+  const [selectedByDate, setSelectedByDate] = useState<
+    Record<string, TimeRange[]>
+  >({});
+
   const registerMutation = useRegisterAvailabilitiesMutation(
     current.interviewId
   );
 
-  // 콜백도 배열 받기
-  const handleSelectionChange = useCallback((ranges: TimeRange[]) => {
-    setSelectedRanges(ranges);
-  }, []);
+  // ✅ 날짜를 받아서 해당 날짜의 선택값만 업데이트
+  const handleSelectionChangeByDate = useCallback(
+    (date: string, ranges: TimeRange[]) => {
+      setSelectedByDate((prev) => ({
+        ...prev,
+        [date]: ranges,
+      }));
+    },
+    []
+  );
+
+  // ✅ 하나라도 선택돼 있으면 저장 가능
+  const hasAnySelection = Object.values(selectedByDate).some(
+    (ranges) => ranges.length > 0
+  );
 
   const handleSave = () => {
-    if (selectedRanges.length === 0) return;
+    if (!hasAnySelection) return;
 
     confirm({
       type: 'info',
@@ -79,18 +93,23 @@ export default function ScheduleClient({ organizationId }: Props) {
       confirmText: '저장',
       onConfirm: () => {
         const slots: string[] = [];
+        const step = interviewDuration * 60 * 1000;
 
-        const date = dates[0];
-        const dateIso = date!.replace(/\./g, '-');
+        // ✅ 날짜별로 ISO datetime 생성
+        for (const [date, ranges] of Object.entries(selectedByDate)) {
+          if (!ranges.length) continue;
 
-        for (const { startTime, endTime } of selectedRanges) {
-          const start = new Date(`${dateIso}T${startTime}:00`);
-          const end = new Date(`${dateIso}T${endTime}:00`);
-          const step = interviewDuration * 60 * 1000;
-          let cursor = start.getTime();
-          while (cursor < end.getTime()) {
-            slots.push(format(new Date(cursor), "yyyy-MM-dd'T'HH:mm:ss"));
-            cursor += step;
+          const dateIso = date.replace(/\./g, '-');
+
+          for (const { startTime, endTime } of ranges) {
+            const start = new Date(`${dateIso}T${startTime}:00`);
+            const end = new Date(`${dateIso}T${endTime}:00`);
+
+            let cursor = start.getTime();
+            while (cursor < end.getTime()) {
+              slots.push(format(new Date(cursor), "yyyy-MM-dd'T'HH:mm:ss"));
+              cursor += step;
+            }
           }
         }
 
@@ -98,7 +117,6 @@ export default function ScheduleClient({ organizationId }: Props) {
           { availableTimes: slots },
           {
             onSuccess: () => {
-              //console.log('가능한 시간', slots);
               router.replace(
                 `/interview-evaluation/timetable/interviewer` +
                   `?interviewId=${current.interviewId}` +
@@ -172,7 +190,10 @@ export default function ScheduleClient({ organizationId }: Props) {
                       endTime: slot.endTime,
                     })),
                   }}
-                  onSelectionChange={handleSelectionChange}
+                  // ✅ 이 날짜 테이블의 선택값만 업데이트
+                  onSelectionChange={(ranges) =>
+                    handleSelectionChangeByDate(date, ranges)
+                  }
                 />
               );
             })}
@@ -181,7 +202,7 @@ export default function ScheduleClient({ organizationId }: Props) {
           <Button
             variant="main"
             size="48"
-            disabled={!selectedRanges.length}
+            disabled={!hasAnySelection}
             onClick={handleSave}
             width="24rem"
           >

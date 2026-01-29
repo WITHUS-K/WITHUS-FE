@@ -25,7 +25,7 @@ export function useRegisterAvailabilitiesMutation(
     mutationFn: async (body) => {
       await POST(`api/v1/interviewers/${interviewId}/availabilities`, body);
       // void 반환
-      console.log(body);
+      console.log("면접", body);
     },
     onSuccess: () => {
       // 저장 후 조직의 면접 정보 리스트를 리패치
