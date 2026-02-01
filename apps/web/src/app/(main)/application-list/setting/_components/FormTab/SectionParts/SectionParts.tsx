@@ -60,7 +60,27 @@ export default function SectionParts() {
           name="applicationParts.isSelected"
           control={control}
           render={({ field: { value, onChange } }) => (
-            <SimpleToggleSwitch checked={value} onChange={onChange} />
+            <SimpleToggleSwitch
+              checked={value}
+              onChange={(next: boolean) => {
+                onChange(next);
+                if (!next) {
+                  setValue('applicationParts.parts', [], { shouldDirty: true });
+                  ctx.setForm((prev) => ({
+                    ...prev,
+                    applicationParts: { isSelected: false, parts: [] },
+                  }));
+                } else {
+                  ctx.setForm((prev) => ({
+                    ...prev,
+                    applicationParts: {
+                      ...prev.applicationParts!,
+                      isSelected: true,
+                    },
+                  }));
+                }
+              }}
+            />
           )}
         />
       </Flex>
