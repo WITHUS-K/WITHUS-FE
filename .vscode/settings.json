@@ -3,5 +3,6 @@
     {
       "mode": "auto"
     }
-  ]
+  ],
+  "typescript.tsdk": "apps/web/node_modules/typescript/lib"
 }

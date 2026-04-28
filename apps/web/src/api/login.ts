@@ -5,7 +5,7 @@ import { cookieOptions } from './authCookies';
 
 export async function login(data: LoginRequest): Promise<LoginPayload> {
   const response = await api.post('api/v1/auth/login', {
-    body: JSON.stringify(data),
+    json: data,
   });
 
   // 토큰 세팅

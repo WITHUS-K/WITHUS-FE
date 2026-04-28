@@ -1,12 +1,13 @@
 'use client';
 import React, { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import * as styles from './UserDocReviewList.css';
 import { OptionsList, TextToggleSwitch } from '@repo/ui/TextToggleSwitch';
 import { Text } from '@repo/ui/Text';
 import { Tag } from '@repo/ui/Tag';
 import { Button } from '@repo/ui/Button';
 import { IcArrowRight } from '@repo/ui/icons/mono';
-import { getPositionTagColor } from 'node_modules/@repo/utils/src/util/tag';
+import { getPositionTagColor } from '@repo/utils/util/tag';
 
 export interface ReviewItem {
   id: string;
@@ -25,6 +26,7 @@ export const UserDocReviewList: React.FC<UserDocReviewListProps> = ({
   itemsBefore,
   itemsAfter,
 }) => {
+  const router = useRouter();
   const [tab, setTab] = useState<ReviewTab>('before');
 
   const items = useMemo(
@@ -47,7 +49,7 @@ export const UserDocReviewList: React.FC<UserDocReviewListProps> = ({
           variant="sub"
           size="32"
           width="15.2rem"
-          onClick={() => console.log('서류 평가 페이지 이동')}
+          onClick={() => router.push('/docs-evaluation')}
           rightIcon={<IcArrowRight width={16} height={16} />}
         >
           서류 평가 바로가기

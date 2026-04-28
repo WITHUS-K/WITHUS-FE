@@ -14,6 +14,7 @@ const publicPaths: string[] = [
 const RESERVED_PREFIXES = [
   'api',
   '_next',
+  'dashboard',
   'application-list',
   'apply-management',
   'docs-evaluation',

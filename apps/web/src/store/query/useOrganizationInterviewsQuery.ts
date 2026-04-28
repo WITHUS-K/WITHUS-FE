@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
 import { queryKeys } from '../constants';
-import type { ApiResponse, Tokens } from '@web/api/types';
+import type { Tokens } from '@web/api/types';
 
 // — 요청/응답 타입 —
 
@@ -44,7 +44,6 @@ export function getOrgInterviewsOptions(
         undefined,
         tokens
       );
-      console.log(res);
       return res.result;
     },
     staleTime: 1000 * 60 * 1,
@@ -63,7 +62,6 @@ export function useOrganizationInterviewsQuery(
         undefined,
         tokens
       );
-      console.log(res);
       return res.result;
     },
     staleTime: 1000 * 60 * 1,

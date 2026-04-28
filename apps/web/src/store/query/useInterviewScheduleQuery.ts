@@ -1,8 +1,6 @@
 // src/store/query/useInterviewSchedule.ts
 import {
   useSuspenseQuery,
-  type FetchQueryOptions,
-  UseSuspenseQueryResult,
   queryOptions,
   UseSuspenseQueryOptions,
 } from '@tanstack/react-query';
@@ -75,10 +73,7 @@ export function getInterviewScheduleQueryOptions({
         `api/v1/interviews/${interviewId}/schedule`,
         undefined,
         tokens
-      ).then((res) => {
-        console.log('[useInterviewSchedule] raw response:', res);
-        return res.result;
-      }),
+      ).then((res) => res.result),
     staleTime: 1000 * 60,
     enabled: interviewId > 0,
   });
