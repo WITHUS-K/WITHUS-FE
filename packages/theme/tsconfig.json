@@ -6,11 +6,11 @@
     "moduleResolution": "bundler",
     "target": "ESNext",
     "allowImportingTsExtensions": false,
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
     "outDir": "./dist",
+    "rootDir": "./src",
     "declaration": true
   },
   "include": ["src/**/*", "**/*.css.ts"],
