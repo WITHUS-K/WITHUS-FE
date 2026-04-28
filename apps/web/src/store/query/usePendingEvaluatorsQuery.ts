@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
+import type { Tokens } from '@web/api/types';
 
 export interface PendingEvaluator {
   userId: number;
@@ -8,7 +9,7 @@ export interface PendingEvaluator {
 }
 
 export interface PendingEvaluatorsResult {
-  stage: string; 
+  stage: string;
   deadline: string;
   daysToDeadline: number;
   hoursToDeadline: number;
@@ -23,15 +24,26 @@ export interface PendingEvaluatorsResponse {
   success: boolean;
 }
 
-export function usePendingEvaluatorsQuery(recruitmentId: number) {
-  return useQuery<PendingEvaluatorsResult, Error>({
-    queryKey: ['admin', 'recruitments', recruitmentId, 'pending-evaluators'],
+export function getPendingEvaluatorsQueryOptions(
+  recruitmentId: number,
+  tokens?: Tokens
+) {
+  return {
+    queryKey: ['admin', 'recruitments', recruitmentId, 'pending-evaluators'] as const,
     queryFn: async () => {
       const res = await GET<PendingEvaluatorsResponse['result']>(
-        `api/v1/admin/recruitments/${recruitmentId}/pending-evaluators`
+        `api/v1/admin/recruitments/${recruitmentId}/pending-evaluators`,
+        undefined,
+        tokens
       );
       return res.result;
     },
-    enabled: !!recruitmentId, 
-  });
+    enabled: !!recruitmentId,
+  };
+}
+
+export function usePendingEvaluatorsQuery(recruitmentId: number) {
+  return useQuery<PendingEvaluatorsResult, Error>(
+    getPendingEvaluatorsQueryOptions(recruitmentId)
+  );
 }

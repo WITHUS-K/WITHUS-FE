@@ -1,13 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
 import { queryKeys } from '../constants/queryKeys';
+import type { Tokens } from '@web/api/types';
 
 export interface MyEvaluationItem {
-  id: number; 
+  id: number;
   name: string;
   email: string;
   positionName: string;
-  status: string; 
+  status: string;
 }
 
 export interface MyDocumentEvaluationsResult {
@@ -22,16 +23,26 @@ export interface MyDocumentEvaluationsResponse {
   success: boolean;
 }
 
-export function useMyDocumentEvaluationsQuery(recruitmentId: number) {
-  return useQuery<MyDocumentEvaluationsResult, Error>({
+export function getMyDocumentEvaluationsQueryOptions(
+  recruitmentId: number,
+  tokens?: Tokens
+) {
+  return {
     queryKey: queryKeys.recruitments.myDocumentEvaluations(recruitmentId),
     queryFn: async () => {
       const res = await GET<MyDocumentEvaluationsResponse['result']>(
-        `api/v1/recruitments/${recruitmentId}/my/evaluations/documents`
+        `api/v1/recruitments/${recruitmentId}/my/evaluations/documents`,
+        undefined,
+        tokens
       );
-      console.log("서류평가리스트", res.result)
       return res.result;
     },
     enabled: !!recruitmentId,
-  });
+  };
+}
+
+export function useMyDocumentEvaluationsQuery(recruitmentId: number) {
+  return useQuery<MyDocumentEvaluationsResult, Error>(
+    getMyDocumentEvaluationsQueryOptions(recruitmentId)
+  );
 }

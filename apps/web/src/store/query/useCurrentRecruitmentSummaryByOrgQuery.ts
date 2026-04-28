@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
+import type { Tokens } from '@web/api/types';
 
 // 사용자용
 
@@ -30,16 +31,27 @@ export interface OrganizationRecruitmentSummaryResponse {
   result: OrganizationRecruitmentSummary[];
   success: boolean;
 }
-export function useCurrentRecruitmentSummaryByOrgQuery(organizationId: number) {
-  return useQuery<OrganizationRecruitmentSummary[], Error>({
-    queryKey: ['recruitments', organizationId, 'current', 'summary'],
+
+export function getCurrentRecruitmentSummaryByOrgQueryOptions(
+  organizationId: number,
+  tokens?: Tokens
+) {
+  return {
+    queryKey: ['recruitments', organizationId, 'current', 'summary'] as const,
     queryFn: async () => {
       const res = await GET<OrganizationRecruitmentSummaryResponse['result']>(
-        `api/v1/recruitments/${organizationId}/current/summary`
+        `api/v1/recruitments/${organizationId}/current/summary`,
+        undefined,
+        tokens
       );
-      console.log("홈", res.result)
       return res.result;
     },
-    enabled: !!organizationId, 
-  });
+    enabled: !!organizationId,
+  };
+}
+
+export function useCurrentRecruitmentSummaryByOrgQuery(organizationId: number) {
+  return useQuery<OrganizationRecruitmentSummary[], Error>(
+    getCurrentRecruitmentSummaryByOrgQueryOptions(organizationId)
+  );
 }

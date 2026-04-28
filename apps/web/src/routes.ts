@@ -21,4 +21,9 @@ export const ROUTES = {
   },
 
   ORGANIZATION: '/organization',
+
+  DASHBOARD: {
+    ADMIN: '/dashboard/admin',
+    USER: '/dashboard/user',
+  },
 } as const;
