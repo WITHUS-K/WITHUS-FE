@@ -9,7 +9,7 @@ import {
   IcHomeInterviewColored,
 } from '@repo/ui/icons/colored';
 import { RecruitmentProgressItem } from '@web/store/query/useRecruitmentProgressQuery';
-import { getPositionTagColor } from 'node_modules/@repo/utils/src/util/tag';
+import { getPositionTagColor } from '@repo/utils/util/tag';
 
 export interface OverallProgressProps {
   docData?: RecruitmentProgressItem[];

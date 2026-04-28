@@ -12,9 +12,10 @@ import { PendingEvaluatorsResult } from '@web/store/query/usePendingEvaluatorsQu
 export interface PendingUsersProps {
   data: PendingEvaluatorsResult;
   onRemind: () => void;
+  isReminding?: boolean;
 }
 
-export const PendingUsers = ({ data, onRemind }: PendingUsersProps) => {
+export const PendingUsers = ({ data, onRemind, isReminding }: PendingUsersProps) => {
   const deadline = new Date(data.deadline);
 
   return (
@@ -35,6 +36,8 @@ export const PendingUsers = ({ data, onRemind }: PendingUsersProps) => {
             />
           }
           onClick={onRemind}
+          isLoading={isReminding}
+          disabled={isReminding}
         >
           리마인드 알림
         </Button>

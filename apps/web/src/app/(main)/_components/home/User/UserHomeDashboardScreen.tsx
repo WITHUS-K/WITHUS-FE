@@ -13,18 +13,22 @@ import {
   AnnouncementEvent,
 } from '@web/app/(main)/_components/user/UserAnnouncementProgress/UserAnnouncementProgress';
 import {
-  InterviewSlot,
-  ReviewerRole,
+  InterviewScheduleItem,
   UserInterviewReview,
 } from '@web/app/(main)/_components/user/UserInterviewReview/UserInterviewReview';
 
 import { useCurrentRecruitmentSummaryByOrgQuery } from '@web/store/query/useCurrentRecruitmentSummaryByOrgQuery';
 import { useMyDocumentEvaluationsQuery } from '@web/store/query/useMyDocumentEvaluationsQuery';
+import {
+  useOrgInterviewsForHomeQuery,
+  useMyTimeSlotsForHomeQuery,
+} from '@web/store/query/useMyInterviewForHomeQuery';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 
 export const UserHomeDashboardScreen = () => {
-  const { organizationId } = getClientSideTokens();
+  const { organizationId, userId } = getClientSideTokens();
   const orgId = Number(organizationId);
+  const uid = Number(userId);
 
   const { data: summaryData, isLoading: isSummaryLoading } =
     useCurrentRecruitmentSummaryByOrgQuery(orgId);
@@ -32,8 +36,15 @@ export const UserHomeDashboardScreen = () => {
   const currentRecruitment = summaryData?.[0];
   const recruitmentId = currentRecruitment?.recruitmentId;
 
-  const { data: myEvalData, isLoading: isEvalLoading } =
-    useMyDocumentEvaluationsQuery(recruitmentId!);
+  const { data: myEvalData } = useMyDocumentEvaluationsQuery(recruitmentId!);
+
+  const { data: orgInterviews } = useOrgInterviewsForHomeQuery(orgId);
+  const currentInterview = orgInterviews?.find(
+    (iv) => iv.recruitmentId === recruitmentId
+  );
+  const { data: mySchedules } = useMyTimeSlotsForHomeQuery(
+    currentInterview?.interviewId
+  );
 
   const announcementProps = useMemo(() => {
     if (!currentRecruitment) return null;
@@ -45,10 +56,7 @@ export const UserHomeDashboardScreen = () => {
       })
     );
 
-    return {
-      title: currentRecruitment.title,
-      events: sortedEvents,
-    };
+    return { title: currentRecruitment.title, events: sortedEvents };
   }, [currentRecruitment]);
 
   const docReviewProps = useMemo(() => {
@@ -69,31 +77,39 @@ export const UserHomeDashboardScreen = () => {
     return { itemsBefore, itemsAfter };
   }, [myEvalData]);
 
-  const initialDate = new Date(2025, 4, 12);
-  const slotsByRole: Record<ReviewerRole, InterviewSlot[]> = {
-    interviewer: [
-      {
-        start: '13:00',
-        end: '13:30',
-        applicants: ['김현호', '윤지원'],
-        interviewers: [
-          {
-            id: 'i1',
-            avatarUrl: 'https://randomuser.me/api/portraits/women/68.jpg',
-          },
-          {
-            id: 'i2',
-            avatarUrl: 'https://randomuser.me/api/portraits/women/32.jpg',
-          },
-          {
-            id: 'i3',
-            avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
-          },
-        ],
-      },
-    ],
-    guide: [],
-  };
+  const schedules = useMemo<InterviewScheduleItem[]>(() => {
+    if (!mySchedules?.length) return [];
+
+    return mySchedules.map((schedule) => {
+      const parts = schedule.date.split('.').map(Number);
+      const date = new Date(parts[0]!, parts[1]! - 1, parts[2]!);
+
+      const toSlot = (
+        ts: (typeof schedule.timeSlots)[number],
+        roleUsers: { userId: number; name: string; role: string; profileUrl: string }[]
+      ) => ({
+        start: ts.startTime,
+        end: ts.endTime,
+        applicants: ts.applicants.map((a) => a.name),
+        interviewers: roleUsers.map((u) => ({
+          id: String(u.userId),
+          avatarUrl: u.profileUrl,
+        })),
+      });
+
+      return {
+        date,
+        slotsByRole: {
+          interviewer: schedule.timeSlots
+            .filter((ts) => ts.interviewers.some((iv) => iv.userId === uid))
+            .map((ts) => toSlot(ts, ts.interviewers)),
+          guide: schedule.timeSlots
+            .filter((ts) => ts.assistants.some((a) => a.userId === uid))
+            .map((ts) => toSlot(ts, ts.assistants)),
+        },
+      };
+    });
+  }, [mySchedules, uid]);
 
   if (isSummaryLoading) {
     return (
@@ -142,10 +158,7 @@ export const UserHomeDashboardScreen = () => {
             itemsAfter={docReviewProps.itemsAfter}
           />
 
-          <UserInterviewReview
-            initialDate={initialDate}
-            slotsByRole={slotsByRole}
-          />
+          <UserInterviewReview schedules={schedules} />
         </Flex>
       </Flex>
     </Flex>
