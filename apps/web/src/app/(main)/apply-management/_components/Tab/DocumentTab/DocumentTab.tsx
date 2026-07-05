@@ -19,11 +19,10 @@ import {
   AdminApplicationStatus,
 } from '@web/store/query/useAdminApplicationsQuery';
 import { sortByMap, stageMap } from '../../../[tab]/TabClient';
-import { mapServerColorToTagHex } from '@web/utils/color';
-import { TagColor } from '@repo/utils';
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { useAdminApplicationsExcelDownload } from '@web/store/query/useAdminApplicationsExcelDownload';
 import { toFixed1 } from '@web/utils/number';
+import { toAppliedPositionTags } from '@web/utils/applicationPositionTags';
 
 // ─── 테이블 헤더 정의 ─────────────────────────────────────────────────────────
 const DOC_HEADER: HeaderMeta[] = [
@@ -223,16 +222,11 @@ export default function DocumentTab({ recruitmentId, posColorMap}: DocumentTabPr
   const rows = useMemo(() => {
     if (!data) return [];
     return data.data.map((item, idx) => {
-      const positionLabel = item.organizationRoleName ?? '공통';
-      const positionColor: TagColor = item.organizationRoleName
-        ? mapServerColorToTagHex(posColorMap[item.organizationRoleName]!)
-        : '#5A5C72';
-
       return {
         applicationId: item.id,
         id: String(page * size + idx + 1).padStart(3, '0'),
         name: item.name,
-        fieldTags: [{ label: positionLabel, color: positionColor }],
+        fieldTags: toAppliedPositionTags(item, posColorMap),
         evalStatus: `${item.documentEvaluatedCount}/${item.documentAssignedCount}`,
         documentScore: toFixed1(item.documentAverageScore),
         status: (() => {

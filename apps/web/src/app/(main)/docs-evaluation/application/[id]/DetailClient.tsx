@@ -74,11 +74,19 @@ export default function DetailClient() {
 
   const allCriteria = application?.documentEvaluationCriterias ?? [];
 
-  const appliedPosition = application?.appliedPosition; // 예: "1", "2" 등
+  const appliedPositions = new Set(
+    application?.appliedPositions?.length
+      ? application.appliedPositions
+      : application?.appliedPosition
+        ? [application.appliedPosition]
+        : []
+  );
 
   // 지원자의 포지션과 일치하는 것만 필터
   const criteriaList = allCriteria.filter(
-    (c) => c.organizationRoleName === appliedPosition
+    (c) =>
+      c.organizationRoleName === '공통' ||
+      appliedPositions.has(c.organizationRoleName)
   );
 
   // Evaluation 리스트 생성

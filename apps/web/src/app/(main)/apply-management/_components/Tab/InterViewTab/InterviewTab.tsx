@@ -18,13 +18,12 @@ import {
   type AdminApplicationSortBy,
   AdminApplicationStatus,
 } from '@web/store/query/useAdminApplicationsQuery';
-import { mapServerColorToTagHex } from '@web/utils/color';
 import { HeaderMeta } from '../../ApplyListHeader/ApplyListHeader';
-import { TagColor } from '@repo/utils';
 import { useUpdateQuery } from '@web/store/query/useUpdateQuery';
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { useAdminApplicationsExcelDownload } from '@web/store/query/useAdminApplicationsExcelDownload';
 import { toFixed1 } from '@web/utils/number';
+import { toAppliedPositionTags } from '@web/utils/applicationPositionTags';
 
 // 인터뷰 탭 헤더 정의
 const INT_HEADER: HeaderMeta[] = [
@@ -211,16 +210,11 @@ export default function InterviewTab({ recruitmentId }: InterviewTabProps) {
   const rows = useMemo(() => {
     if (!data) return [];
     return data.data.map((item, idx) => {
-      const positionLabel = item.organizationRoleName ?? '공통';
-      const positionColor: TagColor = item.organizationRoleName
-        ? mapServerColorToTagHex(posColorMap[item.organizationRoleName]!)
-        : '#5A5C72';
-
       return {
         applicationId: item.id,
         id: String(page * size + idx + 1).padStart(3, '0'),
         name: item.name,
-        fieldTags: [{ label: positionLabel, color: positionColor }],
+        fieldTags: toAppliedPositionTags(item, posColorMap),
         evalStatus: `${item.interviewEvaluatedCount}/${item.interviewAssignedCount}`,
         interviewScore: toFixed1(item.interviewAverageScore),
         status: (() => {

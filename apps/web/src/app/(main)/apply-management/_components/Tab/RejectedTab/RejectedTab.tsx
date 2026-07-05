@@ -15,7 +15,6 @@ import {
 } from 'next/navigation';
 
 import { Flex } from '@repo/ui/Flex';
-import { TagColor } from '@repo/utils';
 
 import ActionToolbar from '../../ActionToolbar/ActionToolbar';
 import TableContainer from '../../TableContainer/TableContainer';
@@ -30,12 +29,12 @@ import {
   useAdminApplicationsClientQuery,
 } from '@web/store/query/useAdminApplicationsQuery';
 import { sortByMap, stageMap } from '../../../[tab]/TabClient';
-import { mapServerColorToTagHex } from '@web/utils/color';
 
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { useUpdateQuery } from '@web/store/query/useUpdateQuery';
 import { useAdminApplicationsExcelDownload } from '@web/store/query/useAdminApplicationsExcelDownload';
 import { toFixed1 } from '@web/utils/number';
+import { toAppliedPositionTags } from '@web/utils/applicationPositionTags';
 
 const HEADER: HeaderMeta[] = [
   { key: 'checkbox', label: '', width: '4.7rem' },
@@ -227,17 +226,11 @@ export default function RejectedTab({ recruitmentId }: RejectedTabProps) {
     if (!data) return [];
 
     return data.data.map((item, idx) => {
-      const positionLabel = item.organizationRoleName ?? '공통';
-
-      const positionColor: TagColor = item.organizationRoleName
-        ? mapServerColorToTagHex(posColorMap[item.organizationRoleName]!)
-        : '#5A5C72';
-
       return {
         applicationId: item.id,
         id: String(page * size + idx + 1).padStart(3, '0'),
         name: item.name,
-        fieldTags: [{ label: positionLabel, color: positionColor }],
+        fieldTags: toAppliedPositionTags(item, posColorMap),
         evalStatus: `${item.documentEvaluatedCount}/${item.documentAssignedCount}`,
         documentScore: toFixed1(item.documentAverageScore),
         interviewScore: toFixed1(item.interviewAverageScore),

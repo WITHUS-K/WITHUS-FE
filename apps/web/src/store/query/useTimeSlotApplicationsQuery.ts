@@ -65,6 +65,7 @@ export interface CommentItem {
 export interface TimeSlotApplication {
   applicationId: number;
   appliedPosition: number;
+  appliedPositions?: string[];
   name: string;
   date: string;
   startTime: string;

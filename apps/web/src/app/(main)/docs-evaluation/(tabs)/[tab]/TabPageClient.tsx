@@ -87,10 +87,15 @@ export default function TabPageClient({ recruitmentId }: { recruitmentId: number
           <div className={styles.scrollContainer}>
             <Flex wrap="wrap" gap="2rem">
               {apps.map((app) => {
-                const displayPositionName = app.organizationRoleName ?? '공통';
-                const pos = positions.find((p) => p.name === app.organizationRoleName);
+                const positionNames =
+                  app.appliedPositions && app.appliedPositions.length > 0
+                    ? app.appliedPositions
+                    : [app.organizationRoleName ?? '공통'];
+                const displayPositionName = positionNames.join(', ');
+                const firstPositionName = positionNames[0];
+                const pos = positions.find((p) => p.name === firstPositionName);
                 const tagColor =
-                  app.organizationRoleName == null
+                  firstPositionName == null || firstPositionName === '공통'
                     ? '#7F82A1'
                     : mapServerColorToTagHex(pos?.color ?? 'GRAY');
                 return (

@@ -67,6 +67,7 @@ export interface ApplicationDetail {
   id: number;
   title: string;
   appliedPosition: string;
+  appliedPositions?: string[];
   name: string;
   gender: 'MALE' | 'FEMALE' | 'NONE';
   email: string;

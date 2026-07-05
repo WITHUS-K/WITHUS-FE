@@ -21,12 +21,11 @@ import {
   useAdminApplicationsQuery,
 } from '@web/store/query/useAdminApplicationsQuery';
 import { sortByMap, stageMap } from '../../../[tab]/TabClient';
-import { mapServerColorToTagHex } from '@web/utils/color';
-import { TagColor } from '@repo/utils';
 import { useRecruitmentPositionsQuery } from '@web/store/query/useRecruitmentPositionsQuery';
 import { useUpdateQuery } from '@web/store/query/useUpdateQuery';
 import { useAdminApplicationsExcelDownload } from '@web/store/query/useAdminApplicationsExcelDownload';
 import { toFixed1 } from '@web/utils/number';
+import { toAppliedPositionTags } from '@web/utils/applicationPositionTags';
 
 const HEADER: HeaderMeta[] = [
   { key: 'checkbox', label: '', width: '4.7rem' },
@@ -221,16 +220,11 @@ export default function FinalTab({ recruitmentId }: FinalTabProps) {
   const rows = useMemo(() => {
     if (!data) return [];
     return data.data.map((item, idx) => {
-      const positionLabel = item.organizationRoleName ?? '공통';
-      const positionColor: TagColor = item.organizationRoleName
-        ? mapServerColorToTagHex(posColorMap[item.organizationRoleName]!)
-        : '#5A5C72';
-
       return {
         applicationId: item.id,
         id: String(page * size + idx + 1).padStart(3, '0'),
         name: item.name,
-        fieldTags: [{ label: positionLabel, color: positionColor }],
+        fieldTags: toAppliedPositionTags(item, posColorMap),
         documentScore: toFixed1(item.documentAverageScore),
         interviewScore: toFixed1(item.interviewAverageScore),
         status: '최종합격',

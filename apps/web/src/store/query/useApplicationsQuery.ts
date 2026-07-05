@@ -21,6 +21,7 @@ export interface ApplicationSummary {
   id: number;
   name: string;
   organizationRoleName : string;
+  appliedPositions?: string[];
   status:
     | 'PENDING'
     | 'DOX_PASS'
