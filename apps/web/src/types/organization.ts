@@ -46,6 +46,37 @@ export interface OrganizationRolesData {
 
 export type OrganizationRolesResponse = ApiResponse<OrganizationRolesData>;
 
+export interface OrganizationRoleGroupRole {
+  id: number;
+  roleName: string;
+  color: string;
+}
+
+export interface OrganizationRoleGroup {
+  id: number;
+  name: string;
+  selectionMinCount: number;
+  selectionMaxCount: number;
+  roles: OrganizationRoleGroupRole[];
+}
+
+export type OrganizationRoleGroupsResponse = ApiResponse<OrganizationRoleGroup[]>;
+
+export interface CreateOrganizationRoleGroupRequest {
+  name: string;
+  selectionMinCount: number;
+  selectionMaxCount: number;
+}
+
+export type CreateOrganizationRoleGroupResponse = ApiResponse<OrganizationRoleGroup>;
+
+export interface AssignOrganizationRoleGroupRolesRequest {
+  roleIds: number[];
+}
+
+export type AssignOrganizationRoleGroupRolesResponse = ApiResponse<OrganizationRoleGroup>;
+
+
 export interface CreateRoleRequest {
   name: string;
   color: string;
