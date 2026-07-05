@@ -33,6 +33,10 @@ import {
   AnswerFile,
   QuestionAndFileListForm,
 } from '@web/components/QuestionFileListForm/QuestionFileListForm';
+import {
+  buildRoleGroups,
+  toSelectedPartLabels,
+} from '@web/utils/applicationParts';
 
 interface Props {
   recruitmentId: number;
@@ -66,6 +70,7 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
         profileImage: null,
       },
       applicationPart: undefined,
+      applicationParts: [],
       questionAnswers: [],
       questionFiles: [],
       interviewSchedule: {
@@ -132,20 +137,59 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
     [data, dates]
   );
 
-  const selectedPartLabel = watch('applicationPart')?.label;
+  const selectedParts = watch('applicationParts') ?? [];
+  const selectedPartIds = selectedParts.map((part) => part.id);
+  const selectedPartLabels = useMemo(
+    () => toSelectedPartLabels(selectedParts),
+    [selectedParts]
+  );
+
+  const partOptions = useMemo(
+    () =>
+      data?.positions.map((position) => ({
+        id: position.id,
+        label: position.roleName,
+      })) ?? [],
+    [data?.positions]
+  );
+
+  const roleGroups = useMemo(
+    () =>
+      buildRoleGroups(
+        partOptions,
+        data?.roleGroups?.map((group) => ({
+          id: group.id,
+          name: group.name,
+          selectionMinCount: group.selectionMinCount,
+          selectionMaxCount: group.selectionMaxCount,
+          roles: group.roles.map((role) => ({
+            id: role.id,
+            label: role.roleName,
+          })),
+        }))
+      ),
+    [data?.roleGroups, partOptions]
+  );
+
+  const groupedPartOptions =
+    data?.roleGroups !== undefined && data.roleGroups.length > 0
+      ? roleGroups
+      : undefined;
 
   useEffect(() => {
     if (
       data?.positions.length &&
-      !watch('applicationPart') // 아직 선택 안되어 있다면
+      selectedParts.length === 0
     ) {
       const firstPart = data.positions[0];
-      setValue('applicationPart', {
+      const defaultPart = {
         id: firstPart!.id,
         label: firstPart!.roleName,
-      });
+      };
+      setValue('applicationPart', defaultPart);
+      setValue('applicationParts', [defaultPart]);
     }
-  }, [data?.positions, setValue, watch]);
+  }, [data?.positions, selectedParts.length, setValue]);
 
   // detailItems 정의부를 이렇게 바꿔주세요.
   const detailItems: (DetailItem & { questionId: number })[] = useMemo(
@@ -154,7 +198,8 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
         // 파트 이름(positionName) 이 선택된 파트 라벨과 같은 것만
         .filter(
           (q) =>
-            q.organizationRoleName === '공통' || q.organizationRoleName === selectedPartLabel
+            q.organizationRoleName === '공통' ||
+            selectedPartLabels.has(q.organizationRoleName)
         )
         .map((q) => {
           console.log(q);
@@ -188,7 +233,7 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
             };
           }
         }) ?? [],
-    [data?.applicationQuestions, selectedPartLabel]
+    [data?.applicationQuestions, selectedPartLabels]
   );
 
   const onSubmit = useCallback(
@@ -270,7 +315,7 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
         phoneNumber: vals.basicInfo.phone.replace(/\D/g, ''),
         gender: (vals.basicInfo.gender || 'MALE').toUpperCase() as 'MALE' | 'FEMALE',
         recruitmentId,
-        positionId: vals.applicationPart!.id,
+        positionIds: vals.applicationParts?.map((part) => part.id) ?? [],
         answers, 
         availableTimes,
         university: vals.additionalInfo.school ?? '',
@@ -336,12 +381,18 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
         </Flex>
 
         <ApplicationPartsForm
-          parts={data.positions.map((p) => ({
-            id: p.id,
-            label: p.roleName,
-          }))}
+          parts={partOptions}
+          roleGroups={groupedPartOptions}
           selectedPartId={watch('applicationPart')?.id}
-          onChange={(p: PartOption) => setValue('applicationPart', p)}
+          selectedPartIds={selectedPartIds}
+          onChange={(p: PartOption) => {
+            setValue('applicationPart', p);
+            setValue('applicationParts', [p]);
+          }}
+          onMultiChange={(parts: PartOption[]) => {
+            setValue('applicationParts', parts);
+            setValue('applicationPart', parts[0]);
+          }}
         />
 
         <QuestionAndFileListForm

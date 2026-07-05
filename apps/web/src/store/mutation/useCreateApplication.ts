@@ -16,6 +16,7 @@ export interface CreateApplicationRequest {
   address?: string;
   recruitmentId: number;
   positionId?: number | null;
+  positionIds?: number[];
   /** 질문별 답변 */
   answers: Array<{
     questionId: number;
@@ -35,6 +36,7 @@ export interface CreateApplicationResponse {
     name: string;
     email: string;
     organizationRoleName : string;
+    appliedPositions?: string[];
     status: string; // e.g. "PENDING"
   };
   success: boolean;

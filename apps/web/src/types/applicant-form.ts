@@ -22,6 +22,7 @@ export type ApplicantForm = {
     profileImage: File | null;
   };
   applicationPart?: PartOption;
+  applicationParts?: PartOption[];
   questionAnswers: string[];
   questionFiles: AnswerFile[][];
   interviewSchedule: {

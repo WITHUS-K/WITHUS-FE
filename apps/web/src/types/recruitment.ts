@@ -93,6 +93,17 @@ export interface RecruitmentDetailDto {
     roleName: string;
     color: string;
   }[];
+  roleGroups?: {
+    id: number;
+    name: string;
+    selectionMinCount: number;
+    selectionMaxCount: number;
+    roles: {
+      id: number;
+      roleName: string;
+      color: string;
+    }[];
+  }[];
   documentDeadline: string;
   isDocumentResultRequired: boolean;
   documentResultDate: string;
