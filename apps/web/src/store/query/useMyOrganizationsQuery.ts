@@ -1,7 +1,7 @@
 import {
   queryOptions,
-  useSuspenseQuery,
-  type UseSuspenseQueryOptions,
+  useQuery,
+  type UseQueryOptions,
 } from '@tanstack/react-query';
 import { GET } from '@web/api/fetch';
 import type { Tokens } from '@web/api/types';
@@ -25,7 +25,7 @@ export async function fetchMyOrganizations(
 
 export function getMyOrganizationsQueryOptions(
   tokens?: Tokens
-): UseSuspenseQueryOptions<Organization[], Error> {
+): UseQueryOptions<Organization[], Error> {
   return queryOptions<Organization[]>({
     queryKey: queryKeys.organization.me(),
     queryFn: () => fetchMyOrganizations(tokens),
@@ -33,6 +33,6 @@ export function getMyOrganizationsQueryOptions(
   });
 }
 
-export function useMyOrganizationsQuery() {
-  return useSuspenseQuery(getMyOrganizationsQueryOptions());
+export function useMyOrganizationsQuery(enabled = true) {
+  return useQuery({ ...getMyOrganizationsQueryOptions(), enabled });
 }
