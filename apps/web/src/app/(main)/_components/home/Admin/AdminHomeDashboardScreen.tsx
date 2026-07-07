@@ -1,17 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { Flex } from '@repo/ui/Flex';
 import { AdminHomeHeader } from '@web/app/(main)/_components/admin/AdminHomeHeader/AdminHomeHeader';
 import { AnnounceCard } from '@web/app/(main)/_components/admin/AnnouncedCard/AnnouncedCard';
 import { DocTimeline } from '@web/app/(main)/_components/admin/DocTimeline/DocTimeline';
-import { OverallProgress } from '@web/app/(main)/_components/admin/OverallProgress/OverallProgress';
-import { PendingUsers } from '@web/app/(main)/_components/admin/PendingUsers/PendingUsers';
+import { OverallProgressContainer } from '@web/app/(main)/_components/admin/OverallProgress/OverallProgressContainer';
+import { OverallProgressSkeleton } from '@web/app/(main)/_components/admin/OverallProgress/OverallProgressSkeleton';
+import { PendingUsersContainer } from '@web/app/(main)/_components/admin/PendingUsers/PendingUsersContainer';
+import { PendingUsersSkeleton } from '@web/app/(main)/_components/admin/PendingUsers/PendingUsersSkeleton';
 import { useCurrentRecruitmentSummaryQuery } from '@web/store/query/useCurrentRecruitmentSummaryQuery';
-import { useRecruitmentProgressQuery } from '@web/store/query/useRecruitmentProgressQuery';
-import { usePendingEvaluatorsQuery } from '@web/store/query/usePendingEvaluatorsQuery';
-import { useRemindEvaluatorsMutation } from '@web/store/mutation/useRemindEvaluatorsMutation';
 
 export const AdminHomeDashboardScreen = () => {
   const router = useRouter();
@@ -19,14 +18,8 @@ export const AdminHomeDashboardScreen = () => {
   const currentRecruitment = summaryData?.[0];
   const recruitmentId = currentRecruitment?.recruitmentId;
 
-  const { data: docProgress } = useRecruitmentProgressQuery(recruitmentId!, 'DOCUMENT');
-  const { data: interviewProgress } = useRecruitmentProgressQuery(recruitmentId!, 'INTERVIEW');
-  const { data: pendingData } = usePendingEvaluatorsQuery(recruitmentId!);
-
-  const { mutate: remind, isPending: isReminding } = useRemindEvaluatorsMutation();
-
-  if (!currentRecruitment) {
-    return <Flex padding="2.4rem">Loading...</Flex>;
+  if (!currentRecruitment || !recruitmentId) {
+    return null;
   }
 
   return (
@@ -50,18 +43,13 @@ export const AdminHomeDashboardScreen = () => {
         <Flex width="100%" gap="2rem">
           <DocTimeline data={currentRecruitment} />
 
-          <OverallProgress
-            docData={docProgress}
-            interviewData={interviewProgress}
-          />
+          <Suspense fallback={<OverallProgressSkeleton />}>
+            <OverallProgressContainer recruitmentId={recruitmentId} />
+          </Suspense>
 
-          {pendingData && (
-            <PendingUsers
-              data={pendingData}
-              onRemind={() => remind(recruitmentId!)}
-              isReminding={isReminding}
-            />
-          )}
+          <Suspense fallback={<PendingUsersSkeleton />}>
+            <PendingUsersContainer recruitmentId={recruitmentId} />
+          </Suspense>
         </Flex>
       </Flex>
     </Flex>

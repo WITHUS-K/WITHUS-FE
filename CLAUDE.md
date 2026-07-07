@@ -20,10 +20,11 @@ WITHUS-FE/
 │   ├── typescript-config/    # 공통 TS 설정
 │   └── eslint-config/        # 공통 ESLint 설정
 └── docs/
-    ├── api-ssr-pattern.md    # API 연동 + SSR 패턴 가이드 (필독)
-    ├── modal-pattern.md      # 모달 구현 패턴 가이드 (필독)
-    ├── ui-design-system.md   # UI 마크업 + 디자인 시스템 + Toast 가이드 (필독)
-    └── form-pattern.md       # react-hook-form + TextField 폼 패턴 가이드 (필독)
+    ├── api-ssr-pattern.md       # API 연동 + SSR 패턴 가이드 (필독)
+    ├── ssr-streaming-pattern.md # SSR 스트리밍 + 섹션별 Suspense 패턴 가이드 (필독)
+    ├── modal-pattern.md         # 모달 구현 패턴 가이드 (필독)
+    ├── ui-design-system.md      # UI 마크업 + 디자인 시스템 + Toast 가이드 (필독)
+    └── form-pattern.md          # react-hook-form + TextField 폼 패턴 가이드 (필독)
 ```
 
 패키지 매니저: **pnpm** / 모노레포 빌드: **Turborepo**
@@ -77,6 +78,7 @@ src/
 새 기능 작업 전 반드시 읽을 것:
 
 - **`docs/api-ssr-pattern.md`** — API 연동 + SSR prefetch 패턴
+- **`docs/ssr-streaming-pattern.md`** — 섹션별로 독립적인 데이터를 스트리밍하는 SSR + Suspense 패턴
 - **`docs/modal-pattern.md`** — 모달 구현 패턴 (Parallel Route + Intercepting Route)
 - **`docs/form-pattern.md`** — react-hook-form + Controller + TextField 연동 패턴
 - **`docs/ui-design-system.md`** — UI 컴포넌트 + 디자인 토큰 + Toast 사용 가이드
