@@ -38,7 +38,7 @@ export default function AuthLayout({
   const clearUser = useUserStore((state) => state.clearUser);
   const { confirm } = useModal();
 
-  const { data } = useMyOrganizationsQuery();
+  const { data } = useMyOrganizationsQuery(role === 'USER');
   const organizations = data ?? [];
   const handleLogout = () => {
     confirm({
