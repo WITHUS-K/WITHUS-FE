@@ -186,75 +186,88 @@ export const SomePageScreen = () => {
 | 로딩 중 | Suspense fallback으로 올라감 | `isLoading: true` 반환 |
 | 에러 시 | ErrorBoundary로 올라감 | `isError: true` 반환 |
 | 사용 위치 | Suspense 경계 안쪽 | 어디서든 |
-| **홈 대시보드** | 사용하지 않음 | **사용** |
 
-홈 대시보드처럼 SSR prefetch + 클라이언트 조건부 렌더링이 필요한 곳은 `useQuery`를 쓴다.
+`recruitmentId`처럼 **레이아웃 자체를 결정하는 최상위 데이터**나, role에 따라 실행 여부가 갈리는 쿼리(조건부 `enabled`가 필요한 경우)는 `useQuery`를 쓴다. `useSuspenseQuery`는 `enabled` 옵션을 지원하지 않기 때문이다.
+
+```typescript
+'use client';
+
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { getMyDataQueryOptions } from '@web/store/query/useMyDataQuery';
+
+export function MyDataContainer({ id }: { id: number }) {
+  // 이미 상위 Suspense fallback이 로딩을 대신 보여주므로 isLoading 분기가 필요 없다
+  const { data } = useSuspenseQuery(getMyDataQueryOptions(id));
+  return <div>{data.name}</div>;
+}
+
+// 사용하는 쪽
+<Suspense fallback={<MyDataSkeleton />}>
+  <MyDataContainer id={id} />
+</Suspense>
+```
+
+섹션이 여러 개고 그중 하나가 느려도 나머지는 바로 보여줘야 하는 경우(어드민 홈 대시보드의 진행률/미완료 평가자 섹션 등)엔 이렇게 섹션별 `Container` + `useSuspenseQuery` + `Suspense`로 분리한다 — 자세한 패턴은 **`docs/ssr-streaming-pattern.md`** 참고.
 
 ---
 
-## 5. 실제 예시: Admin 홈 대시보드
+## 5. 실제 예시: User 홈 대시보드 (체이닝 + 병렬 prefetch)
 
-### `store/query/useRecruitmentProgressQuery.ts`
+### `app/(main)/dashboard/user/page.tsx`
 ```typescript
-export function getRecruitmentProgressQueryOptions(
-  recruitmentId: number,
-  stage: 'DOCUMENT' | 'INTERVIEW',
-  tokens?: Tokens
-) {
-  return {
-    queryKey: ['recruitment', 'progress', recruitmentId, stage],
-    queryFn: async () => {
-      const res = await GET<RecruitmentProgressItem[]>(
-        `api/v1/recruitments/${recruitmentId}/progress?stage=${stage}`,
-        undefined,
-        tokens
-      );
-      return res.result;
-    },
-    enabled: !!recruitmentId,
-  };
-}
-
-export function useRecruitmentProgressQuery(
-  recruitmentId: number,
-  stage: 'DOCUMENT' | 'INTERVIEW'
-) {
-  return useQuery(getRecruitmentProgressQueryOptions(recruitmentId, stage));
-}
-```
-
-### `app/(main)/dashboard/admin/page.tsx`
-```typescript
-export default async function AdminDashboardPage() {
+export default async function UserDashboardPage() {
   const tokens = await getServerSideTokens();
+  const orgId = tokens.organizationId;
   const queryClient = getQueryClient();
 
-  // 1. 현재 공고 요약 (recruitmentId 획득)
-  const summaryOptions = getCurrentRecruitmentSummaryQueryOptions(tokens);
+  if (!orgId) {
+    return <UserHomeEmptyScreen />;
+  }
+
+  // 1단계: 현재 공고 요약 (recruitmentId 획득)
+  const summaryOptions = getCurrentRecruitmentSummaryByOrgQueryOptions(orgId, tokens);
   let summaries: Awaited<ReturnType<typeof summaryOptions.queryFn>> = [];
+
   try {
     summaries = await queryClient.fetchQuery(summaryOptions);
   } catch {
-    return <AdminHomeEmptyScreen />;
+    return <UserHomeEmptyScreen />;
   }
 
   const firstSummary = summaries[0];
-  if (!firstSummary) return <AdminHomeEmptyScreen />;
+  if (!firstSummary) {
+    return <UserHomeEmptyScreen />;
+  }
 
-  // 2. 나머지 데이터 병렬 prefetch
+  const recruitmentId = firstSummary.recruitmentId;
+
+  // 2단계: 독립적인 API는 병렬로, 의존적인 API는 .then()으로 체이닝
+  const docEvalOptions = getMyDocumentEvaluationsQueryOptions(recruitmentId, tokens);
+  const orgInterviewsOptions = getOrgInterviewsForHomeQueryOptions(orgId, tokens);
+
   await Promise.all([
-    queryClient.fetchQuery(getRecruitmentProgressQueryOptions(firstSummary.recruitmentId, 'DOCUMENT', tokens)),
-    queryClient.fetchQuery(getRecruitmentProgressQueryOptions(firstSummary.recruitmentId, 'INTERVIEW', tokens)),
-    queryClient.fetchQuery(getPendingEvaluatorsQueryOptions(firstSummary.recruitmentId, tokens)),
+    queryClient.fetchQuery(docEvalOptions),
+    queryClient.fetchQuery(orgInterviewsOptions).then((orgInterviews) => {
+      const interviewId = orgInterviews.find(
+        (iv) => iv.recruitmentId === recruitmentId
+      )?.interviewId;
+      if (interviewId) {
+        return queryClient.fetchQuery(
+          getMyTimeSlotsForHomeQueryOptions(interviewId, tokens)
+        );
+      }
+    }),
   ]).catch(() => {});
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <AdminHomeDashboardScreen />
+      <UserHomeDashboardScreen />
     </HydrationBoundary>
   );
 }
 ```
+
+> **참고**: 위 패턴은 병렬 prefetch한 API들이 전부 빠르게 응답한다는 전제하에 쓴다. 페이지 안에 서로 독립적인 섹션이 여러 개 있고 그중 하나가 느려져도 나머지는 바로 보여줘야 한다면(예: 어드민 홈 대시보드), 이 문서 대신 **`docs/ssr-streaming-pattern.md`**의 섹션별 Suspense 스트리밍 패턴을 따른다.
 
 ---
 
