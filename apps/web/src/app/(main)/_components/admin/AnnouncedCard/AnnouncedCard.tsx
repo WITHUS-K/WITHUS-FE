@@ -59,9 +59,19 @@ export const AnnounceCard = ({ data, onViewDetail }: AnnounceCardProps) => {
                 <Text variant="xs_caption_medium" color="grayscale60">
                   파트{idx + 1}
                 </Text>
-                <Flex gap="0.8rem" align="center">
-                  <Tag color={tagColor}>{p.positionName}</Tag>
-                  <Text variant="lg_subtitle_bold" color="grayscale90">
+                <Flex gap="0.8rem" align="center" className={styles.partRow}>
+                  <Tag
+                    color={tagColor}
+                    className={styles.partTag}
+                    title={p.positionName}
+                  >
+                    {p.positionName}
+                  </Tag>
+                  <Text
+                    variant="lg_subtitle_bold"
+                    color="grayscale90"
+                    className={styles.partCount}
+                  >
                     {p.count}명
                   </Text>
                 </Flex>
