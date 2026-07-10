@@ -16,10 +16,9 @@ export default function OrganizationLayout({
       style={{
         height: '100%',
         width: '100%',
-        padding: '2.4rem',
       }}
     >
-      {children}
+      <div style={{ padding: '2.4rem' }}>{children}</div>
       {modal}
     </div>
   );
