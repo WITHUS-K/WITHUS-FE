@@ -6,11 +6,13 @@ import RolePalettePanel, {
   colorHexToNameMap,
 } from '../_components/RolePalettePanel/RolePalettePanel';
 import MemberAssignmentPanel from '../_components/MemberAssignmentPanel/MemberAssignmentPanel';
+import RoleGroupPanel from '../_components/RoleGroupPanel/RoleGroupPanel';
 import { hexToName, nameToHex } from '@web/utils/color';
 import type { RoleSelectWithCount, UserResult } from '@web/types/organization';
 import type { PaletteColor } from '@repo/utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getOrganizationRolesQueryOptions } from '@web/store/query/useOrganizationRolesQuery';
+import { useOrganizationRoleGroupsQuery } from '@web/store/query/useOrganizationRoleGroupsQuery';
 import {
   useOrganizationUsersClientQuery,
   useOrganizationUsersQuery,
@@ -35,6 +37,10 @@ export default function Settings({ organizationId }: Props) {
   const { data: rolesData } = useSuspenseQuery(
     getOrganizationRolesQueryOptions({ organizationId })
   );
+
+  const { data: roleGroups } = useOrganizationRoleGroupsQuery({
+    organizationId,
+  });
 
   const filteredRoles = useMemo(
     () =>
@@ -151,6 +157,13 @@ export default function Settings({ organizationId }: Props) {
             onAdd={handleAdd}
             onRemove={handleRemove}
             showBulkControls={selectedRoleIdx !== null}
+          />
+        </Flex>
+        <Flex width="100%" marginTop="1.6rem">
+          <RoleGroupPanel
+            organizationId={organizationId}
+            roles={rolesData.roles}
+            groups={roleGroups}
           />
         </Flex>
       </Flex>

@@ -7,7 +7,8 @@ export const root = style({
   padding: '2rem',
   border: `1px solid ${vars.colors.grayscale5}`,
   width: '100%',
-  height: '34.7rem',
+  height: '100%',
+  minHeight: 0,
   overflow: 'auto'
 })
 

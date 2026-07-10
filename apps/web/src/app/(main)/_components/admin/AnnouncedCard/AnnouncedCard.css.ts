@@ -48,5 +48,23 @@ export const partCard = style({
   flexDirection: 'column',
   alignItems: 'flex-start',
   gap: '0.8rem',
-  width: '100%'
+  width: '100%',
+  minWidth: 0
+})
+
+export const partRow = style({
+  width: '100%',
+  minWidth: 0
+})
+
+export const partTag = style({
+  minWidth: 0,
+  maxWidth: '100%',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis'
+})
+
+export const partCount = style({
+  flexShrink: 0,
+  whiteSpace: 'nowrap'
 })

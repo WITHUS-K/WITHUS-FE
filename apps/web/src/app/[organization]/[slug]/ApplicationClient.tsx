@@ -43,6 +43,11 @@ import { FormFieldStatusProvider } from './_context/FormFieldStatusContext';
 import { PartStatusResetter } from './_context/PartStatusResetter';
 import { Spinner } from '@repo/ui/Spinner';
 import { useMissingFieldToast } from '@web/hooks/useMissingFieldToast';
+import {
+  buildRoleGroups,
+  isPartSelectionValid,
+  toSelectedPartLabels,
+} from '@web/utils/applicationParts';
 import { buildRecruitUrl } from '@web/utils/url';
 
 interface ApplicationClientProps {
@@ -54,7 +59,6 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   const createApp = useCreateApplication();
   const { data } = useRecruitmentBySlugQuery({ slug });
   const { confirm } = useModal();
-  console.log('슬러그', data);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -106,6 +110,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
         profileImage: null,
       },
       applicationPart: undefined,
+      applicationParts: [],
       questionAnswers: [],
       questionFiles: [] as AnswerFile[][],
       interviewSchedule: {
@@ -115,6 +120,40 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   });
 
   const selectedPart = watch('applicationPart');
+  const selectedParts = watch('applicationParts') ?? [];
+  const selectedPartIds = selectedParts.map((part) => part.id);
+  const selectedPartLabels = useMemo(
+    () => toSelectedPartLabels(selectedParts),
+    [selectedParts]
+  );
+  const selectedPartLabelText = selectedParts.map((part) => part.label).join(', ');
+
+  const partOptions = useMemo(
+    () =>
+      data.positions.map((position) => ({
+        id: position.id,
+        label: position.roleName,
+      })),
+    [data.positions]
+  );
+
+  const roleGroups = useMemo(
+    () =>
+      buildRoleGroups(
+        partOptions,
+        data.roleGroups?.map((group) => ({
+          id: group.id,
+          name: group.name,
+          selectionMinCount: group.selectionMinCount,
+          selectionMaxCount: group.selectionMaxCount,
+          roles: group.roles.map((role) => ({
+            id: role.id,
+            label: role.roleName,
+          })),
+        }))
+      ),
+    [data.roleGroups, partOptions]
+  );
 
   const commonTextCount =
     data?.applicationQuestions.filter(
@@ -180,13 +219,13 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
     [data, dates]
   );
 
-  const selectedPartLabel = watch('applicationPart')?.label;
-
   const detailItems: (DetailItem & { questionId: number })[] = useMemo(() => {
     if (!data?.applicationQuestions) return [];
     return data.applicationQuestions
       .filter(
-        (q) => q.organizationRoleName === '공통' || q.organizationRoleName === selectedPartLabel
+        (q) =>
+          q.organizationRoleName === '공통' ||
+          selectedPartLabels.has(q.organizationRoleName)
       )
       .map((q) => {
         if (q.type === 'TEXT') {
@@ -220,7 +259,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
           } as const;
         }
       });
-  }, [data?.applicationQuestions, selectedPartLabel]);
+  }, [data?.applicationQuestions, selectedPartLabels]);
 
   const partTextCount = detailItems.filter((d) => d.type === 'text').length;
   const partFileCount = detailItems.filter((d) => d.type === 'file').length;
@@ -350,7 +389,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
     basicInfo: watch('basicInfo'),
     additionalInfo: watch('additionalInfo'),
     hasPositions: (data?.positions.length ?? 0) > 0,
-    selectedPartLabel: watch('applicationPart')?.label ?? null,
+    selectedPartLabel: selectedPartLabelText || null,
 
     detailItems,
     textAnswers: watch('questionAnswers') ?? [],
@@ -364,7 +403,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
     additionalFilled &&
     questionsAnswered &&
     hasSchedule &&
-    (data.positions.length > 0 ? Boolean(selectedPart) : true);
+    isPartSelectionValid(roleGroups, selectedPartIds);
 
   const onSubmit = useCallback(
     (vals: ApplicantForm) => {
@@ -437,7 +476,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
           ? (vals.basicInfo.gender.toUpperCase() as 'MALE' | 'FEMALE')
           : undefined,
         recruitmentId: data.recruitmentId,
-        positionId: vals.applicationPart?.id ?? null,
+        positionIds: vals.applicationParts?.map((part) => part.id) ?? [],
         answers,
         availableTimes,
         university: vals.additionalInfo.school ?? '',
@@ -611,7 +650,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   return (
     <FormFieldStatusProvider>
       <PartStatusResetter
-        selectedPartLabel={watch('applicationPart')?.label}
+        selectedPartLabel={selectedPartLabelText}
         detailItems={detailItems}
         commonTextCount={commonTextCount}
         commonFileCount={commonFileCount}
@@ -679,12 +718,18 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
             </Flex>
 
             <ApplicationPartsForm
-              parts={data.positions.map((p) => ({
-                id: p.id,
-                label: p.roleName,
-              }))}
+              parts={partOptions}
+              roleGroups={roleGroups}
               selectedPartId={watch('applicationPart')?.id}
-              onChange={(p: PartOption) => setValue('applicationPart', p)}
+              selectedPartIds={selectedPartIds}
+              onChange={(p: PartOption) => {
+                setValue('applicationPart', p);
+                setValue('applicationParts', [p]);
+              }}
+              onMultiChange={(parts: PartOption[]) => {
+                setValue('applicationParts', parts);
+                setValue('applicationPart', parts[0]);
+              }}
             />
 
             <QuestionAndFileListForm

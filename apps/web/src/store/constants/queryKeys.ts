@@ -19,6 +19,10 @@ export const queryKeys = {
             ] as const)
           : (['organization', organizationId, 'roles'] as const),
     },
+    roleGroups: {
+      list: (organizationId: number) =>
+        ['organization', organizationId, 'role-groups'] as const,
+    },
     users: {
       search: (organizationId: number, roleId: number, keyword?: string) =>
         keyword

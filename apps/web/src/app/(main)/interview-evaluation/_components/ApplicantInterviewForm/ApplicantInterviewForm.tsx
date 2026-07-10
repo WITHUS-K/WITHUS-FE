@@ -50,14 +50,25 @@ export const ApplicantInterviewForm = ({
     recruitmentId,
   });
 
-  const positionName = recruitmentDetail?.positions.find(
+  const fallbackPositionName = recruitmentDetail?.positions.find(
     (p) => p.id === detail.appliedPosition
   )?.roleName;
+
+  const positionNames = new Set(
+    detail.appliedPositions?.length
+      ? detail.appliedPositions
+      : fallbackPositionName
+        ? [fallbackPositionName]
+        : []
+  );
 
   // 해당 포지션의 Interview 평가 기준만 추출
   const allCriteria =
     recruitmentDetail?.interviewEvaluationCriteria.filter(
-      (c) => c.type === 'INTERVIEW' && c.organizationRoleName === positionName
+      (c) =>
+        c.type === 'INTERVIEW' &&
+        (c.organizationRoleName === '공통' ||
+          positionNames.has(c.organizationRoleName))
     ) ?? [];
 
   const mergedCriteria = allCriteria.map((c) => {

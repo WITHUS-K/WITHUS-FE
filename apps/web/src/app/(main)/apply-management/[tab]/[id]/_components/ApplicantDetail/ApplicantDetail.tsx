@@ -163,7 +163,9 @@ export default function ApplicantDetail({
               borderColor="grayscale40"
             />
             <Text variant="md2_text_semibold" color="primary50">
-              {application.appliedPosition}
+              {application.appliedPositions?.length
+                ? application.appliedPositions.join(', ')
+                : application.appliedPosition}
             </Text>
           </Flex>
 

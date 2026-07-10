@@ -103,16 +103,21 @@ export default function ApplicantDetailClient({ timeSlotId }: Props) {
   // 평균(하단 카드에 보여줄 값)
   const average = application?.interviewAverageScore ?? '0';
 
-  // 지원자 포지션(서버에서 문자열/아이디 형태면 너희 프로젝트 타입에 맞게 맞춰줘)
-  const positionName = application?.appliedPosition;
-
-  // recruitmentDetail의 positions에서 지원자의 포지션 이름 찾기 (ApplicantInterviewForm 동일)
-
+  const positionNames = new Set(
+    application?.appliedPositions?.length
+      ? application.appliedPositions
+      : application?.appliedPosition
+        ? [application.appliedPosition]
+        : []
+  );
   
   // ✅ 해당 포지션의 INTERVIEW 평가기준만
   const interviewCriteria =
     recruitmentDetail?.interviewEvaluationCriteria.filter(
-      (c) => c.type === 'INTERVIEW' && c.organizationRoleName === positionName
+      (c) =>
+        c.type === 'INTERVIEW' &&
+        (c.organizationRoleName === '공통' ||
+          positionNames.has(c.organizationRoleName))
     ) ?? [];
 
   // ✅ “내가 이미 준 점수”는 application.evaluations에서 찾기 (없으면 null/기본값)

@@ -49,6 +49,7 @@ export interface AdminApplicationSummary {
   id: number;
   name: string;
   organizationRoleName: string;
+  appliedPositions?: string[];
   status: AdminApplicationStatus;
 
   documentAssignedCount: number;

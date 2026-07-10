@@ -23,6 +23,7 @@ export interface UpdateApplicationsStatusResponse {
     name: string;
     email: string;
     organizationRoleName : string;
+    appliedPositions?: string[];
     status: string;
   }[];
   success: boolean;
@@ -63,17 +64,12 @@ export function useUpdateApplicationsStatus(
         'api/v1/admin/applications/status',
         payload
       );
-      console.log('상태', payload);
-      console.log('상태', res);
       return res.result;
     },
 
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: allAppsPrefix });
       qc.invalidateQueries({ queryKey: listPrefix });
-    },
-    onError(error, variables, context) {
-      console.log(error, variables, context);
     },
   });
 }

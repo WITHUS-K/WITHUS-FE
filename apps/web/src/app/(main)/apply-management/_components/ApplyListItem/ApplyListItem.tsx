@@ -159,7 +159,15 @@ export default function ApplyListItem({
         {member.name}
       </Text>
 
-      <div style={{ width: '13.4rem', marginRight: '3.8rem' }}>
+      <div
+        style={{
+          width: '13.4rem',
+          marginRight: '3.8rem',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '0.4rem',
+        }}
+      >
         {member.fieldTags.map((t) => (
           <Tag key={t.label} color={t.color} withCircle>
             {t.label}
