@@ -68,8 +68,7 @@ export const PendingUsers = ({ data, onRemind, isReminding }: PendingUsersProps)
               <Profile
                 size={32}
                 src={
-                  u.profileImageUrl ||
-                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpe8Bx-lLSfBQO6Pi22c5nnBpUaJMeV0hi_s9Vf-CFB-pRlj0ezWnKCtf3b9AvkvxRmLo&usqp=CAU'
+                  u.profileImageUrl 
                 }
                 alt={u.name}
               />
