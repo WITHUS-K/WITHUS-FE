@@ -32,21 +32,12 @@ export function ApplicationPartsForm({
 
   const partStatus = useFormFieldStatus('part-select');
   const isGrouped = roleGroups !== undefined && roleGroups.length > 0;
+  // buildRoleGroups()가 실제 그룹이 없을 때 만드는 합성 그룹(id: 0)은
+  // 섹션 제목("지원 파트")과 이름이 겹치므로 그룹 헤더를 별도로 보여주지 않는다.
+  const hasRealGroups = (roleGroups ?? []).some((group) => group.id !== 0);
 
-  const handleMultiToggle = (group: RoleGroupOption, part: PartOption) => {
+  const commitSelection = (nextIds: number[]) => {
     const groups = roleGroups ?? [];
-    const selected = selectedPartIds.includes(part.id);
-    const selectedInGroupCount = group.roles.filter((role) =>
-      selectedPartIds.includes(role.id)
-    ).length;
-
-    if (!selected && selectedInGroupCount >= group.selectionMaxCount) {
-      return;
-    }
-
-    const nextIds = selected
-      ? selectedPartIds.filter((id) => id !== part.id)
-      : [...selectedPartIds, part.id];
     const nextParts = parts.filter((candidate) => nextIds.includes(candidate.id));
 
     onMultiChange?.(nextParts);
@@ -69,6 +60,32 @@ export function ApplicationPartsForm({
     }
   };
 
+  const handleMultiToggle = (group: RoleGroupOption, part: PartOption) => {
+    const selected = selectedPartIds.includes(part.id);
+    const selectedInGroupCount = group.roles.filter((role) =>
+      selectedPartIds.includes(role.id)
+    ).length;
+
+    if (!selected && selectedInGroupCount >= group.selectionMaxCount) {
+      return;
+    }
+
+    const nextIds = selected
+      ? selectedPartIds.filter((id) => id !== part.id)
+      : [...selectedPartIds, part.id];
+
+    commitSelection(nextIds);
+  };
+
+  const handleSingleSelect = (group: RoleGroupOption, part: PartOption) => {
+    const otherGroupIds = selectedPartIds.filter(
+      (id) => !group.roles.some((role) => role.id === id)
+    );
+    const nextIds = [...otherGroupIds, part.id];
+
+    commitSelection(nextIds);
+  };
+
   return (
     <section id="part-select" tabIndex={-1} className={focusableWrapper}>
       <Flex gap="2.4rem" direction="column">
@@ -82,28 +99,44 @@ export function ApplicationPartsForm({
             </Text>
           </Flex>
           <Text variant="sm_caption_medium" color="grayscale40">
-            다른 파트에 지원할 경우, 지원서를 각각 제출해주세요.
+            {hasRealGroups
+              ? '그룹별로 지원 파트를 선택해주세요.'
+              : '다른 파트에 지원할 경우, 지원서를 각각 제출해주세요.'}
           </Text>
         </Flex>
         {isGrouped ? (
           <Flex gap="2rem" direction="column">
             {roleGroups.map((group) => (
               <Flex key={group.id} gap="1rem" direction="column">
-                <Text variant="md2_text_semibold" color="grayscale60">
-                  {group.name}
-                </Text>
+                {group.id !== 0 && (
+                  <Text variant="md2_text_semibold" color="grayscale60">
+                    {group.name}
+                  </Text>
+                )}
                 <Flex gap="1rem" style={{ flexWrap: 'wrap' }}>
-                  {group.roles.map((part) => (
-                    <Option
-                      key={part.id}
-                      type="checkbox"
-                      label={part.label}
-                      width="19.6rem"
-                      onFocus={partStatus.setEditing}
-                      isChecked={selectedPartIds.includes(part.id)}
-                      onChange={() => handleMultiToggle(group, part)}
-                    />
-                  ))}
+                  {group.roles.map((part) =>
+                    group.selectionMaxCount === 1 ? (
+                      <Option
+                        key={part.id}
+                        type="radio"
+                        label={part.label}
+                        width="19.6rem"
+                        onFocus={partStatus.setEditing}
+                        isSelected={selectedPartIds.includes(part.id)}
+                        onChange={() => handleSingleSelect(group, part)}
+                      />
+                    ) : (
+                      <Option
+                        key={part.id}
+                        type="checkbox"
+                        label={part.label}
+                        width="19.6rem"
+                        onFocus={partStatus.setEditing}
+                        isChecked={selectedPartIds.includes(part.id)}
+                        onChange={() => handleMultiToggle(group, part)}
+                      />
+                    )
+                  )}
                 </Flex>
               </Flex>
             ))}

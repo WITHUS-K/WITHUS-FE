@@ -59,7 +59,6 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
   const createApp = useCreateApplication();
   const { data } = useRecruitmentBySlugQuery({ slug });
   const { confirm } = useModal();
-  console.log('슬러그', data);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -155,11 +154,6 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
       ),
     [data.roleGroups, partOptions]
   );
-
-  const groupedPartOptions =
-    data.roleGroups !== undefined && data.roleGroups.length > 0
-      ? roleGroups
-      : undefined;
 
   const commonTextCount =
     data?.applicationQuestions.filter(
@@ -725,7 +719,7 @@ export default function ApplicationClient({ slug }: ApplicationClientProps) {
 
             <ApplicationPartsForm
               parts={partOptions}
-              roleGroups={groupedPartOptions}
+              roleGroups={roleGroups}
               selectedPartId={watch('applicationPart')?.id}
               selectedPartIds={selectedPartIds}
               onChange={(p: PartOption) => {

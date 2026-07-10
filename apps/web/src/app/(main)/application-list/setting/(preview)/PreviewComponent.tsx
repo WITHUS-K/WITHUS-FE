@@ -19,6 +19,8 @@ import { ko } from 'date-fns/locale/ko';
 import { TIME_STEP } from '@web/utils/application';
 import { getClientSideTokens } from '@web/utils/getClientSideTokens';
 import { useOrganizationRolesQuery } from '@web/store/query/useOrganizationRolesQuery';
+import { useOrganizationRoleGroupsQuery } from '@web/store/query/useOrganizationRoleGroupsQuery';
+import { buildRoleGroups, PartOption } from '@web/utils/applicationParts';
 
 export default function PreviewComponent() {
   const ctx = useContext<SettingContextType | null>(SettingContext);
@@ -27,6 +29,9 @@ export default function PreviewComponent() {
 
   const { organizationId } = getClientSideTokens();
   const { data: rolesData } = useOrganizationRolesQuery({ organizationId });
+  const { data: roleGroupsData } = useOrganizationRoleGroupsQuery({
+    organizationId,
+  });
 
   const roleNameById = useMemo(() => {
     const m = new Map<number, string>();
@@ -65,48 +70,74 @@ export default function PreviewComponent() {
   ];
 
   const hasParts = form.applicationParts?.isSelected === true;
-  const [selectedPartIdx, setSelectedPartIdx] = useState<number>(0);
 
   const roleIds = form.applicationParts?.parts ?? [];
 
-  const partNames = useMemo(() => {
-    return roleIds.map((id) => roleNameById.get(id) ?? `파트(${id})`);
-  }, [roleIds, roleNameById]);
+  const partOptions: PartOption[] = useMemo(
+    () =>
+      roleIds.map((id) => ({
+        id,
+        label: roleNameById.get(id) ?? `파트(${id})`,
+      })),
+    [roleIds, roleNameById]
+  );
+
+  const roleGroupOptions = useMemo(() => {
+    const idSet = new Set(roleIds);
+    const filteredGroups = (roleGroupsData ?? [])
+      .map((group) => ({
+        id: group.id,
+        name: group.name,
+        selectionMinCount: group.selectionMinCount,
+        selectionMaxCount: group.selectionMaxCount,
+        roles: group.roles
+          .filter((role) => idSet.has(role.id))
+          .map((role) => ({ id: role.id, label: role.roleName })),
+      }))
+      .filter((group) => group.roles.length > 0);
+
+    return buildRoleGroups(partOptions, filteredGroups);
+  }, [roleGroupsData, roleIds, partOptions]);
+
+  const [selectedPartIds, setSelectedPartIds] = useState<number[]>([]);
 
   useEffect(() => {
     if (!hasParts) {
-      setSelectedPartIdx(0);
+      setSelectedPartIds([]);
       return;
     }
-    if (partNames.length > 0 && selectedPartIdx >= partNames.length) {
-      setSelectedPartIdx(Math.max(0, partNames.length - 1));
-    }
-  }, [hasParts, partNames.length, selectedPartIdx]);
+
+    setSelectedPartIds((prev) => {
+      const validIds = new Set(
+        roleGroupOptions.flatMap((group) => group.roles.map((role) => role.id))
+      );
+      let next = prev.filter((id) => validIds.has(id));
+
+      roleGroupOptions.forEach((group) => {
+        const hasSelectionInGroup = group.roles.some((role) =>
+          next.includes(role.id)
+        );
+        if (!hasSelectionInGroup && group.roles.length > 0) {
+          next = [...next, group.roles[0]!.id];
+        }
+      });
+
+      return next;
+    });
+  }, [hasParts, roleGroupOptions]);
 
   const filteredItems = useMemo(() => {
     const items = form.detailItems ?? [];
-    
+
     if (!hasParts || roleIds.length === 0) {
       return items.filter((item) => Number(item.responseTarget) === 0);
     }
 
-    const targetIndex = selectedPartIdx + 1;
-    const targetRoleId = roleIds[selectedPartIdx];
-
-    const out = items.filter((item) => {
+    return items.filter((item) => {
       const target = Number(item.responseTarget);
-
-      if (target === 0) return true;
-
-      if (target === targetIndex) return true;
-
-      if (targetRoleId !== undefined && target === targetRoleId) return true;
-
-      return false;
+      return target === 0 || selectedPartIds.includes(target);
     });
-
-    return out;
-  }, [form.detailItems, hasParts, roleIds, selectedPartIdx]);
+  }, [form.detailItems, hasParts, roleIds.length, selectedPartIds]);
 
   const interval = TIME_STEP[form.interviewDuration];
   const allSlots = form.interviewSchedule?.scheduleList ?? [];
@@ -129,9 +160,7 @@ export default function PreviewComponent() {
 
       <div className={styles.container}>
         <Flex direction="column" width="100%" gap="5rem">
-          <div className={styles.title}>
-            {form.title || '[한국대학생IT경영학회] 큐시즘 33기 학회원 모집'}
-          </div>
+          <div className={styles.title}>{form.title || '공고명'}</div>
           <div className={styles.headerWrapper}>
             {applicationSchedule.map((s, i) => (
               <div key={i} className={styles.item}>
@@ -160,11 +189,11 @@ export default function PreviewComponent() {
           />
         </Flex>
 
-        {form.applicationParts?.isSelected && partNames.length > 0 && (
+        {form.applicationParts?.isSelected && roleGroupOptions.length > 0 && (
           <ApplicationPartsPreview
-            parts={partNames}
-            selectedIndex={selectedPartIdx}
-            onChange={setSelectedPartIdx}
+            roleGroups={roleGroupOptions}
+            selectedPartIds={selectedPartIds}
+            onMultiChange={setSelectedPartIds}
           />
         )}
 

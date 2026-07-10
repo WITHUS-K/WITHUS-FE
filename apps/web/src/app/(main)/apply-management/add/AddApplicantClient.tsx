@@ -52,7 +52,6 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
     recruitmentId,
   });
 
-  console.log('공고 디테일', data);
   const { watch, setValue, handleSubmit } = useForm<ApplicantForm>({
     defaultValues: {
       basicInfo: {
@@ -171,11 +170,6 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
     [data?.roleGroups, partOptions]
   );
 
-  const groupedPartOptions =
-    data?.roleGroups !== undefined && data.roleGroups.length > 0
-      ? roleGroups
-      : undefined;
-
   useEffect(() => {
     if (
       data?.positions.length &&
@@ -202,7 +196,6 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
             selectedPartLabels.has(q.organizationRoleName)
         )
         .map((q) => {
-          console.log(q);
           if (q.type === 'TEXT') {
             const tq = q as TextQuestionDto;
             const infoText =
@@ -382,7 +375,7 @@ export default function AddApplicantClient({ recruitmentId }: Props) {
 
         <ApplicationPartsForm
           parts={partOptions}
-          roleGroups={groupedPartOptions}
+          roleGroups={roleGroups}
           selectedPartId={watch('applicationPart')?.id}
           selectedPartIds={selectedPartIds}
           onChange={(p: PartOption) => {
