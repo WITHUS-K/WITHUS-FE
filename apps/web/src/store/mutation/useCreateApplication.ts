@@ -61,36 +61,19 @@ export function useCreateApplication() {
     }
   >({
     mutationFn: async ({ payload, profileImage, answerFiles = [] }) => {
-      // 1) FormData 생성
       const form = new FormData();
-
-      console.log('payload to be stringified:', payload);
-      console.log('JSON stringified:', JSON.stringify(payload));
 
       form.append(
         'request',
         new Blob([JSON.stringify(payload)], { type: 'application/json' })
       );
 
-      // 3) 프로필 이미지 (optional)
       if (profileImage) {
         form.append('profileImage', profileImage, profileImage.name);
       }
 
-      // 4) 질문 첨부 파일들
-      /*for (const file of answerFiles) {
-        const safeName = sanitizeFileName(file.name);
-        // 새 File 객체로 이름만 교체
-        const safeFile = new File([file], safeName, { type: file.type });
-        form.append('files', safeFile, safeName);
-      }*/
       for (const file of answerFiles) {
         form.append('files', file, file.name);
-      }
-
-      //console.log('FormData entries:');
-      for (const [key, val] of Array.from(form.entries())) {
-        //console.log(key, val);
       }
 
       const res = await fetch(
@@ -101,17 +84,13 @@ export function useCreateApplication() {
         }
       );
 
-      console.log('응답', res);
       if (!res.ok) {
         const text = await res.text();
         console.error('API error status/text:', res.status, text);
         throw new Error(`지원서 생성 실패: ${res.status} ${text}`);
       }
 
-      // 6) 결과 파싱
-      const json = (await res.json()) as CreateApplicationResponse;
-      //console.log('API 응답 JSON:', json);
-      return json;
+      return (await res.json()) as CreateApplicationResponse;
     },
 
     onSuccess: (_data, variables) => {

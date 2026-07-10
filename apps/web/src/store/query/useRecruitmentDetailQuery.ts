@@ -29,19 +29,11 @@ export function getRecruitmentDetailQueryOptions({
   return queryOptions<RecruitmentDetailDto>({
     queryKey: queryKeys.recruitment.detail(recruitmentId),
     queryFn: async () => {
-      console.log(
-        '[getRecruitmentDetailQuery] request recruitmentId:',
-        recruitmentId
-      );
-
       const res = await GET<RecruitmentDetailResponse['result']>(
         `api/v1/recruitments/${recruitmentId}`,
         undefined,
         tokens
       );
-
-      console.log('[getRecruitmentDetailQuery] full response:', res);
-      console.log('[getRecruitmentDetailQuery] result:', res.result);
 
       return res.result;
     },
