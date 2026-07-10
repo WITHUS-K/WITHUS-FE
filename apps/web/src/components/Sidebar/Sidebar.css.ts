@@ -80,7 +80,7 @@ export const sidebarOrgs = style({
   overflowX: 'hidden',
   maxHeight: 'calc((3 * 3.7rem) + (2 * 0.8rem) + (2 * 1.2rem))',
   overflowY: 'auto',
-  scrollbarGutter: 'stable both-edges',
+  scrollbarGutter: 'stable',
   selectors: {
     '&::-webkit-scrollbar': {
       width: '2px',
@@ -102,5 +102,5 @@ export const orgPlus = style({
 export const orgItem = style({
   flex: '0 0 auto',
   height: '3.7rem',
-  width: '16.8rem',
+  width: '100%',
 });
