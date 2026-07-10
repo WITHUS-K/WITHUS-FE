@@ -25,6 +25,7 @@ export const AdminHomeDashboardScreen = () => {
   return (
     <Flex
       width="100%"
+      height="100%"
       direction="column"
       gap="4rem"
       paddingBottom="2.4rem"
@@ -34,13 +35,25 @@ export const AdminHomeDashboardScreen = () => {
     >
       <AdminHomeHeader />
 
-      <Flex width="100%" direction="column" gap="2rem">
+      <Flex
+        width="100%"
+        direction="column"
+        gap="2rem"
+        grow="grow1"
+        style={{ minHeight: 0 }}
+      >
         <AnnounceCard
           data={currentRecruitment}
           onViewDetail={() => router.push('/apply-management')}
         />
 
-        <Flex width="100%" gap="2rem">
+        <Flex
+          width="100%"
+          gap="2rem"
+          align="stretch"
+          grow="grow1"
+          style={{ minHeight: 0 }}
+        >
           <DocTimeline data={currentRecruitment} />
 
           <Suspense fallback={<OverallProgressSkeleton />}>
